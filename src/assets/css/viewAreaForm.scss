@@ -1,0 +1,42 @@
+.viewArea {
+  display: flex;
+
+  .contentDiv {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    overflow: hidden;
+    overflow-y: auto;
+    background-color: white;
+    border-radius: 8px;
+    padding: 10px;
+
+    p {
+      font-size: 22px;
+      padding: 0 0 10px 15px;
+      margin-top: 5px;
+      margin-bottom: 15px;
+      font-weight: 550;
+      border-bottom: 1px solid #ccc;
+    }
+
+    .el-form {
+      width: 850px;
+    }
+
+    .btns {
+      width: 850px;
+      display: flex;
+      justify-content: center;
+      margin-top: 10px;
+    }
+  }
+}
+
+:deep(.el-cascader) {
+  width: 100%;
+}
+
+:deep(.el-date-editor--date) {
+  width: 100% !important;
+}

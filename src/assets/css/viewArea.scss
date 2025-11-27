@@ -1,0 +1,75 @@
+.viewArea {
+  display: flex;
+  flex-direction: column;
+}
+
+.tableDiv {
+  display: flex;
+  flex-direction: column;
+  margin-top: 5px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  flex: 1;
+  overflow: hidden;
+  background-color: white;
+  border-radius: 4px;
+  padding: 0 16px;
+  min-height: 300px;
+
+  .cursor-pointer {
+    color: #1890ff;
+    margin: 0 8px;
+    display: flex;
+    align-items: center;
+  }
+
+  .cursor-pointer:hover {
+    cursor: pointer;
+  }
+}
+// 复制图标
+.copyDiv {
+  display: flex;
+  align-items: center;
+  .copyIcon {
+    margin-right: 8px;
+    cursor: pointer;
+    font-size: 17px;
+    &:hover {
+      color: #1890ff;
+    }
+  }
+}
+.copyText {
+  font-size: 14px;
+  color: #0300bb;
+  cursor: pointer;
+  &:hover {
+    text-decoration: underline;
+  }
+}
+// 按钮禁用效果
+.btnDisable {
+  color: #919191 !important;
+  cursor: not-allowed !important;
+}
+// 状态筛选
+.tableTopButtons {
+  width: 100%;
+
+  .statusIds {
+    margin-bottom: 7px;
+    background-color: #f0faff;
+    border-radius: 5px;
+    padding: 2px 8px;
+    display: flex;
+  }
+}
+
+/* 清楚悬浮黑框 */
+:deep(.el-dropdown) {
+  outline: none;
+}
+
+:deep(.el-tooltip__trigger) {
+  outline: none;
+}

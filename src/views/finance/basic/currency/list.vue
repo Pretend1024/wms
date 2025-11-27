@@ -1,0 +1,362 @@
+<template>
+    <div class="viewArea">
+        <div class="filterDiv">
+            <hydFilterBox :form-items="formConfig" :initial-value="initValues" @search="handleSearch"
+                @reset="handleReset">
+            </hydFilterBox>
+        </div>
+        <div class="tableDiv">
+            <hydTable :footer="footer" :tableData="tableData" :columns="columns" :pagination="pagination"
+                :enableSelection="true" :loading="loading" :pageSizes="[20, 50, 100, 200, 500]"
+                @selection-change="handleSelectionChange" @row-click="handleRowClick" @page-change="handlePageChange"
+                @sort-change="handleTableSort">
+                <template #table-buttons>
+                    <el-button type="primary" @click="handleAdd" :icon="Plus">{{ getButtonText('add') }}</el-button>
+                    <el-button type="danger" @click="handleDel" :icon="Delete">{{ getButtonText('del') }}</el-button>
+                </template>
+                <template #customBtn="{ row }">
+                    <div style="display: flex;">
+                        <div class="cursor-pointer" @click="!row.isStandardCurrency && handleEdit(row)"
+                            :class="{ 'btnDisable': row.isStandardCurrency }">
+                            <el-icon>
+                                <EditPen />
+                            </el-icon>
+                            <span>{{ getButtonText('edit') }}</span>
+                        </div>
+                        <!-- 详情 -->
+                        <div class="cursor-pointer" @click="handleDetail(row)">
+                            <el-icon>
+                                <DocumentCopy />
+                            </el-icon>
+                            <span>{{ getButtonText('detail') }}</span>
+                        </div>
+                    </div>
+                </template>
+                <template #isStandardCurrency="{ row }">
+                    <span :style="{ color: row.isStandardCurrency ? 'green' : 'red' }">{{ row.isStandardCurrency
+                        ? '是' : '否'
+                    }}</span>
+                </template>
+            </hydTable>
+        </div>
+        <!-- 弹窗：关键修改：动态组件传递initData（回显数据），移除无用的formData -->
+        <el-dialog v-model="centerDialogVisible" :title="dialogTitle" width="450" align-center destroy-on-close>
+            <component :is="currentForm" ref="childFormRef" :initData="dialogMode === 'add' ? {} : editInitData"
+                :isDisabled="dialogMode === 'info'" />
+            <template #footer>
+                <div class="dialog-footer">
+                    <el-button @click="handleDialogCancel">{{ getButtonText('cancel') }}</el-button>
+                    <!-- 仅新增/编辑模式显示确认按钮 -->
+                    <el-button type="primary" @click="handleDialogConfirm" v-if="dialogMode !== 'info'">
+                        {{ getButtonText('confirm') }}
+                    </el-button>
+                </div>
+            </template>
+        </el-dialog>
+
+        <batchOperationn :isVisible="delDialogVisible" :tableData="delData" :nameField="'id'" :nameLabel="'币种代码'"
+            @close="delColse" :promptMessage="promptMessage" />
+    </div>
+</template>
+
+<script setup name="币种汇率">
+import { ref, computed, onMounted, nextTick } from 'vue';
+import { Plus, Delete, EditPen } from '@element-plus/icons-vue';
+import { ElLoading, ElMessage, ElMessageBox } from 'element-plus';
+
+// 接口导入
+import { getCurrencyPageApi, delCurrencyByIdApi, addCurrencyApi, updCurrencyByIdApi } from '@/api/financeApi/basic.js';
+
+// 工具与组件导入
+import { smartAlert, trimObjectStrings } from '@/utils/genericMethods.js';
+import hydFilterBox from "@/components/table/hyd-filterBox.vue";
+import hydTable from "@/components/table/hyd-table.vue";
+import batchOperationn from '@/components/messageNotices/batchOperation.vue';
+import AddForm from './add.vue';
+import UpdForm from './upd.vue'; // 虽与AddForm相同，保留动态切换逻辑
+import { useI18n } from 'vue-i18n';
+const { t } = useI18n();
+
+// -------------------------- 核心修改1：定义编辑回显数据存储变量 --------------------------
+// 编辑时的回显数据（替代原addData，专门用于传递给子组件）
+const editInitData = ref({});
+// 移除无用的addData（因子组件已内部维护formData，无需父组件传递formData）
+
+// -------------------------- 搜索表单配置 --------------------------
+const formConfig = ref([
+    {
+        type: 'select', label: '本位币', prop: 'isStandardCurrency', options: [
+            { label: '是', value: true },
+            { label: '否', value: false }
+        ]
+    },
+    { type: 'input', label: '币种代码', prop: 'currency' },
+    { type: 'date', label: '创建时间', prop: 'createdTimeBegin', useEndOfDay: false },
+    { type: 'date', label: '截至时间', prop: 'createdTimeEnd', useEndOfDay: true },
+]);
+
+const initValues = ref({
+    customerCode: '',
+    orgId: '',
+    toUsToken: '',
+    apiTypeId: '',
+    createdTimeBegin: '',
+    createdTimeEnd: ''
+});
+
+// 搜索事件
+const handleSearch = (data) => {
+    loading.value = true;
+    if (Array.isArray(data.orgId)) {
+        data.orgId = data.orgId.length > 0 ? data.orgId[data.orgId.length - 1] : '';
+    }
+    initValues.value = { ...data };
+    getList(pagination.value.currentPage, pagination.value.pageSize, orderBy.value);
+};
+
+// 重置事件
+const handleReset = (data) => {
+    loading.value = true;
+    initValues.value = { ...data };
+    getList(pagination.value.currentPage, pagination.value.pageSize, orderBy.value);
+};
+
+// -------------------------- 表格配置与事件 --------------------------
+const tableData = ref([]);
+const columns = ref([
+    { label: '币种代码', prop: 'currency', width: '175', fixed: 'left', sortable: true },
+    { label: '汇率', prop: 'rate', width: '120', sortable: true },
+    { label: '本位币', prop: 'isStandardCurrency', width: '150', sortable: true, slot: 'isStandardCurrency' },
+    { label: '备注', prop: 'remark', width: '200' },
+    { label: '创建时间', prop: 'createdTime', width: '200', sortable: true },
+    { label: '创建人', prop: 'createdBy', width: '110' },
+    { label: '更新时间', prop: 'updatedTime', width: '200', sortable: true },
+    { label: '更新人', prop: 'updatedBy', width: '120' },
+    { label: '操作', prop: 'action', width: '150', fixed: 'right', slot: 'customBtn' }
+]);
+
+const pagination = ref({ currentPage: 1, pageSize: 100, total: 99 });
+const loading = ref(true);
+const selectionRows = ref([]); // 批量选择数据
+const selection = ref({}); // 单行点击数据
+const orderBy = ref(''); // 排序条件
+
+// 表格事件
+const handleSelectionChange = (selection) => {
+    selectionRows.value = selection;
+};
+
+const handleRowClick = (row) => {
+    selection.value = row;
+    console.log('点击行数据:', row);
+};
+
+const handlePageChange = ({ pageSize, currentPage }) => {
+    loading.value = true;
+    pagination.value.pageSize = pageSize;
+    pagination.value.currentPage = currentPage;
+    getList(currentPage, pageSize, orderBy.value);
+};
+
+const handleTableSort = (sortString) => {
+    orderBy.value = sortString;
+    getList(pagination.value.currentPage, pagination.value.pageSize, sortString);
+};
+
+// -------------------------- 弹窗与动态组件配置（核心修改区） --------------------------
+const centerDialogVisible = ref(false);
+const childFormRef = ref(null); // 子组件引用
+const dialogMode = ref('add'); // 弹窗模式：add-新增，upd-编辑
+
+// 动态组件：根据模式选择AddForm/UpdForm（虽相同，保留扩展性）
+const currentForm = computed(() => dialogMode.value === 'add' ? AddForm : UpdForm);
+// 弹窗标题：根据模式切换
+// 弹窗标题：add-新增 / upd-编辑 / info-详情
+const dialogTitle = computed(() => {
+    if (dialogMode.value === 'add') {
+        return t(`finance_account_currency_list.addTitle`);
+    } else if (dialogMode.value === 'upd') {
+        return t(`finance_account_currency_list.updTitle`);
+    } else { // info模式
+        return t(`finance_account_currency_list.infoTitle`); // 需确保i18n中有infoTitle配置
+    }
+});
+
+// -------------------------- 核心修改2：编辑按钮点击事件（回显数据核心） --------------------------
+const handleEdit = (row) => {
+    // 1. 深拷贝行数据到回显变量（避免原数据被修改）
+    editInitData.value = JSON.parse(JSON.stringify(row));
+    // 2. 设置弹窗模式为编辑
+    dialogMode.value = 'upd';
+    // 3. 打开弹窗（nextTick确保数据赋值完成后再渲染子组件）
+    nextTick(() => {
+        centerDialogVisible.value = true;
+    });
+};
+
+// 新增按钮点击事件
+const handleAdd = () => {
+    // 1. 清空回显数据（避免残留编辑数据）
+    editInitData.value = {};
+    // 2. 设置弹窗模式为新增
+    dialogMode.value = 'add';
+    // 3. 打开弹窗
+    centerDialogVisible.value = true;
+};
+
+// 弹窗取消按钮
+const handleDialogCancel = () => {
+    centerDialogVisible.value = false;
+    // 取消时重置子组件表单（避免下次打开残留数据）
+    nextTick(() => {
+        childFormRef.value?.resetFields();
+    });
+};
+
+// 弹窗确认按钮（已适配子组件内部formData）
+const handleDialogConfirm = async () => {
+    if (!childFormRef.value) return;
+
+    let bodyLoading = null;
+    try {
+        // 1. 子组件表单验证
+        await childFormRef.value.validate();
+        // 2. 获取子组件内部最新表单数据（关键：从子组件拿实时数据）
+        const formData = childFormRef.value.getFormData();
+        if (!formData) {
+            smartAlert('表单数据异常，请重试', false, 1000);
+            return;
+        }
+
+        // 3. 显示加载状态
+        bodyLoading = ElLoading.service({ lock: true, text: 'Loading' });
+        loading.value = true;
+
+        // 4. 调用新增/编辑接口（根据formData是否有id判断）
+        let res;
+        if (formData.id) {
+            res = await updCurrencyByIdApi(formData); // 编辑接口
+        } else {
+            res = await addCurrencyApi(formData); // 新增接口
+        }
+
+        // 5. 结果提示与后续操作
+        smartAlert(
+            res?.msg || (formData.id ? '修改' : '新增') + '操作异常',
+            res?.success || false,
+            1000
+        );
+        if (res?.success) {
+            centerDialogVisible.value = false;
+            getList(pagination.value.currentPage, pagination.value.pageSize, orderBy.value); // 刷新列表
+        }
+
+    } catch (error) {
+        // 错误分类提示
+        if (error?.name === 'ValidationError' || error?.message.includes('表单验证')) {
+            smartAlert('请完善必填项后提交', false, 1000);
+        } else {
+            smartAlert('网络异常或操作失败，请重试', false, 1000);
+        }
+        console.error('操作失败:', error);
+
+    } finally {
+        // 确保加载状态关闭
+        if (bodyLoading) bodyLoading.close();
+        loading.value = false;
+    }
+};
+
+// 详情
+// 详情按钮点击事件（核心：设置详情模式+回显数据）
+const handleDetail = (row) => {
+    // 1. 深拷贝行数据到回显变量（与编辑共用editInitData，无需新增变量）
+    editInitData.value = JSON.parse(JSON.stringify(row));
+    // 2. 设置弹窗模式为“详情”（用于标题切换和禁用控制）
+    dialogMode.value = 'info';
+    // 3. 打开弹窗（nextTick确保数据赋值完成）
+    nextTick(() => {
+        centerDialogVisible.value = true;
+    });
+};
+
+// -------------------------- 删除功能 --------------------------
+const delData = ref([]);
+const delDialogVisible = ref(false);
+const promptMessage = ref('');
+
+const handleDel = () => {
+    if (selectionRows.value.length === 0) {
+        ElMessage({
+            type: 'warning',
+            message: '请选择要删除的数据！'
+        });
+        return;
+    }
+    ElMessageBox.confirm(
+        `是否要删除${selectionRows.value.length > 0 ? selectionRows.value.length : '该'}条数据?`,
+        '提醒',
+        {
+            confirmButtonText: '确定',
+            cancelButtonText: '取消',
+            type: 'warning'
+        }
+    )
+        .then(async () => {
+            loading.value = true;
+            delDialogVisible.value = true;
+            delData.value = [];
+            promptMessage.value = '操作中...'
+            for (let i = 0; i < selectionRows.value.length; i++) {
+                const res = await delCurrencyByIdApi({ id: selectionRows.value[i].id });
+                delData.value.push({
+                    id: selectionRows.value[i].currency,
+                    msg: res.msg,
+                    success: res.success
+                });
+                console.log('删除数据:', res);
+            }
+            promptMessage.value = '操作完成！'
+        })
+        .catch(() => {
+            ElMessage({
+                type: 'info',
+                message: '已取消'
+            });
+        });
+};
+
+const delColse = () => {
+    delDialogVisible.value = false;
+    getList(pagination.value.currentPage, pagination.value.pageSize, orderBy.value); // 刷新列表
+};
+
+// -------------------------- 列表数据与枚举加载 --------------------------
+// 获取列表数据
+const getList = async (currentPage, pageSize, orderByStr) => {
+    try {
+        const res = await getCurrencyPageApi({
+            page: currentPage,
+            pageSize: pageSize,
+            orderBy: orderByStr,
+            ...trimObjectStrings(initValues.value)
+        });
+        tableData.value = res.data.rows;
+        pagination.value = {
+            currentPage: res.data.page,
+            pageSize: pageSize,
+            total: res.data.total
+        };
+    } catch (error) {
+        console.error('获取列表失败:', error);
+        tableData.value = [];
+    } finally {
+        loading.value = false;
+    }
+};
+
+</script>
+
+<style scoped lang="scss">
+@use '@/assets/css/viewArea.scss';
+</style>

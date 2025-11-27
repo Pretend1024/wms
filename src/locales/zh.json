@@ -1,0 +1,252 @@
+{
+  "UserName": "用户名字",
+  "LastActivity": "最近访问",
+  "Download": "我的下载",
+  "OrderTrend": "订单趋势",
+  "OrderPercentage": "订单比例",
+  "PerDiem": "按天",
+  "PerMensem": "按月",
+  "PerClient": "按客户",
+  "PerRegion": "按地区",
+  "Refresh": "刷新",
+  "CloseOther": "关闭其他",
+  "CloseLeft": "关闭左侧",
+  "CloseRight": "关闭右侧",
+  "CloseAll": "关闭全部",
+  "FullScreen": "全屏",
+  "tool": "工具",
+  "print": "条码打印",
+  "Message": "消息",
+  "ToDo": "代办",
+  "UserInfo": "用户信息",
+  "Logout": "退出登录",
+  "ChangePassword": "修改密码",
+  "AllRead": "全部已读",
+  "More": "查看更多",
+  "Welcome": "欢迎使用本系统，期待您的反馈和建议！",
+  "Login": "登录",
+  "SignInNow": "立即登录",
+  "ForgotPassword": "忘记密码",
+  "ResetPassword": "重置密码",
+  "UserNamePlaceholder": "请输入用户名",
+  "PasswordPlaceholder": "请输入密码",
+  "PhonePlaceholder": "请输入手机号",
+  "CaptchaPlaceholder": "请输入验证码",
+  "NewPasswordPlaceholder": "请输入新密码",
+  "ConfirmChange": "确定修改",
+  "BackToLogin": "返回登录",
+  "Send": "发送",
+  "SelectBranch": "选择网点",
+  "SelectStation": "选择站点",
+  "InformationBulletin": "信息公告",
+  "DocumentArea": "文档区域",
+  "StatusOfTheMission": "任务现状",
+  "EmployeeInfo": "员工信息",
+  "DataPermission": "数据权限",
+  "RulePrompt": "规则提示",
+  "WhsePermScp": "仓库权限范围:",
+  "Desig.": "指定",
+  "Default": "默认",
+  "SelectAll": "全选",
+  "CustPermScp": "客户权限范围",
+  "SearchCustomer": "搜索客户",
+  "Male": "男",
+  "Female": "女",
+  "DataPermissionDescription": "<p style='font-weight:900;font-size:16px;color:#000000cc'> 数据权限包括查看和操作</p><p style='font-weight:900;font-size:16px;color:#000000cc'> 数据权限生效范围</p><p>所有查询页面，如：客户列表、SKU、入库单、库存、出库单、退件、报价、应收应付等</p><p style='font-weight:900;font-size:16px;color:#000000cc'> 默认范围</p><p>1. 本公司 (不可移除)</p><p>2. 所有仓库 (可移除)</p><p>3. 所有客户 (可移除)</p><p style='font-weight:900;font-size:16px;color:#000000cc'> 可配置范围</p><p>2. 指定仓库</p><p>3. 指定客户</p><p style='font-weight:900;font-size:16px;color:#000000cc'> 不可移除且不可增加约束的权限</p><p>1. 岗位 - 销售员：自己的客户</p><p>2. 岗位 - 销售主管：部门内所有客户 </p><p>3. 仓库员工：所在仓库的全部数据 </p><p>4. 系统管理员：拥有全局数据查看权限，包括所有公司、仓库及客户的全部数据</p><p style='font-weight:900;font-size:16px;color:#000000cc'> 权限控制机制</p><p>采用数据权限与功能权限相结合的双重控制模式：</p><p>● 数据权限决定用户可访问的信息范围</p><p>● 功能权限限制用户可操作的功能模块</p><p>例如：仓库员工虽具备所在仓库的全部数据权限，但可通过角色配置限制其功能权限，如：</p><p>● 隐藏 \"客户列表\" 菜单入口</p><p>● 禁用 \"账单查询\"、\"客户管理\" 等功能按钮</p><p>● 限制导出客户相关数据的操作权限</p>",
+  "ContactInfo": "联系信息",
+  "BasicData": "基础资料",
+  "Authority": "权限",
+  "ContractDocuments": "合同证件",
+  "DockingInfo": "对接信息",
+  "ResetPwd": "重置密码",
+  "enterNewPassword": "请输入“{name} ({userCode})”的新密码",
+  "addressInfo": "地址信息",
+  "basicInfo": "基础信息",
+  "recipientInfo": "收件人信息",
+  "senderInfo": "发件人信息",
+  "productInfo": "商品信息",
+  "taskAndValueAddedService": "任务与增值服务",
+  "logisticsPackage": "物流包裹",
+  "attachment": "附件",
+  "costDetails": "费用明细",
+  "consumables": "耗材",
+  "remark": "备注",
+  "listDetail": "列表详情",
+  "addTrack": "添加轨迹",
+  "trackList": "轨迹详情",
+  "noRecord": "暂无记录",
+  "base_org_organization_list": {
+    "addTitle": "新增部门",
+    "updTitle": "编辑部门"
+  },
+  "base_basic_country_list": {
+    "addTitle": "新增国家地区",
+    "updTitle": "编辑国家地区"
+  },
+  "base_basic_template_list": {
+    "addTitle": "新增模板",
+    "updTitle": "编辑模板"
+  },
+  "base_consumables_consumables_list": {
+    "addTitle": "新增包材类型",
+    "updTitle": "编辑包材类型"
+  },
+  "base_consumables_consumablesIn_list": {
+    "addTitle": "耗材入库",
+    "updTitle": "编辑耗材"
+  },
+  "base_consumables_consumablesInventory_list": {
+    "addTitle": "新增耗材库存",
+    "updTitle": "编辑耗材备注"
+  },
+  "base_consumables_consumablesOut_list": {
+    "addTitle": "耗材出库",
+    "updTitle": "编辑耗材库存"
+  },
+  "base_cust_customerApi_list": {
+    "addTitle": "新增Api对接",
+    "updTitle": "编辑Api对接"
+  },
+  "base_cust_customerLevel_list": {
+    "addTitle": "新增客户等级",
+    "updTitle": "编辑客户等级"
+  },
+  "base_org_position_list": {
+    "addTitle": "新增岗位",
+    "updTitle": "编辑岗位"
+  },
+  "base_sku_skuMapping_list": {
+    "addTitle": "新增SKU映射",
+    "updTitle": "编辑SKU映射"
+  },
+  "base_wh_location_list": {
+    "addTitle": "新增库位",
+    "updTitle": "编辑库位"
+  },
+  "base_wh_locationSizeType_list": {
+    "addTitle": "新增库位类型",
+    "updTitle": "编辑库位类型"
+  },
+  "base_wh_platform_list": {
+    "addTitle": "新增月台",
+    "updTitle": "编辑月台"
+  },
+  "base_wh_warehouse_list": {
+    "addTitle": "新增仓库",
+    "updTitle": "编辑仓库"
+  },
+  "base_wh_zone_list": {
+    "addTitle": "新增库区",
+    "updTitle": "编辑库区"
+  },
+  "instock_appointment_inAppointment_list": {
+    "addTitle": "新增预约",
+    "updTitle": "编辑预约"
+  },
+  "product_shipway_carrier_list": {
+    "addTitle": "新增承运商",
+    "updTitle": "编辑承运商",
+    "infoTitle": "承运商详情"
+  },
+  "product_price_fuel_list": {
+    "addTitle": "新增模板",
+    "updTitle": "编辑模板"
+  },
+  "product_price_regionProject_list": {
+    "addTitle": "新增分区模板",
+    "updTitle": "编辑分区模板"
+  },
+  "product_price_remote_list": {
+    "addTitle": "新增偏远库",
+    "updTitle": "编辑偏远库"
+  },
+  "product_shipway_shipwaySender_list": {
+    "addTitle": "新增回邮地址",
+    "updTitle": "编辑回邮地址"
+  },
+  "base_basic_address_list": {
+    "addTitle": "新增地址",
+    "updTitle": "编辑地址"
+  },
+  "sys_job_exportJob_list": {
+    "checkTitle": "查看详情"
+  },
+  "sys_job_importJob_list": {
+    "checkTitle": "查看详情"
+  },
+  "sys_job_scheduleJob_list": {
+    "addTitle": "新增定时任务",
+    "updTitle": "编辑定时任务"
+  },
+  "sys_msg_messageContent_list": {
+    "addTitle": "新增消息通知",
+    "checkTitle": "查看详情"
+  },
+  "sys_setting_menu_list": {
+    "addTitle": "新增菜单",
+    "updTitle": "编辑菜单"
+  },
+  "sys_user_role_list": {
+    "addTitle": "新增角色",
+    "updTitle": "编辑角色"
+  },
+  "instock_returned_returnClaim_list": {
+    "title": "退货认领"
+  },
+  "instock_inventory_inventorySn_list": {
+    "addTitle": "新增SN",
+    "updTitle": "编辑SN"
+  },
+  "outstock_order_outOrder_list": {
+    "warehouseTitle": "设置仓库",
+    "channelTitle": "设置渠道",
+    "applyTitle": "申请单号"
+  },
+  "outstock_order_outOrderProblem_list": {
+    "addTitle": "新增问题",
+    "closeTitle": "关闭问题"
+  },
+  "finance_account_collectionAccount_list": {
+    "addTitle": "新增账户",
+    "updTitle": "编辑账户",
+    "infoTitle": "账户详情"
+  },
+  "finance_account_currency_list": {
+    "addTitle": "新增币种",
+    "updTitle": "编辑币种",
+    "infoTitle": "币种详情"
+  },
+  "finance_account_customerAccount_list": {
+    "addTitle": "新增账户",
+    "infoTitle": "账户详情"
+  },
+  "finance_receivables_customerCredit_list": {
+    "addTitle": "新增授信",
+    "updTitle": "编辑授信",
+    "infoTitle": "授信详情"
+  },
+  "vas_vas_vasServiceType_list": {
+    "addTitle": "新增服务类型",
+    "updTitle": "编辑服务类型",
+    "infoTitle": "服务类型详情"
+  },
+  "finance_account_recharge_list": {
+    "addTitle": "新增充值",
+    "updTitle": "编辑充值",
+    "infoTitle": "充值详情"
+  },
+  "outstock_trace_outTrack_list": {
+    "addTitle": "新增轨迹",
+    "delTitle": "删除轨迹",
+    "infoTitle": "轨迹详情",
+    "status0": "操作未开始",
+    "status1": "处理中",
+    "status2": "处理完成",
+    "status3": "成功",
+    "status4": "失败"
+  },
+  "vas_wo_workOrderType_list": {
+    "addTitle": "新增问题类型",
+    "updTitle": "编辑问题类型"
+  }
+}

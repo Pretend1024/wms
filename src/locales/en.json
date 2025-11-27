@@ -1,0 +1,252 @@
+{
+  "UserName": "User Name",
+  "LastActivity": "Last Activity",
+  "Download": "My Downloads",
+  "OrderTrend": "Order Trend",
+  "OrderPercentage": "Order Percentage",
+  "PerDiem": "Per Day",
+  "PerMensem": "Per Month",
+  "PerClient": "Per Client",
+  "PerRegion": "Per Region",
+  "Refresh": "Refresh",
+  "CloseOther": "CloseOthers",
+  "CloseLeft": "CloseLeft",
+  "CloseRight": "CloseRight",
+  "CloseAll": "CloseAll",
+  "FullScreen": "Full Screen",
+  "Message": "Message",
+  "ToDo": "To-Do",
+  "tool": "Tool",
+  "print": "Print Barcode",
+  "UserInfo": "User Information",
+  "Logout": "Logout",
+  "ChangePassword": "Change Password",
+  "AllRead": "MarkAllAsRead",
+  "More": "View More",
+  "Welcome": "Welcome to use this system. We look forward to your feedback and suggestions!",
+  "Login": "Login",
+  "SignInNow": "Sign In Now",
+  "ForgotPassword": "Forgot Password",
+  "ResetPassword": "ResetPassword",
+  "UserNamePlaceholder": "Username",
+  "PasswordPlaceholder": "Password",
+  "PhonePlaceholder": "Phone Number",
+  "CaptchaPlaceholder": "Verification Code",
+  "NewPasswordPlaceholder": "Eew Password",
+  "ConfirmChange": "Confirm Change",
+  "BackToLogin": "Back to Login",
+  "Send": "Send",
+  "SelectBranch": "Select Branch",
+  "SelectStation": "Select Station",
+  "InformationBulletin": "Information Bulletin",
+  "DocumentArea": "Document Area",
+  "StatusOfTheMission": "Mission Status",
+  "EmployeeInfo": "Employee Info",
+  "DataPermission": "Data Permission",
+  "RulePrompt": "Rule Prompt",
+  "WhsePermScp": "Whse Perm Scp:",
+  "Desig.": "Desig.",
+  "Default": "Default",
+  "SelectAll": "Select All",
+  "CustPermScp": "Cust Perm Scp:",
+  "SearchCustomer": "Search Customer",
+  "Male": "Male",
+  "Female": "Female",
+  "DataPermissionDescription": "<p style='font-weight:900;font-size:16px;color:#000000cc'>Data permission includes viewing and operation</p><p style='font-weight:900;font-size:16px;color:#000000cc'>Effective Scope of Data Permission</p><p>All query pages, such as: Customer List, SKU, Warehouse Receipt, Inventory, Warehouse Shipment, Returned Items, Quotation, Accounts Receivable and Payable, etc.</p><p style='font-weight:900;font-size:16px;color:#000000cc'>Default Scope</p><p>1. This Company (Non-removable)</p><p>2. All Warehouses (Removable)</p><p>3. All Customers (Removable)</p><p style='font-weight:900;font-size:16px;color:#000000cc'>Configurable Scope</p><p>2. Designated Warehouses</p><p>3. Designated Customers</p><p style='font-weight:900;font-size:16px;color:#000000cc'>Permissions that are Non-removable and Non-restrictable</p><p>1. Position - Salesperson: Own customers</p><p>2. Position - Sales Supervisor: All customers in the department </p><p>3. Warehouse Staff: All data of the affiliated warehouse </p><p>4. System Administrator: Has global data viewing permission, including all data of all companies, warehouses and customers</p><p style='font-weight:900;font-size:16px;color:#000000cc'>Permission Control Mechanism</p><p>Adopts a dual control mode combining data permission and function permission:</p><p>● Data permission determines the scope of information accessible to users</p><p>● Function permission restricts the functional modules operable by users</p><p>Example: Although warehouse staff have full data permission for their affiliated warehouse, their function permission can be restricted through role configuration, such as:</p><p>● Hide the 'Customer List' menu entry</p><p>● Disable function buttons such as 'Bill Query' and 'Customer Management'</p><p>● Restrict the operation permission for exporting customer-related data</p>",
+  "ContactInfo": "Contact Information",
+  "BasicData": "Basic Data",
+  "Authority": "Authority",
+  "ContractDocuments": "Contract Documents",
+  "DockingInfo": "Docking Information",
+  "ResetPwd": "Reset Pwd",
+  "enterNewPassword": "Please enter the new password for \"{name} ({userCode})\"",
+  "basicInfo": "Basic Information",
+  "addressInfo": "Address Information",
+  "recipientInfo": "Recipient Information",
+  "senderInfo": "Sender Information",
+  "productInfo": "Product Information",
+  "taskAndValueAddedService": "Task and Value-added Services",
+  "logisticsPackage": "Logistics Package",
+  "attachment": "Attachment",
+  "costDetails": "Cost Details",
+  "consumables": "Consumables",
+  "remark": "Remark",
+  "addTrack": "Add Track",
+  "trackList": "Track List",
+  "listDetail": "List Detail",
+  "noRecord": "No Record",
+  "base_org_organization_list": {
+    "addTitle": "Add Department",
+    "updTitle": "Upd Department"
+  },
+  "base_basic_country_list": {
+    "addTitle": "Add Country/Region",
+    "updTitle": "Edit Country/Region"
+  },
+  "base_basic_template_list": {
+    "addTitle": "Add Template",
+    "updTitle": "Edit Template"
+  },
+  "base_consumables_consumables_list": {
+    "addTitle": "Add Packaging Material Type",
+    "updTitle": "Edit Packaging Material Type"
+  },
+  "base_consumables_consumablesIn_list": {
+    "addTitle": "Consumables Inbound",
+    "updTitle": "Edit Consumables"
+  },
+  "base_consumables_consumablesInventory_list": {
+    "addTitle": "Add Consumables Inventory",
+    "updTitle": "Edit Consumables Remarks"
+  },
+  "base_consumables_consumablesOut_list": {
+    "addTitle": "Consumables Outbound",
+    "updTitle": "Edit Consumables Inventory"
+  },
+  "base_cust_customerApi_list": {
+    "addTitle": "Add API Integration",
+    "updTitle": "Edit API Integration"
+  },
+  "base_cust_customerLevel_list": {
+    "addTitle": "Add Customer Level",
+    "updTitle": "Edit Customer Level"
+  },
+  "base_org_position_list": {
+    "addTitle": "Add Position",
+    "updTitle": "Edit Position"
+  },
+  "base_sku_skuMapping_list": {
+    "addTitle": "Add SKU Mapping",
+    "updTitle": "Edit SKU Mapping"
+  },
+  "base_wh_location_list": {
+    "addTitle": "Add Storage Location",
+    "updTitle": "Edit Storage Location"
+  },
+  "base_wh_locationSizeType_list": {
+    "addTitle": "Add Location Type",
+    "updTitle": "Edit Location Type"
+  },
+  "base_wh_platform_list": {
+    "addTitle": "Add Platform",
+    "updTitle": "Edit Platform"
+  },
+  "base_wh_warehouse_list": {
+    "addTitle": "Add Warehouse",
+    "updTitle": "Edit Warehouse"
+  },
+  "base_wh_zone_list": {
+    "addTitle": "Add Warehouse Zone",
+    "updTitle": "Edit Warehouse Zone"
+  },
+  "instock_appointment_inAppointment_list": {
+    "addTitle": "Add Appointment",
+    "updTitle": "Edit Appointment"
+  },
+  "product_shipway_carrier_list": {
+    "addTitle": "Add Carrier",
+    "updTitle": "Edit Carrier",
+    "infoTitle": "Carrier Details"
+  },
+  "product_price_fuel_list": {
+    "addTitle": "Add Template",
+    "updTitle": "Edit Template"
+  },
+  "product_price_regionProject_list": {
+    "addTitle": "Add Zone Template",
+    "updTitle": "Edit Zone Template"
+  },
+  "product_price_remote_list": {
+    "addTitle": "Add Remote Warehouse",
+    "updTitle": "Edit Remote Warehouse"
+  },
+  "product_shipway_shipwaySender_list": {
+    "addTitle": "Add Sender Address",
+    "updTitle": "Edit Sender Address"
+  },
+  "base_basic_address_list": {
+    "addTitle": "Add Address",
+    "updTitle": "Edit Address"
+  },
+  "sys_job_exportJob_list": {
+    "checkTitle": "View Details"
+  },
+  "sys_job_importJob_list": {
+    "checkTitle": "View Details"
+  },
+  "sys_job_scheduleJob_list": {
+    "addTitle": "Add Scheduled Task",
+    "updTitle": "Edit Scheduled Task"
+  },
+  "sys_msg_messageContent_list": {
+    "addTitle": "Add Message Notification",
+    "checkTitle": "View Details"
+  },
+  "sys_setting_menu_list": {
+    "addTitle": "Add Menu",
+    "updTitle": "Edit Menu"
+  },
+  "sys_user_role_list": {
+    "addTitle": "Add Role",
+    "updTitle": "Edit Role"
+  },
+  "instock_returned_returnClaim_list": {
+    "title": "Return Claim"
+  },
+  "instock_inventory_inventorySn_list": {
+    "addTitle": "Add SN",
+    "updTitle": "Edit SN"
+  },
+  "outstock_order_outOrder_list": {
+    "warehouseTitle": "Warehouse Setting",
+    "channelTitle": "Channel Setting",
+    "applyTitle": "Application Number"
+  },
+  "outstock_order_outOrderProblem_list": {
+    "addTitle": "Add Problem",
+    "closeTitle": "Close Problem"
+  },
+  "finance_account_collectionAccount_list": {
+    "addTitle": "Add Account",
+    "updTitle": "Edit Account",
+    "infoTitle": "Account Details"
+  },
+  "finance_account_currency_list": {
+    "addTitle": "Add Currency",
+    "updTitle": "Edit Currency",
+    "infoTitle": "Currency Details"
+  },
+  "finance_account_customerAccount_list": {
+    "addTitle": "Add Account",
+    "infoTitle": "Account Details"
+  },
+  "finance_receivables_customerCredit_list": {
+    "addTitle": "Add Credit",
+    "updTitle": "Edit Credit",
+    "infoTitle": "Credit Details"
+  },
+  "vas_vas_vasServiceType_list": {
+    "addTitle": "Add Service Type",
+    "updTitle": "Edit Service Type",
+    "infoTitle": "Service Type Details"
+  },
+  "finance_account_recharge_list": {
+    "addTitle": "Add Recharge",
+    "updTitle": "Edit Recharge",
+    "infoTitle": "Recharge Details"
+  },
+  "outstock_trace_outTrack_list": {
+    "addTitle": "Add Tracking",
+    "delTitle": "Delete Tracking",
+    "infoTitle": "Tracking Details",
+    "status0": "Have Not Begun",
+    "status1": "In Hand",
+    "status2": "Finished",
+    "status3": "Success",
+    "status4": "Failure"
+  },
+  "vas_wo_workOrderType_list": {
+    "addTitle": "Add Work Order Type",
+    "updTitle": "Edit Work Order Type"
+  }
+}
