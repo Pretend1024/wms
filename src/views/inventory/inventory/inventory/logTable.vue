@@ -74,7 +74,7 @@ const handleReset = (data) => {
     getList(pagination.value.currentPage, pagination.value.pageSize)
 }
 // 表格数据--------------------------------------
-const tableData = ref([])
+const tableData = shallowRef([])
 // 表格列配置
 const columns = ref([
     { label: '操作类型', prop: 'opTypeName', width: '140', fixed: 'left' },

@@ -22,7 +22,7 @@ const props = defineProps({
     isExpanded: { type: Boolean, default: false }
 });
 
-const tableData = ref([]);
+const tableData = shallowRef([]);
 
 const columns = ref([
     { label: '客户', prop: 'customerCode', width: '200', slot: 'customer' },

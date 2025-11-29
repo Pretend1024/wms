@@ -287,7 +287,7 @@ const handleReset = (data) => {
     getStatus()
 }
 // 表格数据--------------------------------------
-const tableData = ref([])
+const tableData = shallowRef([])
 // 底部信息
 const footer = ref({})
 // 表格列配置

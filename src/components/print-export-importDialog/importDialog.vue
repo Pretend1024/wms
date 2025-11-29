@@ -118,7 +118,7 @@ defineExpose({ openImportDialog }); ({ openImportDialog });
 
 // ------- 以下为原有导入功能逻辑，保持不变 -------
 const templateList = ref([]);
-const tableData = ref([]);
+const tableData = shallowRef([]);
 const filterStatus = ref('all');
 const fileUrl = ref('');
 const fileList = ref([]);

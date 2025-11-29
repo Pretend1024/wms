@@ -233,6 +233,7 @@ const qualityOptions = ref([])
 onMounted(async () => {
     const loading = ElLoading.service({
         lock: true,
+        target: ".contentDiv",
         text: 'Loading'
     })
     // 仓库数据

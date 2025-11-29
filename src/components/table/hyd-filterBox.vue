@@ -45,6 +45,11 @@
 // ========================== 1. 依赖引入 ==========================
 import { ref, computed, onMounted, onUnmounted, useSlots, defineProps, defineEmits, defineExpose } from 'vue'
 import { ArrowDown } from '@element-plus/icons-vue'
+import {
+    ElInput, ElSelect, ElDatePicker, ElSwitch,
+    ElRadioGroup, ElCheckboxGroup, ElCascader,
+    ElOption, ElRadio, ElCheckbox
+} from 'element-plus'
 import dayjs from 'dayjs'
 import useUserMenuStore from '@/store/userMenu';
 import { getLabel, getPlaceholder } from '@/utils/i18n/i18nLabels'
@@ -158,22 +163,19 @@ function resetForm(init = false) {
 
 // 5.2 组件映射与属性处理
 const componentMap = {
-    // 表单项类型到组件的映射
-    input: 'el-input',
-    select: 'el-select',
-    date: 'el-date-picker',
-    switch: 'el-switch',
-    radio: 'el-radio-group',
-    checkbox: 'el-checkbox-group',
-    cascader: 'el-cascader',
-    number: 'el-input' // 数字类型复用输入框
+    input: ElInput,
+    select: ElSelect,
+    date: ElDatePicker,
+    switch: ElSwitch,
+    radio: ElRadioGroup,
+    checkbox: ElCheckboxGroup,
+    cascader: ElCascader,
+    number: ElInput
 }
-
 const optionComponentMap = {
-    // 选项类组件的选项组件映射
-    select: 'el-option',
-    radio: 'el-radio',
-    checkbox: 'el-checkbox'
+    select: ElOption,
+    radio: ElRadio,
+    checkbox: ElCheckbox
 }
 
 function getComponentProps(item) {

@@ -218,7 +218,7 @@ const handleReset = (data) => {
 // 表格及分页相关
 // =====================
 // 表格数据
-const tableData = ref([])
+const tableData = shallowRef([])
 // 表格列配置（包括 slot 定义）
 const columns = ref([
     { label: '订单号 ', prop: 'outOrderNo', width: '220', fixed: 'left', sortable: true },

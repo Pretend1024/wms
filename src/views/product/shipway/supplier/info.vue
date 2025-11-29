@@ -196,6 +196,7 @@ const handleCascaderChange = async (index) => {
 onMounted(async () => {
     const loading = ElLoading.service({
         lock: true,
+        target: ".contentDiv",
         text: 'Loading',
     })
     // 获取状态

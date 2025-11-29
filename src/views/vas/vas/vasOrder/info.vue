@@ -197,14 +197,14 @@
                 <el-col :span="24">
                     <generalAddTable ref="feeTableRef" :modelValue="false" :columns="feeTableColumns"
                         :data="feeTableData" :addRowDefaults="[{ prop: 'createWay', value: 20 }]">
-                        <template #feeTypeId="{ row }">
-                            <el-select v-model="row.feeTypeId" placeholder="请选择费用类型" clearable filterable disabled>
+                        <template #feeSubTypeId="{ row }">
+                            <el-select v-model="row.feeSubTypeId" placeholder="请选择费用类型" clearable filterable disabled>
                                 <el-option v-for="item in feeTypeOptions" :key="item.id" :label="item.name"
                                     :value="item.id" />
                             </el-select>
                         </template>
-                        <template #totalFee="{ row }">
-                            <el-input v-model.number="row.totalFee" placeholder="请输入总费用" v-number readonly />
+                        <template #feeAmount="{ row }">
+                            <el-input v-model.number="row.feeAmount" placeholder="请输入总费用" v-number readonly />
                         </template>
                         <template #currency="{ row }">
                             <el-select v-model="row.currency" placeholder="请选择货币类型" clearable filterable disabled>
@@ -333,8 +333,8 @@ const itemFormRules = reactive({
 
 // 费用表格列配置（和新增页面一致）
 const feeTableColumns = ref([
-    { label: '费用类型', prop: 'feeTypeId', required: true, slot: 'feeTypeId', width: 200 },
-    { label: '费用金额', prop: 'totalFee', required: true, slot: 'totalFee', width: 150 },
+    { label: '费用类型', prop: 'feeSubTypeId', required: true, slot: 'feeSubTypeId', width: 200 },
+    { label: '费用金额', prop: 'feeAmount', required: true, slot: 'feeAmount', width: 150 },
     { label: '货币类型', prop: 'currency', required: true, slot: 'currency', width: 180 },
     { label: '创建类型', prop: 'createWay', required: true, slot: 'createWay', width: 180 },
     { label: '费用备注', prop: 'remark', slot: 'remark', width: 280 }
@@ -353,7 +353,7 @@ const handleClose = () => {
  * 获取编辑详情数据
  */
 const getDetail = async () => {
-    const loading = ElLoading.service({ lock: true, text: "加载中..." });
+    const loading = ElLoading.service({ lock: true, target: ".contentDiv", text: "loading..." });
     try {
         if (!props.id) {
             ElMessage.warning('缺少编辑ID');
@@ -420,9 +420,9 @@ const getDetail = async () => {
             feeTableData.value = data.vasOrderFeeList.map(fee => ({
                 id: fee.id || '',
                 vasOrderId: fee.vasOrderId || '',
-                feeTypeId: fee.feeTypeId || '',
+                feeSubTypeId: fee.feeSubTypeId || '',
                 unitPrice: fee.unitPrice || 0,
-                totalFee: fee.totalFee || 0,
+                feeAmount: fee.feeAmount || 0,
                 currency: fee.currency || '',
                 statusId: fee.statusId || 0,
                 remark: fee.remark || '',

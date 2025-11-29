@@ -222,7 +222,7 @@ const handleReset = (data) => {
     getStatus()
 }
 // 表格数据--------------------------------------
-const tableData = ref([])
+const tableData = shallowRef([])
 // 表格列配置
 const columns = ref([
     { label: '公司', prop: 'orgName', width: '130', fixed: 'left', sortable: true },

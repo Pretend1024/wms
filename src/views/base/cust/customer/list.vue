@@ -118,7 +118,7 @@
         </el-dialog>
     </div>
 </template>
-<script setup name="客户列表">
+<script setup name="客户">
 import { Plus, Link } from '@element-plus/icons-vue'
 import { getOrgListCompanyApi } from '@/api/baseApi/org.js';
 import { smartAlert, trimObjectStrings } from '@/utils/genericMethods.js'
@@ -183,7 +183,7 @@ const handleReset = (data) => {
     getList(pagination.value.currentPage, pagination.value.pageSize, orderBy.value)
 }
 // 表格数据--------------------------------------
-const tableData = ref([])
+const tableData = shallowRef([])
 const linkTableData = ref([])
 // 表格列配置
 const columns = ref([

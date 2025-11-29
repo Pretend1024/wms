@@ -118,7 +118,7 @@ const formRules = ref({
 });
 
 // 表格数据（初始为空，点击删除后填充）
-const tableData = ref([]);
+const tableData = shallowRef([]);
 
 // 批量操作进度文本
 const batchProgressText = computed(() => {

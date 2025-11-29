@@ -239,7 +239,7 @@
                                 <el-col :span="6">
                                     <el-button @click="openAddressDialog(true)" type="primary" plain>{{
                                         getButtonText('addressBook')
-                                        }}</el-button>
+                                    }}</el-button>
                                 </el-col>
                             </el-row>
                         </el-form>
@@ -339,7 +339,7 @@
                                 <el-col :span="6">
                                     <el-button @click="openAddressDialog(false)" type="primary" plain>{{
                                         getButtonText('addressBook')
-                                        }}</el-button>
+                                    }}</el-button>
                                 </el-col>
                             </el-row>
                         </el-form>
@@ -753,6 +753,9 @@ const handleSave = async () => {
                     }
                 })
             }
+            if (data.sender && typeof data.sender === 'object' && Object.keys(data.sender).length === 0) {
+                data.sender = null;
+            }
             delete data.id;
             delete data.statusId;
             //提交数据
@@ -850,6 +853,7 @@ async function handleSkuConfirm(selectedList) {
     if (!selectedList || !Array.isArray(selectedList) || selectedList.length === 0) return;
     const loading = ElLoading.service({
         lock: true,
+        target: ".contentDiv",
         text: 'Loading'
     })
 
@@ -1003,6 +1007,7 @@ const handleLabelUrlUpload = async (options, row) => {
 
     const loading = ElLoading.service({
         lock: true,
+        target: ".contentDiv",
         text: 'loading...'
     });
 
@@ -1030,6 +1035,7 @@ const handleCustomLabelUrlUpload = async (options, row) => {
 
     const loading = ElLoading.service({
         lock: true,
+        target: ".contentDiv",
         text: 'loading...'
     });
 
@@ -1230,6 +1236,7 @@ const selectChannel = async () => {
 onMounted(async () => {
     const loading = ElLoading.service({
         lock: true,
+        target: ".contentDiv",
         text: "Loading",
     });
 

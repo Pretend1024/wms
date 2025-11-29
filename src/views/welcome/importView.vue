@@ -81,7 +81,7 @@ const props = defineProps({
 })
 
 const templateList = ref([])
-const tableData = ref([])
+const tableData = shallowRef([])
 const filterStatus = ref('all')
 const fileUrl = ref('')
 const fileList = ref([])

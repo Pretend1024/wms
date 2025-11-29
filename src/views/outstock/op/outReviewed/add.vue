@@ -139,7 +139,7 @@
                             </div>
                             <div class="info-item">
                                 <span class="info-label">复核开始时间:</span>
-                                <span class="info-value">{{ orderBasicInfo.reCheckStartTime || '-' }}</span>
+                                <span class="info-value">{{ orderBasicInfo.startTime || '-' }}</span>
                             </div>
                         </div>
                     </div>
@@ -293,7 +293,7 @@ const orderBasicInfo = reactive({
     customerCode: '',
     customerName: '',
     shipwayCode: '',
-    reCheckStartTime: ''
+    startTime: ''
 });
 
 // 包裹列表数据结构
@@ -417,7 +417,8 @@ const fetchOrderDetails = async (orderId) => {
     const loading = ElLoading.service({ lock: true, text: 'loading...' });
     try {
         const res = await getReCheckOutOrderApi({
-            outOrderId: orderId
+            outOrderId: orderId,
+            opType: 1
         });
 
         if (res.success && res.data) {
@@ -431,7 +432,7 @@ const fetchOrderDetails = async (orderId) => {
             orderBasicInfo.customerCode = orderResData.customerCode || '';
             orderBasicInfo.customerName = orderResData.customerName || '';
             orderBasicInfo.shipwayCode = orderResData.shipwayCode || '';
-            orderBasicInfo.reCheckStartTime = orderResData.reCheckStartTime || new Date().toLocaleString();
+            orderBasicInfo.startTime = orderResData.startTime || new Date().toLocaleString();
 
             // 处理包裹列表
             packageList.value = (orderResData.orderItems || []).map(pkg => ({

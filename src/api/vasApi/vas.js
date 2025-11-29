@@ -65,15 +65,11 @@ export const getVasOrderRelatedBizTypeEnumApi = () => {
 
 // 服务费用类型枚举/vas/vas/vasOrderFee/typeEnum
 export const getVasOrderFeeTypeEnumApi = () => {
-    return http.post('/vas/vas/vasOrderFee/typeEnum')
-}
-// 服务费用状态枚举/vas/vas/vasOrderFee/statusEnum
-export const getVasOrderFeeStatusEnumApi = () => {
-    return http.post('/vas/vas/vasOrderFee/statusEnum')
+    return http.post('/vas/vas/vasOrder/feeTypeEnum')
 }
 // 服务费用创建方式枚举/vas/vas/vasOrderFee/createTypeEnum
 export const getVasOrderFeeCreateTypeEnumApi = () => {
-    return http.post('/vas/vas/vasOrderFee/createTypeEnum')
+    return http.post('/finance/receivables/receivableFee/receivableFeeCreateWayEnum')
 }
 
 // 服务类型单位枚举/vas/vas/vasServiceType/unitEnum
@@ -83,5 +79,5 @@ export const getVasServiceTypeUnitEnumApi = () => {
 
 // 估算费用/vas/vas/vasOrderFee/calculateFee
 export const calculateFeeApi = (data) => {
-    return http.post('/vas/vas/vasOrderFee/calculateFee', data)
+    return http.post('/vas/vas/vasOrder/calculateFee', data)
 }

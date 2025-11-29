@@ -65,7 +65,7 @@ const dialogVisible = computed({
 });
 
 const tableRef = ref(null);
-const tableData = ref([]);
+const tableData = shallowRef([]);
 const loading = ref(false);
 
 // 分页参数

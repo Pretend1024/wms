@@ -312,7 +312,7 @@ const getDetail = async () => {
     const id = props.id || route.query.id;
     if (!id) return; // 无ID则不加载详情（新增场景）
 
-    const loading = ElLoading.service({ target: '.viewArea', text: '加载工单详情...' });
+    const loading = ElLoading.service({ target: '.viewArea', target: ".contentDiv", text: 'loading...' });
     try {
         const res = await getFullByIdApi({ id });
         if (res.success && res.data) {
@@ -384,7 +384,7 @@ const getDetail = async () => {
 
 // 初始化加载（合并原有初始化和详情加载逻辑）
 onMounted(async () => {
-    const loading = ElLoading.service({ lock: true, text: '初始化数据...' });
+    const loading = ElLoading.service({ lock: true, target: ".contentDiv", text: 'loading...' });
     try {
         // 并行加载基础选项数据
         const tasks = [

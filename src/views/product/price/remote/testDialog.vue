@@ -70,7 +70,7 @@ const form = ref({
 const countryOptions = ref([])
 
 // 表格数据
-const tableData = ref([])
+const tableData = shallowRef([])
 const formRef = ref(null)
 const rules = {
     countryCode: [

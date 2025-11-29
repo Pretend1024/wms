@@ -1,16 +1,6 @@
 <template>
     <div class="tags">
         <progressBar />
-        <!-- <a-tabs v-model:activeKey="activeKey" lazy-load type="card-gutter" :editable="true" @tabClick="tabClick"
-            @delete="handleDelete" auto-switch>
-            <a-tab-pane v-for="(item, index) in useTagsStore.tagsStore" :key="item.path" :closable="true">
-                <template #title>
-                    <p @contextmenu.prevent="(event) => handleRightClick(event, index)">
-                        {{ item.name }}
-                    </p>
-                </template>
-</a-tab-pane>
-</a-tabs> -->
         <a-tabs v-model:activeKey="activeKey" lazy-load type="card-gutter" :editable="true" @tabClick="tabClick"
             @delete="handleDelete" auto-switch>
             <a-tab-pane v-for="(item, index) in useTagsStore.tagsStore" :key="item.fullPath" :closable="true">
@@ -21,76 +11,32 @@
                 </template>
             </a-tab-pane>
         </a-tabs>
-        <!-- 右上更多按钮 -->
-        <!-- <el-dropdown class="RightHandMenu">
-            <span class="iconfont icon-gengduo rightIcon"></span>
-            <template #dropdown>
-                <el-dropdown-menu>
-                    <el-dropdown-item @click="refreshPageTabs">
-                        <el-icon>
-                            <Loading />
-                        </el-icon>
-                        {{ $t('Refresh') }}
-                    </el-dropdown-item>
-                    <el-dropdown-item @click="deleteOtherTabs">
-                        <el-icon>
-                            <DocumentRemove />
-                        </el-icon>
-                        {{ $t('CloseOther') }}
-                    </el-dropdown-item>
-                    <el-dropdown-item @click="deleteLeftTabs">
-                        <el-icon>
-                            <CaretLeft />
-                        </el-icon>
-                        {{ $t('CloseLeft') }}
-                    </el-dropdown-item>
-                    <el-dropdown-item @click="deleteRightTabs">
-                        <el-icon>
-                            <CaretRight />
-                        </el-icon>
-                        {{ $t('CloseRight') }}
-                    </el-dropdown-item>
-                    <el-dropdown-item @click="deleteAll">
-                        <el-icon>
-                            <SemiSelect />
-                        </el-icon>
-                        {{ $t('CloseAll') }}
-                    </el-dropdown-item>
-                </el-dropdown-menu>
-            </template>
-        </el-dropdown> -->
 
-        <!-- 右键菜单 -->
         <div class="rightMenu" v-show="showMenu" :style="{ top: `${menuY}px`, left: `${menuX}px` }">
             <div @click="refreshPage" class="rightMenuItem">
                 <el-icon>
                     <Loading />
-                </el-icon>
-                {{ $t('Refresh') }}
+                </el-icon> {{ $t('Refresh') }}
             </div>
             <div @click="deleteOthers" class="rightMenuItem">
                 <el-icon>
                     <DocumentRemove />
-                </el-icon>
-                {{ $t('CloseOther') }}
+                </el-icon> {{ $t('CloseOther') }}
             </div>
             <div @click="deleteLeft" class="rightMenuItem">
                 <el-icon>
                     <CaretLeft />
-                </el-icon>
-                {{ $t('CloseLeft') }}
+                </el-icon> {{ $t('CloseLeft') }}
             </div>
             <div @click="deleteRight" class="rightMenuItem">
                 <el-icon>
                     <CaretRight />
-                </el-icon>
-                {{ $t('CloseRight') }}
+                </el-icon> {{ $t('CloseRight') }}
             </div>
             <div @click="deleteAll" class="rightMenuItem">
                 <el-icon>
                     <SemiSelect />
-                </el-icon>
-                {{ $t('CloseAll') }}
+                </el-icon> {{ $t('CloseAll') }}
             </div>
         </div>
     </div>
@@ -102,25 +48,34 @@ import { useRoute, useRouter } from 'vue-router'
 import tagsStore from '@/store/tags.js'
 import progressBar from '@/components/animation/progressBar.vue'
 
-// 路由 + store
 const route = useRoute()
 const router = useRouter()
 const useTagsStore = tagsStore()
 
+// 刷新方法
+const refreshCurrentPage = inject('refresh')
+
 // 受控 activeKey —— 与 route.fullPath 同步
-const activeKey = ref(route.path)
-watch(() => route.path, newPath => activeKey.value = newPath)
+const activeKey = ref(route.fullPath) 
+watch(() => route.fullPath, (newPath) => {
+    activeKey.value = newPath
+})
 
 // —— 点击 tab 切换路由
 const tabClick = key => router.push(key)
 
 // —— 删除 tab
 const handleDelete = key => {
+    // 移除 store 中的 tag
     useTagsStore.tagsStore = useTagsStore.tagsStore.filter(i => i.fullPath !== key)
+
+    // 如果全部删除了，跳转回欢迎页或首页
     if (!useTagsStore.tagsStore.length) return router.push('/welcome')
-    if (key === route.path) {
+
+    // 如果删除的是当前页，跳转到最后一个 tag
+    if (key === route.fullPath) {
         const last = useTagsStore.tagsStore.at(-1)
-        last && router.push(last.path)
+        if (last) router.push(last.fullPath)
     }
 }
 
@@ -132,80 +87,121 @@ const activeTabIndex = ref(null)
 
 // 捕获右键，弹出菜单
 const handleRightClick = (event, index) => {
-    menuX.value = event.clientX - 200
+    menuX.value = event.clientX - 180
     menuY.value = event.clientY
     showMenu.value = true
     activeTabIndex.value = index
 }
 
-// —— 右键/上方按钮：刷新 & 关闭操作
-const refreshCurrentPage = inject('refresh')
-
-// 刷新当前标签
+// —— 刷新当前标签逻辑
 const refreshPageTabs = () => {
-    setTimeout(() => {
+    if (route.meta.keepAlive) {
+        useTagsStore.removeKeepAliveName(route.fullPath)
+    }
+
+    // 触发 index.vue 的刷新
+    refreshCurrentPage(route.fullPath)
+
+    nextTick(() => {
         if (route.meta.keepAlive) {
-            useTagsStore.removeKeepAliveName(route.fullPath)
+            useTagsStore.addKeepAliveName(route.fullPath)
         }
-        refreshCurrentPage(route.fullPath, false)
-        nextTick(() => {
-            if (route.meta.keepAlive) {
-                useTagsStore.addKeepAliveName(route.fullPath)
-            }
-        })
-    }, 0)
+    })
 }
 
-// 上面按钮：只删其他/左/右标签
-const deleteOtherTabs = () => {
-    useTagsStore.tagsStore = useTagsStore.tagsStore.filter(tab => tab.path === route.path)
-}
-const deleteLeftTabs = () => {
-    const i = useTagsStore.tagsStore.findIndex(tab => tab.path === route.path)
-    useTagsStore.tagsStore = useTagsStore.tagsStore.slice(i)
-}
-const deleteRightTabs = () => {
-    const i = useTagsStore.tagsStore.findIndex(tab => tab.path === route.path)
-    useTagsStore.tagsStore = useTagsStore.tagsStore.slice(0, i + 1)
+// 右键菜单操作
+const refreshPage = () => {
+    refreshPageTabs()
+    showMenu.value = false
 }
 
-// 右键菜单：刷新/关闭
-const refreshPage = () => { refreshPageTabs(); showMenu.value = false }
 const deleteOthers = () => {
     if (activeTabIndex.value !== null) {
-        const current = useTagsStore.tagsStore[activeTabIndex.value]
-        useTagsStore.tagsStore = [current]
-        router.push(current.fullPath)
+        const selectedTag = useTagsStore.tagsStore[activeTabIndex.value]
+
+        // 如果右键选中的不是当前显示的页面，需要先跳过去
+        if (route.fullPath !== selectedTag.fullPath) {
+            router.push(selectedTag.fullPath).then(() => {
+                // 跳转完成后，只保留选中的这一个
+                useTagsStore.tagsStore = [selectedTag]
+            })
+        } else {
+            // 如果就是当前页，直接保留它即可
+            useTagsStore.tagsStore = [selectedTag]
+        }
     }
     showMenu.value = false
 }
+
 const deleteLeft = () => {
     if (activeTabIndex.value > 0) {
-        useTagsStore.tagsStore.splice(0, activeTabIndex.value)
-        router.push(useTagsStore.tagsStore[0].path)
+        // 先计算好要保留哪些
+        const remainingTags = useTagsStore.tagsStore.slice(activeTabIndex.value)
+        const isCurrentInRemaining = remainingTags.some(t => t.fullPath === route.fullPath)
+
+        if (isCurrentInRemaining) {
+            // 如果当前页还在保留列表中，直接更新 store
+            useTagsStore.tagsStore = remainingTags
+        } else {
+            // 先跳转到要保留的第一个，再更新 store
+            const target = remainingTags[0]
+            if (target) {
+                router.push(target.fullPath).then(() => {
+                    useTagsStore.tagsStore = remainingTags
+                })
+            }
+        }
     }
     showMenu.value = false
 }
+
 const deleteRight = () => {
     if (activeTabIndex.value < useTagsStore.tagsStore.length - 1) {
-        useTagsStore.tagsStore.splice(activeTabIndex.value + 1)
-        router.push(useTagsStore.tagsStore[useTagsStore.tagsStore.length - 1].path)
+        const remainingTags = useTagsStore.tagsStore.slice(0, activeTabIndex.value + 1)
+        const isCurrentInRemaining = remainingTags.some(t => t.fullPath === route.fullPath)
+
+        if (isCurrentInRemaining) {
+            useTagsStore.tagsStore = remainingTags
+        } else {
+            const target = remainingTags[remainingTags.length - 1]
+            if (target) {
+                router.push(target.fullPath).then(() => {
+                    useTagsStore.tagsStore = remainingTags
+                })
+            }
+        }
     }
     showMenu.value = false
 }
+//关闭全部
 const deleteAll = () => {
-    useTagsStore.tagsStore = []
-    router.push('/welcome')
+    router.push('/welcome').then(() => {
+        // setTimeout 确保在下一轮事件循环清理，
+        // 避免在跳转动画执行期间修改 Store 导致 KeepAlive 混乱
+        setTimeout(() => {
+            const currentPath = route.fullPath
+            // 过滤只保留当前页（欢迎页）
+            useTagsStore.tagsStore = useTagsStore.tagsStore.filter(tag => tag.fullPath === currentPath)
+        }, 50)
+    })
     showMenu.value = false
 }
 
 // 点击别处关闭右键菜单
-const handleGlobalClick = e => {
+const handleGlobalClick = (e) => {
     const menuEl = document.querySelector('.rightMenu')
-    if (menuEl && !menuEl.contains(e.target)) showMenu.value = false
+    if (showMenu.value && menuEl && !menuEl.contains(e.target)) {
+        showMenu.value = false
+    }
 }
-onMounted(() => window.addEventListener('click', handleGlobalClick))
-onBeforeUnmount(() => window.removeEventListener('click', handleGlobalClick))
+
+onMounted(() => {
+    window.addEventListener('click', handleGlobalClick)
+})
+
+onBeforeUnmount(() => {
+    window.removeEventListener('click', handleGlobalClick)
+})
 </script>
 
 <style scoped lang="scss">

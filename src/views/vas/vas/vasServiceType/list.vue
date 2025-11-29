@@ -161,7 +161,7 @@ const handleReset = (data) => {
 };
 
 // -------------------------- 表格配置与事件 --------------------------
-const tableData = ref([]);
+const tableData = shallowRef([]);
 const columns = ref([
     { label: '服务类型编码', prop: 'code', width: '150', fixed: 'left', sortable: true },
     { label: '服务类型名称', prop: 'name', width: '150' },

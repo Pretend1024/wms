@@ -313,7 +313,7 @@ onMounted(async () => {
     // 加载动画
     const loading = ElLoading.service({
         lock: true,
-        text: '加载中...'
+        text: 'loading...'
     })
     const res = await checkTokenApi()
     if (!res.success) {

@@ -189,7 +189,7 @@ const handleReset = (data) => {
     getStatus()
 }
 // 表格数据--------------------------------------
-const tableData = ref([])
+const tableData = shallowRef([])
 // 表格列配置
 const columns = ref([
     { label: '仓库代码', prop: 'warehouseCode', width: '135', fixed: 'left', sortable: true },

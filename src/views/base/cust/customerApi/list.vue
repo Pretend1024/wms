@@ -129,7 +129,7 @@ const handleReset = (data) => {
     getList(pagination.value.currentPage, pagination.value.pageSize, orderBy.value)
 }
 // 表格数据--------------------------------------
-const tableData = ref([])
+const tableData = shallowRef([])
 // 表格列配置
 const columns = ref([
     { label: '公司', prop: 'orgName', width: '175', fixed: 'left', sortable: true },

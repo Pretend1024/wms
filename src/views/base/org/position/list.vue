@@ -63,7 +63,7 @@ import { useI18n } from 'vue-i18n';
 const { t } = useI18n();
 
 // 表格数据与列配置
-const tableData = ref([]);
+const tableData = shallowRef([]);
 const columns = ref([
     { label: '岗位名称', prop: 'name', width: '180', sortable: true },
     { label: '是否内置', prop: 'isInit', width: '125', sortable: true, slot: 'isInit' },

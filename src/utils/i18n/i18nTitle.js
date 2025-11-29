@@ -59,6 +59,10 @@ const tagMap = {
         zh: '编辑入库单',
         en: 'Edit Inbound Order'
     },
+    入库单复制: {
+        zh: '入库单复制',
+        en: 'Copy Inbound Order'
+    },
     新增服务商: {
         zh: '新增服务商',
         en: 'Add Supplier'
@@ -110,6 +114,10 @@ const tagMap = {
     出库单详情: {
         zh: '出库单详情',
         en: 'Outbound Order Details'
+    },
+    出库单复制: {
+        zh: '出库单复制',
+        en: 'Copy Outbound Order'
     }
 }
 import useUserMenuStore from '@/store/userMenu'

@@ -63,7 +63,7 @@ const formRef = ref(null);
 const visible = ref(false);
 
 // 表格数据
-const tableData = ref([]);
+const tableData = shallowRef([]);
 
 // 加载状态
 const loading = ref(false);

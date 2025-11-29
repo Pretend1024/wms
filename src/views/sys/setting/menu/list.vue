@@ -78,7 +78,7 @@ import { smartAlert } from '@/utils/genericMethods.js'
 import { useI18n } from 'vue-i18n';
 const { t } = useI18n();
 // 表格数据及配置
-const tableData = ref([]);
+const tableData = shallowRef([]);
 const columns = ref([
     { label: '菜单中文', prop: 'nameCn', width: '180' },
     { label: '菜单英文', prop: 'nameEn', width: '180' },

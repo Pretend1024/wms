@@ -235,6 +235,7 @@ const handleSubmit = async () => {
 
                 const loading = ElLoading.service({
                     lock: true,
+                    target: ".contentDiv",
                     text: 'Loading'
                 });
                 if (Array.isArray(formData.value.orgId)) {

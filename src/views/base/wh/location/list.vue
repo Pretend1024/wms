@@ -233,7 +233,7 @@ const handleReset = (data) => {
     getList(pagination.value.currentPage, pagination.value.pageSize, orderBy.value);
 };
 // 表格数据与列配置
-const tableData = ref([]);
+const tableData = shallowRef([]);
 const columns = ref([
     { label: '仓库代码', prop: 'warehouseCode', width: '135', fixed: 'left', sortable: true },
     { label: '库区代码', prop: 'zoneCode', width: '120', fixed: 'left', sortable: true },

@@ -18,7 +18,7 @@ const props = defineProps({
     }
 });
 
-const tableData = ref([]);
+const tableData = shallowRef([]);
 const loading = ref(true);
 const tableRef = ref(null);
 const roleIds = ref([])

@@ -82,7 +82,7 @@ const handleSearch = async () => {
 // 国家数据
 const countryOptions = ref([]);
 // 表格数据与列配置
-const tableData = ref([]);
+const tableData = shallowRef([]);
 const columns = ref([
     { label: '偏远类型', prop: 'typeName', width: '110', sortable: true },
     { label: '国家', prop: 'countryCode', width: '150', slot: 'country', sortable: true },

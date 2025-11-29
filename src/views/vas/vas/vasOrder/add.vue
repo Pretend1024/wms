@@ -137,14 +137,14 @@
                 <el-col :span="24">
                     <generalAddTable ref="feeTableRef" :columns="feeTableColumns" :data="feeTableData"
                         :addRowDefaults="[{ prop: 'createWay', value: 20 }]">
-                        <template #feeTypeId="{ row }">
-                            <el-select v-model="row.feeTypeId" placeholder="请选择费用类型" clearable filterable>
+                        <template #feeSubTypeId="{ row }">
+                            <el-select v-model="row.feeSubTypeId" placeholder="请选择费用类型" clearable filterable>
                                 <el-option v-for="item in feeTypeOptions" :key="item.id" :label="item.name"
                                     :value="item.id" />
                             </el-select>
                         </template>
-                        <template #totalFee="{ row }">
-                            <el-input v-model.number="row.totalFee" placeholder="请输入总费用" v-number />
+                        <template #feeAmount="{ row }">
+                            <el-input v-model.number="row.feeAmount" placeholder="请输入总费用" v-number />
                         </template>
                         <template #currency="{ row }">
                             <el-select v-model="row.currency" placeholder="请选择货币类型" clearable filterable>
@@ -278,8 +278,8 @@ const itemTableColumns = ref([
 ]);
 
 const feeTableColumns = ref([
-    { label: '费用类型', prop: 'feeTypeId', required: true, slot: 'feeTypeId', width: 200 },
-    { label: '费用金额', prop: 'totalFee', required: true, slot: 'totalFee', width: 150 },
+    { label: '费用类型', prop: 'feeSubTypeId', required: true, slot: 'feeSubTypeId', width: 200 },
+    { label: '费用金额', prop: 'feeAmount', required: true, slot: 'feeAmount', width: 150 },
     { label: '货币类型', prop: 'currency', required: true, slot: 'currency', width: 180 },
     { label: '创建类型', prop: 'createWay', required: true, slot: 'createWay', width: 180 },
     { label: '费用备注', prop: 'remark', slot: 'remark', width: 280 }
@@ -356,12 +356,12 @@ const fetchFeeData = async () => {
         }
 
         isFetchingFee.value = true;
-        const loading = ElLoading.service({ lock: true, text: '费用计算中...' });
+        const loading = ElLoading.service({ lock: true, target: ".contentDiv", text: 'loading...' });
 
         // 构造接口请求参数（根据实际接口要求调整格式）
         const requestParams = {
             vasOrderItemVOList: itemTableDataLocal.filter(item => item.serviceTypeId && item.planQty && item.planQty),
-            vasOrderFeeVOList: feeTableDataLocal.filter(item => item.feeTypeId && item.totalFee && item.totalFee)
+            vasOrderFeeVOList: feeTableDataLocal.filter(item => item.feeSubTypeId && item.feeAmount && item.feeAmount)
         };
 
         // 调用费用计算接口
@@ -374,8 +374,8 @@ const fetchFeeData = async () => {
 
             // 用接口返回结果覆盖费用表格数据（根据接口返回字段调整映射关系）
             feeTableData.value = res.data.vasOrderFeeVOList.map(feeItem => ({
-                feeTypeId: feeItem.feeTypeId || '',
-                totalFee: feeItem.totalFee,
+                feeSubTypeId: feeItem.feeSubTypeId || '',
+                feeAmount: feeItem.feeAmount,
                 currency: feeItem.currency,
                 createWay: feeItem.createWay,
                 remark: feeItem.remark
@@ -499,7 +499,7 @@ async function handleSingleSkuConfirm(selectedSku) {
 
 // 页面加载逻辑保持不变
 onMounted(async () => {
-    const loading = ElLoading.service({ lock: true, text: "Loading" });
+    const loading = ElLoading.service({ lock: true, target: ".contentDiv", text: "loading..." });
     try {
         const apiTasks = [
             { key: "关联业务类型", api: getVasOrderRelatedBizTypeEnumApi(), handleSuccess: (data) => (relatedBizTypeOptions.value = data || []) },

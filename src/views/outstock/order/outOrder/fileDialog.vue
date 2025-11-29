@@ -105,7 +105,7 @@ const formRef = ref(null);
 const visible = ref(false);
 
 // 表格数据
-const tableData = ref([]);
+const tableData = shallowRef([]);
 
 // 文件类型选项
 const fileTypeOptions = ref([]);

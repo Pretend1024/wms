@@ -74,7 +74,7 @@ const props = defineProps({
 
 
 const formRef = ref(null);
-const tableData = ref([]);
+const tableData = shallowRef([]);
 const skuDialogVisible = ref(false);
 
 // 表单校验规则

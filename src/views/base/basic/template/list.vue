@@ -121,7 +121,7 @@ const handleReset = (data) => {
     templateBTypeOptions.value = []
 }
 // 表格数据--------------------------------------
-const tableData = ref([])
+const tableData = shallowRef([])
 // 表格列配置
 const columns = ref([
     { label: '模板类型', prop: 'atypeName', width: '180', fixed: 'left', sortable: true },

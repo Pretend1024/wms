@@ -225,7 +225,7 @@ const selectDateData = ref({
 
 // 表格配置 (字段变更为 outOrderNo)
 const loading = ref(false);
-const tableData = ref([]);
+const tableData = shallowRef([]);
 const footer = ref();
 const selectionRows = ref([]);
 const orderBy = ref('');

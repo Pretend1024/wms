@@ -154,7 +154,7 @@ const handleReset = (data) => {
     getList(pagination.value.currentPage, pagination.value.pageSize, orderBy.value)
 }
 // 表格数据--------------------------------------
-const tableData = ref([])
+const tableData = shallowRef([])
 // 表格列配置
 const columns = ref([
     { label: '导出编号', prop: 'jobNo', width: '200', fixed: 'left' },

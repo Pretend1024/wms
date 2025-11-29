@@ -12,7 +12,7 @@
 
 <script setup name="OrderPercentage">
 import { ref, onMounted, watch, computed, defineProps, onUnmounted } from 'vue'
-import echarts from '@/utils/echarts-config'
+import echarts from '@/plugins/echarts.js'
 
 const props = defineProps({
     customerData: {

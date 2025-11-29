@@ -64,7 +64,7 @@ const props = defineProps({
 
 
 const formRef = ref(null);
-const tableData = ref([]);
+const tableData = shallowRef([]);
 
 // 表单校验
 const rules = {

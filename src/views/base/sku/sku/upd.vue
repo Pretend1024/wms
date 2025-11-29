@@ -540,7 +540,7 @@ const handleClose = () => {
 }
 
 onMounted(async () => {
-    const loading = ElLoading.service({ lock: true, text: "Loading" });
+    const loading = ElLoading.service({ lock: true, target: ".contentDiv", text: "loading..." });
     try {
         // 1. 下拉框接口配置
         const apiTasks = [

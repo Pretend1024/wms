@@ -22,8 +22,8 @@ export const submitRePickApi = (data) => {
 // 通过订单号/运单号查询出库单/outstock/order/outOrder/getOutOrderByCode
 export const getOutOrderByCodeApi = createPostRequestWithQuery('/outstock/order/outOrder/getOutOrderByCode')
 
-// 复核获取订单信息/outstock/order/outOrder/getReCheckOutOrder
-export const getReCheckOutOrderApi = createPostRequestWithQuery('/outstock/order/outOrder/getReCheckOutOrder')
+// 复核获取订单信息/outstock/order/outOrder/getReCheckOutOrder  opType 1:复核 2：称重 3：出库 对应OutOrderOpStatusValidEnum枚举
+export const getReCheckOutOrderApi = createPostRequestWithQuery('/outstock/order/outOrder/getOrderWithWaybillAndSku')
 
 // 复核提交/outstock/order/outOrder/submitReCheck
 export const submitReCheckApi = (data) => {

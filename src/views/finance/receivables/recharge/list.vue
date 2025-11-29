@@ -176,7 +176,7 @@ const handleReset = (data) => {
 };
 
 // -------------------------- 表格配置与事件 --------------------------
-const tableData = ref([]);
+const tableData = shallowRef([]);
 const columns = ref([
     { label: '公司', prop: 'orgName', width: '175', fixed: 'left', sortable: true },
     { label: '客户', prop: 'customerCode', width: '180', slot: 'customer', fixed: 'left', sortable: true },

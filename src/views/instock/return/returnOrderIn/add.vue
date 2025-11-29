@@ -264,6 +264,7 @@ const getOrderInfo = async () => {
     }
     const loading = ElLoading.service({
         lock: true,
+        target: ".contentDiv",
         text: 'Loading'
     })
     const res = await getReturnOrderListByNumberTypeApi(orderData.value)

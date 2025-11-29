@@ -144,7 +144,7 @@ const handleReset = (data) => {
 };
 
 // 表格数据--------------------------------------
-const tableData = ref([]);
+const tableData = shallowRef([]);
 // 表格列配置
 const columns = ref([
     { label: '用户代码', prop: 'userCode', width: '140', sortable: true, fixed: 'left' },

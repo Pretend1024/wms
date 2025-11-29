@@ -375,6 +375,7 @@ onMounted(async () => {
     console.log('传递的参数:', props.id, props.name);
     const loading = ElLoading.service({
         lock: true,
+        target: ".contentDiv",
         text: 'Loading'
     })
     // 仓库数据

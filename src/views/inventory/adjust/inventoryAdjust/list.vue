@@ -161,7 +161,7 @@ const handleReset = (data) => {
     getList(pagination.value.currentPage, pagination.value.pageSize, orderBy.value);
 }
 // 表格数据--------------------------------------
-const tableData = ref([])
+const tableData = shallowRef([])
 // 底部信息
 const footer = ref({})
 // 表格列配置

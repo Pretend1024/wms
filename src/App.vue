@@ -23,52 +23,6 @@ if (getRoute.userMenuList.length > 0) {
     router.push(url)
   })
 }
-
-
-// 不需要切换的输入框id
-// const specificInputIds = ['loginPassword'];
-// const handleEnterKey = (e) => {
-//   // 检查按下的键是否为回车键
-//   if (e.key === 'Enter') {
-//     // 获取当前聚焦的元素
-//     const currentElement = document.activeElement;
-//     // 判断当前元素是否是指定 id 的输入框
-//     const isSpecificInput = specificInputIds.includes(currentElement.id);
-
-//     if (isSpecificInput) {
-//       // 若为指定输入框，不进行焦点切换
-//       e.preventDefault();
-//       return;
-//     }
-
-//     // 选择所有的输入框、文本框、下拉框和具有 tabindex 属性且 tabindex 不为 -1 的元素 select
-//     const formElements = Array.from(
-//       document.querySelectorAll('input, textarea, [tabindex]:not([tabindex="-1"])')
-//     )
-//       // 过滤掉禁用的元素、tabindex 为 -1 的元素和隐藏的输入框
-//       .filter(el => !el.disabled && el.tabIndex !== -1 && el.type !== 'hidden');
-
-//     // 获取当前聚焦元素在表单元素数组中的索引
-//     const currentIndex = formElements.indexOf(document.activeElement);
-//     // 检查当前聚焦元素是否存在于表单元素数组中，并且不是最后一个元素
-//     if (currentIndex !== -1 && currentIndex < formElements.length - 1) {
-//       // 获取下一个可聚焦的元素
-//       const nextElement = formElements[currentIndex + 1];
-//       // 将焦点移动到下一个元素
-//       nextElement.focus();
-//       // 阻止回车键的默认行为（例如提交表单）
-//       e.preventDefault();
-//     }
-//   }
-// };
-
-// onMounted(() => {
-//   window.addEventListener('keydown', handleEnterKey);
-// });
-
-// onBeforeUnmount(() => {
-//   window.removeEventListener('keydown', handleEnterKey);
-// });
 </script>
 <style scoped lang="scss">
 .viewArea {

@@ -121,7 +121,7 @@ const props = defineProps({
 
 const formRef = ref(null)
 const tableRef = ref(null)
-const tableData = ref([])
+const tableData = shallowRef([])
 const loading = ref(false)
 const dialogVisible = ref(false)
 

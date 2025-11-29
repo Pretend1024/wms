@@ -59,7 +59,7 @@ import { useI18n } from 'vue-i18n';
 const { t } = useI18n();
 
 // 表格数据及配置
-const tableData = ref([]);
+const tableData = shallowRef([]);
 const columns = ref([
     { label: '类型名称', prop: 'name', width: '180' },
     { label: '排序', prop: 'sortNo', width: '85', sortable: true },

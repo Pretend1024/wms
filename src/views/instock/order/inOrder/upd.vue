@@ -179,7 +179,7 @@ const formData = ref({
     boxList: []
 });
 // 表格数据
-const tableData = ref([]);
+const tableData = shallowRef([]);
 const tableRef = ref(null);
 const columns = [
     { label: '箱数', prop: 'boxQty', width: '220', slot: 'boxQty' },
@@ -265,6 +265,7 @@ const arrivalTypeOptions = ref([])
 onMounted(async () => {
     const loading = ElLoading.service({
         lock: true,
+        target: ".contentDiv",
         text: 'Loading'
     })
     // 仓库数据

@@ -118,7 +118,7 @@ const handleReset = (data) => {
     getList(pagination.value.currentPage, pagination.value.pageSize, orderBy.value);
 };
 // 表格数据与列配置
-const tableData = ref([]);
+const tableData = shallowRef([]);
 const columns = ref([
     { label: '导入编号', prop: 'jobNo', width: '200', sortable: true, fixed: 'left' },
     { label: '导入类型', prop: 'typeName', width: '150', sortable: true, fixed: 'left' },

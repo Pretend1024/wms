@@ -58,7 +58,7 @@ import { getProductShipwayRemoteApi, addProductShipwayRemoteApi, updProductShipw
 import { useI18n } from 'vue-i18n';
 const { t } = useI18n();
 // 表格数据与列配置
-const tableData = ref([]);
+const tableData = shallowRef([]);
 // 当前选中的分区
 const currentPartition = ref(1);
 // 处理分区选择

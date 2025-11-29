@@ -258,7 +258,7 @@ const detailData = reactive({
     statusId: 0,
     title: '',
     content: '',
-    fileUrl: '', 
+    fileUrl: '',
     workOrderUserList: [],
     workOrderDetailList: [],
 });
@@ -266,7 +266,7 @@ const detailData = reactive({
 // 回复表单
 const replyForm = reactive({
     content: '',
-    fileUrl: [] 
+    fileUrl: []
 });
 
 // --- 指派相关变量 ---
@@ -311,7 +311,7 @@ const getDetail = async () => {
     const id = props.id || route.query.id;
     if (!id) return;
 
-    const loading = ElLoading.service({ target: '.viewArea', text: 'loading...' });
+    const loading = ElLoading.service({ target: '.viewArea', target: ".contentDiv", text: 'loading...' });
     try {
         const res = await getFullByIdApi({ id });
         if (res.success && res.data) {

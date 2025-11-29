@@ -110,7 +110,7 @@ const handleReset = (data) => {
     getList(pagination.value.currentPage, pagination.value.pageSize, orderBy.value)
 }
 // 表格数据与列配置
-const tableData = ref([]);
+const tableData = shallowRef([]);
 const columns = ref([
     { label: '模板名称', prop: 'name', width: '180', sortable: true },
     { label: '模板类型', prop: 'typeName', width: '180', sortable: true },

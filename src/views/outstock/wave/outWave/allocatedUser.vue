@@ -74,7 +74,7 @@ const selectedRow = ref(null);
 
 // 表格状态
 const tableRef = ref(null);
-const tableData = ref([]);
+const tableData = shallowRef([]);
 const loading = ref(false);
 const total = ref(0);
 const page = ref(1);

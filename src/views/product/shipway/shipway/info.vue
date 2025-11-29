@@ -465,7 +465,7 @@ const signatureOptions = ref([])
 const uploadWaybillOptions = ref([])
 
 onMounted(async () => {
-    const loading = ElLoading.service({ lock: true, text: 'Loading' })
+    const loading = ElLoading.service({ lock: true, target: ".contentDiv", text: 'Loading' })
     try {
         // 仓库
         const wh = await getWhWarehouseApi()

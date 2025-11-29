@@ -239,14 +239,14 @@
                 <el-col :span="24">
                     <generalAddTable ref="feeTableRef" :columns="feeTableColumns" :data="feeTableData"
                         :addRowDefaults="[{ prop: 'createWay', value: 20 }]">
-                        <template #feeTypeId="{ row }">
-                            <el-select v-model="row.feeTypeId" placeholder="请选择费用类型" clearable filterable>
+                        <template #feeSubTypeId="{ row }">
+                            <el-select v-model="row.feeSubTypeId" placeholder="请选择费用类型" clearable filterable>
                                 <el-option v-for="item in feeTypeOptions" :key="item.id" :label="item.name"
                                     :value="item.id" />
                             </el-select>
                         </template>
-                        <template #totalFee="{ row }">
-                            <el-input v-model.number="row.totalFee" placeholder="请输入总费用" v-number />
+                        <template #feeAmount="{ row }">
+                            <el-input v-model.number="row.feeAmount" placeholder="请输入总费用" v-number />
                         </template>
                         <template #currency="{ row }">
                             <el-select v-model="row.currency" placeholder="请选择货币类型" clearable filterable>
@@ -402,8 +402,8 @@ const itemFormRules = reactive({
 
 // 费用表格列配置（和新增页面一致）
 const feeTableColumns = ref([
-    { label: '费用类型', prop: 'feeTypeId', required: true, slot: 'feeTypeId', width: 200 },
-    { label: '费用金额', prop: 'totalFee', required: true, slot: 'totalFee', width: 150 },
+    { label: '费用类型', prop: 'feeSubTypeId', required: true, slot: 'feeSubTypeId', width: 200 },
+    { label: '费用金额', prop: 'feeAmount', required: true, slot: 'feeAmount', width: 150 },
     { label: '货币类型', prop: 'currency', required: true, slot: 'currency', width: 180 },
     { label: '创建类型', prop: 'createWay', required: true, slot: 'createWay', width: 180 },
     { label: '费用备注', prop: 'remark', slot: 'remark', width: 280 }
@@ -488,7 +488,7 @@ const fetchFeeData = async () => {
         }
 
         isFetchingFee.value = true;
-        const loading = ElLoading.service({ lock: true, text: 'loading...' });
+        const loading = ElLoading.service({ lock: true, target: ".contentDiv", text: 'loading...' });
 
         // 构造接口请求参数
         const requestParams = {
@@ -498,7 +498,7 @@ const fetchFeeData = async () => {
                 unit: item.unit,
                 sku: item.sku
             })),
-            vasOrderFeeVOList: feeTableRef.value.getTableData().filter(fee => fee.feeTypeId),
+            vasOrderFeeVOList: feeTableRef.value.getTableData().filter(fee => fee.feeSubTypeId),
         };
 
         // 调用费用计算接口
@@ -512,9 +512,9 @@ const fetchFeeData = async () => {
             // 用接口返回结果覆盖费用表格数据
             feeTableData.value = res.data.vasOrderFeeVOList.map(feeItem => ({
                 id: feeItem.id || '', // 保留原有ID（编辑场景）
-                feeTypeId: feeItem.feeTypeId || '',
+                feeSubTypeId: feeItem.feeSubTypeId || '',
                 unitPrice: feeItem.unitPrice || 0,
-                totalFee: feeItem.totalFee || 0,
+                feeAmount: feeItem.feeAmount || 0,
                 currency: feeItem.currency || '',
                 statusId: feeItem.statusId || 0,
                 remark: feeItem.remark || '',
@@ -785,7 +785,7 @@ const deleteAttachment = (attachmentList, index) => {
  * 获取编辑详情数据
  */
 const getDetail = async () => {
-    const loading = ElLoading.service({ lock: true, text: "加载中..." });
+    const loading = ElLoading.service({ lock: true, target: ".contentDiv", text: "加载中..." });
     try {
         if (!props.id) {
             ElMessage.warning('缺少编辑ID');
@@ -852,9 +852,9 @@ const getDetail = async () => {
             feeTableData.value = data.vasOrderFeeList.map(fee => ({
                 id: fee.id || '',
                 vasOrderId: fee.vasOrderId || '',
-                feeTypeId: fee.feeTypeId || '',
+                feeSubTypeId: fee.feeSubTypeId || '',
                 unitPrice: fee.unitPrice || 0,
-                totalFee: fee.totalFee || 0,
+                feeAmount: fee.feeAmount || 0,
                 currency: fee.currency || '',
                 statusId: fee.statusId || 0,
                 remark: fee.remark || '',

@@ -103,7 +103,7 @@ const print = async () => {
         await formRef.value.validate()
         const loading = ElLoading.service({
             lock: true,
-            text: '正在准备打印...',
+            text: 'loading...',
         })
         let res
         if (printData.value.btypeId === 117) {

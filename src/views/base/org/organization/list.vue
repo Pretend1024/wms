@@ -69,7 +69,7 @@ import { useI18n } from 'vue-i18n';
 const { t } = useI18n();
 
 // 表格数据及配置
-const tableData = ref([]);
+const tableData = shallowRef([]);
 const columns = ref([
     { label: '中文名', prop: 'nameCn', width: '180' },
     { label: '英文名', prop: 'nameEn', width: '180' },
@@ -209,34 +209,6 @@ const handleDialogConfirm = async () => {
     } catch (error) {
         console.error('表单验证失败:', error);
     }
-
-
-
-    // try {
-    //     await commonFormSubmit({
-    //         formRef: childFormRef.value,
-    //         data: addData.value,
-    //         addApi: addOrganizationDataApi,
-    //         updateApi: updateOrganizationDataApi,
-    //         handleSuccess: async (res) => {
-    //             smartAlert(res.msg, res.success, 1000);
-    //             await getList();
-    //             // 关闭弹窗
-    //             centerDialogVisible.value = false;
-    //             // 更新类型枚举
-    //             const resType = await getOrganizationTypeEnumApi();
-    //             TypeEnum.value = resType.data;
-    //         },
-    //         handleError: async (res) => {
-    //             smartAlert(res.msg, res.success);
-    //             // 自定义错误处理
-    //             console.log(res, '------')
-    //         }
-    //     });
-    // } catch (error) {
-    //     console.error('提交过程中发生错误:', error);
-    //     ElMessage.error('操作失败，请检查网络或数据');
-    // }
 };
 
 // 删除操作

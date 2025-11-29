@@ -122,7 +122,7 @@ const handleReset = (data) => {
 };
 
 // -------------------------- 表格配置与事件 --------------------------
-const tableData = ref([]);
+const tableData = shallowRef([]);
 const columns = ref([
     { label: '币种代码', prop: 'currency', width: '175', fixed: 'left', sortable: true },
     { label: '汇率', prop: 'rate', width: '120', sortable: true },

@@ -94,7 +94,7 @@ const handleReset = (data) => {
     getList(pagination.value.currentPage, pagination.value.pageSize, orderBy.value);
 };
 // 表格数据与列配置
-const tableData = ref([]);
+const tableData = shallowRef([]);
 const columns = ref([
     { label: '洲名', prop: 'continentName', width: '145', sortable: true ,sortAlias: 'continentId'},
     { label: '国家代码', prop: 'code', width: '155', sortable: true },

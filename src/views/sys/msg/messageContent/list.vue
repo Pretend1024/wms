@@ -106,7 +106,7 @@ const handleReset = (data) => {
     getList(pagination.value.currentPage, pagination.value.pageSize, orderBy.value);
 };
 // 表格数据与列配置
-const tableData = ref([]);
+const tableData = shallowRef([]);
 const columns = ref([
     { label: '创建时间', prop: 'createdTime', width: '200', sortable: true },
     { label: '消息类型', prop: 'typeName', width: '160', sortable: true },

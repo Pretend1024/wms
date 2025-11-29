@@ -92,7 +92,7 @@ const handleReset = (data) => {
     getList(pagination.value.currentPage, pagination.value.pageSize, orderBy.value);
 };
 // 表格数据与列配置
-const tableData = ref([]);
+const tableData = shallowRef([]);
 const columns = ref([
     { label: '任务分组', prop: 'jobGroupName', width: '150', sortable: true },
     { label: '任务名称', prop: 'jobName', width: '150', sortable: true },

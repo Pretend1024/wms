@@ -119,6 +119,7 @@ import draggable from 'vuedraggable' // 拖拽排序组件
 import { ElLoading } from 'element-plus' // 加载遮罩
 // 接口与工具函数
 import { setUserUserConfigApi } from '@/api/sysApi/user.js'
+import { getUserUserConfigApi } from '@/api/sysApi/user.js'
 import { getColumnText } from '@/utils/i18n/i18nColumns.js'
 import { getButtonText } from '@/utils/i18n/i18nLabels'
 
@@ -486,7 +487,7 @@ const getCellClassName = ({ row, column }) => {
 
 // ========================== 7. 生命周期与监听 ==========================
 // 组件挂载时初始化：缓存恢复 + 临时状态
-onMounted(() => {
+onMounted(async () => {
     // 初始化可见列
     const savedVisible = localStorage.getItem(visibleStorageKey.value)
     if (savedVisible) {
@@ -509,6 +510,56 @@ onMounted(() => {
             setDefaultFixedColumns()
         }
     } else setDefaultFixedColumns()
+
+    // 获取自定义配置覆盖本地缓存
+    if (effectiveTableId.value) {
+        try {
+            const res = await getUserUserConfigApi({
+                mapKey: effectiveTableId.value,
+                type: 'tableConfig'
+            })
+
+            if (res && res.success && res.data && res.data.mapValue) {
+                const config = JSON.parse(res.data.mapValue)
+
+                // 更新本地缓存，保证下次进入时能用
+                localStorage.setItem(visibleStorageKey.value, JSON.stringify(config.hiddenCols || []))
+                localStorage.setItem(fixedStorageKey.value, JSON.stringify(config.fixedCols || []))
+                localStorage.setItem(columnOrderStorageKey.value, JSON.stringify(config.sortCols || []))
+
+                // 只有当配置确实改变时才刷新，避免不必要的抖动
+                // 这里简单处理：如果有远程配置，直接应用远程配置
+                if (config.hiddenCols) {
+                    visibleColumns.value = allColProps.value.filter(prop => !config.hiddenCols.includes(prop))
+                }
+                if (config.fixedCols) {
+                    fixedColumns.value = config.fixedCols
+                }
+                if (config.sortCols) {
+                    // 重新排序 localColumns
+                    const orderedColumns = []
+                    const remainingColumns = [...props.columns]
+                    config.sortCols.forEach(({ prop, width }) => {
+                        const idx = remainingColumns.findIndex(c => c.prop === prop)
+                        if (idx > -1) {
+                            const col = remainingColumns.splice(idx, 1)[0]
+                            col.width = width || col.width
+                            orderedColumns.push(col)
+                        }
+                    })
+                    orderedColumns.push(...remainingColumns)
+                    localColumns.value = orderedColumns
+                    // 更新列宽缓存
+                    tempWidths.value = orderedColumns.reduce((obj, col) => {
+                        obj[col.prop] = col.width || 100
+                        return obj
+                    }, {})
+                }
+            }
+        } catch (err) {
+            console.warn('获取表格自定义配置失败，使用默认配置', err)
+        }
+    }
 
     // 初始化临时状态
     initTempStates()
@@ -686,12 +737,12 @@ watch(fixedColumns, saveFixedColumns, { deep: true })
 }
 
 /* 展开列隐藏样式（核心：隐藏默认展开图标列） */
-:deep(.el-table__header-wrapper .el-table__expand-column),
+/* :deep(.el-table__header-wrapper .el-table__expand-column),
 :deep(.el-table__body-wrapper .el-table__expand-column) {
-    /* display: none !important;
+    display: none !important;
     width: 0 !important;
-    padding: 0 !important; */
-}
+    padding: 0 !important;
+} */
 
 /* 按钮样式 */
 :deep(.el-button) {

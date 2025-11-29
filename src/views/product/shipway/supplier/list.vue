@@ -137,7 +137,7 @@ const handleReset = (data) => {
     getList(pagination.value.currentPage, pagination.value.pageSize, orderBy.value)
 }
 // 表格数据--------------------------------------
-const tableData = ref([])
+const tableData = shallowRef([])
 // 表格列配置
 const columns = ref([
     { label: '服务商代码', width: '180', prop: 'code', fixed: 'left', sortable: true },
@@ -245,7 +245,7 @@ const openChannel = async (row) => {
     // 加载动画
     const loading = ElLoading.service({
         lock: true,
-        text: '加载中...',
+        text: 'loading...',
     })
     const res = await getProductSupplierChannelListApi({ supplierId: row.id })
     console.log(res)
@@ -262,7 +262,7 @@ const handleSaveChannel = async () => {
     }
     const loading = ElLoading.service({
         lock: true,
-        text: '加载中...',
+        text: 'loading...',
     })
     const data = {
         supplierId: dataId.value,

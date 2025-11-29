@@ -73,14 +73,12 @@ import UpdForm from './upd.vue';
 import setRole from './setRole.vue';
 import { ElMessage, ElMessageBox } from 'element-plus';
 import *as api from '@/api/sysApi/user.js'
-// 表单提交方法
-import { commonFormSubmit } from '@/utils/formElements.js'
 import { smartAlert } from '@/utils/genericMethods.js'
 import { useI18n } from 'vue-i18n';
 const { t } = useI18n();
 
 // 表格数据与列配置
-const tableData = ref([]);
+const tableData = shallowRef([]);
 const columns = ref([
     { label: '角色名称', prop: 'name', width: '150', sortable: true },
     { label: '备注', prop: 'remark', width: '300' },
@@ -241,28 +239,25 @@ const delColse = () => {
 
 // 弹窗确定按钮，调用子组件的表单校验及提交
 const handleDialogConfirm = async () => {
+    if (!childFormRef.value) return;
     try {
-        await commonFormSubmit({
-            formRef: childFormRef.value,
-            data: addData.value,
-            addApi: api.addUserRoleDataApi,
-            updateApi: api.updateUserRoleDataApi,
-            handleSuccess: async (res) => {
-                // 自定义成功处理
-                // ElMessage.success(res.msg);
-                smartAlert(res.msg, res.success, 1000);
-                // 调用getList
-                await getList(pagination.value.currentPage, pagination.value.pageSize, orderBy.value);;
-                // 关闭弹窗
-                centerDialogVisible.value = false;
-            },
-            handleError: async (res) => {
-                smartAlert(res.msg, res.success);
-            }
-        });
+        await childFormRef.value.validate();
+        let res = null;
+        const data = {
+            ...addData.value
+        };
+        if (dialogMode.value === 'upd') {
+            res = await api.updateUserRoleDataApi(data);
+        } else {
+            res = await api.addUserRoleDataApi(data);
+        }
+        smartAlert(res.msg, res.success, 1000);
+        if (res.success) {
+            getList();
+            centerDialogVisible.value = false;
+        }
     } catch (error) {
-        console.error('提交过程中发生错误:', error);
-        ElMessage.error('操作失败，请检查网络或数据');
+        console.error('表单验证失败:', error);
     }
 };
 // 弹窗取消按钮

@@ -70,7 +70,7 @@ const emit = defineEmits(['update:visible', 'confirm']);
 
 // 内部状态
 const loading = ref(false);
-const tableData = ref([]);
+const tableData = shallowRef([]);
 const selectedRow = ref(null);
 const filterForm = ref({ taskNo: '', taskName: '' });
 const pagination = ref({

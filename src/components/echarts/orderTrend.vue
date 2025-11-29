@@ -20,7 +20,7 @@
 
 <script setup name="OrderTrend">
 import { ref, onMounted, watch, computed } from 'vue'
-import * as echarts from 'echarts'
+import echarts from '@/plugins/echarts.js'
 
 const timeType = ref('day')  // 默认选择按天
 const chartRef = ref(null)

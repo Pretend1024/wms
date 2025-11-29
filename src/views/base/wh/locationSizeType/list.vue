@@ -58,7 +58,7 @@ import { getWhLocationSizeTypeListApi, addWhLocationSizeTypeApi, updWhLocationSi
 import { useI18n } from 'vue-i18n';
 const { t } = useI18n();
 // 表格数据与列配置
-const tableData = ref([]);
+const tableData = shallowRef([]);
 const columns = ref([
     { label: '名称', prop: 'name', width: '150' },
     { label: '代码', prop: 'code', width: '110', sortable: true },

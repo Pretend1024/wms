@@ -91,7 +91,7 @@ const uploadRef = ref(null);
 const isCoverDuplicate = ref(true);
 
 // 表格数据
-const tableData = ref([]);
+const tableData = shallowRef([]);
 const filterStatus = ref('all');
 
 // 筛选表格数据

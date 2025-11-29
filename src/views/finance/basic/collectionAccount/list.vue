@@ -134,7 +134,7 @@ const handleReset = (data) => {
 };
 
 // -------------------------- 表格配置与事件 --------------------------
-const tableData = ref([]);
+const tableData = shallowRef([]);
 const columns = ref([
     { label: '公司', prop: 'orgName', width: '175', fixed: 'left', sortable: true },
     { label: '支付类型', prop: 'paywayName', width: '120', sortable: true },

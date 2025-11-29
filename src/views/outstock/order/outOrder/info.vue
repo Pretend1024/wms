@@ -864,6 +864,7 @@ async function handleSkuConfirm(selectedList) {
     if (!selectedList || !Array.isArray(selectedList) || selectedList.length === 0) return;
     const loading = ElLoading.service({
         lock: true,
+        target: ".contentDiv",
         text: 'Loading'
     })
 
@@ -976,6 +977,7 @@ const handleLabelUrlUpload = async (options, row) => {
 
     const loading = ElLoading.service({
         lock: true,
+        target: ".contentDiv",
         text: 'loading...'
     });
 
@@ -1003,7 +1005,8 @@ const handleCustomLabelUrlUpload = async (options, row) => {
 
     const loading = ElLoading.service({
         lock: true,
-        text: 'loading...'
+        text: 'loading...',
+        target: ".contentDiv",
     });
 
     try {
@@ -1300,6 +1303,7 @@ onMounted(async () => {
     const loading = ElLoading.service({
         lock: true,
         text: "Loading",
+        target: ".contentDiv"
     });
 
     try {

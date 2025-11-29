@@ -246,7 +246,7 @@ const selectDateData = ref({
    3. 表格配置 (Table State)
    ========================================================================= */
 const loading = ref(false);
-const tableData = ref([]);
+const tableData = shallowRef([]);
 const footer = ref();
 const selectionRows = ref([]);
 const orderBy = ref('');

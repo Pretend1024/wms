@@ -261,7 +261,7 @@ const rules = {
     ]
 };
 // 表格数据
-const tableData = ref([]);
+const tableData = shallowRef([]);
 const columns = [
     { label: getColumnText('contractFile'), prop: 'contractFile', width: '300', fixed: 'left', slot: 'contractFile' },
     { label: getColumnText('contractBegin'), prop: 'contractBegin', width: '220', slot: 'beginPicker' },
@@ -283,6 +283,7 @@ const uploadContracts = async ({ file }) => {
     // 加载动画
     const loading = ElLoading.service({
         lock: true,
+        target: ".contentDiv",
         text: 'loading...',
     })
     try {

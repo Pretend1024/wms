@@ -19,7 +19,7 @@ const props = defineProps({
     isExpanded: { type: Boolean, default: false }
 });
 
-const tableData = ref([]);
+const tableData = shallowRef([]);
 const columns = ref([
     { label: '入库单号', prop: 'inOrderNo', width: '180' },
     { label: '状态', prop: 'statusName', width: '100' },

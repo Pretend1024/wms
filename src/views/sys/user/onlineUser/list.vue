@@ -31,7 +31,7 @@ import batchOperationn from '@/components/messageNotices/batchOperation.vue';
 import { getOnlineUserListApi, forceLogoutApi } from '@/api/sysApi/user.js'
 import { smartAlert } from '@/utils/genericMethods.js'
 // 表格数据与列配置
-const tableData = ref([]);
+const tableData = shallowRef([]);
 const columns = ref([
     { label: '用户代码', prop: 'userCode', width: '125' },
     { label: '用户类型', prop: 'userTypeName', width: '125' },
