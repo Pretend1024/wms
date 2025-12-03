@@ -31,9 +31,9 @@
                         </el-form-item>
                     </el-col>
                     <el-col>
-                        <el-form-item :label="getLabel('inOrderNo')">
-                            <canonicalInput v-model:listName="formData.inOrderNoList"
-                                :placeholder="getPlaceholder('inOrderNo')" clearable>
+                        <el-form-item :label="getLabel('outOrderNo')">
+                            <canonicalInput v-model:listName="formData.outOrderNoList"
+                                :placeholder="getPlaceholder('outOrderNo')" clearable>
                             </canonicalInput>
                         </el-form-item>
                     </el-col>
@@ -75,16 +75,13 @@
             <hydTable :footer="footer" :tableData="tableData" :columns="columns" :pagination="pagination"
                 :enableSelection="true" :loading="loading" :pageSizes="[20, 50, 100, 200, 500]"
                 @selection-change="handleSelectionChange" @page-change="handlePageChange" @sort-change="handleTableSort"
-                :tableId="'finance/receivables/fee/list/inboundFee'">
+                :tableId="'finance/receivables/fee/list/storageFee'">
                 <template #table-buttons>
-                    <el-button type="primary" @click="handleAdd" :icon="Plus">{{ getButtonText('add') }}</el-button>
                     <el-button type="danger" @click="handleDel" :icon="Delete">{{ getButtonText('del') }}</el-button>
-                    <el-button type="success" @click="handleImport" :icon="Upload">{{ getButtonText('importCreate')
-                    }}</el-button>
                     <el-button type="success" @click="handleExport" :icon="Share">{{ getButtonText('export')
-                    }}</el-button>
+                        }}</el-button>
                     <el-button type="primary" @click="joinBillVisible = true" :icon="Money">{{ getButtonText('joinBill')
-                    }}</el-button>
+                        }}</el-button>
                 </template>
 
                 <template #customBtn="{ row }">
@@ -105,7 +102,7 @@
                         {{ row.statusName }}
                     </span>
                 </template>
-                <template #inOrderCreatedTime="{ row }">
+                <template #outOrderCreatedTime="{ row }">
                     <span>{{ row.orderCreatedTime }}</span>
                 </template>
             </hydTable>
@@ -121,15 +118,14 @@
                 </div>
             </template>
         </el-dialog> -->
-
-        <FeeDialog v-model="centerDialogVisible" :dialogMode="dialogMode" :feeMainTypeId="1" :initData="editInitData"
+        <FeeDialog v-model="centerDialogVisible" :dialogMode="dialogMode" :feeMainTypeId="3" :initData="editInitData"
             :feeTypeOptions="feeTypeOptions" :currencyOptions="currencyOptions" :loading="dialogLoading"
             @confirm="handleDialogConfirm" />
 
         <JoinBillDialog v-model="joinBillVisible" :selectionCount="selectionRows.length" :loading="joinBillLoading"
             @confirm="handleJoinBillConfirm" />
 
-        <exportDialog ref="exportDialogRef" :selectionRows="selectionRows" :initValues="initValues" :exportType="606">
+        <exportDialog ref="exportDialogRef" :selectionRows="selectionRows" :initValues="initValues" :exportType="608">
         </exportDialog>
 
         <batchOperationn :dialogTitle="'操作结果'" :isVisible="resultDialogVisible" :tableData="resultData"
@@ -137,14 +133,14 @@
     </div>
 </template>
 
-<script setup name="入库费用">
+<script setup name="出库费用">
 import { ref, computed, onMounted, nextTick } from 'vue';
 import { useRouter } from 'vue-router';
 import { useI18n } from 'vue-i18n';
 import { Plus, Delete, EditPen, Share, Upload, Money } from '@element-plus/icons-vue';
 import { ElLoading, ElMessage, ElMessageBox } from 'element-plus';
 
-// --- 组件导入 ---
+// 组件
 import canonicalInput from '@/components/table/canonicalInpt.vue';
 import hydFilterBox from "@/components/table/hyd-filterBox.vue";
 import hydTable from "@/components/table/hyd-table.vue";
@@ -153,12 +149,13 @@ import batchOperationn from '@/components/messageNotices/batchOperation.vue';
 // 引入封装的加入账单组件
 import JoinBillDialog from '../JoinBillDialog.vue';
 
-// import AddForm from './add.vue';
-// import UpdForm from './upd.vue';
 import FeeDialog from '../FeeDialog.vue';
 
-// --- 工具与API导入 ---
+// 工具与API
 import { smartAlert, trimObjectStrings } from '@/utils/genericMethods.js';
+import { getButtonText } from '@/utils/i18n/i18nLabels';
+
+// *** 替换为出库相关 API ***
 import {
     getFeePageApi,
     addFeeApi,
@@ -167,21 +164,12 @@ import {
     joinBillApi
 } from '@/api/financeApi/receivables.js';
 
-import { getOrgListCompanyApi } from '@/api/baseApi/org.js';
-import { getWhWarehouseApi } from '@/api/baseApi/wh.js';
 import { getCustomerLikeQueryApi } from '@/api/baseApi/sku.js';
-import {
-    getFeeTypeEnumApi,
-    getFeeStatusEnumApi,
-    getFeeCreateWayEnumApi,
-} from '@/api/financeApi/receivables.js';
-import { getCurrencyEnumApi } from '@/api/baseApi/index.js'
+import { getFeeTypeEnumApi } from '@/api/financeApi/receivables.js';
+
 const { t } = useI18n();
 const router = useRouter();
 
-/* =========================================================================
-   1. 基础配置与枚举
-   ========================================================================= */
 const props = defineProps({
     companyOptions: { type: Array, default: () => [] },
     warehouseOptions: { type: Array, default: () => [] },
@@ -200,74 +188,52 @@ const {
 const customerOptions = ref([]);
 const feeTypeOptions = ref([]);
 
-// 级联选择器配置
 const cascaderRef = ref(null);
 const parentProps = { checkStrictly: true, expandTrigger: 'hover' };
 
-/* =========================================================================
-   2. 搜索表单配置 (Search State)
-   ========================================================================= */
-// 配置表单项
+// 搜索表单 (字段变更为 outOrderNo)
 const formConfig = ref([]);
 
-// 搜索初始值
 const initValues = ref({
     orgId: [],
-    warehouseCode: '',
-    customerCodeList: [],
-    inOrderNoList: [],
-    feeTypeId: '',
-    statusId: '',
-    createWayId: '',
-    feeMainTypeId: 1,
+    outOrderNoList: [],
+    feeMainTypeId: 3,
 });
 
-// 日期相关
+// 日期
 const dateSelectRef = ref(null);
 const timeTypeOptions = ref([
     { label: '单据创建时间', value: 10 },
     { label: '费用创建时间', value: 20 }
 ]);
-
-// 生成默认日期范围（最近30天）
 const getDefaultDateRange = () => {
     const end = new Date();
     end.setHours(23, 59, 59, 999);
     const start = new Date(end);
     start.setDate(start.getDate() - 30);
     start.setHours(0, 0, 0, 0);
-
     const formatDate = (d) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')} ${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}:${String(d.getSeconds()).padStart(2, '0')}`;
     return [formatDate(start), formatDate(end)];
 };
-
 const selectDateData = ref({
     dateType: 10,
     dateRange: getDefaultDateRange()
 });
 
-
-/* =========================================================================
-   3. 表格配置 (Table State)
-   ========================================================================= */
+// 表格配置 (字段变更为 outOrderNo)
 const loading = ref(false);
 const tableData = shallowRef([]);
 const footer = ref();
 const selectionRows = ref([]);
 const orderBy = ref('');
-
-const pagination = ref({
-    currentPage: 1,
-    pageSize: 100,
-    total: 0
-});
+const pagination = ref({ currentPage: 1, pageSize: 100, total: 0 });
 
 const columns = ref([
     { label: '公司', prop: 'orgName', width: '120', sortable: true, fixed: 'left' },
     { label: '仓库', prop: 'warehouseCode', width: '100', sortable: true, fixed: 'left' },
     { label: '客户', prop: 'customerCode', width: '180', sortable: true, fixed: 'left' },
-    { label: '入库单号', prop: 'orderNo', width: '160', sortable: true, fixed: 'left' },
-    { label: '入库日期', prop: 'inOrderCreatedTime', width: '200', slot: 'inOrderCreatedTime' },
+    { label: '出库单号', prop: 'orderNo', width: '160', sortable: true, fixed: 'left' },
+    { label: '出库日期', prop: 'outOrderCreatedTime', width: '200', slot: 'outOrderCreatedTime' },
     { label: '费用类型', prop: 'feeTypeName', width: '120', sortable: true },
     { label: '费用名称', prop: 'feeName', width: '120' },
     { label: '创建方式', prop: 'createWayName', width: '120', sortable: true },
@@ -290,15 +256,10 @@ const columns = ref([
     { label: '操作', prop: 'action', width: '100', fixed: 'right', slot: 'customBtn' }
 ]);
 
-/* =========================================================================
-   4. 业务逻辑与方法
-   ========================================================================= */
-
-// --- 搜索与表格事件 ---
+// --- 方法 ---
 const handleTimeChange = (data) => selectDateData.value = data;
 
 const handleSearch = (data) => {
-    // 构造查询参数，处理级联选择器和时间组件的数据
     initValues.value = {
         ...data,
         orgId: Array.isArray(data.orgId) && data.orgId.length > 0 ? data.orgId[data.orgId.length - 1] : '',
@@ -310,15 +271,9 @@ const handleSearch = (data) => {
 };
 
 const handleReset = (data) => {
-    // 重置逻辑：还原初始值
     selectDateData.value = { dateType: 10, dateRange: getDefaultDateRange() };
-    initValues.value = {
-        ...data,
-        orgId: '',
-        dateType: 10,
-        dateRange: getDefaultDateRange()
-    };
-    handleCascaderChange(); // 重置客户下拉
+    initValues.value = { ...data, orgId: '', dateType: 10, dateRange: getDefaultDateRange() };
+    handleCascaderChange();
     getList(1, pagination.value.pageSize);
 };
 
@@ -326,21 +281,13 @@ const getList = async (page, pageSize, orderByStr = orderBy.value) => {
     loading.value = true;
     try {
         const params = { ...trimObjectStrings(initValues.value) };
-        const res = await getFeePageApi({
-            page,
-            pageSize,
-            orderBy: orderByStr,
-            ...params
-        });
+        // 调用出库分页接口
+        const res = await getFeePageApi({ page, pageSize, orderBy: orderByStr, ...params });
         tableData.value = res.data.rows || [];
         footer.value = res.data.footer ? res.data.footer[0] : {};
-        pagination.value = {
-            currentPage: res.data.page,
-            pageSize: pageSize,
-            total: res.data.total
-        };
+        pagination.value = { currentPage: res.data.page, pageSize, total: res.data.total };
     } catch (e) {
-        console.error('List Error:', e);
+        console.error(e);
         tableData.value = [];
     } finally {
         loading.value = false;
@@ -348,29 +295,21 @@ const getList = async (page, pageSize, orderByStr = orderBy.value) => {
 };
 
 const handleSelectionChange = (val) => selectionRows.value = val;
-const handlePageChange = ({ pageSize, currentPage }) => {
-    pagination.value.pageSize = pageSize;
-    pagination.value.currentPage = currentPage;
-    getList(currentPage, pageSize);
-};
-const handleTableSort = (sortString) => {
-    orderBy.value = sortString;
-    getList(pagination.value.currentPage, pagination.value.pageSize);
-};
+const handlePageChange = ({ pageSize, currentPage }) => getList(currentPage, pageSize);
+const handleTableSort = (sort) => { orderBy.value = sort; getList(pagination.value.currentPage, pagination.value.pageSize); };
 
-// --- 新增 / 编辑 ---
+// --- 新增/编辑 ---
 const centerDialogVisible = ref(false);
 const dialogMode = ref('add');
 const editInitData = ref({});
 const dialogLoading = ref(false); // 控制弹窗按钮loading
-
-
 
 const handleAdd = () => {
     editInitData.value = {};
     dialogMode.value = 'add';
     centerDialogVisible.value = true;
 };
+
 
 const handleEdit = (row) => {
     if (row.statusId != 10) {
@@ -380,6 +319,7 @@ const handleEdit = (row) => {
     dialogMode.value = 'upd';
     centerDialogVisible.value = true;
 };
+
 
 const handleDialogCancel = () => {
     centerDialogVisible.value = false;
@@ -423,14 +363,10 @@ const resultData = ref([]);
 const promptMessage = ref('');
 
 const handleDel = () => {
-    if (selectionRows.value.length === 0) {
-        return ElMessage.warning('请选择要删除的数据！');
-    }
+    if (selectionRows.value.length === 0) return ElMessage.warning('请选择要删除的数据！');
 
     ElMessageBox.confirm(`是否要删除${selectionRows.value.length}条数据?`, '提醒', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        type: 'warning'
+        confirmButtonText: '确定', cancelButtonText: '取消', type: 'warning'
     }).then(async () => {
         loading.value = true;
         resultData.value = [];
@@ -438,9 +374,10 @@ const handleDel = () => {
         promptMessage.value = '操作中...';
 
         for (const row of selectionRows.value) {
+            // 调用出库删除接口
             const res = await delFeeByIdApi({ id: row.id });
             resultData.value.push({
-                id: `${row.inOrderNo} - ${row.feeName}`,
+                id: `${row.outOrderNo} - ${row.feeName}`,
                 msg: res.msg,
                 success: res.success
             });
@@ -449,7 +386,6 @@ const handleDel = () => {
         loading.value = false;
     }).catch(() => { });
 };
-
 const resultClose = () => {
     resultDialogVisible.value = false;
     getList(pagination.value.currentPage, pagination.value.pageSize);
@@ -462,7 +398,7 @@ const joinBillLoading = ref(false);
 const handleJoinBillConfirm = async (formData) => {
     const params = {
         option: formData.method,
-        typeId: 10,
+        typeId: 20,
         billIdNo: formData.targetBillNo,
     };
 
@@ -473,10 +409,12 @@ const handleJoinBillConfirm = async (formData) => {
             ...trimObjectStrings(initValues.value),
         }
     }
+
     joinBillLoading.value = true;
     try {
+        // 调用出库加入账单接口
         const res = await joinBillApi(params);
-        smartAlert(res.msg, res.success, 1000);
+        smartAlert(res.msg || '加入账单处理完成', res.success, 1000);
         if (res.success) {
             joinBillVisible.value = false;
             getList(pagination.value.currentPage, pagination.value.pageSize);
@@ -489,38 +427,21 @@ const handleJoinBillConfirm = async (formData) => {
     }
 };
 
-// --- 导入 / 导出 ---
-const handleImport = () => {
-    router.push({
-        name: '导入文件',
-        params: { typeId: 606, typeName: '入库单应收费用' },
-    });
-};
-
 const exportDialogRef = ref(null);
-const handleExport = () => {
-    exportDialogRef.value.openExportDialog();
-};
+const handleExport = () => exportDialogRef.value.openExportDialog();
 
-// --- 级联选择与下拉联动 ---
+// --- 下拉数据初始化 ---
 const handleCascaderChange = async (e) => {
     if (e) nextTick(() => cascaderRef.value.togglePopperVisible());
     const orgId = e ? e[e.length - 1] : '';
-
     const result = await getCustomerLikeQueryApi({ keyword: '*', orgId });
-    customerOptions.value = result.data.map(item => ({
-        value: item.code,
-        label: `${item.code}(${item.name})`
-    }));
+    customerOptions.value = result.data.map(item => ({ value: item.code, label: `${item.code}(${item.name})` }));
 };
 
-/* =========================================================================
-   5. 生命周期 (Initialization)
-   ========================================================================= */
 onMounted(async () => {
     customerOptions.value = props.initialCustomerOptions;
     // 获取类型选项
-    const feeTypeRes = await getFeeTypeEnumApi({ mainTypeId: 1 });
+    const feeTypeRes = await getFeeTypeEnumApi({ mainTypeId: 3 });
     feeTypeOptions.value = feeTypeRes.data.map(i => ({ label: i.name, value: i.id }));
 });
 </script>

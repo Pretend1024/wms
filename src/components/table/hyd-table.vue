@@ -65,7 +65,7 @@
         </div>
 
         <!-- 2. 表格主体：核心数据展示 + 功能列 -->
-        <el-table ref="elTableRef" highlight-current-row :data="filteredColumnsData" :row-key="rowKey"
+        <el-table ref="elTableRef" highlight-current-row :data="tableData" :row-key="rowKey"
             :tree-props="isTree ? treeProps : undefined" :default-expand-all="defaultExpandAll" border
             @selection-change="handleSelectionChange" @row-click="handleRowClick" @sort-change="handleSortChange"
             style="width: 100%; flex: 1;" v-loading="loading" :show-summary="footer !== null"
@@ -458,7 +458,7 @@ const onSaveSettings = async () => {
 const filteredColumns = computed(() => localColumns.value.filter(col => visibleColumns.value.includes(col.prop)))
 
 // 表格数据源（保持原数据，仅列过滤）
-const filteredColumnsData = computed(() => props.tableData)
+// const filteredColumnsData = computed(() => props.tableData)
 
 // 合计行计算函数
 const computeSummary = (param) => {
@@ -580,9 +580,9 @@ watch(fixedColumns, () => {
 })
 
 // 监听列顺序/可见性/固定状态变更，自动保存缓存
-watch(localColumns, saveColumnOrder, { deep: true })
-watch(visibleColumns, saveVisibleColumns, { deep: true })
-watch(fixedColumns, saveFixedColumns, { deep: true })
+// watch(localColumns, saveColumnOrder, { deep: true })
+// watch(visibleColumns, saveVisibleColumns, { deep: true })
+// watch(fixedColumns, saveFixedColumns, { deep: true })
 </script>
 
 <style scoped>
@@ -747,6 +747,8 @@ watch(fixedColumns, saveFixedColumns, { deep: true })
 /* 按钮样式 */
 :deep(.el-button) {
     margin-left: 8px;
+    margin-bottom: 2px;
+    margin-top: 2px;
 }
 
 /* 拖拽过程中样式 */

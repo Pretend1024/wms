@@ -35,8 +35,8 @@
             <el-col :span="12">
                 <el-form-item :label="getLabel('isConcurrent')" prop="isConcurrent">
                     <el-select v-model="formData.isConcurrent" :placeholder="getPlaceholder('isConcurrent')">
-                        <el-option label="是" :value="true"></el-option>
-                        <el-option label="否" :value="false"></el-option>
+                        <el-option :label="$t('yes')" :value="true"></el-option>
+                        <el-option :label="$t('no')" :value="false"></el-option>
                     </el-select>
                 </el-form-item>
             </el-col>

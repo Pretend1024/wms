@@ -53,8 +53,8 @@
             <el-col :span="12">
                 <el-form-item :label="getLabel('display')">
                     <el-select v-model="formData.display" :placeholder="getPlaceholder('display')">
-                        <el-option label="是" :value="false" />
-                        <el-option label="否" :value="true" />
+                        <el-option :label="$t('yes')" :value="false" />
+                        <el-option :label="$t('no')" :value="true" />
                     </el-select>
                 </el-form-item>
             </el-col>

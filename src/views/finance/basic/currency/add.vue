@@ -24,8 +24,8 @@
                 <el-form-item :label="getLabel('isStandardCurrency')" prop="isStandardCurrency">
                     <el-select v-model="formData.isStandardCurrency" :placeholder="getPlaceholder('isStandardCurrency')"
                         clearable disabled>
-                        <el-option label="是" :value="true" />
-                        <el-option label="否" :value="false" />
+                        <el-option :label="$t('yes')" :value="true" />
+                        <el-option :label="$t('no')" :value="false" />
                     </el-select>
                 </el-form-item>
             </el-col>

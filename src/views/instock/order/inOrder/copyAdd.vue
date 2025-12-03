@@ -75,8 +75,8 @@
                     </el-col>
                     <el-col :span="12">
                         <el-form-item label="计划到仓时间:" prop="plannedArrivalTime">
-                            <el-date-picker v-model="formData.plannedArrivalTime" type="date" placeholder="选择计划到仓时间"
-                                format="YYYY/MM/DD" value-format="YYYY-MM-DD" />
+                            <el-date-picker v-model="formData.plannedArrivalTime" type="datetime" placeholder="选择计划到仓时间"
+                                format="YYYY/MM/DD HH:mm:ss" value-format="YYYY/MM/DD HH:mm:ss" />
                         </el-form-item>
                     </el-col>
                     <el-col :span="12">

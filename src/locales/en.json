@@ -75,6 +75,9 @@
   "trackList": "Track List",
   "listDetail": "List Detail",
   "noRecord": "No Record",
+  "ruleGroup": "Rule Group(Matching is possible if any rule group is satisfied)",
+  "yes": "Yes",
+  "no": "No",
   "base_org_organization_list": {
     "addTitle": "Add Department",
     "updTitle": "Upd Department"
@@ -248,5 +251,9 @@
   "vas_wo_workOrderType_list": {
     "addTitle": "Add Work Order Type",
     "updTitle": "Edit Work Order Type"
+  },
+  "base_basic_traceStatus_list": {
+    "addTitle": "Add Track Status",
+    "updTitle": "Edit Track Status"
   }
 }

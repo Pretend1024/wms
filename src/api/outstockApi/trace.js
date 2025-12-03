@@ -24,3 +24,8 @@ export const deleteOutstockOrderTraceApi = (data) => {
 export const deleteOutstockOrderTraceByIdApi = createPostRequestWithQuery('/outstock/trace/outTrace/deleteById')
 // 查询轨迹明细
 export const getOutstockOrderTraceDetailListApi = createPostRequestWithQuery('/outstock/trace/outTrace/listByTrackId')
+
+// 轨迹节点枚举
+export const getOutstockOrderTraceNodeEnumApi = () => {
+    return http.post('/outstock/trace/outTrace/podStatusEnum', {})
+}

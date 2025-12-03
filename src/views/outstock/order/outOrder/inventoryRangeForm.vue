@@ -1,5 +1,6 @@
 <template>
     <el-form :model="formData" ref="formRef" label-width="110px" class="inventory-range-form">
+        <h3>库存范围</h3>
         <el-row :gutter="20">
             <!-- 入库单 -->
             <el-col :span="24">

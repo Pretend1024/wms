@@ -150,8 +150,8 @@
                         <el-form-item :label="getLabel('supplierPushStatusId')">
                             <el-select v-model="formData.isTrackingNoReady"
                                 :placeholder="getPlaceholder('supplierPushStatusId')" clearable>
-                                <el-option label="是" :value="true" />
-                                <el-option label="否" :value="false" />
+                                <el-option :label="$t('yes')" :value="true" />
+                                <el-option :label="$t('no')" :value="false" />
                             </el-select>
                         </el-form-item>
                     </el-col>
@@ -160,8 +160,8 @@
                         <el-form-item :label="getLabel('isPrint')">
                             <el-select v-model="formData.isPrintedLabel" :placeholder="getPlaceholder('isPrint')"
                                 clearable>
-                                <el-option label="是" :value="true" />
-                                <el-option label="否" :value="false" />
+                                <el-option :label="$t('yes')" :value="true" />
+                                <el-option :label="$t('no')" :value="false" />
                             </el-select>
                         </el-form-item>
                     </el-col>
@@ -231,8 +231,8 @@
                         <el-form-item :label="getLabel('isPremium')">
                             <el-select v-model="formData.isInsured" :placeholder="getPlaceholder('isPremium')"
                                 clearable>
-                                <el-option label="是" :value="true" />
-                                <el-option label="否" :value="false" />
+                                <el-option :label="$t('yes')" :value="true" />
+                                <el-option :label="$t('no')" :value="false" />
                             </el-select>
                         </el-form-item>
                     </el-col>
@@ -241,8 +241,8 @@
                         <el-form-item :label="getLabel('isShortage')">
                             <el-select v-model="formData.isShortage" :placeholder="getPlaceholder('isShortage')"
                                 clearable>
-                                <el-option label="是" :value="true" />
-                                <el-option label="否" :value="false" />
+                                <el-option :label="$t('yes')" :value="true" />
+                                <el-option :label="$t('no')" :value="false" />
                             </el-select>
                         </el-form-item>
                     </el-col>
@@ -290,7 +290,7 @@
                         <div class="btns">
                             <!-- 新增 -->
                             <el-button type="primary" @click="handleAdd" :icon="Plus">{{ getButtonText('add')
-                                }}</el-button>
+                            }}</el-button>
                             <!-- 导入 -->
                             <el-dropdown trigger="click">
                                 <el-button type="success">
@@ -300,9 +300,9 @@
                                 <template #dropdown>
                                     <el-dropdown-menu>
                                         <el-dropdown-item @click="handleImportAdd">{{ getButtonText('importCreate')
-                                        }}</el-dropdown-item>
+                                            }}</el-dropdown-item>
                                         <el-dropdown-item @click="handleImportUpd">{{ getButtonText('importUpdate')
-                                        }}</el-dropdown-item>
+                                            }}</el-dropdown-item>
                                     </el-dropdown-menu>
                                 </template>
                             </el-dropdown>
@@ -315,12 +315,12 @@
                                 <template #dropdown>
                                     <el-dropdown-menu>
                                         <el-dropdown-item @click="applyNo">{{ getButtonText('applyNo')
-                                        }}</el-dropdown-item>
+                                            }}</el-dropdown-item>
                                         <el-dropdown-item @click="handleImport"> {{ getButtonText('importTrackingNo')
-                                        }}</el-dropdown-item>
+                                            }}</el-dropdown-item>
                                         <el-dropdown-item @click="handleCancelTrackingNo"> {{
                                             getButtonText('cancelTrackingNo')
-                                        }}</el-dropdown-item>
+                                            }}</el-dropdown-item>
                                     </el-dropdown-menu>
                                 </template>
                             </el-dropdown>
@@ -332,14 +332,14 @@
                                 <template #dropdown>
                                     <el-dropdown-menu>
                                         <el-dropdown-item @click="handlePrint(403)"> {{ getButtonText('trackingNo')
-                                        }}</el-dropdown-item>
+                                            }}</el-dropdown-item>
                                         <el-dropdown-item @click="handlePrint(404)">{{ getButtonText('serviceOrder')
-                                        }}</el-dropdown-item>
+                                            }}</el-dropdown-item>
                                         <el-dropdown-item @click="handlePrint(405)">{{ getButtonText('attachment')
-                                        }}</el-dropdown-item>
+                                            }}</el-dropdown-item>
                                         <el-dropdown-item @click="handlePrint(402)">{{
                                             getButtonText('commercialInvoice')
-                                            }}</el-dropdown-item>
+                                        }}</el-dropdown-item>
                                     </el-dropdown-menu>
                                 </template>
                             </el-dropdown>
@@ -352,10 +352,10 @@
                                 <template #dropdown>
                                     <el-dropdown-menu>
                                         <el-dropdown-item @click="handleJoinWave">{{ getButtonText('joinWave')
-                                        }}</el-dropdown-item>
+                                            }}</el-dropdown-item>
                                         <el-dropdown-item @click="handleExitWave"> {{
                                             getButtonText('exitWave')
-                                        }}</el-dropdown-item>
+                                            }}</el-dropdown-item>
                                     </el-dropdown-menu>
                                 </template>
                             </el-dropdown>
@@ -368,10 +368,10 @@
                                 <template #dropdown>
                                     <el-dropdown-menu>
                                         <el-dropdown-item @click="handleInventory">{{ getButtonText('assignStock')
-                                        }}</el-dropdown-item>
+                                            }}</el-dropdown-item>
                                         <el-dropdown-item @click="handleCancelInventory"> {{
                                             getButtonText('cancelAssign')
-                                        }}</el-dropdown-item>
+                                            }}</el-dropdown-item>
                                     </el-dropdown-menu>
                                 </template>
                             </el-dropdown>
@@ -384,17 +384,17 @@
                                 <template #dropdown>
                                     <el-dropdown-menu>
                                         <el-dropdown-item @click="ApplyHoldUp">{{ getButtonText('ApplyHoldUp')
-                                        }}</el-dropdown-item>
+                                            }}</el-dropdown-item>
                                         <el-dropdown-item @click="CancelHoldUp"> {{
                                             getButtonText('CancelHoldUp')
-                                        }}</el-dropdown-item>
+                                            }}</el-dropdown-item>
                                     </el-dropdown-menu>
                                 </template>
                             </el-dropdown>
                             <!-- 问题 -->
                             <el-button type="primary" @click="handleProblem" :icon="Plus">{{
                                 getButtonText('registerProblem')
-                            }}</el-button>
+                                }}</el-button>
                             <!-- 状态修改 -->
                             <el-dropdown trigger="click">
                                 <el-button type="success">
@@ -404,9 +404,9 @@
                                 <template #dropdown>
                                     <el-dropdown-menu>
                                         <el-dropdown-item @click="handleToAllocate">{{ getButtonText('pendingAssign')
-                                        }}</el-dropdown-item>
+                                            }}</el-dropdown-item>
                                         <el-dropdown-item @click="handleToDraft">{{ getButtonText('draft')
-                                        }}</el-dropdown-item>
+                                            }}</el-dropdown-item>
                                     </el-dropdown-menu>
                                 </template>
                             </el-dropdown>
@@ -419,22 +419,22 @@
                                 <template #dropdown>
                                     <el-dropdown-menu>
                                         <el-dropdown-item @click="setWarehouse"> {{ getButtonText('setWarehouse')
-                                        }}</el-dropdown-item>
+                                            }}</el-dropdown-item>
                                         <el-dropdown-item @click="setShipway">{{ getButtonText('setChannel')
-                                        }}</el-dropdown-item>
+                                            }}</el-dropdown-item>
                                     </el-dropdown-menu>
                                 </template>
                             </el-dropdown>
                             <!-- 导出 -->
                             <el-button type="success" @click="handleExport" :icon="Share">{{ getButtonText('export')
-                                }}</el-button>
+                            }}</el-button>
                             <!-- 导出文件 -->
                             <el-button type="info" @click="handleExportAttachment" :icon="Share">{{
                                 getButtonText('exportAttachment')
-                            }}</el-button>
+                                }}</el-button>
                             <!-- 删除 -->
                             <el-button type="danger" @click="handleDel" :icon="Delete">{{ getButtonText('del')
-                                }}</el-button>
+                            }}</el-button>
                         </div>
                     </div>
                 </template>
@@ -473,9 +473,9 @@
                             <template #dropdown>
                                 <el-dropdown-menu>
                                     <el-dropdown-item @click="handleCopy(row)">{{ getButtonText('copy')
-                                        }}</el-dropdown-item>
+                                    }}</el-dropdown-item>
                                     <el-dropdown-item @click="handleCancel(row)">{{ getButtonText('cancelReceipt')
-                                        }}</el-dropdown-item>
+                                    }}</el-dropdown-item>
                                 </el-dropdown-menu>
                             </template>
                         </el-dropdown>
@@ -502,7 +502,7 @@
                 </template>
                 <template #isValiPackage="{ row }">
                     <span :style="{ color: row.isValiPackage ? 'red' : 'green' }">{{ row.isValiPackage ? '是' : '否'
-                    }}</span>
+                        }}</span>
                 </template>
                 <template #isValiLabel="{ row }">
                     <span :style="{ color: row.isValiLabel ? 'red' : 'green' }">{{ row.isValiLabel ? '是' : '否' }}</span>
@@ -1471,10 +1471,10 @@ const handleInventory = async () => {
 const handleInventoryRange = async () => {
     const data = inventoryRangeFormRef.value.getFormData()
     inventoryDialogVisible.value = false;
+    delData.value = [];
     for (let i = 0; i < selectionRows.value.length; i++) {
         loading.value = true;
         delDialogVisible.value = true;
-        delData.value = [];
         promptMessage.value = '操作中...'
         data.outOrderId = selectionRows.value[i].id;
         console.log('分配库存数据:', data)

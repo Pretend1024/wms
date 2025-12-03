@@ -8,7 +8,9 @@ export function transitionMenu(tree) {
         return null;
     }
     if (Array.isArray(tree)) {
-        return tree.map(item => transitionMenu(item));
+        return tree
+            .filter(item => item.typeId != 20) // 过滤掉 typeId 为 20 的按钮数据
+            .map(item => transitionMenu(item)); // 递归转换
     }
     const { nameCn, nameEn, url, children, id, ...rest } = tree;
     let path = '';

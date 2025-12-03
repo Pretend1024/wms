@@ -80,11 +80,11 @@
                     <el-button type="primary" @click="handleAdd" :icon="Plus">{{ getButtonText('add') }}</el-button>
                     <el-button type="danger" @click="handleDel" :icon="Delete">{{ getButtonText('del') }}</el-button>
                     <el-button type="success" @click="handleImport" :icon="Upload">{{ getButtonText('importCreate')
-                        }}</el-button>
+                    }}</el-button>
                     <el-button type="success" @click="handleExport" :icon="Share">{{ getButtonText('export')
-                        }}</el-button>
+                    }}</el-button>
                     <el-button type="primary" @click="joinBillVisible = true" :icon="Money">{{ getButtonText('joinBill')
-                        }}</el-button>
+                    }}</el-button>
                 </template>
 
                 <template #customBtn="{ row }">
@@ -111,7 +111,7 @@
             </hydTable>
         </div>
 
-        <el-dialog v-model="centerDialogVisible" :title="dialogTitle" width="500px" align-center destroy-on-close>
+        <!-- <el-dialog v-model="centerDialogVisible" :title="dialogTitle" width="500px" align-center destroy-on-close>
             <component :is="currentForm" ref="childFormRef" :initData="dialogMode === 'add' ? {} : editInitData"
                 :feeTypeOptions="feeTypeOptions" :currencyOptions="currencyOptions" />
             <template #footer>
@@ -120,7 +120,10 @@
                     <el-button type="primary" @click="handleDialogConfirm">{{ getButtonText('confirm') }}</el-button>
                 </div>
             </template>
-        </el-dialog>
+        </el-dialog> -->
+        <FeeDialog v-model="centerDialogVisible" :dialogMode="dialogMode" :feeMainTypeId="2" :initData="editInitData"
+            :feeTypeOptions="feeTypeOptions" :currencyOptions="currencyOptions" :loading="dialogLoading"
+            @confirm="handleDialogConfirm" />
 
         <JoinBillDialog v-model="joinBillVisible" :selectionCount="selectionRows.length" :loading="joinBillLoading"
             @confirm="handleJoinBillConfirm" />
@@ -149,8 +152,7 @@ import batchOperationn from '@/components/messageNotices/batchOperation.vue';
 // 引入封装的加入账单组件
 import JoinBillDialog from '../JoinBillDialog.vue';
 
-import AddForm from './add.vue';
-import UpdForm from './upd.vue';
+import FeeDialog from '../FeeDialog.vue';
 
 // 工具与API
 import { smartAlert, trimObjectStrings } from '@/utils/genericMethods.js';
@@ -158,17 +160,18 @@ import { getButtonText } from '@/utils/i18n/i18nLabels';
 
 // *** 替换为出库相关 API ***
 import {
-    getOutOrderFeePageApi,
-    addOutOrderFeeApi,
-    updOutOrderFeeByIdApi,
-    delOutOrderFeeByIdApi,
+    getFeePageApi,
+    addFeeApi,
+    updFeeByIdApi,
+    delFeeByIdApi,
     joinBillApi
 } from '@/api/financeApi/receivables.js';
 
 import { getOrgListCompanyApi } from '@/api/baseApi/org.js';
 import { getWhWarehouseApi } from '@/api/baseApi/wh.js';
 import { getCustomerLikeQueryApi } from '@/api/baseApi/sku.js';
-import { getFeeTypeEnumApi, getFeeStatusEnumApi, getFeeCreateWayEnumApi, getCurrencyEnumApi } from '@/api/baseApi/index.js';
+import { getFeeTypeEnumApi, getFeeStatusEnumApi, getFeeCreateWayEnumApi } from '@/api/financeApi/receivables.js';
+import { getCurrencyEnumApi } from '@/api/baseApi/index.js'
 
 const { t } = useI18n();
 const router = useRouter();
@@ -177,7 +180,6 @@ const props = defineProps({
     companyOptions: { type: Array, default: () => [] },
     warehouseOptions: { type: Array, default: () => [] },
     initialCustomerOptions: { type: Array, default: () => [] },
-    feeTypeOptions: { type: Array, default: () => [] },
     statusOptions: { type: Array, default: () => [] },
     createWayOptions: { type: Array, default: () => [] },
     currencyOptions: { type: Array, default: () => [] },
@@ -185,12 +187,12 @@ const props = defineProps({
 const {
     companyOptions,
     warehouseOptions,
-    feeTypeOptions,
     statusOptions,
     createWayOptions,
     currencyOptions
 } = toRefs(props);
 const customerOptions = ref([]);
+const feeTypeOptions = ref([]);
 
 const cascaderRef = ref(null);
 const parentProps = { checkStrictly: true, expandTrigger: 'hover' };
@@ -200,7 +202,8 @@ const formConfig = ref([]);
 
 const initValues = ref({
     orgId: [],
-    outOrderNoList: [] // 变更
+    outOrderNoList: [],
+    feeMainTypeId: 2,
 });
 
 // 日期
@@ -235,7 +238,7 @@ const columns = ref([
     { label: '公司', prop: 'orgName', width: '120', sortable: true, fixed: 'left' },
     { label: '仓库', prop: 'warehouseCode', width: '100', sortable: true, fixed: 'left' },
     { label: '客户', prop: 'customerCode', width: '180', sortable: true, fixed: 'left' },
-    { label: '出库单号', prop: 'outOrderNo', width: '160', sortable: true, fixed: 'left' },
+    { label: '出库单号', prop: 'orderNo', width: '160', sortable: true, fixed: 'left' },
     { label: '出库日期', prop: 'outOrderCreatedTime', width: '200', slot: 'outOrderCreatedTime' },
     { label: '费用类型', prop: 'feeTypeName', width: '120', sortable: true },
     { label: '费用名称', prop: 'feeName', width: '120' },
@@ -285,7 +288,7 @@ const getList = async (page, pageSize, orderByStr = orderBy.value) => {
     try {
         const params = { ...trimObjectStrings(initValues.value) };
         // 调用出库分页接口
-        const res = await getOutOrderFeePageApi({ page, pageSize, orderBy: orderByStr, ...params });
+        const res = await getFeePageApi({ page, pageSize, orderBy: orderByStr, ...params });
         tableData.value = res.data.rows || [];
         footer.value = res.data.footer ? res.data.footer[0] : {};
         pagination.value = { currentPage: res.data.page, pageSize, total: res.data.total };
@@ -305,10 +308,7 @@ const handleTableSort = (sort) => { orderBy.value = sort; getList(pagination.val
 const centerDialogVisible = ref(false);
 const dialogMode = ref('add');
 const editInitData = ref({});
-const childFormRef = ref(null);
-
-const currentForm = computed(() => dialogMode.value === 'add' ? AddForm : UpdForm);
-const dialogTitle = computed(() => dialogMode.value === 'add' ? '新增出库费用' : '编辑出库费用');
+const dialogLoading = ref(false); // 控制弹窗按钮loading
 
 const handleAdd = () => {
     editInitData.value = {};
@@ -316,33 +316,35 @@ const handleAdd = () => {
     centerDialogVisible.value = true;
 };
 
+
 const handleEdit = (row) => {
-    if (row.statusId != 10) return smartAlert('只能编辑未确认状态的费用', false);
+    if (row.statusId != 10) {
+        return smartAlert('只能编辑未确认状态的费用', false);
+    }
     editInitData.value = JSON.parse(JSON.stringify(row));
     dialogMode.value = 'upd';
     centerDialogVisible.value = true;
 };
+
 
 const handleDialogCancel = () => {
     centerDialogVisible.value = false;
     nextTick(() => childFormRef.value?.resetFields());
 };
 
-const handleDialogConfirm = async () => {
-    if (!childFormRef.value) return;
+// 统一的确认回调
+const handleDialogConfirm = async (formData) => {
+    dialogLoading.value = true;
     try {
-        await childFormRef.value.validate();
-        const formData = childFormRef.value.getFormData();
-
-        loading.value = true;
         let res;
         if (dialogMode.value === 'add') {
-            formData.createWayId = MANUAL_CREATE_ID;
-            // 调用出库新增接口
-            res = await addOutOrderFeeApi(formData);
+            res = await addFeeApi({
+                ...formData,
+            });
         } else {
-            // 调用出库更新接口
-            res = await updOutOrderFeeByIdApi({
+            // 编辑接口调用
+            // 只需要 id, confirmFeeAmount, remark
+            res = await updFeeByIdApi({
                 id: formData.id,
                 confirmFeeAmount: formData.confirmFeeAmount,
                 remark: formData.remark
@@ -357,7 +359,7 @@ const handleDialogConfirm = async () => {
     } catch (e) {
         console.error(e);
     } finally {
-        loading.value = false;
+        dialogLoading.value = false;
     }
 };
 
@@ -379,7 +381,7 @@ const handleDel = () => {
 
         for (const row of selectionRows.value) {
             // 调用出库删除接口
-            const res = await delOutOrderFeeByIdApi({ id: row.id });
+            const res = await delFeeByIdApi({ id: row.id });
             resultData.value.push({
                 id: `${row.outOrderNo} - ${row.feeName}`,
                 msg: res.msg,
@@ -448,6 +450,9 @@ const handleCascaderChange = async (e) => {
 
 onMounted(async () => {
     customerOptions.value = props.initialCustomerOptions;
+    // 获取类型选项
+    const feeTypeRes = await getFeeTypeEnumApi({ mainTypeId: 2 });
+    feeTypeOptions.value = feeTypeRes.data.map(i => ({ label: i.name, value: i.id }));
 });
 </script>
 

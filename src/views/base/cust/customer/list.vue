@@ -60,12 +60,13 @@
                 @sort-change="handleTableSort">
                 <!-- 在表格上方通过 slot 插入按钮 -->
                 <template #table-buttons>
-                    <el-button type="primary" @click="handleAdd" :icon="Plus">{{ getButtonText('add') }}</el-button>
+                    <el-button type="primary" @click="handleAdd" v-permission="'customer:add'" :icon="Plus">{{
+                        getButtonText('add') }}</el-button>
                 </template>
                 <!-- 使用插槽来自定义列内容，假如我们需要在操作列中添加按钮 -->
                 <template #customBtn="{ row }">
                     <div style="display: flex;">
-                        <div class="cursor-pointer" @click="handleEdit(row)">
+                        <div class="cursor-pointer" @click="handleEdit(row)" v-if="canEdit">
                             <el-icon>
                                 <EditPen />
                             </el-icon>
@@ -83,9 +84,9 @@
                                     <el-dropdown-item @click="handleLink(row)">{{ getButtonText('connect') }}
                                     </el-dropdown-item>
                                     <el-dropdown-item @click="resetPassword(row)">{{ getButtonText('resetPassword')
-                                        }}</el-dropdown-item>
+                                    }}</el-dropdown-item>
                                     <el-dropdown-item @click="lookPassword(row)">{{ getButtonText('viewPassword')
-                                        }}</el-dropdown-item>
+                                    }}</el-dropdown-item>
                                 </el-dropdown-menu>
                             </template>
                         </el-dropdown>
@@ -108,7 +109,7 @@
                 </template>
                 <template #isCompany="{ row }">
                     <span :style="{ color: row.isCompany ? 'green' : 'red' }">{{ row.isCompany ? '是' : '否'
-                    }}</span>
+                        }}</span>
                 </template>
             </hydTable>
         </div>
@@ -132,8 +133,10 @@ import { useI18n } from 'vue-i18n';
 const { t } = useI18n();
 import { useRefreshStore } from '@/store/refresh.js'
 const refreshStore = useRefreshStore()
-
 import { getCustomerListApi, getCustomerStatusEnumApi, getListSalesUserEnumApi, getListFinancialUserEnumApi, getCustomerApiList } from '@/api/baseApi/cust.js'
+// 表格内按钮权限
+import { hasPerm } from "@/directives/permission.js"
+const canEdit = computed(() => hasPerm('customer:edit'));
 // 搜索表单配置项------------------------------------------------
 // 配置表单项，使用所有支持的类型
 const formConfig = ref([

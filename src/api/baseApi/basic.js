@@ -85,3 +85,8 @@ export const getBasicAddressTypeEnumApi = () => {
 export const getBasicGenerateAddressCodeApi = () => {
     return http.post('/base/basic/address/generateAddressCode')
 }
+
+// 单位
+export const getUnitTypeEnumApi = () => {
+    return http.post('/base/common/enums/unitTypeEnum')
+}

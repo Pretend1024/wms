@@ -541,6 +541,31 @@ export const buttonTextMap = {
     joinBill: {
         zh: '加入账单',
         en: 'Join Bill'
+    },
+    // 添加规则组
+    addRuleGroup: {
+        zh: '添加规则组',
+        en: 'Add Rule Group'
+    },
+    // 删除规则组
+    deleteRuleGroup: {
+        zh: '删除规则组',
+        en: 'Delete Rule Group'
+    },
+    //规则组
+    ruleGroup: {
+        zh: '规则组',
+        en: 'Rule Group'
+    },
+    // 添加条件
+    addCondition: {
+        zh: '添加条件',
+        en: 'Add Condition'
+    },
+    // 刷新缓存
+    refreshCache: {
+        zh: '刷新缓存',
+        en: 'Refresh Cache'
     }
 }
 const labelsMap = {
@@ -2698,6 +2723,18 @@ const labelsMap = {
             "en": "User Code:",
             "placeholderZh": "请输入用户代码",
             "placeholderEn": "Enter User Code"
+        },
+        "allocatedEmployeeNum": {
+            "zh": "拣货员:",
+            "en": "Picking Employee:",
+            "placeholderZh": "请输入拣货员工号",
+            "placeholderEn": "Enter Picking Employee No."
+        },
+        "allocatedStatus": {
+            "zh": "分配状态:",
+            "en": "Allocated Status:",
+            "placeholderZh": "请选择分配状态",
+            "placeholderEn": "Select Allocated Status"
         }
     },
     "product_shipway_carrier_list": {
@@ -6292,7 +6329,33 @@ const labelsMap = {
             "placeholderZh": "请输入排序",
             "placeholderEn": "Please Enter Sort Number"
         }
-    }
+    },
+    "base_basic_traceStatus_list": {
+        "remark": {
+            "zh": "备注:",
+            "en": "Remark:",
+            "placeholderZh": "请输入备注",
+            "placeholderEn": "Please Enter Remark"
+        },
+        "statusId": {
+            "zh": "状态名称:",
+            "en": "Status Name:",
+            "placeholderZh": "请输入状态名称",
+            "placeholderEn": "Please Enter Status Name"
+        },
+        "isEnable": {
+            "zh": "是否启用:",
+            "en": "Is Enable:",
+            "placeholderZh": "请选择是否启用",
+            "placeholderEn": "Please Select Is Enable"
+        },
+        "conditionValue": {
+            "zh": "条件值:",
+            "en": "Condition Value:",
+            "placeholderZh": "请输入条件值",
+            "placeholderEn": "Please Enter Condition Value"
+        }
+    },
 }
 import router from '@/router/index.js'
 

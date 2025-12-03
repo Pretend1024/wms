@@ -16,13 +16,21 @@ export function transitionRouters(originalTree, router) {
             if (node.url) {
                 const filePath = `../../views/${node.url}`;
                 if (modules[filePath]) {
+                    // 获取当前菜单下所有的按钮权限码（typeId 为 20）
+                    let codes = [];
+                    if (node.children && node.children.length > 0) {
+                        // 筛选出 typeId 为 20 的按钮节点
+                        const buttons = node.children.filter(child => child.typeId == 20);
+                        // 提取 permissionCode 并过滤空值
+                        codes = buttons.map(btn => btn.permissionCode).filter(code => code);
+                    }
                     routeMap[node.url] = {
                         path: `/${node.url.replace('.vue', '')}`,
                         name: node.nameCn,
                         component: modules[filePath],
                         meta: {
                             keepAlive: true,
-                            permissionCode: node.permissionCode || '',
+                            permissionCode: codes.length > 0 ? codes : [],
                             lang: userMenuStore.lang === 'zh' ? node.nameCn : node.nameEn,
                         }
                     };

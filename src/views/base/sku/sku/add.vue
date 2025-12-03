@@ -132,8 +132,8 @@
                     <el-col :span="8">
                         <el-form-item label="是否新品:">
                             <el-select v-model="formData.isNew" placeholder="请选择是否新品" clearable>
-                                <el-option label="是" :value=true />
-                                <el-option label="否" :value=false />
+                                <el-option :label="$t('yes')" :value=true />
+                                <el-option :label="$t('no')" :value=false />
                             </el-select>
                         </el-form-item>
                     </el-col>
@@ -163,8 +163,8 @@
                     <el-col :span="8">
                         <el-form-item label="是否复测:">
                             <el-select v-model="formData.isCheckedSize" placeholder="请选择是否复测" clearable>
-                                <el-option label="是" :value=true />
-                                <el-option label="否" :value=false />
+                                <el-option :label="$t('yes')" :value=true />
+                                <el-option :label="$t('no')" :value=false />
                             </el-select>
                         </el-form-item>
                     </el-col>

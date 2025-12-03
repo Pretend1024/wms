@@ -274,3 +274,35 @@ export const delProductShipwayPostApi = createPostRequestWithQuery('/product/shi
 export const getProductShipwayConfigTypeEnumApi = () => {
     return http.post('/product/shipway/shipwaySender/configTypeEnum')
 }
+
+
+// -------------------------------------------------------------轨迹状态配置
+
+// 获取轨迹配置
+export const getBasicTraceStatusPageApi = (data) => {
+    return http.post('/product/shipway/traceStatus/page', { ...data })
+}
+// 添加轨迹配置
+export const addBasicTraceStatusApi = (data) => {
+    return http.post('/product/shipway/traceStatus/add', { ...data }, { headers: { 'loading': true } })
+}
+// 编辑轨迹配置
+export const updBasicTraceStatusApi = (data) => {
+    return http.post('/product/shipway/traceStatus/updateById', { ...data }, { headers: { 'loading': true } })
+}
+// 删除轨迹配置
+export const delBasicTraceStatusApi = createPostRequestWithQuery('/product/shipway/traceStatus/deleteById')
+// 获取轨迹配置详情
+export const getBasicTraceStatusByIdApi = createPostRequestWithQuery('/product/shipway/traceStatus/getById')
+// 轨迹配置条件枚举
+export const getBasicTraceStatusConditionTypeEnumApi = () => {
+    return http.post('/product/shipway/traceStatus/conditionTypeEnum')
+}
+// 轨迹配置条件枚举
+export const getBasicTraceStatusLogicTypeEnumApi = () => {
+    return http.post('/product/shipway/traceStatus/logicTypeEnum')
+}
+// 轨迹刷新
+export const getBasicTraceStatusRefreshCacheApi = () => {
+    return http.post('/product/shipway/traceStatus/refreshCache')
+}

@@ -5,25 +5,28 @@
             <el-tab-pane label="入库费用" name="inbound">
                 <InboundList v-if="activeName === 'inbound'" :companyOptions="companyOptions"
                     :warehouseOptions="warehouseOptions" :initialCustomerOptions="initialCustomerOptions"
-                    :feeTypeOptions="feeTypeOptions" :statusOptions="statusOptions" :createWayOptions="createWayOptions"
+                    :statusOptions="statusOptions" :createWayOptions="createWayOptions"
                     :currencyOptions="currencyOptions" />
             </el-tab-pane>
 
             <el-tab-pane label="出库费用" name="outbound">
                 <OutboundList v-if="activeName === 'outbound'" :companyOptions="companyOptions"
                     :warehouseOptions="warehouseOptions" :initialCustomerOptions="initialCustomerOptions"
-                    :feeTypeOptions="feeTypeOptions" :statusOptions="statusOptions" :createWayOptions="createWayOptions"
+                    :statusOptions="statusOptions" :createWayOptions="createWayOptions"
                     :currencyOptions="currencyOptions" />
             </el-tab-pane>
 
             <el-tab-pane label="仓租费用" name="storage">
-                <div>待开发...</div>
+                <StorageList v-if="activeName === 'storage'" :companyOptions="companyOptions"
+                    :warehouseOptions="warehouseOptions" :initialCustomerOptions="initialCustomerOptions"
+                    :statusOptions="statusOptions" :createWayOptions="createWayOptions"
+                    :currencyOptions="currencyOptions" />
             </el-tab-pane>
 
             <el-tab-pane label="增值费用" name="valueAdded">
                 <ValueAddedList v-if="activeName === 'valueAdded'" :companyOptions="companyOptions"
                     :warehouseOptions="warehouseOptions" :initialCustomerOptions="initialCustomerOptions"
-                    :feeTypeOptions="feeTypeOptions" :statusOptions="statusOptions" :createWayOptions="createWayOptions"
+                    :statusOptions="statusOptions" :createWayOptions="createWayOptions"
                     :currencyOptions="currencyOptions" />
             </el-tab-pane>
         </el-tabs>
@@ -35,7 +38,7 @@
 import { onMounted, ref } from 'vue';
 import InboundList from './inboundFee/list.vue';
 import OutboundList from './outboundFee/list.vue';
-// import StorageList from './storageFee/list.vue';
+import StorageList from './storageFee/list.vue';
 import ValueAddedList from './valueAddedFee/list.vue';
 
 // 引入所有公共 API
@@ -43,11 +46,10 @@ import { getOrgListCompanyApi } from '@/api/baseApi/org.js';
 import { getWhWarehouseApi } from '@/api/baseApi/wh.js';
 import { getCustomerLikeQueryApi } from '@/api/baseApi/sku.js';
 import {
-    getFeeTypeEnumApi,
     getFeeStatusEnumApi,
     getFeeCreateWayEnumApi,
-    getCurrencyEnumApi
-} from '@/api/baseApi/index.js';
+} from '@/api/financeApi/receivables.js';
+import { getCurrencyEnumApi } from '@/api/baseApi/index.js'
 
 const activeName = ref('inbound');
 const isDataReady = ref(false); // 控制渲染时机
@@ -56,7 +58,6 @@ const isDataReady = ref(false); // 控制渲染时机
 const companyOptions = ref([]);
 const warehouseOptions = ref([]);
 const initialCustomerOptions = ref([]); // 初始全部客户
-const feeTypeOptions = ref([]);
 const statusOptions = ref([]);
 const createWayOptions = ref([]);
 const currencyOptions = ref([]);
@@ -67,7 +68,6 @@ onMounted(async () => {
             companyRes,
             whRes,
             customerRes,
-            feeRes,
             statusRes,
             wayRes,
             currRes
@@ -75,7 +75,6 @@ onMounted(async () => {
             getOrgListCompanyApi(),
             getWhWarehouseApi(),
             getCustomerLikeQueryApi({ keyword: '*', orgId: '' }),
-            getFeeTypeEnumApi(),
             getFeeStatusEnumApi(),
             getFeeCreateWayEnumApi(),
             getCurrencyEnumApi()
@@ -97,7 +96,6 @@ onMounted(async () => {
             label: `${item.code}(${item.name})`
         }));
 
-        feeTypeOptions.value = feeRes.data.map(i => ({ label: i.name, value: i.id }));
         statusOptions.value = statusRes.data.map(i => ({ label: i.name, value: i.id }));
         createWayOptions.value = wayRes.data.map(i => ({ label: i.name, value: i.id }));
         currencyOptions.value = currRes.data.map(i => ({ label: i.name, value: i.code }));

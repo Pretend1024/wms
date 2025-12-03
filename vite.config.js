@@ -43,7 +43,7 @@ export default defineConfig(({ command, mode }) => {
                 ext: '.gz',
             }),
             visualizer({
-                open: true,             // 打包完成后自动在浏览器打开报告
+                open: false,             // 打包完成后自动在浏览器打开报告
                 gzipSize: true,         // 显示 gzip 压缩后的大小
                 brotliSize: true,       // 显示 brotli 压缩后的大小
                 filename: "stats.html"  // 生成报告的文件名

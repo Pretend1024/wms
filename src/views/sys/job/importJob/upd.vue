@@ -69,8 +69,8 @@
             <el-col :span="12">
                 <el-form-item :label="getLabel('async')">
                     <el-select v-model="formData.async" disabled>
-                        <el-option label="是" :value="true" />
-                        <el-option label="否" :value="false" />
+                        <el-option :label="$t('yes')" :value="true" />
+                        <el-option :label="$t('no')" :value="false" />
                     </el-select>
                 </el-form-item>
             </el-col>

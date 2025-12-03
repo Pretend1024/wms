@@ -929,7 +929,7 @@ onUnmounted(() => {
 }
 
 .waybill-number {
-    margin-left: auto;
+    margin-left: 50px;
     font-size: 14px;
     color: #606266;
 }

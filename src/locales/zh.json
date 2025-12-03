@@ -75,6 +75,9 @@
   "addTrack": "添加轨迹",
   "trackList": "轨迹详情",
   "noRecord": "暂无记录",
+  "ruleGroup": "规则配置组 (满足任意一个规则组即可匹配)",
+  "yes":"是",
+  "no":"否",
   "base_org_organization_list": {
     "addTitle": "新增部门",
     "updTitle": "编辑部门"
@@ -248,5 +251,9 @@
   "vas_wo_workOrderType_list": {
     "addTitle": "新增问题类型",
     "updTitle": "编辑问题类型"
+  },
+  "base_basic_traceStatus_list": {
+    "addTitle": "新增轨迹状态",
+    "updTitle": "编辑轨迹状态"
   }
 }

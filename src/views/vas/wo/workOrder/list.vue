@@ -72,8 +72,8 @@
                     <el-col>
                         <el-form-item :label="getLabel('isSolved')">
                             <el-select v-model="formData.isSolved" :placeholder="getPlaceholder('isSolved')" clearable>
-                                <el-option label="是" :value="true" />
-                                <el-option label="否" :value="false" />
+                                <el-option :label="$t('yes')" :value="true" />
+                                <el-option :label="$t('no')" :value="false" />
                             </el-select>
                         </el-form-item>
                     </el-col>
@@ -82,8 +82,8 @@
                         <el-form-item :label="getLabel('isRelated')">
                             <el-select v-model="formData.isRelated" :placeholder="getPlaceholder('isRelated')"
                                 clearable>
-                                <el-option label="是" :value="true" />
-                                <el-option label="否" :value="false" />
+                                <el-option :label="$t('yes')" :value="true" />
+                                <el-option :label="$t('no')" :value="false" />
                             </el-select>
                         </el-form-item>
                     </el-col>

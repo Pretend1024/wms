@@ -51,15 +51,3 @@ export const getOpLogByDataApi = (data) => {
     return http.post('/inventory/inventory/inventory/listLog', { ...data })
 }
 
-// 费用类型/base/common/enums/feeTypeEnum
-export const getFeeTypeEnumApi = () => {
-    return http.post('/base/common/enums/feeTypeEnum')
-}
-// 费用状态/base/common/enums/feeStatusEnum
-export const getFeeStatusEnumApi = () => {
-    return http.post('/base/common/enums/feeStatusEnum')
-}
-// 创建方式/base/common/enums/feeCreateWayEnum
-export const getFeeCreateWayEnumApi = () => {
-    return http.post('/base/common/enums/feeCreateWayEnum')
-}

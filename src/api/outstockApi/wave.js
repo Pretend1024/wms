@@ -31,6 +31,10 @@ export const getOutstockWaveStatusEnumApi = () => {
 export const getOutstockWaveTypeEnumApi = () => {
     return http.post('/outstock/wave/outWave/outWaveTypeEnum')
 }
+// 波次分配状态枚举
+export const getOutstockWaveAllocateStatusEnumApi = () => {
+    return http.post('/outstock/wave/outWave/outWaveAllocateStatusEnum')
+}
 
 // 新增波次任务/outstock/wave/outWaveTask/add
 export const addOutstockWaveTaskApi = (data) => {

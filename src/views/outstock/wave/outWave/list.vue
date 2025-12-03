@@ -39,14 +39,21 @@
                             </el-select>
                         </el-form-item>
                     </el-col>
-                    <!-- <el-col>
-                        <el-form-item :label="getLabel('statusId')">
-                            <el-select v-model="formData.statusId" :placeholder="getPlaceholder('statusId')" clearable>
-                                <el-option v-for="item in statusOptions" :key="item.value" :label="item.label"
+                    <el-col>
+                        <el-form-item :label="getLabel('allocatedStatus')">
+                            <el-select v-model="formData.allocatedStatus"
+                                :placeholder="getPlaceholder('allocatedStatus')" clearable>
+                                <el-option v-for="item in allocatedStatusOptions" :key="item.value" :label="item.label"
                                     :value="item.value" />
                             </el-select>
                         </el-form-item>
-                    </el-col> -->
+                    </el-col>
+                    <el-col>
+                        <el-form-item :label="getLabel('allocatedEmployeeNum')">
+                            <el-input v-model.trim="formData.allocatedEmployeeNum"
+                                :placeholder="getPlaceholder('allocatedEmployeeNum')" clearable />
+                        </el-form-item>
+                    </el-col>
                 </template>
             </hydFilterBox>
         </div>
@@ -107,7 +114,8 @@
                     {{ row.customerCode }}({{ row.customerName }})
                 </template>
                 <template #allocatedEmployeeNum="{ row }">
-                    {{ row.allocatedEmployeeNum }}{{ row.allocatedEmployeeNum ? '(' + row.allocatedEmployeeName + ')' : '' }}
+                    {{ row.allocatedEmployeeNum }}{{ row.allocatedEmployeeNum ? '(' + row.allocatedEmployeeName + ')' :
+                        '' }}
                 </template>
                 <template #customBtn="{ row }">
                     <div style="display: flex; align-items: center;">
@@ -141,8 +149,8 @@
                 </el-form-item>
                 <el-form-item label="刷新列表:" label-width="90px">
                     <el-select v-model="form.refresh">
-                        <el-option label="是" :value="true" />
-                        <el-option label="否" :value="false" />
+                        <el-option :label="$t('yes')" :value="true" />
+                        <el-option :label="$t('no')" :value="false" />
                     </el-select>
                 </el-form-item>
             </el-form>
@@ -166,7 +174,7 @@
     </div>
 </template>
 <script setup name="波次">
-import { getOutstockWaveListApi, getOutstockWaveStatusEnumApi, getOutstockWaveTypeEnumApi, printWavePickApi, getOutstockWavePrintFormatEnumApi, cancelAllocatePickingUserApi, getOutstockWaveStatusCountApi } from '@/api/outstockApi/wave.js'
+import { getOutstockWaveListApi, getOutstockWaveAllocateStatusEnumApi, getOutstockWaveTypeEnumApi, printWavePickApi, getOutstockWavePrintFormatEnumApi, cancelAllocatePickingUserApi, getOutstockWaveStatusCountApi } from '@/api/outstockApi/wave.js'
 import router from '@/router/index.js'
 import { useRefreshStore } from '@/store/refresh.js'
 const refreshStore = useRefreshStore()
@@ -236,6 +244,7 @@ const columns = ref([
     { label: '拣货人', prop: 'allocatedEmployeeNum', width: '160', sortable: true, slot: 'allocatedEmployeeNum' },
     { label: '波次打印时间', prop: 'printWaveTime', width: '200', sortable: true },
     { label: '库区', prop: 'zoneCode', width: '150', sortable: true },
+    { label: '库位', prop: 'locationCode', width: '150', sortable: true },
     { label: '订单数量', prop: 'orderQty', width: '150', sortable: true },
     { label: '商品数量', prop: 'goodsQty', width: '150', sortable: true },
     { label: '货位数量', prop: 'locationQty', width: '150', sortable: true },
@@ -465,8 +474,8 @@ const handleCascaderChange = async (e) => {
 const customerOptions = ref([]);
 // 仓库数据
 const warehouseOptions = ref([])
-// 拦截状态
-// const statusOptions = ref([])
+// 分配状态
+const allocatedStatusOptions = ref([])
 // 波次类型
 const waveTypeOptions = ref([])
 const pickOptions = ref([])
@@ -491,12 +500,12 @@ onMounted(async () => {
     // 获取仓库数据
     const warehouseRes = await getWhWarehouseApi()
     warehouseOptions.value = warehouseRes.data.map(item => ({ label: item.code + '-' + item.name, value: item.code }))
-    // 获取拦截状态
-    // const holdUpStatusRes = await getOutstockWaveStatusEnumApi()
-    // statusOptions.value = holdUpStatusRes.data.map(item => ({
-    //     value: item.id,
-    //     label: item.name
-    // }))
+    // 获取分配状态
+    const holdUpStatusRes = await getOutstockWaveAllocateStatusEnumApi()
+    allocatedStatusOptions.value = holdUpStatusRes.data.map(item => ({
+        value: item.id,
+        label: item.name
+    }))
     // 获取波次类型
     const waveTypeRes = await getOutstockWaveTypeEnumApi()
     waveTypeOptions.value = waveTypeRes.data.map(item => ({

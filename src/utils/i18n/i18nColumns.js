@@ -942,6 +942,7 @@ export const columnTextMap = {
         "statusName": { "zh": "状态", "en": "Status" },
         "printWaveTime": { "zh": "波次打印时间", "en": "Wave Print Time" },
         "zoneCode": { "zh": "库区", "en": "Zone" },
+        "locationCode": { "zh": "库位", "en": "Location Code" },
         "orderQty": { "zh": "订单数量", "en": "Order Qty" },
         "goodsQty": { "zh": "商品数量", "en": "Goods Qty" },
         "locationQty": { "zh": "货位数量", "en": "Location Qty" },
@@ -1165,7 +1166,7 @@ export const columnTextMap = {
         "orderData": { "zh": "关联单据信息", "en": "Related Order Info" },
     },
     "finance_receivables_fee_list": {
-        "inOrderNo": { "zh": "入库单号", "en": "Inbound Order No." },
+        "orderNo": { "zh": "关联单号", "en": "Related Order No." },
         "inOrderCreatedTime": { "zh": "入库日期", "en": "Inbound Date" },
         "outOrderCreatedTime": { "zh": "出库日期", "en": "Outbound Date" },
         "feeTypeName": { "zh": "费用类型", "en": "Fee Type" },
@@ -1191,7 +1192,11 @@ export const columnTextMap = {
     "vas_wo_workOrderType_list": {
         "name": { "zh": "问题类型名称", "en": "Issue Type Name" },
         "sortNo": { "zh": "排序", "en": "Sort Number" },
-    }
+    },
+    "base_basic_traceStatus_list": {
+        "statusName": { "zh": "状态名称", "en": "Status Name" },
+        "isEnable": { "zh": "是否启用", "en": "Is Enabled" },
+    },
 }
 import router from '@/router/index.js'
 // 获取当前路由

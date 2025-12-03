@@ -81,49 +81,31 @@ export const getCustomerRechargeCertificateApi = createPostRequestWithQuery('/fi
 export const joinBillApi = (data) => {
     return http.post('/finance/receivables/customerBill/joinBill', data)
 }
-// -----入库单应收
-// 获取入库单应收/finance/receivables/inOrderFee/page
-export const getInOrderFeePageApi = (data) => {
-    return http.post('/finance/receivables/inOrderFee/page', data)
+// 获取费用
+export const getFeePageApi = (data) => {
+    return http.post('/finance/receivables/receivableFee/page', data)
 }
-// 添加入库单应收/finance/receivables/inOrderFee/add
-export const addInOrderFeeApi = (data) => {
-    return http.post('/finance/receivables/inOrderFee/add', data)
+// 添加费用
+export const addFeeApi = (data) => {
+    return http.post('/finance/receivables/receivableFee/add', data)
 }
-// 编辑入库单应收/finance/receivables/inOrderFee/updateById
-export const updInOrderFeeByIdApi = (data) => {
-    return http.post('/finance/receivables/inOrderFee/updateById', data)
+// 编辑费用
+export const updFeeByIdApi = (data) => {
+    return http.post('/finance/receivables/receivableFee/updateById', data)
 }
-// 删除入库单应收/finance/receivables/inOrderFee/deleteById
-export const delInOrderFeeByIdApi = createPostRequestWithQuery('/finance/receivables/inOrderFee/deleteById')
-// 退出账单/finance/receivables/inOrderFee/exitBill
-export const exitInOrderFeeBillApi = createPostRequestWithQuery('/finance/receivables/inOrderFee/exitBill')
-
-
-// -----出库应收
-// 获取出库应收/finance/receivables/outOrderFee/page
-export const getOutOrderFeePageApi = (data) => {
-    return http.post('/finance/receivables/outOrderFee/page', data)
+// 删除费用
+export const delFeeByIdApi = createPostRequestWithQuery('/finance/receivables/receivableFee/deleteById')
+// 费用大类型
+export const getFeeMainTypeEnumApi = () => {
+    return http.post('/finance/receivables/receivableFee/feeMainTypeEnum')
 }
-// 添加入库单应收/finance/receivables/outOrderFee/add
-export const addOutOrderFeeApi = (data) => {
-    return http.post('/finance/receivables/outOrderFee/add', data)
+// 费用小类型
+export const getFeeTypeEnumApi = createPostRequestWithQuery('/finance/receivables/receivableFee/feeSubTypeEnum')
+// 费用状态
+export const getFeeStatusEnumApi = () => {
+    return http.post('/finance/receivables/receivableFee/receivableFeeStatusEnum')
 }
-// 编辑入库单应收/finance/receivables/outOrderFee/updateById
-export const updOutOrderFeeByIdApi = (data) => {
-    return http.post('/finance/receivables/outOrderFee/updateById', data)
+// 创建方式
+export const getFeeCreateWayEnumApi = () => {
+    return http.post('/finance/receivables/receivableFee/receivableFeeCreateWayEnum')
 }
-// 删除入库单应收/finance/receivables/outOrderFee/deleteById
-export const delOutOrderFeeByIdApi = createPostRequestWithQuery('/finance/receivables/outOrderFee/deleteById')
-
-// -----增值应收
-// 获取增值应收/vas/vas/vasOrderFee/page
-export const getVasOrderPageApi = (data) => {
-    return http.post('/vas/vas/vasOrderFee/page', data)
-}
-// 添加入库单应收/vas/vas/vasOrderFee/add
-export const addVasOrderFeeApi = (data) => {
-    return http.post('/vas/vas/vasOrderFee/add', data)
-}
-// 删除入库单应收/vas/vas/vasOrderFee/deleteById
-export const delVasOrderFeeByIdApi = createPostRequestWithQuery('/vas/vas/vasOrderFee/deleteById')

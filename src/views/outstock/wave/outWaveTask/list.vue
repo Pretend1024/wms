@@ -25,8 +25,8 @@
                         <el-form-item :label="getLabel('isTemplate')">
                             <el-select v-model="formData.isTemplate" :placeholder="getPlaceholder('isTemplate')"
                                 clearable>
-                                <el-option label="是" :value="true" />
-                                <el-option label="否" :value="false" />
+                                <el-option :label="$t('yes')" :value="true" />
+                                <el-option :label="$t('no')" :value="false" />
                             </el-select>
                         </el-form-item>
                     </el-col>

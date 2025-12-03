@@ -38,9 +38,9 @@
         <!-- 固定在最后的操作列：组内增删，只有在 controlsVisible 为 true 时才渲染 -->
         <el-table-column v-if="hideOperationVisible ? !hideOperationVisible : controlsVisible" label="操作" fixed="right"
             width="130">
-            <template #default="{ row }">
+            <template #default="{ row, $index }">
                 <el-button icon="Plus" @click="addInGroup(getGroupKey(row))" :disabled="localData.length >= 50" />
-                <el-button icon="Minus" @click="removeInGroup(getGroupKey(row))" />
+                <el-button icon="Minus" @click="removeInGroup(getGroupKey(row), $index)" />
             </template>
         </el-table-column>
     </el-table>
@@ -149,14 +149,27 @@ function addInGroup(groupVal) {
     emit('update:data', [...localData]);
 }
 
-function removeInGroup(groupVal) {
-    const idxs = localData.reduce((arr, r, i) => {
+function removeInGroup(groupVal, currentIndex) {
+    // 获取分组内所有行的索引
+    const groupIdxs = localData.reduce((arr, r, i) => {
         if (getGroupKey(r) === groupVal) arr.push(i);
         return arr;
     }, []);
-    if (idxs.length <= 1) idxs.reverse().forEach(i => localData.splice(i, 1));
-    else localData.splice(idxs.pop(), 1);
-    if (!localData.length) localData.push(emptyRow());
+
+    // 分组内只剩一行时，删除整个分组；否则删除点击的当前行
+    if (groupIdxs.length <= 1) {
+        groupIdxs.forEach(i => localData.splice(i, 1));
+    } else {
+        // 校验索引有效性，防止异常
+        if (groupIdxs.includes(currentIndex)) {
+            localData.splice(currentIndex, 1);
+        }
+    }
+
+    // 数据为空时补充空行
+    if (!localData.length) {
+        localData.push(emptyRow());
+    }
     emit('update:data', [...localData]);
 }
 
