@@ -79,7 +79,7 @@
                 <template #table-buttons>
                     <el-button type="success" @click="handleExport" :icon="Share">{{ getButtonText('export')
                     }}</el-button>
-                    <el-button type="info" @click="handleDel" :icon="CloseBold">{{ getButtonText('cancel')
+                    <el-button type="info" @click="handleDel" v-permission="'cancel'" :icon="CloseBold">{{ getButtonText('cancel')
                     }}</el-button>
                 </template>
                 <!-- 使用插槽来自定义列内容，假如我们需要在操作列中添加按钮 -->

@@ -128,6 +128,7 @@ async function getList() {
         total.value = res.data.total; // 设置总条数
         await nextTick();
         tableRef.value.clearSelection();
+        console.log('selectedData.value', tableRef.value);
         // 用 sku 来回显已选择
         tableData.value.forEach((row) => {
             if (selectedData.value.has(row.sku)) {

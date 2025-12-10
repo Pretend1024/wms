@@ -21,11 +21,14 @@
                 @sort-change="handleTableSort">
                 <!-- 在表格上方通过 slot 插入按钮 -->
                 <template #table-buttons>
-                    <el-button type="primary" @click="batchSetRoleMenu" :icon="Finished">{{ getButtonText
-                        ('batchAssignRole') }}</el-button>
-                    <el-button type="danger" @click="handleLock" :icon="Lock">{{ getButtonText('lock') }}</el-button>
-                    <el-button type="warning" @click="handleUnlock" :icon="Unlock">{{ getButtonText('unlock')
-                    }}</el-button>
+                    <el-button type="primary" @click="batchSetRoleMenu" v-permission="'userRole:setUserRole'" :icon="Finished">{{
+                        getButtonText
+                            ('batchAssignRole') }}</el-button>
+                    <el-button type="danger" @click="handleLock" v-permission="'lock'" :icon="Lock">{{
+                        getButtonText('lock') }}</el-button>
+                    <el-button type="warning" @click="handleUnlock" v-permission="'unLock'" :icon="Unlock">{{
+                        getButtonText('unlock')
+                        }}</el-button>
                 </template>
                 <!-- 使用插槽来自定义列内容，假如我们需要在操作列中添加按钮 -->
                 <template #customBtn="{ row }">

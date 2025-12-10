@@ -4,7 +4,7 @@
             <hydTable ref="hydTableRef" :tableData="tableData" :columns="columns" :loading="loading" :is-tree="true"
                 :tree-props="{ children: 'children' }" @row-click="handleRowClick">
                 <template #table-buttons>
-                    <el-button type="primary" @click="handleAdd" v-permission="'menu:add'" :icon="Plus">
+                    <el-button type="primary" @click="handleAdd" v-permission="'add'" :icon="Plus">
                         {{ getButtonText('add') }}
                     </el-button>
                     <el-button type="success" plain @click="handleToggleExpand" :icon="Sort">

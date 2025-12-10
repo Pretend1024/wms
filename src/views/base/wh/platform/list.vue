@@ -29,7 +29,7 @@
                 @row-click="handleRowClick" @page-change="handlePageChange" @sort-change="handleTableSort">
                 <!-- 表格上方按钮 -->
                 <template #table-buttons>
-                    <el-button type="primary" @click="handleAdd" :icon="Plus">{{ getButtonText('add') }}</el-button>
+                    <el-button type="primary" @click="handleAdd" v-permission="'add'" :icon="Plus">{{ getButtonText('add') }}</el-button>
                     <el-button type="success" @click="handleDel(10)" :icon="Edit">{{ getButtonText('enable')
                         }}</el-button>
                     <el-button type="danger" @click="handleDel(20)" :icon="Edit">{{ getButtonText('disable')

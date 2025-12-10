@@ -255,5 +255,9 @@
   "base_basic_traceStatus_list": {
     "addTitle": "Add Track Status",
     "updTitle": "Edit Track Status"
+  },
+  "product_price_priceItem_list": {
+    "addTitle": "Add Price Item",
+    "updTitle": "Edit Price Item"
   }
 }

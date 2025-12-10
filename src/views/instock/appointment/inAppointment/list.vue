@@ -56,7 +56,8 @@
                             </el-checkbox-group>
                         </div>
                         <div class="btns">
-                            <el-button type="primary" @click="handleAdd" :icon="Plus">{{ getButtonText('add')
+                            <el-button type="primary" @click="handleAdd" v-permission="'add'" :icon="Plus">{{
+                                getButtonText('add')
                             }}</el-button>
                             <el-button type="success" @click="handleConfirm(20)" :icon="Check">{{ getButtonText
                                 ('auditPass') }}</el-button>
@@ -97,6 +98,11 @@
                 <template #platformCode="{ row }">
                     {{ row.platformCode }}({{ row.platformName }})
                 </template>
+                <template #statusName="{ row }">
+                    <span :style="{ color: row.statusId == 30 || row.statusId == 40 ? 'red' : 'green' }">{{
+                        row.statusName
+                        }}</span>
+                </template>
                 <template #isLateCheckin="{ row }">
                     {{ row.isLateCheckin ? '是' : '否' }}
                 </template>
@@ -104,7 +110,7 @@
         </div>
         <!-- 添加/编辑弹窗 -->
         <el-dialog v-model="centerDialogVisible" :title="dialogTitle" width="1355" align-center destroy-on-close>
-            <component :is="currentForm" ref="childFormRef" :formData="addData" :typeOptions="typeOptions"
+            <component :is="currentForm" ref="childFormRef" v-model:formData="addData" :typeOptions="typeOptions"
                 :statusOptions="statusOptions" :warehouseOptions="warehouseOptions"
                 :deliveryTypeOptions="deliveryTypeOptions" />
             <template #footer>
@@ -197,7 +203,7 @@ const columns = ref([
     { label: '客户', prop: 'customerName', width: '200', slot: 'customer', fixed: 'left' },
     { label: '预约单号', prop: 'appointmentNo', width: '150', sortable: true },
     { label: '入库单号', prop: 'inOrderNo', width: '160', sortable: true },
-    { label: '预约状态', prop: 'statusName', width: '160', sortable: true },
+    { label: '预约状态', prop: 'statusName', width: '160', sortable: true, slot: 'statusName' },
     { label: '预约类型', prop: 'appointmentTypeName', width: '160', sortable: true },
     { label: '预约时间', prop: 'expectedStartTime', width: '200', sortable: true },
     { label: '签到时间', prop: 'checkinTime', width: '200' },
@@ -431,10 +437,9 @@ const getList = async (currentPage, pageSize, orderBy) => {
 
 // 获状态栏
 const getStatus = async () => {
-    const res = await getInstockInAppointmentCountGroupByStatusApi({
-        ...trimObjectStrings(initValues.value),
-        statusIdList: initValues.value.statusIdList
-    })
+    const data = { ...trimObjectStrings(initValues.value) }
+    delete data.statusIdList
+    const res = await getInstockInAppointmentCountGroupByStatusApi(data)
     statusIdsList.value = res.data
     statusIdsArr.value = [...initValues.value.statusIdList]
 }

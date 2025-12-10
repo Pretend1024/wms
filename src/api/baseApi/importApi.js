@@ -37,15 +37,7 @@ export const importInventorySnAddApi = (data) => {
     return http.post('/inventory/inventory/inventorySn/importAdd', data)
 }
 
-// 导入入库单费用
-export const importInOrderFeeAddApi = (data) => {
-    return http.post('/finance/receivables/inOrderFee/importAdd', data)
-}
-// 导入出库单费用
-export const importOutOrderFeeAddApi = (data) => {
-    return http.post('/finance/receivables/outOrderFee/importAdd', data)
-}
-// 导入增值费用
-export const importVasOrderFeeAddApi = (data) => {
-    return http.post('/finance/receivables/vasOrderFee/importAdd', data)
+// 导入应收费用
+export const importReceivableFeeAddApi = (data) => {
+    return http.post('/finance/receivables/receivableFee/importAdd', data)
 }

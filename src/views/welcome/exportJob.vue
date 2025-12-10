@@ -37,7 +37,7 @@
                 @selection-change="handleSelectionChange" @row-click="handleRowClick" @page-change="handlePageChange"
                 @sort-change="handleTableSort">
                 <template #table-buttons>
-                    <el-button type="danger" @click="handleDel" :icon="Close">{{ getButtonText('close') }}
+                    <el-button type="danger" @click="handleDel"  :icon="Close">{{ getButtonText('close') }}
                     </el-button>
                 </template>
                 <template #fileUrl='{ row, column, index }'>

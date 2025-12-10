@@ -5,7 +5,7 @@
                 <el-splitter-panel size="350" :resizable="false">
                     <div class="partitionTitle">
                         <span>偏远库列表</span>
-                        <div class="iconDiv" @click="handleAdd">
+                        <div class="iconDiv" @click="handleAdd" v-permission="'add'">
                             +
                         </div>
                     </div>

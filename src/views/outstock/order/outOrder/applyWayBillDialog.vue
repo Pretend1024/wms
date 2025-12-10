@@ -4,9 +4,9 @@
             <el-row>
                 <el-col :span="12">
                     <!-- 申请类型 -->
-                    <el-form-item :label="getLabel('applyType')" prop="applyType">
-                        <el-select v-model="formData.applyType" clearable>
-                            <el-option v-for="item in applyTypeOptions" :key="item.value" :label="item.label"
+                    <el-form-item :label="getLabel('waybillTypeId')" prop="waybillTypeId">
+                        <el-select v-model="formData.waybillTypeId" clearable>
+                            <el-option v-for="item in waybillTypeIdOptions" :key="item.value" :label="item.label"
                                 :value="item.value" />
                         </el-select>
                     </el-form-item>
@@ -62,13 +62,15 @@
 
 <script setup>
 import { ref, reactive, computed, onMounted } from 'vue';
-import { getOutstockOrderApplyWayBillTypeEnumApi } from '@/api/outstockApi/order.js';
 import { useI18n } from 'vue-i18n';
 const { t } = useI18n();
 
 // 定义组件接收的参数
 const props = defineProps({
-    // 可根据需要添加传入的属性
+    waybillTypeIdOptions: {
+        type: Array,
+        default: () => []
+    }
 });
 
 // 定义组件抛出的事件
@@ -76,7 +78,7 @@ const emit = defineEmits(['confirm', 'cancel', 'close']);
 
 // 表单数据
 const formData = reactive({
-    applyType: null,         // 申请类型（必需）
+    waybillTypeId: 10,         // 申请类型（必需）
     pickupCode: '',          // 自提代码（可选）
     pickupTime: '',          // 取件时间（可选）
     isPhoneReserved: false,  // 是否预约派件（可选）
@@ -91,8 +93,6 @@ const formRef = ref(null);
 // 弹窗显示状态
 const visible = ref(false);
 
-// 申请类型选项
-const applyTypeOptions = ref([]);
 
 // 弹窗标题
 const dialogTitle = computed(() => t(`outstock_order_outOrder_list.applyTitle`));
@@ -108,7 +108,7 @@ const open = () => {
 
 // 重置表单
 const resetForm = () => {
-    formData.applyType = null;
+    formData.waybillTypeId = 10;
     formData.pickupCode = '';
     formData.pickupTime = '';
     formData.isPhoneReserved = false;
@@ -152,19 +152,6 @@ const handleConfirm = () => {
 defineExpose({
     open,
     close
-});
-
-// 初始化获取申请类型列表
-onMounted(async () => {
-    try {
-        const res = await getOutstockOrderApplyWayBillTypeEnumApi();
-        applyTypeOptions.value = res.data.map(item => ({
-            label: item.name,
-            value: item.id
-        }));
-    } catch (error) {
-        console.error('获取申请类型失败:', error);
-    }
 });
 </script>
 

@@ -5,7 +5,8 @@
                 @selection-change="handleSelectionChange" @row-click="handleRowClick">
                 <!-- 表格上方按钮 -->
                 <template #table-buttons>
-                    <el-button type="danger" @click="handleLogout" :icon="SemiSelect">
+                    <el-button type="danger" @click="handleLogout" :icon="SemiSelect"
+                        v-permission="'passport:forceLogout'">
                         {{ getButtonText('forceOffline') }}
                     </el-button>
                 </template>

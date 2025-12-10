@@ -105,7 +105,7 @@
                     <inOrder-table ref="tableRef" :columns="columns" :data="tableData" index-label="箱规序号"
                         :merge-key="['boxBatch']" :merge-cols="['boxQty']" @update:data="tableData = $event">
                         <template #boxQty="{ row }">
-                            <el-input v-model="row.boxQty" @blur="onBoxQtyBlur(row)" v-number />
+                            <el-input v-model="row.boxQty" v-intNumber @blur="onBoxQtyBlur(row)" v-number />
                         </template>
                         <template #skus="{ row }">
                             <el-form-item>
@@ -118,8 +118,8 @@
                             </el-form-item>
                         </template>
                         <template #boxInnerQty="{ row }">
-                            <el-input v-model="row.boxInnerQty" @blur="onInnerQtyBlur(row)" placeholder="请输入件数"
-                                v-number />
+                            <el-input v-model="row.boxInnerQty" v-intNumber @blur="onInnerQtyBlur(row)"
+                                placeholder="请输入件数" v-number />
                         </template>
                         <template #skuPhoto="{ row }">
                             <!-- 循环skuPhoto展示图片 -->
@@ -180,7 +180,7 @@ const formData = ref({
     boxList: []
 });
 // 表格数据
-const tableData = shallowRef([]);
+const tableData = ref([]);
 const tableRef = ref(null);
 const columns = [
     { label: '箱数', prop: 'boxQty', width: '220', slot: 'boxQty' },
@@ -392,7 +392,7 @@ function onInnerQtyBlur(row) {
         tableRef.value.getGroupKey(r) === key
     );
     const parent = all[0];
-    const boxQty = Number(parent.boxQty) || 1;
+    const boxQty = Number(parent.boxQty) || 0;
     const inner = Number(row.boxInnerQty) || 0;
     row.skuSum = boxQty * inner;
 }
@@ -401,7 +401,7 @@ function onBoxQtyBlur(row) {
     const all = tableData.value.filter(r =>
         tableRef.value.getGroupKey(r) === key
     );
-    const boxQty = Number(row.boxQty) || 1;
+    const boxQty = Number(row.boxQty) || 0;
     all.forEach(r => {
         const inner = Number(r.boxInnerQty) || 0;
         r.skuSum = boxQty * inner;

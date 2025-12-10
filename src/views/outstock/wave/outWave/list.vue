@@ -74,8 +74,9 @@
                         </div>
                         <div class="btns">
                             <!-- 新增 -->
-                            <el-button type="primary" @click="handleAdd" :icon="Plus">{{ getButtonText('addWave')
-                                }}</el-button>
+                            <el-button type="primary" @click="handleAdd" v-permission="'add'" :icon="Plus">{{
+                                getButtonText('addWave')
+                            }}</el-button>
                             <!-- 创建记录 -->
                             <el-button type="primary" @click="handleLog" :icon="Checked">{{
                                 getButtonText('createRecord')
@@ -398,6 +399,7 @@ const delColse = () => {
     delDialogVisible.value = false;
     delData.value = [];
     getList(pagination.value.currentPage, pagination.value.pageSize, orderBy.value);
+    getStatus()
 };
 
 // 获取列表
@@ -421,13 +423,13 @@ const getList = async (currentPage, pageSize, orderBy) => {
 const getStatus = async () => {
     const data = {
         ...trimObjectStrings(initValues.value),
-        statusIdList: initValues.value.statusIdList
     }
     if (data.orgId && data.orgId.length > 0) {
         data.orgId = data.orgId[data.orgId.length - 1]
     } else {
         delete data.orgId
     }
+    delete data.statusIdList
     const res = await getOutstockWaveStatusCountApi(data)
     statusIdsList.value = res.data
     statusIdsArr.value = [...initValues.value.statusIdList]

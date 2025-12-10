@@ -113,10 +113,12 @@
                             </el-checkbox-group>
                         </div>
                         <div class="btns">
-                            <el-button type="primary" @click="handleAdd" :icon="Plus">{{ getButtonText('add')
-                                }}</el-button>
-                            <el-button type="danger" @click="handleDel" :icon="Delete">{{ getButtonText('del')
-                                }}</el-button>
+                            <el-button type="primary" @click="handleAdd" v-permission="'add'" :icon="Plus">{{
+                                getButtonText('add')
+                            }}</el-button>
+                            <el-button type="danger" @click="handleDel" v-permission="'delete'" :icon="Delete">{{
+                                getButtonText('del')
+                            }}</el-button>
                             <!-- <el-button type="warning" @click="handleConfirm" :icon="Finished">确认</el-button>
                             <el-button type="warning" @click="handleCancelConfirm" :icon="Minus">取消确认</el-button> -->
                             <el-dropdown trigger="click">
@@ -731,10 +733,9 @@ const getList = async (currentPage, pageSize, orderBy) => {
 }
 // 获状态栏
 const getStatus = async () => {
-    const res = await getInOrderCountGroupByStatusApi({
-        ...trimObjectStrings(initValues.value),
-        statusIdList: initValues.value.statusIdList
-    })
+    const data = { ...trimObjectStrings(initValues.value) }
+    delete data.statusIdList
+    const res = await getInOrderCountGroupByStatusApi(data)
     statusIdsList.value = res.data
     statusIdsArr.value = [...initValues.value.statusIdList]
 }

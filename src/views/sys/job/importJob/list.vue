@@ -32,7 +32,7 @@
                 @row-click="handleRowClick" @page-change="handlePageChange" @sort-change="handleTableSort">
                 <!-- 表格上方按钮 -->
                 <template #table-buttons>
-                    <el-button type="danger" @click="handleDel" :icon="Close">{{ getButtonText('close') }}
+                    <el-button type="danger" @click="handleAdd" v-permission="'closeById'" :icon="Close">{{ getButtonText('close') }}
                     </el-button>
                 </template>
                 <!-- 操作列按钮 -->

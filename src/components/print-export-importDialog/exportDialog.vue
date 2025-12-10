@@ -32,6 +32,7 @@ const apiMap = {
     111: api.exportSkuApi,
 
     221: api.exportWhinOrderApi,
+    222: api.exportConsumablesInReceivingApi,
     223: api.exportInShelfApi,
     224: api.exportReturnOrderApi,
 
@@ -48,16 +49,15 @@ const apiMap = {
     513: api.exportConsumablesInventoryApi,
     514: api.exportConsumablesInApi,
     515: api.exportConsumablesOutApi,
-    522: api.exportConsumablesInReceivingApi,
     518: api.exportProductSupplierApi,
     519: api.exportRemoteDetailApi,
 
     603: api.exportCustomerAccountApi,
     604: api.exportCustomerCreditApi,
     605: api.exportCustomerRechargeApi,
-    606: api.exportInOrderFeeApi,
-    607: api.exportOutOrderFeeApi,
-    609: api.exportVasOrderFeeApi,
+
+
+    610: api.exportReceivableFeeApi
 };
 // 接收外部参数
 const props = defineProps({

@@ -11,7 +11,7 @@
                 @row-click="handleRowClick" @page-change="handlePageChange" @sort-change="handleTableSort">
                 <!-- 表格上方按钮 -->
                 <template #table-buttons>
-                    <el-button type="primary" @click="handleAdd" v-permission="'scheduleJob:add'" :icon="Plus">{{
+                    <el-button type="primary" @click="handleAdd" v-permission="'add'" :icon="Plus">{{
                         getButtonText('add') }}
                     </el-button>
                 </template>
@@ -31,7 +31,7 @@
                 </template>
                 <template #isConcurrent="{ row }">
                     <span :style="{ color: row.isConcurrent ? 'green' : 'red' }">{{ row.isConcurrent ? '可并发' : '不可并发'
-                        }}</span>
+                    }}</span>
                 </template>
             </hydTable>
         </div>

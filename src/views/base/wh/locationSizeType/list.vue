@@ -6,8 +6,8 @@
                 @row-click="handleRowClick" @page-change="handlePageChange" @sort-change="handleTableSort">
                 <!-- 表格上方按钮 -->
                 <template #table-buttons>
-                    <el-button type="primary" @click="handleAdd" :icon="Plus">{{ getButtonText('add') }} </el-button>
-                    <el-button type="danger" @click="handleDel" :icon="DeleteFilled">{{ getButtonText('del') }}
+                    <el-button type="primary" @click="handleAdd" v-permission="'add'" :icon="Plus">{{ getButtonText('add') }} </el-button>
+                    <el-button type="danger" @click="handleDel" v-permission="'delete'" :icon="DeleteFilled">{{ getButtonText('del') }}
                     </el-button>
                 </template>
                 <!-- 操作列按钮 -->

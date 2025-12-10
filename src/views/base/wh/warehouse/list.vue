@@ -11,7 +11,7 @@
                 @row-click="handleRowClick" @page-change="handlePageChange" @sort-change="handleTableSort">
                 <!-- 表格上方按钮 -->
                 <template #table-buttons>
-                    <el-button type="primary" @click="handleAdd" v-permission="'warehouse:add'" :icon="Plus">
+                    <el-button type="primary" @click="handleAdd" v-permission="'add'" :icon="Plus">
                         {{ getButtonText('add') }}
                     </el-button>
                 </template>
@@ -101,9 +101,9 @@ const tableData = shallowRef([]);
 const columns = ref([
     { label: '仓库代码', prop: 'code', width: '180', fixed: 'left', sortable: true },
     { label: '仓库名称', prop: 'name', width: '190', fixed: 'left', sortable: true },
-    { label: '仓库类型', prop: 'typeName', width: '180', sortable: true , sortAlias: 'typeId' },
-    { label: '状态', prop: 'statusName', width: '125', sortable: true, slot: 'statusName',sortAlias: 'statusId' },
-    { label: '货型', prop: 'cargoSizeName', width: '135', sortable: true,sortAlias: 'cargoSizeId' },
+    { label: '仓库类型', prop: 'typeName', width: '180', sortable: true, sortAlias: 'typeId' },
+    { label: '状态', prop: 'statusName', width: '125', sortable: true, slot: 'statusName', sortAlias: 'statusId' },
+    { label: '货型', prop: 'cargoSizeName', width: '135', sortable: true, sortAlias: 'cargoSizeId' },
     { label: '危险品仓', prop: 'isDanger', width: '125', sortable: true, slot: 'isDanger' },
     { label: '平方米', prop: 'squareMeter', width: '100', sortable: true },
     { label: '时区', prop: 'timeZoneName', width: '125' },

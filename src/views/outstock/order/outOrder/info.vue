@@ -432,6 +432,17 @@
                                                     </el-upload>
                                                 </template>
                                             </el-input>
+                                            <el-input v-model="row.returnNo" placeholder="退货单号" readonly />
+                                            <el-input v-model="row.returnLabelUrl" placeholder="请输入退货运单URL">
+                                                <template #append>
+                                                    <el-upload :auto-upload="true"
+                                                        :http-request="(options) => handleReturnLabelUrlUpload(options, row)"
+                                                        :before-upload="beforeUpload" multiple :show-file-list="false"
+                                                        accept=".pdf">
+                                                        <el-button icon="Upload" disabled />
+                                                    </el-upload>
+                                                </template>
+                                            </el-input>
                                         </div>
                                     </template>
 

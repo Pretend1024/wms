@@ -481,7 +481,7 @@ const getRowStyle = ({ row }) => {
     // if (row.qty <= 0) {
     //     return 'background-color: #ffcbcb;'; // 红色背景
     // }
-    if (row.receiptGoodsQty !== row.goodsQty) {
+    if (row.receiptGoodsQty !== row.goodsQty && row.receiptGoodsQty < row.goodsQty) {
         return 'background-color: #ffcbcb;';
     }
     return ''
@@ -512,7 +512,7 @@ function highlight(text) {
 
 // 行样式
 function getRowClass({ row }) {
-    return row.goodsQty != row.receiptGoodsQty ? 'red-row' : '';
+    return row.goodsQty != row.receiptGoodsQty && row.receiptGoodsQty < row.goodsQty ? 'red-row' : '';
 }
 
 // 控制 el-alert 显示隐藏

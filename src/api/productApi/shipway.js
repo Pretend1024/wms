@@ -1,6 +1,6 @@
 import http from '@/utils/request/request'
 import { createPostRequestWithQuery } from '@/utils/request/createPostRequestWithQuery'
-// ------------------------------------------------------------承运商服务商
+// ------------------------------------------------------------服务商
 // 获取服务商
 export const getProductSupplierApi = (data) => {
     return http.post('/product/shipway/supplier/page', data)
@@ -305,4 +305,28 @@ export const getBasicTraceStatusLogicTypeEnumApi = () => {
 // 轨迹刷新
 export const getBasicTraceStatusRefreshCacheApi = () => {
     return http.post('/product/shipway/traceStatus/refreshCache')
+}
+
+
+// ---------------------------------------------------------计费项目
+// 获取计费项目
+export const getProductShipwayPriceItemPageApi = (data) => {
+    return http.post('/product/price/priceItem/page', data)
+}
+// 添加计费项目
+export const addProductShipwayPriceItemApi = (data) => {
+    return http.post('/product/price/priceItem/add', data, { headers: { 'loading': true } })
+}
+// 编辑计费项目
+export const updProductShipwayPriceItemApi = (data) => {
+    return http.post('/product/price/priceItem/updateById', data, { headers: { 'loading': true } })
+}
+// 删除计费项目
+export const delProductShipwayPriceItemApi = createPostRequestWithQuery('/product/price/priceItem/deleteById')
+
+// 费用单位
+export const getFeeUnitTypeEnumApi = createPostRequestWithQuery('product/price/priceItem/feeUnitTypeEnum')
+// 价格维度
+export const getFeePriceDimensionEnumApi = () => {
+    return http.post('product/price/priceItem/priceDimensionEnum')
 }

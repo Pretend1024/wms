@@ -88,15 +88,7 @@ export const exportOutOrderTraceApi = (data) => {
     return http.post('/outstock/trace/outTrack/export', { ...data })
 }
 
-// 导出入库单费用
-export const exportInOrderFeeApi = (data) => {
-    return http.post('/finance/receivables/inOrderFee/export', { ...data })
-}
-// 导出出库单费用
-export const exportOutOrderFeeApi = (data) => {
-    return http.post('/finance/receivables/outOrderFee/export', { ...data })
-}
-// 导出增值费用
-export const exportVasOrderFeeApi = (data) => {
-    return http.post('/vas/vas/vasOrderFee/export', { ...data })
+// 导出应收费用
+export const exportReceivableFeeApi = (data) => {
+    return http.post('/finance/receivables/receivableFee/export', { ...data })
 }

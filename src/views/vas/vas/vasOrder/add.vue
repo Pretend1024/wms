@@ -102,19 +102,23 @@
                         <!-- 合并后的附件列 -->
                         <template #attachment="{ row }">
                             <div class="attachment-container">
-                                <!-- 已上传附件列表 -->
                                 <div class="attachment-list" v-if="row.attachments && row.attachments.length > 0">
                                     <div v-for="(file, index) in row.attachments" :key="index" class="attachment-item">
-                                        <a :href="file.url" target="_blank" class="file-link">
-                                            {{ file.name.length > 20 ? file.name.slice(0, 20) + '...' : file.name }}
+                                        <a :href="file.url" target="_blank" class="file-link" :title="file.name">
+                                            {{ file.name.length > 15 ? file.name.slice(0, 15) + '...' : file.name }}
                                         </a>
+                                        <el-icon class="delete-icon" @click="handleRemoveFile(row, index)">
+                                            <Close />
+                                        </el-icon>
                                     </div>
                                 </div>
-                                <!-- 上传按钮 -->
+
                                 <el-upload :auto-upload="true" :http-request="(params) => handleUpload(params, row)"
                                     :before-upload="beforeUpload" multiple :show-file-list="false"
-                                    v-if="!row.attachments || row.attachments.length === 0">
-                                    <el-button type="primary" size="small">上传附件</el-button>
+                                    class="upload-btn-wrap">
+                                    <el-button type="primary" size="small">
+                                        {{ (row.attachments && row.attachments.length > 0) ? '+ 继续上传' : '上传附件' }}
+                                    </el-button>
                                 </el-upload>
                             </div>
                         </template>
@@ -197,7 +201,7 @@ import { getCurrencyEnumApi } from '@/api/baseApi/index.js';
 import { ref, reactive, onMounted, nextTick } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import generalAddTable from '@/components/table/generalAddTable.vue';
-import { ElLoading, ElMessage, ElNotification } from 'element-plus';
+import { ElLoading, ElMessage } from 'element-plus';
 import tagsStore from '@/store/tags.js';
 import { useRefreshStore } from '@/store/refresh.js';
 import { smartAlert } from '@/utils/genericMethods.js';
@@ -273,8 +277,8 @@ const itemTableColumns = ref([
     { label: '计划数量', prop: 'planQty', required: true, slot: 'planQty', width: 120 },
     { label: '单位', prop: 'unit', required: true, slot: 'unit', width: 100 },
     { label: 'SKU', prop: 'sku', slot: 'sku', width: 180 },
-    { label: '附件', prop: 'attachments', slot: 'attachment', width: 100 },
-    { label: '备注', prop: 'remark', slot: 'remark', width: 340 }
+    { label: '附件', prop: 'attachments', slot: 'attachment', width: 200 },
+    { label: '备注', prop: 'remark', slot: 'remark', width: 240 }
 ]);
 
 const feeTableColumns = ref([
@@ -317,7 +321,7 @@ const handleSave = async () => {
             ...formData,
             orgId: formData.orgId[formData.orgId.length - 1],
             vasOrderItemList: formatItemList,
-            vasOrderFeeList: formatFeeList
+            vasOrderFeeList: (formatFeeList.length === 1 && Object.keys(formatFeeList[0]).length === 1 && 'createWay' in formatFeeList[0]) ? [] : formatFeeList
         };
 
         console.log('提交数据：', submitData);
@@ -429,13 +433,20 @@ const handleUpload = async (params, row) => {
             })
             params.onSuccess && params.onSuccess();
         } else {
-            ElNotification.error({ title: '失败', message: res.msg || '文件上传失败' });
+            smartAlert(res.msg || '服务附件上传失败', false);
             params.onError && params.onError();
         }
     } catch (error) {
         console.error('文件上传失败：', error);
-        ElNotification.error({ title: '失败', message: '文件上传失败，请重试' });
+        smartAlert(error.msg || '服务附件上传失败', false);
         params.onError && params.onError();
+    }
+};
+
+// 删除指定行的指定附件
+const handleRemoveFile = (row, index) => {
+    if (row.attachments) {
+        row.attachments.splice(index, 1);
     }
 };
 
@@ -593,17 +604,58 @@ onMounted(async () => {
     display: flex;
     flex-direction: column;
     gap: 4px;
+    align-items: flex-start;
+    width: 100%;
 }
 
 .attachment-list {
     display: flex;
     flex-direction: column;
     gap: 2px;
+    width: 100%;
 }
 
 .attachment-item {
     font-size: 12px;
-    line-height: 18px;
+    line-height: 20px;
+    display: flex;
+    justify-content: space-between;
+    /* 文件名和删除按钮两端对齐 */
+    align-items: center;
+    background-color: #f5f7fa;
+    padding: 0 4px;
+    border-radius: 2px;
+}
+
+.file-link {
+    color: #409EFF;
+    text-decoration: none;
+    cursor: pointer;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 140px;
+    /* 限制文件名宽度 */
+}
+
+.file-link:hover {
+    text-decoration: underline;
+}
+
+.delete-icon {
+    cursor: pointer;
+    color: #909399;
+    margin-left: 5px;
+    font-size: 12px;
+}
+
+.delete-icon:hover {
+    color: #F56C6C;
+    /* 鼠标悬停变红 */
+}
+
+.upload-btn-wrap {
+    margin-top: 2px;
 }
 
 .file-link {

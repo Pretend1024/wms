@@ -1,8 +1,9 @@
 <template>
     <el-table :data="localData" border stripe :height="'100%'" style="width: 100%" :span-method="spanMethod"
-        :row-class-name="props.getRowClass" :show-summary="hasSummary" :summary-method="summaryMethod">
+        :row-class-name="props.getRowClass" :cell-class-name="cellClassName" :show-summary="hasSummary"
+        :summary-method="summaryMethod">
         <!-- 序号列 -->
-        <el-table-column :label="indexLabel" width="85" fixed="left" v-if="controlsVisible">
+        <el-table-column :label="indexLabel" prop="index" width="85" fixed="left" v-if="controlsVisible">
             <template #default="{ row, $index }">
                 <div v-if="isGroupStart(row)" class="group-start-cell">
                     <div>{{ groupOrder.indexOf(getGroupKey(row)) + 1 }}</div>
@@ -14,7 +15,7 @@
                 </div>
             </template>
         </el-table-column>
-        <el-table-column :label="indexLabel" width="55" fixed="left" v-else>
+        <el-table-column :label="indexLabel" prop="index" width="55" fixed="left" v-else>
             <template #default="{ row, $index }">
                 <div v-if="isGroupStart(row)" class="group-start-cell">
                     <div>{{ groupOrder.indexOf(getGroupKey(row)) + 1 }}</div>
@@ -64,7 +65,9 @@ const props = defineProps({
     // 行样式
     getRowClass: { type: Function, default: () => ({}) },
     summaryColumns: { type: Array, default: () => [] },
-    summaryLabel: { type: String, default: '合计' }
+    summaryLabel: { type: String, default: '合计' },
+    // 传入列的 prop 数组，这些列将不应用 row-class-name 设置的背景色
+    excludeRowClassCols: { type: Array, default: () => ['boxNo', 'index'] }
 });
 const emit = defineEmits(['update:data']);
 
@@ -249,6 +252,15 @@ function getLastRowInGroup(groupVal) {
     return rows[rows.length - 1];
 }
 
+function cellClassName({ row, column, rowIndex, columnIndex }) {
+    // 获取当前列的 prop (el-table 回调中通常使用 column.property)
+    const prop = column.property || column.prop;
+    // 如果当前列在排除列表中，添加样式类 'reset-cell-style'
+    if (props.excludeRowClassCols && props.excludeRowClassCols.includes(prop)) {
+        return 'reset-cell-style';
+    }
+    return '';
+}
 
 
 defineExpose({ getTreeData, getGroupKey, addRowsToGroup, getLastRowInGroup });
@@ -306,5 +318,10 @@ defineExpose({ getTreeData, getGroupKey, addRowsToGroup, getLastRowInGroup });
 
 :deep(.el-table__body-wrapper tbody tr.red-row td) {
     background-color: #ffcbcb !important;
+}
+
+:deep(.el-table__body-wrapper tbody tr td.reset-cell-style) {
+    background-color: #ffffff !important;
+    // 如果你的表格在非高亮行是透明或有特定颜色，可以调整这里
 }
 </style>

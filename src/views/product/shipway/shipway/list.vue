@@ -21,7 +21,7 @@
                 @sort-change="handleTableSort">
                 <!-- 在表格上方通过 slot 插入按钮 -->
                 <template #table-buttons>
-                    <el-button type="primary" @click="handleAdd" :icon="Plus">{{ getButtonText('add') }}</el-button>
+                    <el-button type="primary" @click="handleAdd" v-permission="'add'" :icon="Plus">{{ getButtonText('add') }}</el-button>
                     <el-button type="success" @click="handleDel(10)" :icon="Edit">{{ getButtonText('enable')
                     }}</el-button>
                     <el-button type="danger" @click="handleDel(20)" :icon="Edit">{{ getButtonText('disable')

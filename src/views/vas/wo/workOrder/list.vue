@@ -105,9 +105,11 @@
                             </el-checkbox-group>
                         </div>
                         <div class="btns">
-                            <el-button type="primary" @click="handleAdd" :icon="Plus">{{ getButtonText('add')
+                            <el-button type="primary" @click="handleAdd" v-permission="'add'" :icon="Plus">{{
+                                getButtonText('add')
                             }}</el-button>
-                            <el-button type="danger" @click="handleDel" :icon="Delete">{{ getButtonText('del')
+                            <el-button type="danger" @click="handleDel" v-permission="'delete'" :icon="Delete">{{
+                                getButtonText('del')
                             }}</el-button>
                             <!-- <el-button type="success" @click="handleExport" :icon="Share">{{ getButtonText('export')
                             }}</el-button> -->
@@ -389,9 +391,9 @@ const getList = async (currentPage, pageSize, orderBy) => {
 const getStatus = async () => {
     const data = {
         ...trimObjectStrings(initValues.value),
-        statusIdList: initValues.value.statusIdList,
         orgId: initValues.value.orgId ? initValues.value.orgId[initValues.value.orgId.length - 1] : null
     }
+    delete data.statusIdList
     const res = await api.getCountGroupByStatusApi(data)
     statusIdsList.value = res.data
     statusIdsArr.value = [...(initValues.value.statusIdList || [])]

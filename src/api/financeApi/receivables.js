@@ -101,6 +101,7 @@ export const getFeeMainTypeEnumApi = () => {
 }
 // 费用小类型
 export const getFeeTypeEnumApi = createPostRequestWithQuery('/finance/receivables/receivableFee/feeSubTypeEnum')
+
 // 费用状态
 export const getFeeStatusEnumApi = () => {
     return http.post('/finance/receivables/receivableFee/receivableFeeStatusEnum')

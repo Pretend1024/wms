@@ -3,7 +3,7 @@
         <div class="filterDiv">
             <hydFilterBox :form-items="formConfig" :initial-value="initValues" @search="handleSearch"
                 @reset="handleReset">
-                <template #custom-form="{ formData, getColSpan }">
+                <template #custom-form="{ formData }">
                     <el-col>
                         <el-form-item :label="getLabel('orgId')" class="compact-item">
                             <el-cascader ref="cascaderRef" v-model="formData.orgId" :options="companyOptions"
@@ -29,14 +29,20 @@
                 @sort-change="handleTableSort">
                 <!-- 在表格上方通过 slot 插入按钮 -->
                 <template #table-buttons>
-                    <el-button type="primary" @click="handleAdd" :icon="Plus">{{ getButtonText('add') }}</el-button>
-                    <el-button type="primary" @click="batchSetRoleMenu" :icon="Finished">{{ getButtonText('assignRole')
+                    <el-button type="primary" @click="handleAdd" v-permission="'add'" :icon="Plus">{{
+                        getButtonText('add') }}</el-button>
+                    <el-button type="primary" @click="batchSetRoleMenu" v-permission="'userRole:setUserRole'"
+                        :icon="Finished">{{
+                            getButtonText('assignRole')
                         }}</el-button>
-                    <el-button type="danger" @click="handleLock" :icon="Lock">{{ getButtonText('lock') }}</el-button>
-                    <el-button type="warning" @click="handleUnlock" :icon="Unlock">{{ getButtonText('unlock')
+                    <el-button type="danger" @click="handleLock" v-permission="'user:lock'" :icon="Lock">{{
+                        getButtonText('lock') }}</el-button>
+                    <el-button type="warning" @click="handleUnlock" v-permission="'user:unLock'" :icon="Unlock">{{
+                        getButtonText('unlock')
                         }}</el-button>
-                    <el-button type="danger" @click="handleLeave" :icon="Remove">{{ getButtonText('resign')
-                    }}</el-button>
+                    <el-button type="danger" @click="handleLeave" v-permission="'leaveJob'" :icon="Remove">{{
+                        getButtonText('resign')
+                        }}</el-button>
 
                 </template>
                 <!-- 使用插槽来自定义列内容，假如我们需要在操作列中添加按钮 -->

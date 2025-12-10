@@ -35,8 +35,8 @@
                                 </template>
                                 <el-select v-model="formData.channelId" placeholder="请选择渠道" filterable clearable
                                     :disabled="!formData.supplierId">
-                                    <el-option v-for="item in channelOptions" :key="item.id" :label="item.carrierName"
-                                        :value="item.id" />
+                                    <el-option v-for="item in channelOptions" :key="item.id"
+                                        :label="item.supplierCode + '(' + item.name + ')'" :value="item.id" />
                                 </el-select>
                             </el-form-item>
 
@@ -68,14 +68,6 @@
                                 <div class="stats-label">今日出库数</div>
                                 <div class="stats-value">{{ statistics.today }}</div>
                             </div>
-                            <div class="stats-card danger">
-                                <div class="stats-label">失败订单数</div>
-                                <div class="stats-value">{{ statistics.failed }}</div>
-                            </div>
-                            <div class="stats-card primary">
-                                <div class="stats-label">匹配率</div>
-                                <div class="stats-value">{{ statistics.matchRate }}</div>
-                            </div>
                         </div>
                     </div>
                 </div>
@@ -91,9 +83,9 @@
                         </h3>
                         <el-table :data="logList" border stripe height="100%" style="width: 100%">
                             <el-table-column prop="trackingNo" label="跟踪单号" min-width="200" show-overflow-tooltip />
-                            <el-table-column prop="supplierName" label="服务商" width="270" show-overflow-tooltip />
-                            <el-table-column prop="channelName" label="渠道" width="240" show-overflow-tooltip />
-                            <el-table-column prop="result" label="操作结果" width="200">
+                            <el-table-column prop="supplierName" label="服务商" min-width="210" show-overflow-tooltip />
+                            <el-table-column prop="channelName" label="渠道" min-width="210" show-overflow-tooltip />
+                            <el-table-column prop="result" label="操作结果" min-width="220">
                                 <template #default="{ row }">
                                     <el-tag :type="row.success ? 'success' : 'danger'" effect="dark" size="small">
                                         {{ row.success ? '成功' : '失败' }}
@@ -138,7 +130,7 @@ import okAudio from '@/assets/audio/ok.wav';
 import errorAudio from '@/assets/audio/error.wav';
 
 // 接口
-import { getProductSupplierListApi, getProductShipwayListApi } from '@/api/productApi/shipway.js';
+import { getProductSupplierListApi, getProductSupplierChannelListApi } from '@/api/productApi/shipway.js';
 import { submitOutboundStockApi, getOutboundOrderDataApi, getOutOrderByCodeApi } from '@/api/outstockApi/op.js';
 
 // --- 状态定义 ---
@@ -161,9 +153,7 @@ const channelOptions = ref([]);
 // 统计数据
 const statistics = reactive({
     pending: 0,
-    today: 0,
-    failed: 0,
-    matchRate: '0%'
+    today: 0
 });
 
 // 操作日志
@@ -195,25 +185,24 @@ const playSound = (type) => {
 // 1. 获取下拉数据
 const initOptions = async () => {
     try {
-        // 获取服务商列表
         const resSup = await getProductSupplierListApi();
-        if (resSup.success) {
-            supplierOptions.value = resSup.data || [];
-        }
-        // 获取渠道列表
-        const resChan = await getProductShipwayListApi();
-        if (resChan.success) {
-            channelOptions.value = resChan.data || [];
-        }
+        if (resSup.success) supplierOptions.value = resSup.data || [];
     } catch (error) {
         console.error('初始化选项失败', error);
     }
 };
 
-// 服务商变更处理
 const handleSupplierChange = () => {
-    // 业务逻辑：如果需要级联清空，可以在这里处理
-    // formData.channelId = ''; 
+    //清空渠道选项
+    formData.channelId = '';
+    channelOptions.value = [];
+    //重新获取渠道选项
+    if (formData.supplierId) {
+        getProductSupplierChannelListApi({ supplierId: formData.supplierId }).then(res => {
+            if (res.success) channelOptions.value = res.data || [];
+        })
+    }
+
 };
 
 // 2. 获取统计数据
@@ -221,73 +210,65 @@ const getStatistics = async () => {
     try {
         const res = await getOutboundOrderDataApi();
         if (res.success && res.data) {
-            statistics.pending = res.data.pendingCount || 0;
-            statistics.today = res.data.outboundCount || 0;
-            statistics.failed = res.data.failedCount || 0;
-
-            const total = statistics.today + statistics.failed;
-            statistics.matchRate = total > 0 ? ((statistics.today / total) * 100).toFixed(1) + '%' : '0%';
+            statistics.pending = res.data.waitOutBoundOrderQty || 0;
+            statistics.today = res.data.todayOutBoundOrderQty || 0;
         }
     } catch (e) {
         console.warn('获取统计失败', e);
     }
 };
 
-// 3. 扫描处理 (第一步：获取单据ID)
+// 3. 扫描处理
 const handleScan = async () => {
     const trackingNo = formData.trackingNo.trim();
     if (!trackingNo) return;
 
-    // 校验逻辑
-    if (formData.verifySupplier && !formData.supplierId) {
+    // 必填校验
+    if (!formData.supplierId) {
         ElMessage.warning('请选择服务商');
         playSound('error');
+        nextTick(() => trackingInputRef.value?.focus());
         return;
     }
-    if (formData.verifyChannel && !formData.channelId) {
-        ElMessage.warning('请选择渠道');
+    if (!formData.channelId) {
+        ElMessage.warning('请选择服务商渠道');
         playSound('error');
+        nextTick(() => trackingInputRef.value?.focus());
         return;
     }
 
     const loading = ElLoading.service({ lock: true, text: '查询订单中...' });
     try {
-        // codeType: '1' 代表跟踪号 (参考称重逻辑)
         const res = await getOutOrderByCodeApi({ code: trackingNo, codeType: '1' });
         if (res.success) {
             const list = res.data || [];
             if (list.length === 1) {
-                // 只有一个订单，直接提交
                 await executeSubmit(list[0].id, trackingNo);
             } else if (list.length > 1) {
-                // 多个订单，弹窗选择
                 orderList.value = list;
                 selectedOrderId.value = '';
                 orderSelectDialogVisible.value = true;
-                playSound('error'); // 提示需要人工干预
-            } else {
-                // 未找到
                 playSound('error');
-                smartAlert('未找到该跟踪号对应的订单', false);
-                addLog(trackingNo, false, '未找到订单');
-                // 失败也更新统计（看业务需求，这里暂时认为查不到也算一种失败）
-                statistics.failed++;
-                resetInput();
+            } else {
+                handleFailure(trackingNo, '未找到该跟踪号对应的订单');
             }
         } else {
-            playSound('error');
-            smartAlert(res.msg || '查询失败', false);
-            addLog(trackingNo, false, res.msg);
-            resetInput();
+            handleFailure(trackingNo, res.msg || '查询失败');
         }
     } catch (e) {
         console.error(e);
-        playSound('error');
-        ElMessage.error('系统异常');
-        resetInput();
+        handleFailure(trackingNo, '系统异常');
     } finally {
         loading.close();
     }
+};
+
+// 辅助：统一处理失败
+const handleFailure = (trackingNo, msg) => {
+    playSound('error');
+    smartAlert(msg, false);
+    addLog(trackingNo, false, msg);
+    resetInput();
 };
 
 // 4. 选择订单逻辑
@@ -296,21 +277,21 @@ const getSelectedOrderRowClass = ({ row }) => row.id === selectedOrderId.value ?
 const confirmSelectedOrder = async () => {
     if (selectedOrderId.value) {
         orderSelectDialogVisible.value = false;
-        // 使用当前输入框的跟踪号继续提交
         await executeSubmit(selectedOrderId.value, formData.trackingNo);
     }
 };
 
-// 5. 执行提交 (第二步：调用出库接口)
+// 5. 执行提交
 const executeSubmit = async (outOrderId, trackingNo) => {
     const loading = ElLoading.service({ lock: true, text: '正在出库...' });
     try {
         const params = {
             outOrderId: outOrderId,
-            supplierId: formData.supplierId || '',
-            supplierChannelId: formData.channelId || '', // 注意：这里映射前端的 channelId 到后端 supplierChannelId
+            supplierId: formData.supplierId,
+            supplierChannelId: formData.channelId,
             isCheckSupplier: formData.verifySupplier,
-            isCheckSupplierChannel: formData.verifyChannel
+            isCheckSupplierChannel: formData.verifyChannel,
+            trackingNo: trackingNo
         };
 
         const res = await submitOutboundStockApi(params);
@@ -318,18 +299,12 @@ const executeSubmit = async (outOrderId, trackingNo) => {
             playSound('ok');
             ElMessage.success('出库成功');
             addLog(trackingNo, true);
-            // 刷新统计
-            getStatistics();
+            getStatistics(); // 刷新待出库和今日出库
         } else {
-            playSound('error');
-            smartAlert(res.msg || '出库失败', false);
-            addLog(trackingNo, false, res.msg);
-            statistics.failed++; // 手动增加失败数，或者等待 getStatistics 刷新
+            handleFailure(trackingNo, res.msg || '出库失败');
         }
     } catch (e) {
-        playSound('error');
-        smartAlert('提交异常', false);
-        addLog(trackingNo, false, '提交异常');
+        handleFailure(trackingNo, '提交异常');
     } finally {
         loading.close();
         resetInput();
@@ -344,7 +319,7 @@ const addLog = (trackingNo, isSuccess, msg = '') => {
     const logItem = {
         trackingNo,
         supplierName: currentSupplier ? currentSupplier.name : '-',
-        channelName: currentChannel ? currentChannel.carrierName : '-',
+        channelName: currentChannel ? currentChannel.name : '-',
         time: dayjs().format('MM-DD HH:mm:ss'),
         success: isSuccess,
         msg: msg
@@ -352,7 +327,6 @@ const addLog = (trackingNo, isSuccess, msg = '') => {
     logList.value.unshift(logItem);
 };
 
-// 辅助：重置输入框
 const resetInput = () => {
     formData.trackingNo = '';
     nextTick(() => {
@@ -364,7 +338,6 @@ const clearLogs = () => {
     logList.value = [];
 };
 
-// --- 生命周期 ---
 onMounted(() => {
     initOptions();
     getStatistics();
@@ -485,16 +458,6 @@ h3 {
 
     &.success {
         background: linear-gradient(135deg, #84fab0 0%, #8fd3f4 100%);
-        color: #1f2329;
-    }
-
-    &.danger {
-        background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 99%, #fecfef 100%);
-        color: #5a1e1e;
-    }
-
-    &.primary {
-        background: linear-gradient(135deg, #a1c4fd 0%, #c2e9fb 100%);
         color: #1f2329;
     }
 }

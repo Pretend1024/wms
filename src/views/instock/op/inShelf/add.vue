@@ -4,7 +4,7 @@
             <el-splitter>
                 <el-splitter-panel size="320" :resizable="false" style="padding-right: 10px;">
                     <p>上架信息 </p>
-                    <el-form style="width: 280px;" :model="orderData" ref="formRef" label-width="105px" :rules="rules">
+                    <el-form style="width: 280px;" :model="orderData" label-width="105px" :rules="rules">
                         <el-row>
                             <el-col :span="24">
                                 <el-form-item label="上架方式:">
@@ -108,7 +108,7 @@
                                     message.content }}</span>
                         </el-col>
                     </el-row>
-                    <el-form :model="orderInfo" ref="formRef" label-width="131px" style="width: 950px;">
+                    <el-form :model="orderInfo" label-width="131px" style="width: 950px;">
                         <el-row>
                             <el-col :span="8">
                                 <el-form-item label="仓库代码:">
@@ -219,7 +219,7 @@
             <template #footer>
                 <div class="dialog-footer">
                     <el-button @click="centerDialogVisible = false, orderId = ''">{{ getButtonText('cancel')
-                        }}</el-button>
+                    }}</el-button>
                     <el-button type="primary" @click="handleDialogConfirm">{{ getButtonText('confirm') }}</el-button>
                 </div>
             </template>
@@ -276,6 +276,7 @@ const getOrderRecommendLocation = async () => {
     const elInput = locationCodeRef.value?.$el?.querySelector('input')
     if (elInput) elInput.focus()
 }
+const formRef = ref(null)
 const rules = {
     boxNo: [
         {
@@ -404,6 +405,11 @@ const reset = () => {
     message.value.content = ''; // 提示信息内容
     locationCode.value = '';  // 参考库位
     orderData.value.recommendId = 1; // 推荐规则id
+    nextTick(() => {
+        if (formRef.value) {
+            formRef.value.clearValidate(); // 清空所有字段验证状态
+        }
+    });
 
 }
 // 获取上架SKU或箱信息
@@ -514,7 +520,6 @@ const submit = async () => {
             orderData.value.boxNo = ''
             orderData.value.qualityId = 1
             orderData.value.remark = ''
-            await nextTick()
             const elBoxNo = boxNoRef.value?.$el?.querySelector('input')
             if (elBoxNo) {
                 elBoxNo.focus()
@@ -522,6 +527,12 @@ const submit = async () => {
                 const elInput = skuRef.value?.$el?.querySelector('input')
                 if (elInput) elInput.focus()
             }
+            nextTick(() => {
+                if (formRef.value) {
+                    console.log('clearValidate')
+                    formRef.value.clearValidate(); // 清空所有字段验证状态
+                }
+            });
         }
     } catch (error) {
         console.error('接口调用出错:', error)

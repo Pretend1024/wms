@@ -138,8 +138,8 @@ export const getOutstockOrderProblemApi = createPostRequestWithQuery('/outstock/
 export const getOutstockOrderHoldupApi = createPostRequestWithQuery('/outstock/order/outOrderHoldup/listByOutOrderId')
 
 // 申请单号类型枚举
-export const getOutstockOrderApplyWayBillTypeEnumApi = () => {
-    return http.post('/outstock/order/outOrder/applyWayBillTypeEnum')
+export const getOutstockOrderWayBillTypeEnumApi = () => {
+    return http.post('/outstock/order/outOrder/waybillTypeEnum')
 }
 
 // --------------------------------------分配库存

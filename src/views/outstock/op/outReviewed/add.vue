@@ -1,11 +1,8 @@
 <template>
     <div class="viewArea">
         <div class="contentDiv">
-            <!-- 左右分栏布局 -->
             <div class="layout">
-                <!-- 左侧操作区域 -->
                 <div class="leftPanel">
-                    <!-- 1. 订单识别区域 -->
                     <div class="module orderIdentifyModule">
                         <h3>
                             <el-icon>
@@ -29,7 +26,6 @@
                         </div>
                     </div>
 
-                    <!-- 2. 运单扫描区域 -->
                     <div class="module waybillScanModule">
                         <h3>
                             <el-icon>
@@ -45,7 +41,6 @@
                         </el-form>
                     </div>
 
-                    <!-- 3. 商品扫描区域 -->
                     <div class="module skuScanModule">
                         <h3>
                             <el-icon>
@@ -56,9 +51,8 @@
                             <el-form-item label="商品条码:">
                                 <el-input v-model.trim="skuData.barcode" @keydown.enter.prevent.stop="matchSku"
                                     ref="skuInputRef"
-                                    :disabled="!currentWaybillMatched || currentWaybillSkuFinished || allSkuFinished"
+                                    :disabled="!currentWaybillMatched || currentWaybillSkuFinished || isCurrentPackageSubmitted"
                                     placeholder="扫描商品条码后回车" />
-                                <!-- 进度显示 -->
                                 <div class="progress-text" v-if="currentSkuTotal > 0">
                                     当前进度: {{ currentSkuProgress }}/{{ currentSkuTotal }}
                                 </div>
@@ -69,7 +63,6 @@
                         </el-form>
                     </div>
 
-                    <!-- 4. 耗材扫描区域 -->
                     <div class="module materialScanModule">
                         <h3>
                             <el-icon>
@@ -80,21 +73,19 @@
                             <el-form-item label="耗材条码:">
                                 <el-input v-model.trim="materialData.barcode"
                                     @keydown.enter.prevent.stop="matchMaterial" ref="materialInputRef"
-                                    :disabled="!currentWaybillSkuFinished" @focus="checkAllSkuFinished"
+                                    :disabled="!currentWaybillSkuFinished || isCurrentPackageSubmitted"
                                     placeholder="扫描耗材条码后回车" />
                             </el-form-item>
                         </el-form>
                     </div>
 
-                    <!-- 提交复核 -->
                     <div class="submit-section">
-                        <el-button type="success" icon="Check" @click="submitReview" :disabled="!isReviewComplete"
+                        <el-button type="success" icon="Check" @click="submitReview" :disabled="!canSubmit"
                             class="submit-btn">
-                            提交复核 (Ctrl+Enter)
+                            提交当前包裹 (Ctrl+Enter)
                         </el-button>
                     </div>
 
-                    <!-- 自定义快捷键说明 -->
                     <div class="shortcut-tips-custom">
                         <div class="shortcut-title">快捷键说明</div>
                         <ul class="shortcut-list">
@@ -107,9 +98,7 @@
                     </div>
                 </div>
 
-                <!-- 右侧信息展示区域 -->
                 <div class="rightPanel">
-                    <!-- 订单基本信息 -->
                     <div class="module orderBasicInfoModule">
                         <h3>
                             <el-icon>
@@ -134,7 +123,7 @@
                                 <span class="info-value">{{ orderBasicInfo.customerCode || '-' }}</span>
                             </div>
                             <div class="info-item">
-                                <span class="info-label">物流渠道:</span>
+                                <span class="info-label">物流产品:</span>
                                 <span class="info-value">{{ orderBasicInfo.shipwayCode || '-' }}</span>
                             </div>
                             <div class="info-item">
@@ -144,7 +133,6 @@
                         </div>
                     </div>
 
-                    <!-- 包裹列表 -->
                     <div class="module packageListModule">
                         <h3>
                             <el-icon>
@@ -156,15 +144,16 @@
                             <div v-for="(packageItem, packageIndex) in packageList" :key="packageItem.waybillId"
                                 class="package-item" :class="{
                                     'matched-package': packageItem.isMatched,
-                                    'completed-package': packageItem.isCompleted && !packageItem.isMatched
+                                    'completed-package': packageItem.isSubmitted
                                 }">
                                 <div class="package-header">
                                     <span class="package-number">包裹 {{ packageIndex + 1 }}</span>
                                     <span class="waybill-number">运单号: {{ formatWaybillNo(packageItem.trackingNo)
-                                        }}</span>
+                                    }}</span>
+                                    <el-tag v-if="packageItem.isSubmitted" type="success" size="small"
+                                        style="margin-left: auto;">已提交</el-tag>
                                 </div>
 
-                                <!-- 商品列表 -->
                                 <div class="table-section">
                                     <div class="table-title">商品信息</div>
                                     <el-table :data="packageItem.orderSkuItems" border style="width: 100%;"
@@ -183,7 +172,6 @@
                                     </el-table>
                                 </div>
 
-                                <!-- 耗材列表 -->
                                 <div class="table-section">
                                     <div class="table-title">耗材信息</div>
                                     <el-table :data="packageItem.consumableList" border style="width: 100%;"
@@ -191,7 +179,21 @@
                                         <el-table-column prop="consumablesBarcode" label="耗材条码" width="180" />
                                         <el-table-column prop="consumablesName" label="耗材名称" show-overflow-tooltip
                                             width="200" />
-                                        <el-table-column prop="quantity" label="数量" width="100" />
+                                        <el-table-column prop="quantity" label="数量" width="150">
+                                            <template #default="scope">
+                                                <el-input v-model="scope.row.quantity" v-intNumber="true" size="small"
+                                                    :disabled="packageItem.isSubmitted" style="width: 100%" />
+                                            </template>
+                                        </el-table-column>
+
+                                        <el-table-column label="操作" width="80" align="center">
+                                            <template #default="scope">
+                                                <el-button type="danger" link :icon="Delete"
+                                                    @click="removeConsumable(packageItem, scope.$index)"
+                                                    :disabled="packageItem.isSubmitted">
+                                                </el-button>
+                                            </template>
+                                        </el-table-column>
                                     </el-table>
                                 </div>
                             </div>
@@ -201,7 +203,6 @@
             </div>
         </div>
 
-        <!-- 订单选择弹窗 -->
         <el-dialog v-model="orderSelectDialogVisible" title="选择出库单号" width="700px" :close-on-click-modal="false"
             align-center>
             <el-table :data="orderList" border style="width: 100%" @row-click="handleOrderRowClick"
@@ -222,8 +223,7 @@
 
 <script setup name="复核">
 import { ref, reactive, nextTick, onMounted, onUnmounted, computed } from 'vue';
-import { ElTag, ElInput, ElSelect, ElOption, ElButton, ElTable, ElTableColumn, ElMessage, ElLoading, ElDialog } from 'element-plus';
-import { Document, Ticket, Goods, Crop, Box, InfoFilled, Check, RefreshLeft } from '@element-plus/icons-vue';
+import { Document, Ticket, Goods, Crop, Box, InfoFilled, Delete, RefreshLeft } from '@element-plus/icons-vue';
 import { smartAlert } from '@/utils/genericMethods.js';
 import { getReCheckOutOrderApi, submitReCheckApi, isAvailableAndInStockApi, getOutOrderByCodeApi } from '@/api/outstockApi/op.js';
 
@@ -314,22 +314,21 @@ const orderList = ref([]); // 存储完整的订单信息列表
 const selectedOrderId = ref(''); // 选中的订单ID
 const tempOrderData = ref({}); // 临时存储订单识别数据，用于弹窗选择后恢复
 
-// 计算属性：所有包裹商品是否都已完成
-const allSkuFinished = computed(() => {
-    return packageList.value.every(pkg => {
-        return pkg.orderSkuItems.every(sku => (sku.reviewedQty || 0) >= (sku.qty || 0));
-    });
+// 计算属性：当前包裹是否已提交
+const isCurrentPackageSubmitted = computed(() => {
+    const currentPkg = packageList.value.find(pkg => pkg.isMatched);
+    return currentPkg ? currentPkg.isSubmitted : false;
 });
 
-// 计算属性：是否可以提交复核
-const isReviewComplete = computed(() => {
-    if (!orderInfoLoaded.value) return false;
-
-    // 检查所有包裹的商品是否完成
-    return packageList.value.every(pkg => {
-        const skuAllFinished = pkg.orderSkuItems.every(sku => sku.reviewedQty >= sku.qty);
-        return skuAllFinished;
-    });
+// 计算属性：是否可以提交当前包裹
+const canSubmit = computed(() => {
+    // 必须有匹配的运单
+    if (!currentWaybillMatched.value) return false;
+    // 必须商品复核完成
+    if (!currentWaybillSkuFinished.value) return false;
+    // 不能是已经提交过的
+    if (isCurrentPackageSubmitted.value) return false;
+    return true;
 });
 
 // 格式化运单号（隐藏最后四位）
@@ -354,20 +353,16 @@ const resetWaveInfo = () => {
     });
 };
 
-// 获取订单信息 - 先调用新接口getOutOrderByCodeApi
+// 获取订单信息
 const getOrderInfo = async (forceOrderId = '') => {
-    // 如果有强制传入的订单ID，则直接使用它调用详情接口
     if (forceOrderId) {
         return fetchOrderDetails(forceOrderId);
     }
-
-    // 否则先调用搜索接口
     const codeToUse = orderData.code.trim();
     if (!codeToUse) return;
 
     const loading = ElLoading.service({ lock: true, text: 'loading...' });
     try {
-        // 先调用新接口搜索订单
         const searchRes = await getOutOrderByCodeApi({
             code: codeToUse,
             codeType: orderData.codeType
@@ -379,27 +374,21 @@ const getOrderInfo = async (forceOrderId = '') => {
             return;
         }
 
-        // 检查返回的订单列表
         const orderListData = searchRes.data || [];
-
         if (orderListData.length === 1) {
-            // 只有一条数据，直接使用其ID获取详情
             const orderId = orderListData[0].id;
-            if (orderId) {
-                await fetchOrderDetails(orderId);
-            } else {
+            if (orderId) await fetchOrderDetails(orderId);
+            else {
                 playAudio('error');
                 smartAlert('获取订单ID失败', false);
             }
         } else if (orderListData.length > 1) {
-            // 多条数据，显示选择弹窗
             tempOrderData.value = { ...orderData };
             orderList.value = orderListData;
             selectedOrderId.value = '';
             orderSelectDialogVisible.value = true;
             playAudio('error');
         } else {
-            // 没有找到数据
             playAudio('error');
             smartAlert('未找到匹配的订单信息', false);
         }
@@ -423,7 +412,6 @@ const fetchOrderDetails = async (orderId) => {
 
         if (res.success && res.data) {
             const orderResData = res.data;
-
             // 填充订单基本信息
             orderBasicInfo.orderId = orderResData.orderId || '';
             orderBasicInfo.orderNo = orderResData.orderNo || '';
@@ -438,26 +426,32 @@ const fetchOrderDetails = async (orderId) => {
             packageList.value = (orderResData.orderItems || []).map(pkg => ({
                 ...pkg,
                 isMatched: false,
-                isCompleted: false,
+                isSubmitted: false,
                 orderSkuItems: (pkg.orderSkuItems || []).map(sku => ({
                     ...sku,
                     reviewedQty: 0
                 })),
-                consumableList: [],
+                // --- 修改重点：字段名改为 consumablesVOList ---
+                consumableList: (pkg.consumablesVOList || []).map(c => ({
+                    consumablesCode: c.consumablesCode,
+                    consumablesName: c.consumablesName,
+                    consumablesBarcode: c.consumablesBarcode,
+                    // 优先使用 quantity，如果没有则默认为 1
+                    quantity: c.quantity !== undefined ? c.quantity : 1
+                })),
+                // --- 修改结束 ---
                 originalConsumableList: []
             }));
 
             orderInfoLoaded.value = true;
             orderFormDisabled.value = true;
             playAudio('ok');
-            console.log('订单信息加载成功:', orderData);
-            if(orderData.codeType === '1'){
-                waybillData.number = orderData.code; 
+
+            if (orderData.codeType === '1') {
+                waybillData.number = orderData.code;
                 matchWaybill();
             }
             ElMessage.success('订单信息加载成功');
-
-            // 聚焦运单号输入框
             nextTick(() => waybillInputRef.value?.$el?.querySelector('input')?.focus());
         } else {
             playAudio('error');
@@ -472,71 +466,56 @@ const fetchOrderDetails = async (orderId) => {
     }
 };
 
-// 处理订单选择表格行点击
-const handleOrderRowClick = (row) => {
-    selectedOrderId.value = row.id;
-};
-
-// 获取选中订单行的样式
-const getSelectedOrderRowClass = ({ row }) => {
-    return row.id === selectedOrderId.value ? 'selected-order-row' : '';
-};
-
-// 确认选择的订单
+const handleOrderRowClick = (row) => { selectedOrderId.value = row.id; };
+const getSelectedOrderRowClass = ({ row }) => { return row.id === selectedOrderId.value ? 'selected-order-row' : ''; };
 const confirmSelectedOrder = () => {
     if (!selectedOrderId.value) return;
-
-    // 关闭弹窗
     orderSelectDialogVisible.value = false;
-
-    // 根据选中的订单ID获取详情
     getOrderInfo(selectedOrderId.value);
 };
 
-// 匹配运单 - 不区分大小写
+// 匹配运单
 const matchWaybill = () => {
     if (!waybillData.number.trim() || !orderInfoLoaded.value) return;
-
     const inputWaybill = waybillData.number.trim();
-    // 使用正则表达式进行不区分大小写匹配
     const matchedPackage = packageList.value.find(pkg =>
         new RegExp(`^${pkg.trackingNo}$`, 'i').test(inputWaybill)
     );
 
     if (matchedPackage) {
-        // 重置之前匹配的包裹状态
+        if (matchedPackage.isSubmitted) {
+            playAudio('error');
+            smartAlert('该包裹已提交复核，请扫描其他运单', false);
+            waybillData.number = '';
+            return;
+        }
+
+        // 重置之前匹配的包裹状态（如果有未提交的中间状态）
         packageList.value.forEach(pkg => {
-            pkg.isMatched = false;
+            if (!pkg.isSubmitted) {
+                pkg.isMatched = false;
+            }
         });
 
-        // 设置当前匹配的包裹
         matchedPackage.isMatched = true;
         currentWaybillMatched.value = true;
-        // 匹配到运单后禁用运单号输入框
+        // 匹配成功后，禁用运单输入框，强制走完商品和耗材流程
         waybillDisabled.value = true;
         playAudio('ok');
 
-        // 计算当前商品进度
         currentSkuTotal.value = matchedPackage.orderSkuItems.reduce((sum, sku) => sum + (sku.qty || 0), 0);
         currentSkuProgress.value = matchedPackage.orderSkuItems.reduce((sum, sku) => sum + (sku.reviewedQty || 0), 0);
 
-        // 检查是否所有商品已复核完成
         const pkgSkuFinished = matchedPackage.orderSkuItems.every(sku => (sku.reviewedQty || 0) >= (sku.qty || 0));
         currentWaybillSkuFinished.value = pkgSkuFinished;
 
         if (pkgSkuFinished) {
-            // 标记包裹为已完成
-            matchedPackage.isCompleted = true;
             ElMessage.success('该包裹所有商品已复核完成，请继续处理耗材');
-            // 聚焦耗材条码输入框
             nextTick(() => materialInputRef.value?.$el?.querySelector('input')?.focus());
+        } else {
+            waybillData.number = '';
+            nextTick(() => skuInputRef.value?.$el?.querySelector('input')?.focus());
         }
-
-        // 清空运单号输入框
-        waybillData.number = '';
-
-        // 聚焦商品条码输入框
-        nextTick(() => skuInputRef.value?.$el?.querySelector('input')?.focus());
     } else {
         playAudio('error');
         smartAlert('运单号匹配失败，请检查输入', false);
@@ -544,22 +523,18 @@ const matchWaybill = () => {
     }
 };
 
-// 匹配商品 - 不区分大小写
+// 匹配商品
 const matchSku = async () => {
     if (!skuData.barcode.trim() || !currentWaybillMatched.value) return;
-
-    // 找到当前匹配的包裹
     const currentPackage = packageList.value.find(pkg => pkg.isMatched);
     if (!currentPackage) return;
 
     const inputBarcode = skuData.barcode.trim();
-    // 使用正则表达式进行不区分大小写匹配
     const matchedSku = currentPackage.orderSkuItems.find(sku =>
         new RegExp(`^${sku.barcode}$`, 'i').test(inputBarcode)
     );
 
     if (matchedSku) {
-        // 检查是否已达到拣货数量
         if ((matchedSku.reviewedQty || 0) < (matchedSku.qty || 0)) {
             matchedSku.reviewedQty = (matchedSku.reviewedQty || 0) + 1;
             playAudio('ok');
@@ -570,35 +545,20 @@ const matchSku = async () => {
             return;
         }
 
-        // 更新进度
         currentSkuProgress.value = currentPackage.orderSkuItems.reduce((sum, sku) => sum + (sku.reviewedQty || 0), 0);
-
-        // 检查是否所有商品已复核完成
         const pkgSkuFinished = currentPackage.orderSkuItems.every(sku => (sku.reviewedQty || 0) >= (sku.qty || 0));
         currentWaybillSkuFinished.value = pkgSkuFinished;
 
         if (pkgSkuFinished) {
-            // 标记包裹为已完成
-            currentPackage.isCompleted = true;
-            // 商品复核完成后启用运单号输入框
-            waybillDisabled.value = false;
-            ElMessage.success('该包裹所有商品已复核完成，请继续处理耗材或扫描下一运单');
-            // 聚焦耗材条码输入框
+            ElMessage.success('该包裹所有商品已复核完成，请继续处理耗材或提交');
+            // 注意：商品扫完后不启用运单，必须提交后才启用
             nextTick(() => materialInputRef.value?.$el?.querySelector('input')?.focus());
         }
-
         skuData.barcode = '';
     } else {
         playAudio('error');
         smartAlert('商品条码匹配失败，请检查输入', false);
         skuData.barcode = '';
-    }
-};
-
-// 聚焦耗材时检查所有商品是否完成，若完成则禁用运单号输入框
-const checkAllSkuFinished = () => {
-    if (allSkuFinished.value) {
-        waybillDisabled.value = true;
     }
 };
 
@@ -610,7 +570,6 @@ const matchMaterial = async () => {
     if (!currentPackage) return;
 
     try {
-        // 调用耗材库存检查接口
         const res = await isAvailableAndInStockApi({
             warehouseCode: orderBasicInfo.warehouseCode,
             customerCode: orderBasicInfo.customerCode,
@@ -632,24 +591,22 @@ const matchMaterial = async () => {
             return;
         }
 
-        // 构建耗材数据
-        const newMaterial = {
-            consumablesCode: materialInfo.consumablesCode,
-            consumablesName: materialInfo.consumablesName || `耗材${materialData.barcode.slice(-4)}`,
-            consumablesBarcode: materialInfo.consumablesBarcode || materialData.barcode.trim(),
-            quantity: 1
-        };
-
-        // 检查是否已存在该耗材
-        const existingMaterialIndex = currentPackage.consumableList.findIndex(
-            mat => new RegExp(`^${mat.consumablesBarcode}$`, 'i').test(newMaterial.consumablesBarcode)
+        // 检查耗材是否已存在
+        const existingMaterial = currentPackage.consumableList.find(
+            mat => new RegExp(`^${mat.consumablesBarcode}$`, 'i').test(materialInfo.consumablesBarcode || materialData.barcode.trim())
         );
 
-        if (existingMaterialIndex > -1) {
-            // 已存在则数量+1
-            currentPackage.consumableList[existingMaterialIndex].quantity += 1;
+        if (existingMaterial) {
+            // 已存在则数量+1 (因为是输入框，也可以手动改，扫描则自动加1)
+            existingMaterial.quantity += 1;
         } else {
-            // 不存在则新增
+            // 不存在则新增，初始数量1
+            const newMaterial = {
+                consumablesCode: materialInfo.consumablesCode,
+                consumablesName: materialInfo.consumablesName || `耗材${materialData.barcode.slice(-4)}`,
+                consumablesBarcode: materialInfo.consumablesBarcode || materialData.barcode.trim(),
+                quantity: 1
+            };
             currentPackage.consumableList.push(newMaterial);
         }
 
@@ -663,57 +620,59 @@ const matchMaterial = async () => {
     }
 };
 
-// 商品行样式
-const getSkuRowClassName = ({ row }) => {
-    if ((row.reviewedQty || 0) >= (row.qty || 0)) return 'sku-finished-row';
-    if ((row.reviewedQty || 0) > 0) return 'sku-matched-row';
-    return '';
+//删除耗材
+const removeConsumable = (pkg, index) => {
+    if (pkg.isSubmitted) return;
+    pkg.consumableList.splice(index, 1);
 };
 
-// 耗材行样式
-const getMaterialRowClassName = ({ row }) => {
-    return row.quantity > 0 ? 'material-matched-row' : '';
-};
-
-// 提交复核
+// 提交复核 (按包裹提交)
 const submitReview = async () => {
-    if (!isReviewComplete.value) {
-        smartAlert('复核未完成，请检查所有包裹的商品和耗材', false);
+    // 获取当前正在操作的包裹
+    const currentPackage = packageList.value.find(pkg => pkg.isMatched);
+
+    if (!currentPackage) return;
+    if (!canSubmit.value) {
+        smartAlert('当前包裹尚未完成商品复核，无法提交', false);
         return;
     }
 
-    const loading = ElLoading.service({ lock: true, text: 'loading...' });
-    console.log(packageList.value);
+    const loading = ElLoading.service({ lock: true, text: '提交中...' });
     try {
-        // 收集所有包裹的耗材信息（注意：这里修正了原代码中waybillId和trackingNo未定义的问题，应从pkg中获取）
-        const allConsumables = [];
-        packageList.value.forEach(pkg => {
-            const consumables = pkg.consumableList.length > 0
-                ? pkg.consumableList
-                : pkg.originalConsumableList;
+        // 准备当前包裹的耗材数据
+        const consumablesToSubmit = currentPackage.consumableList.length > 0
+            ? currentPackage.consumableList
+            : currentPackage.originalConsumableList;
 
-            allConsumables.push(...consumables.map(mat => ({
-                consumablesCode: mat.consumablesCode,
-                consumablesName: mat.consumablesName,
-                consumablesBarcode: mat.consumablesBarcode,
-                quantity: mat.quantity,
-                waybillId: pkg.waybillId || '', // 从当前包裹pkg中获取waybillId
-                trackingNo: pkg.trackingNo || ''  // 从当前包裹pkg中获取trackingNo
-            })));
-        });
+        const consumableListPayload = consumablesToSubmit.map(mat => ({
+            consumablesCode: mat.consumablesCode,
+            consumablesName: mat.consumablesName,
+            consumablesBarcode: mat.consumablesBarcode,
+            quantity: mat.quantity,
+            waybillId: currentPackage.waybillId || '',
+            trackingNo: currentPackage.trackingNo || ''
+        }));
 
         // 调用提交复核接口
         const res = await submitReCheckApi({
             outOrderId: orderBasicInfo.orderId,
             customerId: orderBasicInfo.customerId,
             warehouseCode: orderBasicInfo.warehouseCode,
-            consumableList: allConsumables,
+            consumableList: consumableListPayload,
+            // 新增参数：当前包裹的 waybillId
+            waybillIdList: [currentPackage.waybillId]
         });
 
         if (res.success) {
             playAudio('ok');
-            ElMessage.success('复核提交成功');
-            resetPage();
+            ElMessage.success('当前包裹复核提交成功');
+
+            // 标记该包裹为已提交
+            currentPackage.isSubmitted = true;
+            currentPackage.isMatched = false; // 取消匹配高亮，或者保留高亮但变色（CSS控制）
+
+            // 重置当前操作状态，准备扫描下一个包裹
+            resetCurrentOperationState();
         } else {
             playAudio('error');
             smartAlert(res.msg || '复核提交失败', false);
@@ -721,14 +680,30 @@ const submitReview = async () => {
     } catch (error) {
         playAudio('error');
         console.error('提交复核异常:', error);
-        // 修改错误提示，包含具体错误信息
         smartAlert(`提交复核异常: ${error.message || '未知错误'}，请重试`, false);
     } finally {
         loading.close();
     }
 };
 
-// 重置页面
+// 提交成功后重置当前操作区的状态，不重置整个页面
+const resetCurrentOperationState = () => {
+    waybillData.number = '';
+    skuData.barcode = '';
+    materialData.barcode = '';
+    currentWaybillMatched.value = false;
+    currentWaybillSkuFinished.value = false;
+    currentSkuProgress.value = 0;
+    currentSkuTotal.value = 0;
+
+    // 启用运单输入框，以便扫描下一个
+    waybillDisabled.value = false;
+    nextTick(() => {
+        waybillInputRef.value?.$el?.querySelector('input')?.focus();
+    });
+};
+
+// 重置整个页面
 const resetPage = () => {
     orderData.code = '';
     waybillData.number = '';
@@ -745,66 +720,56 @@ const resetPage = () => {
     orderSelectDialogVisible.value = false;
     orderList.value = [];
     selectedOrderId.value = '';
-    // 清空订单基本信息
     Object.keys(orderBasicInfo).forEach(key => {
         orderBasicInfo[key] = '';
     });
-
-    // 聚焦到初始输入框
     nextTick(() => numberInputRef.value?.$el?.querySelector('input')?.focus());
+};
+
+const getSkuRowClassName = ({ row }) => {
+    if ((row.reviewedQty || 0) >= (row.qty || 0)) return 'sku-finished-row';
+    if ((row.reviewedQty || 0) > 0) return 'sku-matched-row';
+    return '';
+};
+
+const getMaterialRowClassName = ({ row }) => {
+    return row.quantity > 0 ? 'material-matched-row' : '';
 };
 
 // 快捷键处理
 const handleKeyDown = (e) => {
-    // 无论当前聚焦元素是什么，优先处理Ctrl+Enter提交
     if (e.ctrlKey && e.key === 'Enter') {
-        e.preventDefault(); // 阻止默认行为（如输入框换行）
-        e.stopPropagation(); // 阻止事件冒泡
+        e.preventDefault();
+        e.stopPropagation();
         submitReview();
-        return; // 处理后直接返回，避免其他逻辑干扰
+        return;
     }
 
-    // Ctrl+1: 聚焦单号输入框
     if (e.ctrlKey && e.key === '1') {
         e.preventDefault();
         nextTick(() => numberInputRef.value?.$el?.querySelector('input')?.focus());
     }
-    // Ctrl+2: 聚焦运单号输入框
     else if (e.ctrlKey && e.key === '2') {
         e.preventDefault();
         if (orderInfoLoaded.value && !waybillDisabled.value) {
             nextTick(() => waybillInputRef.value?.$el?.querySelector('input')?.focus());
-        } else {
-            smartAlert(waybillDisabled.value ? '当前包裹商品尚未完成复核，运单号输入框已禁用' : '请先加载订单信息', false);
         }
     }
-    // Ctrl+3: 聚焦商品条码输入框
     else if (e.ctrlKey && e.key === '3') {
         e.preventDefault();
-        if (currentWaybillMatched.value && !currentWaybillSkuFinished.value && !allSkuFinished.value) {
+        if (currentWaybillMatched.value && !currentWaybillSkuFinished.value && !isCurrentPackageSubmitted.value) {
             nextTick(() => skuInputRef.value?.$el?.querySelector('input')?.focus());
-        } else {
-            smartAlert(allSkuFinished.value ? '所有商品已完成复核' : '请先匹配运单号或完成当前商品复核', false);
         }
     }
-    // Ctrl+4: 聚焦耗材条码输入框
     else if (e.ctrlKey && e.key === '4') {
         e.preventDefault();
-        if (currentWaybillSkuFinished.value) {
+        if (currentWaybillSkuFinished.value && !isCurrentPackageSubmitted.value) {
             nextTick(() => materialInputRef.value?.$el?.querySelector('input')?.focus());
-        } else {
-            smartAlert('请先完成商品复核', false);
         }
     }
 };
 
-// 为所有输入框添加独立的keydown监听（确保在输入框聚焦时也能捕获快捷键）
-const inputs = [
-    numberInputRef,
-    waybillInputRef,
-    skuInputRef,
-    materialInputRef
-];
+const inputs = [numberInputRef, waybillInputRef, skuInputRef, materialInputRef];
 const setupInputKeydownListeners = () => {
     inputs.forEach(ref => {
         nextTick(() => {
@@ -823,8 +788,6 @@ onMounted(() => {
 
 onUnmounted(() => {
     window.removeEventListener('keydown', handleKeyDown);
-
-    // 移除输入框的事件监听
     inputs.forEach(ref => {
         const inputEl = ref.value?.$el?.querySelector('input');
         if (inputEl) {
@@ -895,19 +858,17 @@ onUnmounted(() => {
     transition: all 0.3s;
 }
 
-// 当前匹配的包裹显示橙色边框
 .matched-package {
     border-color: #ff7d00;
     box-shadow: 0 0 0 2px rgba(255, 125, 0, 0.1);
 }
 
-// 已完成的包裹显示绿色边框
 .completed-package {
     border-color: #52c41a;
-    box-shadow: 0 0 0 2px rgba(82, 196, 26, 0.1);
+    background-color: #f6ffed;
+    opacity: 0.8;
 }
 
-// 只有未匹配且未完成的包裹才有悬停效果
 .package-item:not(.matched-package):not(.completed-package):hover {
     border-color: #c0c4cc;
     box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.06);
@@ -969,7 +930,6 @@ onUnmounted(() => {
     font-weight: 500;
 }
 
-// 自定义快捷键说明样式
 .shortcut-tips-custom {
     margin-top: 15px;
     background: #333;
@@ -1009,7 +969,6 @@ onUnmounted(() => {
     }
 }
 
-// 订单选择表格样式
 :deep(.selected-order-row) {
     background-color: #e6f7ff !important;
 }

@@ -23,6 +23,9 @@
                 @input="handlePrintQtyInput" :disabled="disabled" />
         </el-form-item>
 
+        <!-- 表单插槽 -->
+        <slot name="extraForm"></slot>
+
         <!-- 弹窗底部按钮 -->
         <template #footer>
             <div class="dialog-footer">
@@ -86,7 +89,10 @@ const props = defineProps({
     defaultPrintQty: { type: Number, default: 1 },
 
     // 成功回调
-    onPrintSuccess: { type: Function, default: null }
+    onPrintSuccess: { type: Function, default: null },
+
+    //接收父组件插槽表单的数据对象
+    extraParams: { type: Object, default: () => ({}) }
 });
 
 /*-----------------------------------------
@@ -246,6 +252,11 @@ const handlePrintConfirm = async () => {
         baseParams.templateId = printForm.value.templateName;
     }
     Object.assign(apiParams.value, baseParams);
+
+    // 插槽表单参数
+    if (props.extraParams && Object.keys(props.extraParams).length > 0) {
+        Object.assign(apiParams.value, props.extraParams);
+    }
 
     // 找到对应的打印 API
     const printApi = apiMap[props.printType];

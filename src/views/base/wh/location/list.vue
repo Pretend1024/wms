@@ -90,9 +90,10 @@
                 @row-click="handleRowClick" @page-change="handlePageChange" @sort-change="handleTableSort">
                 <!-- 表格上方按钮 -->
                 <template #table-buttons>
-                    <el-button type="primary" @click="handleAdd" v-permission="'location:add'" :icon="Plus">{{
+                    <el-button type="primary" @click="handleAdd" v-permission="'add'" :icon="Plus">{{
                         getButtonText('add') }}</el-button>
-                    <el-button type="danger" @click="handleDel" :icon="DeleteFilled">{{ getButtonText('del') }}
+                    <el-button type="danger" @click="handleDel" v-permission="'delete'" :icon="DeleteFilled">{{
+                        getButtonText('del') }}
                     </el-button>
                     <el-dropdown trigger="click">
                         <el-button type="success">
@@ -101,14 +102,14 @@
                         <template #dropdown>
                             <el-dropdown-menu>
                                 <el-dropdown-item @click="handleImportAdd">{{ getButtonText('importCreate')
-                                }}</el-dropdown-item>
-                                <el-dropdown-item @click="handleImportUpd">{{ getButtonText('importUpdate')
                                     }}</el-dropdown-item>
+                                <el-dropdown-item @click="handleImportUpd">{{ getButtonText('importUpdate')
+                                }}</el-dropdown-item>
                             </el-dropdown-menu>
                         </template>
                     </el-dropdown>
                     <el-button type="success" @click="handleExport" :icon="Share">{{ getButtonText('export')
-                        }}</el-button>
+                    }}</el-button>
                     <el-button type="info" @click="handlePrint" :icon="Printer">{{ getButtonText('print') }}</el-button>
                 </template>
                 <!-- 操作列按钮 -->

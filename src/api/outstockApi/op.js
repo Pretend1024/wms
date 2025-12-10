@@ -19,17 +19,17 @@ export const submitRePickApi = (data) => {
 }
 
 
-// 通过订单号/运单号查询出库单/outstock/order/outOrder/getOutOrderByCode
+// 通过订单号/运单号查询出库单
 export const getOutOrderByCodeApi = createPostRequestWithQuery('/outstock/order/outOrder/getOutOrderByCode')
 
-// 获取订单信息/outstock/order/outOrder/getReCheckOutOrder  opType 1:复核 2：称重 3：出库
+// 获取订单信息  opType 1:复核 2：称重 3：出库
 export const getReCheckOutOrderApi = createPostRequestWithQuery('/outstock/order/outOrder/getOrderWithWaybillAndSku')
 
-// 复核提交/outstock/order/outOrder/submitReCheck
+// 复核提交
 export const submitReCheckApi = (data) => {
     return http.post('/outstock/order/outOrder/submitReCheck', data)
 }
-// 获取耗材信息/base/consumables/consumablesInventory/isAvailableAndInStock
+// 获取耗材信息
 export const isAvailableAndInStockApi = (data) => {
     return http.post('/base/consumables/consumablesInventory/isAvailableAndInStock', data)
 }
@@ -43,6 +43,14 @@ export const submitOutboundStockApi = (data) => {
     return http.post('/outstock/order/outOrder/submitOutboundStock', data)
 }
 // 出库统计
-export const getOutboundOrderDataApi = (data) => {
-    return http.post('/outstock/order/outOrder/getOutboundOrderData', data)
+export const getOutboundOrderDataApi = () => {
+    return http.post('/outstock/order/outOrder/getOutboundOrderData', {})
+}
+
+// 获取出库单/库存分配信息
+export const getOutOrderWithInventoryApi = createPostRequestWithQuery('/outstock/order/outOrder/getOutOrderWithInventory')
+
+// 提交归位上架
+export const submitReturnOnShelfApi = (data) => {
+    return http.post('/outstock/order/outOrder/submitReturnOnShelf', data)
 }

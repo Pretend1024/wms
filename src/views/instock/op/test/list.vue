@@ -39,13 +39,16 @@
                 @row-click="handleRowClick" @page-change="handlePageChange" @sort-change="handleTableSort">
                 <!-- 在表格上方通过 slot 插入按钮 -->
                 <template #table-buttons>
-                    <el-button type="primary" @click="handleAdd" v-permission="'inReceipt:add'">{{getButtonText ('add') }}</el-button>
-                    <el-button type="warning" @click="handleBatchDelete" v-permission="'inReceipt:edit'">{{getButtonText ('edit') }}</el-button>
-                    <el-button type="success" @click="handleExport" v-permission="'inReceipt:delete'">{{getButtonText ('del') }}</el-button>
+                    <el-button type="primary" @click="handleAdd" v-permission="'add'">{{ getButtonText('add')
+                        }}</el-button>
+                    <el-button type="warning" @click="handleBatchDelete" v-permission="'inReceipt:edit'">{{ getButtonText
+                        ('edit') }}</el-button>
+                    <el-button type="success" @click="handleExport" v-permission="'inReceipt:delete'">{{ getButtonText
+                        ('del') }}</el-button>
                 </template>
                 <!-- 使用插槽来自定义列内容，假如我们需要在操作列中添加按钮 -->
                 <template #customBtn="{ row, column, index }">
-                    <a href="#" style="margin: 0 2px;">{{getButtonText ('log') }}</a>
+                    <a href="#" style="margin: 0 2px;">{{ getButtonText('log') }}</a>
                     <a href="#" style="margin: 0 2px;">备注</a>
                     <a href="#" style="margin: 0 2px;">任务单</a>
                     <a href="#" style="margin: 0 2px;">货运参数</a>

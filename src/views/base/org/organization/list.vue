@@ -6,7 +6,7 @@
                 @row-click="handleRowClick">
                 <!-- 表格上方操作按钮 -->
                 <template #table-buttons>
-                    <el-button type="primary" @click="handleAdd" v-permission="'organization:add'" :icon="Plus">
+                    <el-button type="primary" @click="handleAdd" v-permission="'add'" :icon="Plus">
                         {{ getButtonText('add') }}
                     </el-button>
                     <el-button type="success" plain @click="handleExpandAll" :icon="Sort">

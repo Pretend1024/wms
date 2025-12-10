@@ -86,4 +86,8 @@ function summaryMethod({ columns, data }) {
     font-size: 15px;
     font-weight: 700;
 }
+
+::v-deep .el-table {
+    --el-table-row-hover-bg-color: transparent;
+}
 </style>

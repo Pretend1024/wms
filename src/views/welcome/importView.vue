@@ -33,7 +33,7 @@
                 <el-table-column prop="isSuccess" label="成功/失败" width="100">
                     <template #default="{ row }">
                         <span :style="row.isSuccess ? 'color: green' : 'color: red'">{{ row.isSuccess ? '成功' : '失败'
-                        }}</span>
+                            }}</span>
                     </template>
                 </el-table-column>
                 <el-table-column align="right" label="消息">
@@ -110,9 +110,7 @@ const apiMap = {
     561: api.importRemoteDetailAddApi,
 
 
-    606: api.importInOrderFeeAddApi,
-    607: api.importOutOrderFeeAddApi,
-    609: api.importVasOrderFeeAddApi,
+    610: api.importReceivableFeeAddApi
 };
 // 提交
 const commit = async () => {

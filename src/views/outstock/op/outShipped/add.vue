@@ -146,6 +146,9 @@ import { RefreshLeft, Postcard, Grid, EditPen, Folder, List } from '@element-plu
 import { smartAlert } from '@/utils/genericMethods.js';
 import { getWaveOrderProductDetailsApi, getAllUploadFilesApi, submitRePickApi } from '@/api/outstockApi/op.js'
 
+import printJS from 'print-js';
+import 'print-js/dist/print.css';
+
 import okAudio from '@/assets/audio/ok.wav';
 import errorAudio from '@/assets/audio/error.wav';
 import audio0 from '@/assets/audio/0.wav';
@@ -735,153 +738,193 @@ const printAllAttachments = () => {
 };
 
 // 打印单个附件
+// const printAttachment = (file) => {
+//     // 非可打印文件直接返回
+//     if (!isPrintableFile(file.fileName)) {
+//         ElMessage.warning('仅支持PDF和图片文件打印');
+//         return;
+//     }
+
+//     // 清理残留的打印容器和样式，避免叠加
+//     const existingPrintContainer = document.querySelector('.print-container');
+//     const existingPrintStyle = document.querySelector('style[media="print"]');
+//     if (existingPrintContainer) document.body.removeChild(existingPrintContainer);
+//     if (existingPrintStyle) document.head.removeChild(existingPrintStyle);
+
+//     if (!file.fileUrl) {
+//         smartAlert('无附件下载/打印地址', false);
+//         return;
+//     }
+
+//     const fileUrl = file.fileUrl.toLowerCase();
+//     const isImage = isImageFile(file.fileName);
+//     const isPdf = isPdfFile(file.fileName);
+
+//     // 以下为PDF/图片的打印逻辑
+//     const printContainer = document.createElement('div');
+//     printContainer.className = 'print-container';
+//     printContainer.style.position = 'fixed';
+//     printContainer.style.left = '-9999px';
+//     printContainer.style.top = '100';
+//     printContainer.style.width = '100%';
+//     printContainer.style.maxWidth = '790px';
+//     document.body.appendChild(printContainer);
+
+//     let contentElement;
+//     if (isImage) {
+//         contentElement = document.createElement('img');
+//         contentElement.src = `${file.fileUrl}?t=${new Date().getTime()}`; // 禁用缓存
+//         contentElement.style.maxWidth = '100%';
+//         contentElement.style.maxHeight = '100vh';
+//         contentElement.style.margin = '0 auto';
+//         contentElement.alt = file.fileName || '打印图片';
+//     } else if (isPdf) {
+//         contentElement = document.createElement('iframe');
+//         // 加时间戳避免缓存，确保加载最新PDF
+//         contentElement.src = `${file.fileUrl}?t=${new Date().getTime()}`;
+//         contentElement.style.width = '100%';
+//         contentElement.style.height = '95vh';
+//         contentElement.style.border = 'none';
+//         contentElement.style.margin = '0';
+//     }
+
+//     printContainer.appendChild(contentElement);
+
+//     // 强化打印样式，确保仅显示文件内容
+//     const printStyle = document.createElement('style');
+//     printStyle.setAttribute('media', 'print');
+//     printStyle.textContent = `
+//     @media print {
+//       body > *:not(.print-container) { display: none !important; }
+//       .print-container {
+//         position: static !important;
+//         left: 0 !important;
+//         top: 200 !important;
+//         width: 100% !important;
+//         height: 93% !important;
+//         margin: 0 !important;
+//         padding: 0 !important;
+//       }
+//       @page {
+//         margin: 0;
+//         size: A4;
+//       }
+//       html, body {
+//         margin: 0 !important;
+//         padding: 0 !important;
+//         width: 100% !important;
+//         height: 100% !important;
+//          zoom: 100% !important; 
+//          transform: scale(1) !important; 
+//         transform-origin: center !important; 
+//       }
+//       .print-container img, .print-container iframe {
+//         display: block !important;
+//         width: 100% !important;
+//         height: 100% !important;
+//         border: none !important;
+//       }
+//     }
+//   `;
+//     document.head.appendChild(printStyle);
+
+//     // 等待内容加载（优化PDF渲染时机）
+//     const waitForLoad = () => {
+//         return new Promise((resolve, reject) => {
+//             if (isImage) {
+//                 const checkImageLoaded = () => {
+//                     if (contentElement.naturalWidth > 0) resolve('image-loaded');
+//                     else reject(new Error('图片加载失败'));
+//                 };
+//                 contentElement.onload = checkImageLoaded;
+//                 contentElement.onerror = () => reject(new Error('图片加载出错'));
+//                 setTimeout(() => reject(new Error('图片加载超时')), 10000);
+//             } else if (isPdf) {
+//                 let loadTriggered = false;
+//                 // 监听iframe加载完成（PDF渲染可能滞后，增加延迟确认）
+//                 contentElement.onload = () => {
+//                     if (!loadTriggered) {
+//                         loadTriggered = true;
+//                         // 延迟500ms确保PDF渲染完成（关键优化）
+//                         setTimeout(() => resolve('pdf-loaded'), 500);
+//                     }
+//                 };
+//                 contentElement.onerror = () => {
+//                     if (!loadTriggered) {
+//                         loadTriggered = true;
+//                         reject(new Error('PDF加载出错（可能跨域）'));
+//                     }
+//                 };
+//                 // 延长超时时间到20秒，给大型PDF足够加载时间
+//                 setTimeout(() => {
+//                     if (!loadTriggered) {
+//                         loadTriggered = true;
+//                         resolve('pdf-timeout');
+//                     }
+//                 }, 20000);
+//             }
+//         });
+//     };
+
+//     // 执行打印
+//     waitForLoad()
+//         .then(() => {
+//             // 统一使用window.print()，减少浏览器差异（关键优化）
+//             window.print();
+//             // ElMessage.success(`已触发打印：${file.fileName || '未知文件'}`);
+//         })
+//         .catch((error) => {
+//             smartAlert(`打印失败：${error.message}`, false);
+//         })
+//         .finally(() => {
+//             const cleanUp = () => {
+//                 document.body.removeChild(printContainer);
+//                 document.head.removeChild(printStyle);
+//                 window.removeEventListener('afterprint', cleanUp);
+//             };
+//             window.addEventListener('afterprint', cleanUp);
+//             setTimeout(cleanUp, 3000);
+//         });
+// };
 const printAttachment = (file) => {
-    // 非可打印文件直接返回
-    if (!isPrintableFile(file.fileName)) {
-        ElMessage.warning('仅支持PDF和图片文件打印');
-        return;
-    }
-
-    // 清理残留的打印容器和样式，避免叠加
-    const existingPrintContainer = document.querySelector('.print-container');
-    const existingPrintStyle = document.querySelector('style[media="print"]');
-    if (existingPrintContainer) document.body.removeChild(existingPrintContainer);
-    if (existingPrintStyle) document.head.removeChild(existingPrintStyle);
-
     if (!file.fileUrl) {
-        smartAlert('无附件下载/打印地址', false);
+        smartAlert('无附件地址', false);
         return;
     }
 
-    const fileUrl = file.fileUrl.toLowerCase();
-    const isImage = isImageFile(file.fileName);
+    // 加时间戳
+    const url = `${file.fileUrl}?t=${new Date().getTime()}`;
     const isPdf = isPdfFile(file.fileName);
+    const isImage = isImageFile(file.fileName);
 
-    // 以下为PDF/图片的打印逻辑
-    const printContainer = document.createElement('div');
-    printContainer.className = 'print-container';
-    printContainer.style.position = 'fixed';
-    printContainer.style.left = '-9999px';
-    printContainer.style.top = '100';
-    printContainer.style.width = '100%';
-    printContainer.style.maxWidth = '790px';
-    document.body.appendChild(printContainer);
-
-    let contentElement;
-    if (isImage) {
-        contentElement = document.createElement('img');
-        contentElement.src = `${file.fileUrl}?t=${new Date().getTime()}`; // 禁用缓存
-        contentElement.style.maxWidth = '100%';
-        contentElement.style.maxHeight = '100vh';
-        contentElement.style.margin = '0 auto';
-        contentElement.alt = file.fileName || '打印图片';
-    } else if (isPdf) {
-        contentElement = document.createElement('iframe');
-        // 加时间戳避免缓存，确保加载最新PDF
-        contentElement.src = `${file.fileUrl}?t=${new Date().getTime()}`;
-        contentElement.style.width = '100%';
-        contentElement.style.height = '95vh';
-        contentElement.style.border = 'none';
-        contentElement.style.margin = '0';
-    }
-
-    printContainer.appendChild(contentElement);
-
-    // 强化打印样式，确保仅显示文件内容
-    const printStyle = document.createElement('style');
-    printStyle.setAttribute('media', 'print');
-    printStyle.textContent = `
-    @media print {
-      body > *:not(.print-container) { display: none !important; }
-      .print-container {
-        position: static !important;
-        left: 0 !important;
-        top: 200 !important;
-        width: 100% !important;
-        height: 93% !important;
-        margin: 0 !important;
-        padding: 0 !important;
-      }
-      @page {
-        margin: 0;
-        size: A4;
-      }
-      html, body {
-        margin: 0 !important;
-        padding: 0 !important;
-        width: 100% !important;
-        height: 100% !important;
-         zoom: 100% !important; 
-         transform: scale(1) !important; 
-        transform-origin: center !important; 
-      }
-      .print-container img, .print-container iframe {
-        display: block !important;
-        width: 100% !important;
-        height: 100% !important;
-        border: none !important;
-      }
-    }
-  `;
-    document.head.appendChild(printStyle);
-
-    // 等待内容加载（优化PDF渲染时机）
-    const waitForLoad = () => {
-        return new Promise((resolve, reject) => {
-            if (isImage) {
-                const checkImageLoaded = () => {
-                    if (contentElement.naturalWidth > 0) resolve('image-loaded');
-                    else reject(new Error('图片加载失败'));
-                };
-                contentElement.onload = checkImageLoaded;
-                contentElement.onerror = () => reject(new Error('图片加载出错'));
-                setTimeout(() => reject(new Error('图片加载超时')), 10000);
-            } else if (isPdf) {
-                let loadTriggered = false;
-                // 监听iframe加载完成（PDF渲染可能滞后，增加延迟确认）
-                contentElement.onload = () => {
-                    if (!loadTriggered) {
-                        loadTriggered = true;
-                        // 延迟500ms确保PDF渲染完成（关键优化）
-                        setTimeout(() => resolve('pdf-loaded'), 500);
-                    }
-                };
-                contentElement.onerror = () => {
-                    if (!loadTriggered) {
-                        loadTriggered = true;
-                        reject(new Error('PDF加载出错（可能跨域）'));
-                    }
-                };
-                // 延长超时时间到20秒，给大型PDF足够加载时间
-                setTimeout(() => {
-                    if (!loadTriggered) {
-                        loadTriggered = true;
-                        resolve('pdf-timeout');
-                    }
-                }, 20000);
+    if (isPdf) {
+        // 打印 PDF
+        printJS({
+            printable: url,
+            type: 'pdf',
+            showModal: true, // 可选：显示加载中遮罩
+            modalMessage: '正在准备打印文件...',
+            onError: (err) => {
+                console.error(err);
+                ElMessage.error('打印失败，请检查文件地址或跨域设置');
             }
         });
-    };
-
-    // 执行打印
-    waitForLoad()
-        .then(() => {
-            // 统一使用window.print()，减少浏览器差异（关键优化）
-            window.print();
-            // ElMessage.success(`已触发打印：${file.fileName || '未知文件'}`);
-        })
-        .catch((error) => {
-            smartAlert(`打印失败：${error.message}`, false);
-        })
-        .finally(() => {
-            const cleanUp = () => {
-                document.body.removeChild(printContainer);
-                document.head.removeChild(printStyle);
-                window.removeEventListener('afterprint', cleanUp);
-            };
-            window.addEventListener('afterprint', cleanUp);
-            setTimeout(cleanUp, 3000);
+    } else if (isImage) {
+        // 打印图片
+        printJS({
+            printable: url,
+            type: 'image',
+            header: null, // 图片顶部不显示标题
+            imageStyle: 'width:100%;', // 强制图片宽度自适应纸张
+            showModal: true,
+            modalMessage: '正在加载图片...',
+            onError: (err) => {
+                ElMessage.error('图片加载失败');
+            }
         });
+    } else {
+        ElMessage.warning('仅支持PDF和图片打印');
+    }
 };
 
 // 除播种墙外的内容重置

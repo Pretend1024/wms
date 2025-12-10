@@ -77,7 +77,7 @@
                 <template #table-buttons>
                     <el-button type="success" @click="handleExport" :icon="Share">{{ getButtonText('export')
                     }}</el-button>
-                    <el-button type="info" @click="handleDel" :icon="CloseBold">{{ getButtonText('cancel')
+                    <el-button type="info" @click="handleDel" v-permission="'cancel'" :icon="CloseBold">{{ getButtonText('cancel')
                     }}</el-button>
                 </template>
                 <template #customer="{ row }">

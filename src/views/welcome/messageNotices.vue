@@ -25,7 +25,7 @@
                 <template #table-buttons>
                     <el-button type="primary" @click="handleBatchRead" :icon="ChatDotRound">{{
                         getButtonText('batchRead') }}</el-button>
-                    <el-button type="danger" @click="handleDel" :icon="Delete">{{ getButtonText('del') }}</el-button>
+                    <el-button type="danger" @click="handleDel" v-permission="'delete'" :icon="Delete">{{ getButtonText('del') }}</el-button>
                 </template>
                 <!-- 使用插槽来自定义列内容，假如我们需要在操作列中添加按钮 -->
                 <template #customBtn="{ row, column, index }">

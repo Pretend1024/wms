@@ -566,6 +566,11 @@ export const buttonTextMap = {
     refreshCache: {
         zh: '刷新缓存',
         en: 'Refresh Cache'
+    },
+    // 授权
+    authorize: {
+        zh: '授权',
+        en: 'Authorize'
     }
 }
 const labelsMap = {
@@ -2431,10 +2436,10 @@ const labelsMap = {
             "placeholderEn": "Select Logistics Product"
         },
         "supplierPushStatusId": {
-            "zh": "申请单号:",
-            "en": "Order Status:",
-            "placeholderZh": "请选择是否申请单号",
-            "placeholderEn": "Select Order Status"
+            "zh": "运单就绪:",
+            "en": "Waybill Ready:",
+            "placeholderZh": "请选择运单就绪状态",
+            "placeholderEn": "Select Waybill Ready Status"
         },
         "apiTypeId": {
             "zh": "接口类型:",
@@ -2586,7 +2591,7 @@ const labelsMap = {
             "placeholderZh": "请输入附件名称",
             "placeholderEn": "Please enter File Name"
         },
-        "applyType": {
+        "waybillTypeId": {
             "zh": "申请类型:",
             "en": "Apply Type:",
             "placeholderZh": "请选择申请类型",
@@ -2633,6 +2638,12 @@ const labelsMap = {
             "en": "Problem Description:",
             "placeholderZh": "请输入问题描述",
             "placeholderEn": "Enter Problem Description"
+        },
+        "waybillTypeId": {
+            "zh": "运单类型:",
+            "en": "Waybill Type:",
+            "placeholderZh": "请选择运单类型",
+            "placeholderEn": "Select Waybill Type"
         }
     },
     "outstock_order_outOrderHoldup_list": {
@@ -5977,95 +5988,101 @@ const labelsMap = {
         }
     },
     outstock_trace_outTrack_list: {
-        outOrderNo: {
+        'outOrderNo': {
             zh: '订单号:',
             en: 'Outbound Order No.:',
             placeholderZh: '请输入订单号',
             placeholderEn: 'Please Enter Outbound Order No.'
         },
-        isUnlinked: {
+        'isUnlinked': {
             zh: '关联包裹:',
             en: 'Linked Package:',
             placeholderZh: '请选择是否关联包裹',
             placeholderEn: 'Please Select Linked Package'
         },
-        trackingNo: {
+        'trackingNo': {
             zh: '跟踪单号:',
             en: 'Tracking No.:',
             placeholderZh: '请输入跟踪单号',
             placeholderEn: 'Please Enter Tracking No.'
         },
-        destCountryCode: {
+        'destCountryCode': {
             zh: '目的国家:',
             en: 'Destination Country:',
             placeholderZh: '请输入目的国家代码',
             placeholderEn: 'Please Enter Destination Country Code'
         },
-        supplierId: {
+        'supplierId': {
             zh: '服务商:',
             en: 'Supplier:',
             placeholderZh: '请选择服务商',
             placeholderEn: 'Please Select Supplier'
         },
-        shipwayId: {
+        'shipwayId': {
             zh: '渠道:',
             en: 'Channel:',
             placeholderZh: '请选择渠道',
             placeholderEn: 'Please Select Channel'
         },
-        carrierCode: {
+        'carrierCode': {
             zh: '承运商:',
             en: 'Carrier:',
             placeholderZh: '请输入承运商',
             placeholderEn: 'Please Enter Carrier'
         },
-        isDelivered: {
+        'isDelivered': {
             zh: '是否签收:',
             en: 'Is Delivered:',
             placeholderZh: '请选择是否签收',
             placeholderEn: 'Please Select Is Delivered'
         },
-        finished: {
+        'finished': {
             zh: '是否完结:',
             en: 'Is Finished:',
             placeholderZh: '请选择是否完结',
             placeholderEn: 'Please Select Is Finished'
         },
-        traceTime: {
+        'traceTime': {
             zh: '轨迹时间:',
             en: 'Trace Time:',
             placeholderZh: '请选择轨迹时间',
             placeholderEn: 'Please Select Trace Time'
         },
-        traceLocation: {
+        'traceLocation': {
             zh: '轨迹地点:',
             en: 'Trace Location:',
             placeholderZh: '请输入轨迹地点',
             placeholderEn: 'Please Enter Trace Location'
         },
-        traceEvent: {
+        'traceEvent': {
             zh: '轨迹详情:',
             en: 'Trace Event:',
             placeholderZh: '请输入轨迹详情',
             placeholderEn: 'Please Enter Trace Event'
         },
-        fileJson: {
+        'fileJson': {
             zh: '附件:',
             en: 'Attachment:',
             placeholderZh: '请上传附件',
             placeholderEn: 'Please Upload Attachment'
         },
-        traceTimeBegin: {
+        'traceTimeBegin': {
             zh: '起始时间:',
             en: 'Start Time:',
             placeholderZh: '请选择起始时间',
             placeholderEn: 'Please Select Start Time'
         },
-        traceTimeEnd: {
+        'traceTimeEnd': {
             zh: '结束时间:',
             en: 'End Time:',
             placeholderZh: '请选择结束时间',
             placeholderEn: 'Please Select End Time'
+        },
+        "waybillTypeId": {
+            "zh": "运单类型:",
+            "en": "Waybill Type:",
+            "placeholderZh": "请选择运单类型",
+            "placeholderEn": "Select Waybill Type"
         }
     },
     "vas_wo_workOrder_list": {
@@ -6309,6 +6326,30 @@ const labelsMap = {
             "placeholderZh": "请输入增值服务单号",
             "placeholderEn": "Please Enter VAS Order No."
         },
+        "feeMainTypeId": {
+            "zh": "费用大类:",
+            "en": "Fee Main Type:",
+            "placeholderZh": "请选择费用大类",
+            "placeholderEn": "Please Select Fee Main Type"
+        },
+        "feeSubTypeId": {
+            "zh": "费用小类:",
+            "en": "Fee Sub Type:",
+            "placeholderZh": "请选择费用小类",
+            "placeholderEn": "Please Select Fee Sub Type"
+        },
+        "orderNo": {
+            "zh": "关联单号:",
+            "en": "Related Doc. No.:",
+            "placeholderZh": "请输入关联业务单号",
+            "placeholderEn": "Please Enter Related Business Doc. No."
+        },
+        "billNo": {
+            "zh": "账单编号:",
+            "en": "Bill No.:",
+            "placeholderZh": "请输入账单编号",
+            "placeholderEn": "Please Enter Bill No."
+        }
     },
     "vas_wo_workOrderType_list": {
         "name": {
@@ -6330,7 +6371,7 @@ const labelsMap = {
             "placeholderEn": "Please Enter Sort Number"
         }
     },
-    "base_basic_traceStatus_list": {
+    "product_shipway_traceStatus_list": {
         "remark": {
             "zh": "备注:",
             "en": "Remark:",
@@ -6356,6 +6397,62 @@ const labelsMap = {
             "placeholderEn": "Please Enter Condition Value"
         }
     },
+    "product_price_priceItem_list": {
+        "feeMainTypeId": {
+            "zh": "费用大类:",
+            "en": "Fee Main Type:",
+            "placeholderZh": "请选择费用大类",
+            "placeholderEn": "Please Select Fee Main Type"
+        },
+        "feeSubTypeId": {
+            "zh": "费用小类:",
+            "en": "Fee Sub Type:",
+            "placeholderZh": "请选择费用小类",
+            "placeholderEn": "Please Select Fee Sub Type"
+        },
+        "feeUnitTypeId": {
+            "zh": "费用单位:",
+            "en": "Fee Unit Type:",
+            "placeholderZh": "请选择费用单位",
+            "placeholderEn": "Please Select Fee Unit Type"
+        },
+        "priceDimension": {
+            "zh": "价格维度:",
+            "en": "Price Dimension:",
+            "placeholderZh": "请选择价格维度",
+            "placeholderEn": "Please Select Price Dimension"
+        },
+        "chargeCondition": {
+            "zh": "收费条件:",
+            "en": "Charge Condition:",
+            "placeholderZh": "请选择收费条件",
+            "placeholderEn": "Please Select Charge Condition"
+        },
+        "conditionDesc": {
+            "zh": "条件说明:",
+            "en": "Condition Description:",
+            "placeholderZh": "请输入条件说明",
+            "placeholderEn": "Please Enter Condition Description"
+        },
+        "isMandatory": {
+            "zh": "是否必填:",
+            "en": "Is Mandatory:",
+            "placeholderZh": "请选择是否必填",
+            "placeholderEn": "Please Select Is Mandatory"
+        },
+        "sortNo": {
+            "zh": "序号:",
+            "en": "Sort No.:",
+            "placeholderZh": "请输入序号",
+            "placeholderEn": "Please Enter Sort No."
+        },
+        "remark": {
+            "zh": "备注:",
+            "en": "Remark:",
+            "placeholderZh": "请输入备注",
+            "placeholderEn": "Please Enter Remark"
+        }
+    }
 }
 import router from '@/router/index.js'
 

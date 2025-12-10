@@ -143,24 +143,30 @@
                             <el-col :span="16">
                                 <el-form-item label="服务附件:">
                                     <div class="attachment-container">
-                                        <!-- 已上传服务附件列表（带删除按钮） -->
                                         <div class="attachment-list"
                                             v-if="item.serviceAttachmentList && item.serviceAttachmentList.length > 0">
                                             <div v-for="(file, idx) in item.serviceAttachmentList"
                                                 :key="`service-${index}-${idx}`" class="attachment-item">
-                                                <a :href="file.url" target="_blank" class="file-link">
+                                                <a :href="file.url" target="_blank" class="file-link"
+                                                    :title="file.name">
                                                     {{ file.name.length > 35 ? file.name.slice(0, 35) + '...' :
                                                         file.name }}
                                                 </a>
-                                                <el-button type="danger" size="mini" :icon="Close" circle
-                                                    @click.stop="deleteAttachment(item.serviceAttachmentList, idx)" />
+                                                <el-button type="danger" size="small" :icon="Close" circle
+                                                    @click.stop="deleteAttachment(item.serviceAttachmentList, idx)"
+                                                    text />
                                             </div>
                                         </div>
-                                        <!-- 上传按钮（始终显示，支持多文件上传） -->
-                                        <el-upload v-else :auto-upload="true"
+
+                                        <el-upload :auto-upload="true"
                                             :http-request="(params) => handleServiceAttachmentUpload(params, item)"
-                                            :before-upload="beforeUpload" multiple :show-file-list="false">
-                                            <el-button type="primary" size="small">上传服务附件</el-button>
+                                            :before-upload="beforeUpload" multiple :show-file-list="false"
+                                            class="upload-btn-wrap">
+                                            <el-button type="primary" size="small" plain>
+                                                {{ (item.serviceAttachmentList && item.serviceAttachmentList.length > 0)
+                                                    ? '+ 继续上传' :
+                                                    '上传服务附件' }}
+                                            </el-button>
                                         </el-upload>
                                     </div>
                                 </el-form-item>
@@ -194,24 +200,30 @@
                             <el-col :span="16">
                                 <el-form-item label="结果附件:">
                                     <div class="attachment-container">
-                                        <!-- 已上传结果附件列表（带删除按钮） -->
                                         <div class="attachment-list"
                                             v-if="item.resultAttachmentList && item.resultAttachmentList.length > 0">
                                             <div v-for="(file, idx) in item.resultAttachmentList"
                                                 :key="`result-${index}-${idx}`" class="attachment-item">
-                                                <a :href="file.url" target="_blank" class="file-link">
+                                                <a :href="file.url" target="_blank" class="file-link"
+                                                    :title="file.name">
                                                     {{ file.name.length > 35 ? file.name.slice(0, 35) + '...' :
                                                         file.name }}
                                                 </a>
-                                                <el-button type="danger" size="mini" :icon="Close" circle
-                                                    @click.stop="deleteAttachment(item.resultAttachmentList, idx)" />
+                                                <el-button type="danger" size="small" :icon="Close" circle
+                                                    @click.stop="deleteAttachment(item.resultAttachmentList, idx)"
+                                                    text />
                                             </div>
                                         </div>
-                                        <!-- 上传按钮（始终显示，支持多文件上传） -->
-                                        <el-upload v-else :auto-upload="true"
+
+                                        <el-upload :auto-upload="true"
                                             :http-request="(params) => handleResultAttachmentUpload(params, item)"
-                                            :before-upload="beforeUpload" multiple :show-file-list="false">
-                                            <el-button type="primary" size="small">上传结果附件</el-button>
+                                            :before-upload="beforeUpload" multiple :show-file-list="false"
+                                            class="upload-btn-wrap">
+                                            <el-button type="primary" size="small" plain>
+                                                {{ (item.resultAttachmentList && item.resultAttachmentList.length > 0) ?
+                                                    '+ 继续上传' : '上传结果附件'
+                                                }}
+                                            </el-button>
                                         </el-upload>
                                     </div>
                                 </el-form-item>
@@ -302,7 +314,7 @@ import { getCurrencyEnumApi } from '@/api/baseApi/index.js';
 import { ref, reactive, onMounted, nextTick, toRefs } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import generalAddTable from '@/components/table/generalAddTable.vue';
-import { ElLoading, ElMessage, ElNotification } from 'element-plus';
+import { ElLoading, ElMessage } from 'element-plus';
 import { Close } from '@element-plus/icons-vue'
 import tagsStore from '@/store/tags.js';
 import { useRefreshStore } from '@/store/refresh.js';
@@ -445,7 +457,7 @@ const handleSave = async () => {
             id: props.id, // 编辑必填ID
             ...formData,
             vasOrderItemList: formatItemList,
-            vasOrderFeeList: feeTableDataLocal
+            vasOrderFeeList: (feeTableDataLocal.length === 1 && Object.keys(feeTableDataLocal[0]).length === 1 && 'createWay' in feeTableDataLocal[0]) ? [] : feeTableDataLocal
         };
 
         console.log('提交数据：', submitData);
@@ -723,12 +735,12 @@ const handleServiceAttachmentUpload = async (params, row) => {
             })
             params.onSuccess && params.onSuccess();
         } else {
-            ElNotification.error({ title: '失败', message: res.msg || '服务附件上传失败' });
+            smartAlert(res.msg || '服务附件上传失败', false);
             params.onError && params.onError();
         }
     } catch (error) {
         console.error('服务附件上传失败：', error);
-        ElNotification.error({ title: '失败', message: '服务附件上传失败，请重试' });
+        smartAlert(error.msg || '服务附件上传失败', false);
         params.onError && params.onError();
     }
 };
@@ -760,15 +772,18 @@ const handleResultAttachmentUpload = async (params, row) => {
                 url: res.data,
                 size: file.size
             });
-            ElNotification.success({ title: '成功', message: '结果附件上传成功' });
+            ElMessage({
+                message: 'Success',
+                type: 'success',
+            })
             params.onSuccess && params.onSuccess();
         } else {
-            ElNotification.error({ title: '失败', message: res.msg || '结果附件上传失败' });
+            smartAlert(res.msg || '服务附件上传失败', false);
             params.onError && params.onError();
         }
     } catch (error) {
         console.error('结果附件上传失败：', error);
-        ElNotification.error({ title: '失败', message: '结果附件上传失败，请重试' });
+        smartAlert(error.msg || '服务附件上传失败', false);
         params.onError && params.onError();
     }
 };
@@ -1016,12 +1031,14 @@ onMounted(async () => {
     flex-direction: column;
     gap: 8px;
     width: 100%;
+    align-items: flex-start;
 }
 
 .attachment-list {
     display: flex;
     flex-direction: column;
     gap: 4px;
+    width: 100%;
 }
 
 .attachment-item {
@@ -1031,20 +1048,36 @@ onMounted(async () => {
     justify-content: space-between;
     align-items: center;
     padding: 2px 8px;
-    background-color: #fff;
+    background-color: #f5f7fa;
     border-radius: 4px;
-    border: 1px solid #eee;
+    border: 1px solid #e4e7ed;
+
+    .el-button {
+        margin-left: 10px;
+        padding: 4px;
+        min-height: auto;
+    }
+}
+
+.upload-btn-wrap {
+    margin-top: 2px;
+    display: inline-block;
 }
 
 .file-link {
     color: #409EFF;
-    text-decoration: underline;
+    text-decoration: none;
+    /* 去掉下划线，悬停再显示 */
     cursor: pointer;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
     flex: 1;
     margin-right: 8px;
+
+    &:hover {
+        text-decoration: underline;
+    }
 }
 
 .bottom-space {

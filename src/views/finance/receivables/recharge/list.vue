@@ -31,7 +31,8 @@
                 @selection-change="handleSelectionChange" @row-click="handleRowClick" @page-change="handlePageChange"
                 @sort-change="handleTableSort">
                 <template #table-buttons>
-                    <el-button type="primary" @click="handleAdd" :icon="Plus">{{ getButtonText('add') }}</el-button>
+                    <el-button type="primary" @click="handleAdd" v-permission="'add'" :icon="Plus">{{
+                        getButtonText('add') }}</el-button>
                     <!-- 审核 -->
                     <el-dropdown trigger="click">
                         <el-button type="success">
@@ -40,16 +41,18 @@
                         <template #dropdown>
                             <el-dropdown-menu>
                                 <el-dropdown-item @click="handleAudit(30)">{{ getButtonText('auditPass')
-                                }}</el-dropdown-item>
+                                    }}</el-dropdown-item>
                                 <el-dropdown-item @click="handleAudit(40)">{{ getButtonText('auditReject')
-                                }}</el-dropdown-item>
+                                    }}</el-dropdown-item>
                             </el-dropdown-menu>
                         </template>
                     </el-dropdown>
                     <!-- 导出 -->
                     <el-button type="success" @click="handleExport" :icon="Share">{{ getButtonText('export')
+                    }}</el-button>
+                    <el-button type="danger" @click="handleDel" v-permission="'delete'" :icon="Delete">{{
+                        getButtonText('del')
                         }}</el-button>
-                    <el-button type="danger" @click="handleDel" :icon="Delete">{{ getButtonText('del') }}</el-button>
                 </template>
                 <template #customBtn="{ row }">
                     <div style="display: flex;">

@@ -93,8 +93,9 @@
                             </el-checkbox-group>
                         </div>
                         <div class="btns">
-                            <el-button type="danger" @click="handleAdd" :icon="Plus">{{ getButtonText('addProblem')
-                                }}</el-button>
+                            <el-button type="danger" @click="handleAdd" v-permission="'add'" :icon="Plus">{{
+                                getButtonText('addProblem')
+                            }}</el-button>
                             <el-button type="success" @click="handleClose" :icon="Check">{{
                                 getButtonText('closeProblem')
                                 }}</el-button>
@@ -445,6 +446,7 @@ const delColse = () => {
     delDialogVisible.value = false;
     delData.value = [];
     getList(pagination.value.currentPage, pagination.value.pageSize, orderBy.value);
+    getStatus()
 };
 
 // 获取列表
@@ -469,13 +471,13 @@ const getList = async (currentPage, pageSize, orderBy) => {
 const getStatus = async () => {
     const data = {
         ...trimObjectStrings(initValues.value),
-        statusIdList: initValues.value.statusIdList
     }
     if (data.orgId.length > 0) {
         data.orgId = data.orgId[data.orgId.length - 1]
     } else {
         delete data.orgId
     }
+    delete data.statusIdList
     const res = await getOutstockOrderProblemStatusCountApi(data)
     statusIdsList.value = res.data
     statusIdsArr.value = [...initValues.value.statusIdList]

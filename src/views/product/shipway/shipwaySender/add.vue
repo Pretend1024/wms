@@ -20,15 +20,16 @@
                 </el-form-item>
             </el-col>
             <el-col :span="12" v-if="formData.configTypeId === 2 || formData.configTypeId === 4">
-                <el-form-item :label="getLabel('shipwayCode')">
-                    <el-select v-model="formData.shipwayId" :placeholder="getPlaceholder('shipwayCode')" clearable>
+                <el-form-item :label="getLabel('shipwayCode')" prop="shipwayId">
+                    <el-select v-model="formData.shipwayId" :placeholder="getPlaceholder('shipwayCode')" clearable
+                        filterable>
                         <el-option v-for="item in productOptions" :key="item.value" :label="item.label"
                             :value="item.value" />
                     </el-select>
                 </el-form-item>
             </el-col>
             <el-col :span="12" v-if="formData.configTypeId === 3 || formData.configTypeId === 4">
-                <el-form-item :label="getLabel('customerCode')">
+                <el-form-item :label="getLabel('customerCode')" prop="customerCode">
                     <el-select v-model="formData.customerCode" filterable :placeholder="getPlaceholder('customerCode')"
                         popper-class="multi-column-select" clearable>
                         <el-option v-for="item in customerOptions" :key="item.value" :label="item.label"
@@ -169,7 +170,8 @@ const rules = {
         { required: true, message: '请选择' + getLabel('shipwayCode'), trigger: 'change' }
     ],
     name: [
-        { required: true, message: '请输入' + getLabel('name'), trigger: 'blur' }
+        { required: true, message: '请输入' + getLabel('name'), trigger: 'blur' },
+        { pattern: /^\S+$/, message: getLabel('name') + '不能为空格', trigger: 'blur' }
     ],
     identityNumber: [
         { required: true, message: '请输入' + getLabel('identityNumber'), trigger: 'blur' }
@@ -206,7 +208,13 @@ const rules = {
     ],
     company: [
         { required: true, message: '请输入' + getLabel('company'), trigger: 'blur' }
-    ]
+    ],
+    shipwayId: [
+        { required: true, message: '请选择' + getLabel('shipwayCode'), trigger: 'change' }
+    ],
+    customerCode: [
+        { required: true, message: '请选择' + getLabel('customerCode'), trigger: 'change' }
+    ],
 };
 
 defineExpose({

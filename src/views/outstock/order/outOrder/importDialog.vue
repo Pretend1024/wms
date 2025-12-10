@@ -1,7 +1,6 @@
 <template>
     <el-dialog v-model="visible" title="运单导入" width="1000px" align-center destroy-on-close>
         <div class="import-dialog">
-            <!-- 新增：文件上传提示信息 -->
             <div class="upload-hint">
                 <p class="hint-title text-warning">⚠️ 上传须知</p>
                 <ul class="hint-list">
@@ -16,7 +15,6 @@
                 </ul>
             </div>
 
-            <!-- 文件上传区域 -->
             <el-upload ref="uploadRef" class="upload-area" v-model:file-list="fileList" drag :show-file-list="false"
                 :auto-upload="true" :http-request="handleUpload" :before-upload="beforeUpload" :limit="1">
                 <el-icon class="el-icon--upload"><upload-filled /></el-icon>
@@ -25,13 +23,22 @@
                 </div>
                 <template #tip>
                     <div class="upload-tip">
-                        <el-button type="primary" @click="commit" style="margin-right: 10px;">
-                            提交导入
-                        </el-button>
-                        <span>重复是否覆盖:</span>
+                        <span style="margin-left: 5px;">运单类型:</span>
+                        <el-select v-model="waybillTypeId" placeholder="请选择运单类型"
+                            style="width: 160px; margin-right: 10px;">
+                            <el-option v-for="item in waybillTypeIdOptions" :key="item.value" :label="item.label"
+                                :value="item.value" />
+                        </el-select>
+
+                        <span>重复覆盖:</span>
                         <el-switch v-model="isCoverDuplicate" active-text="是" inactive-text="否"
                             style="margin-right: 15px;" inline-prompt>
                         </el-switch>
+
+                        <el-button type="primary" @click="commit" style="margin-right: 10px;">
+                            提交导入
+                        </el-button>
+
                         <p v-if="fileUrl">
                             已上传: <a :href="fileUrl" target="_blank">{{ getFileName(fileUrl) }}</a>
                         </p>
@@ -40,7 +47,6 @@
                 </template>
             </el-upload>
 
-            <!-- 结果表格展示 -->
             <div class="result-table" v-if="tableData.length > 0">
                 <el-table :data="filteredTableData" style="width: 100%" border max-height="300px">
                     <el-table-column prop="index" label="行号" width="75" />
@@ -74,11 +80,18 @@
 </template>
 
 <script setup>
-import { ref, computed, defineExpose } from 'vue';
+import { ref, computed, shallowRef, defineExpose } from 'vue';
 import { ElLoading, ElMessage } from 'element-plus';
 import { uploadApi } from '@/api/baseApi/index.js';
 import { outstockOrderImportTrackingNoApi } from '@/api/outstockApi/order.js'
 import { smartAlert } from '@/utils/genericMethods.js'
+// 定义组件接收的参数
+const props = defineProps({
+    waybillTypeIdOptions: {
+        type: Array,
+        default: () => []
+    }
+});
 
 // 弹窗显示状态
 const visible = ref(false);
@@ -87,8 +100,10 @@ const visible = ref(false);
 const fileList = ref([]);
 const fileUrl = ref('');
 const uploadRef = ref(null);
-// 新增：重复覆盖开关状态（默认关闭，避免误覆盖）
 const isCoverDuplicate = ref(true);
+
+// 运单类型
+const waybillTypeId = ref(10);
 
 // 表格数据
 const tableData = shallowRef([]);
@@ -108,14 +123,13 @@ const getFileName = (url) => {
     return url.split('/').pop().split('?')[0];
 };
 
-// 文件上传前验证（保持原逻辑，强化ZIP校验）
+// 文件上传前验证
 const beforeUpload = (file) => {
     const isZip = file.name.endsWith('.zip');
     if (!isZip) {
         ElMessage.error('仅支持ZIP格式文件，请勿上传RAR等其他压缩格式！');
         return false;
     }
-    // 可选：添加文件大小限制（例：50MB）
     const isLt50M = file.size / 1024 / 1024 < 50;
     if (!isLt50M) {
         ElMessage.error('上传文件大小不能超过50MB！');
@@ -124,11 +138,10 @@ const beforeUpload = (file) => {
     return true;
 };
 
-// 处理文件上传（保持原逻辑）
+// 处理文件上传
 const handleUpload = async (options) => {
     const loading = ElLoading.service({ lock: true, text: '文件上传中...' });
     try {
-        // 清除旧文件信息
         fileUrl.value = '';
         fileList.value = [];
 
@@ -143,10 +156,15 @@ const handleUpload = async (options) => {
     }
 };
 
-// 提交导入（新增：传递重复覆盖状态到接口）
+// 提交导入
 const commit = async () => {
+    // 校验文件
     if (!fileUrl.value) {
         ElMessage.warning('请先上传文件');
+        return;
+    }
+    if (!waybillTypeId.value) {
+        ElMessage.warning('请选择运单类型');
         return;
     }
 
@@ -155,18 +173,18 @@ const commit = async () => {
         const res = await outstockOrderImportTrackingNoApi({
             fileUrl: fileUrl.value,
             async: true,
-        }, { isAppend: isCoverDuplicate.value });
+        }, {
+            isAppend: isCoverDuplicate.value,
+            waybillTypeId: waybillTypeId.value
+        });
 
-        // 格式化表格数据，添加行号
         tableData.value = res.data.map((item, index) => ({
-            // ...item,
             msg: item.code + '：' + item.msg,
             success: item.success,
             index: index + 1
         }));
         smartAlert(res.msg, res.success, 1000)
 
-        // 重置上传状态（含重复覆盖开关）
         fileUrl.value = '';
         fileList.value = [];
         uploadRef.value?.clearFiles();
@@ -178,23 +196,24 @@ const commit = async () => {
     }
 };
 
-// 打开弹窗（重置所有状态）
+// 打开弹窗
 const open = () => {
     visible.value = true;
-    // 重置所有状态
+    // 重置状态
     tableData.value = [];
     fileUrl.value = '';
     fileList.value = [];
     filterStatus.value = 'all';
     uploadRef.value?.clearFiles();
+
+    // 重置运单类型
+    waybillTypeId.value = 10;
 };
 
-// 关闭弹窗
 const close = () => {
     visible.value = false;
 };
 
-// 暴露方法给父组件
 defineExpose({
     open,
     close
@@ -203,8 +222,6 @@ defineExpose({
 
 <style scoped lang="scss">
 .import-dialog {
-
-    // 新增：提示信息样式
     .upload-hint {
         margin-bottom: 15px;
         padding: 12px;
@@ -249,7 +266,7 @@ defineExpose({
         border-radius: 4px;
         flex-wrap: wrap;
         gap: 10px;
-        align-items: center; // 确保开关和按钮垂直居中
+        align-items: center;
 
         .text-warning {
             color: #e6a23c;
@@ -262,7 +279,6 @@ defineExpose({
             min-width: 200px;
         }
 
-        // 调整开关样式
         .el-switch {
             display: flex;
             align-items: center;

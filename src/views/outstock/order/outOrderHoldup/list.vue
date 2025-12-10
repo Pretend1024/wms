@@ -325,6 +325,7 @@ const delColse = () => {
     delDialogVisible.value = false;
     delData.value = [];
     getList(pagination.value.currentPage, pagination.value.pageSize, orderBy.value);
+    getStatus()
 };
 
 // 获取列表
@@ -349,13 +350,13 @@ const getList = async (currentPage, pageSize, orderBy) => {
 const getStatus = async () => {
     const data = {
         ...trimObjectStrings(initValues.value),
-        holdUpStatusList: initValues.value.holdUpStatusList
     }
     if (data.orgId.length > 0) {
         data.orgId = data.orgId[data.orgId.length - 1]
     } else {
         delete data.orgId
     }
+    delete data.holdUpStatusList
     const res = await getOrderHoldupStatusCountApi(data)
     statusIdsList.value = res.data
     statusIdsArr.value = [...initValues.value.holdUpStatusList]

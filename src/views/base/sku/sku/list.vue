@@ -104,30 +104,36 @@
                 @sort-change="handleTableSort">
                 <!-- 在表格上方通过 slot 插入按钮 -->
                 <template #table-buttons>
-                    <el-button type="primary" @click="handleAdd" :icon="Plus">{{ getButtonText('add') }}</el-button>
-                    <el-button type="danger" @click="handleDel" :icon="Delete">{{ getButtonText('del') }}</el-button>
-                    <el-button type="warning" @click="handleAudit" :icon="Finished">{{ getButtonText('audit')
-                    }}</el-button>
+                    <el-button type="primary" @click="handleAdd" v-permission="'add'" :icon="Plus">{{
+                        getButtonText('add') }}</el-button>
+                    <el-button type="danger" @click="handleDel" v-permission="'delete'" :icon="Delete">{{
+                        getButtonText('del') }}</el-button>
+                    <el-button type="warning" @click="handleAudit" v-permission="'updateStatus'" :icon="Finished">{{
+                        getButtonText('audit')
+                        }}</el-button>
 
-                    <el-dropdown trigger="click">
+                    <el-dropdown trigger="click" v-permission="'sku:importAdd,sku:importUpd'">
                         <el-button type="success">
                             {{ getButtonText('import') }}<el-icon class="el-icon--right"><arrow-down /></el-icon>
                         </el-button>
                         <template #dropdown>
                             <el-dropdown-menu>
                                 <el-dropdown-item @click="handleImportAdd">{{ getButtonText('importCreate')
-                                    }}</el-dropdown-item>
+                                }}</el-dropdown-item>
                                 <el-dropdown-item @click="handleImportUpd">{{ getButtonText('importUpdate')
-                                    }}</el-dropdown-item>
+                                }}</el-dropdown-item>
                             </el-dropdown-menu>
                         </template>
                     </el-dropdown>
-                    <el-button type="success" @click="handleExport" :icon="Share">{{ getButtonText('export')
-                    }}</el-button>
-                    <el-button type="info" @click="handlePrint" :icon="Printer">{{ getButtonText('print') }}</el-button>
+                    <el-button type="success" @click="handleExport" v-permission="'export'" :icon="Share">{{
+                        getButtonText('export')
+                        }}</el-button>
+                    <el-button type="info" @click="handlePrint" v-permission="'print'" :icon="Printer">{{
+                        getButtonText('print')
+                        }}</el-button>
                 </template>
                 <!-- 使用插槽来自定义列内容，假如我们需要在操作列中添加按钮 -->
-                <template #customBtn="{ row, column, index }">
+                <template #customBtn="{ row }">
                     <div style="display: flex;">
                         <div class="cursor-pointer" @click="handleEdit(row)">
                             <el-icon>
@@ -140,30 +146,43 @@
                 <template #customer="{ row }">
                     {{ row.customerCode }}({{ row.customerName }})
                 </template>
-                <template #statusName="{ row, column, index }">
+                <template #statusName="{ row }">
                     <span :style="{ color: row.statusId == 20 ? 'green' : 'red' }">{{ row.statusName }}</span>
                 </template>
-                <template #cusStatusName="{ row, column, index }">
+                <template #cusStatusName="{ row }">
                     <span :style="{ color: row.cusStatusId == 20 ? 'green' : 'red' }">{{ row.cusStatusName }}</span>
                 </template>
-                <template #isCheckedSize="{ row, column, index }">
+                <template #isCheckedSize="{ row }">
                     <span :style="{ color: row.isCheckedSize ? 'green' : 'red' }">{{ row.isCheckedSize ? '是' : '否'
-                    }}</span>
+                        }}</span>
                 </template>
-                <template #actualLength="{ row, column, index }">
+                <template #actualLength="{ row }">
                     <span>{{ row.length }}</span>
                 </template>
-                <template #actualWidth="{ row, column, index }">
+                <template #actualWidth="{ row }">
                     <span>{{ row.width }}</span>
                 </template>
-                <template #actualHeight="{ row, column, index }">
+                <template #actualHeight="{ row }">
                     <span>{{ row.height }}</span>
                 </template>
-                <template #actualVolume="{ row, column, index }">
+                <template #actualVolume="{ row }">
                     <span>{{ row.volume }}</span>
                 </template>
-                <template #isNew="{ row, column, index }">
+                <template #isNew="{ row }">
                     <span :style="{ color: row.isNew ? 'red' : 'green' }">{{ row.isNew ? '是' : '否' }}</span>
+                </template>
+                <template #mainImgUrl="{ row }">
+                    <div style="display: flex; justify-content: center; align-items: center; cursor: pointer;"
+                        @click="openImageDialog(row)">
+                        <el-image v-if="row.mainImgUrl" :src="row.mainImgUrl"
+                            style="width: 40px; height: 40px; border-radius: 4px;" fit="cover" />
+                        <div v-else class="cursor-pointer">
+                            <el-icon>
+                                <Upload />
+                            </el-icon>
+                            <span>{{ getButtonText('upload') }}</span>
+                        </div>
+                    </div>
                 </template>
             </hydTable>
         </div>
@@ -184,6 +203,8 @@
                 </div>
             </template>
         </el-dialog>
+        <!-- SKU图片弹窗 -->
+        <SkuImageDialog v-model="imgDialogVisible" :skuData="currentSku" @closed="handleImgDialogClosed" />
         <!-- 导出弹窗 -->
         <exportDialog ref="exportDialogRef" :selectionRows="selectionRows" :initValues="initValues" :exportType="111">
         </exportDialog>
@@ -208,6 +229,7 @@ import router from '@/router/index.js'
 import canonicalInput from '@/components/table/canonicalInpt.vue';
 import printDialog from '@/components/print-export-importDialog/printDialog.vue';
 import exportDialog from '@/components/print-export-importDialog/exportDialog.vue';
+import SkuImageDialog from './SkuImageDialog.vue' // 引入新组件
 import { useRefreshStore } from '@/store/refresh.js'
 const refreshStore = useRefreshStore()
 // 搜索表单配置项------------------------------------------------
@@ -273,6 +295,7 @@ const columns = ref([
     { label: '客户', prop: 'customerName', width: '200', fixed: 'left', slot: 'customer', sortable: true },
     { label: 'SKU', prop: 'sku', width: '180', fixed: 'left', sortable: true },
     { label: '条码', prop: 'barcode', width: '180', sortable: true },
+    { label: '图片', prop: 'mainImgUrl', width: '100', slot: 'mainImgUrl' },
     { label: '中文品名', prop: 'nameCn', width: '230', sortable: true },
     { label: '英文品名', prop: 'nameEn', width: '230', sortable: true },
     { label: '仓库审核', prop: 'statusName', width: '180', slot: 'statusName', sortable: true },
@@ -475,6 +498,24 @@ const delColse = () => {
     delData.value = [];
     getList(pagination.value.currentPage, pagination.value.pageSize, orderBy.value);
 };
+
+// --- 新增图片弹窗逻辑 ---
+const imgDialogVisible = ref(false)
+const currentSku = ref({})
+
+// 打开弹窗
+const openImageDialog = (row) => {
+    currentSku.value = row
+    imgDialogVisible.value = true
+}
+
+// 弹窗关闭回调 isRefresh: Boolean，组件内部判断是否有上传/删除/修改操作
+const handleImgDialogClosed = (isRefresh) => {
+    if (isRefresh) {
+        // 如果数据有变动，刷新列表
+        getList(pagination.value.currentPage, pagination.value.pageSize)
+    }
+}
 
 // 获取列表
 const getList = async (currentPage, pageSize, orderBy) => {

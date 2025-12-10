@@ -39,6 +39,15 @@
                             </canonicalInput>
                         </el-form-item>
                     </el-col>
+                    <!-- 运单类型 -->
+                    <el-col>
+                        <el-form-item :label="getLabel('waybillTypeId')">
+                            <el-select v-model="formData.waybillTypeId" :placeholder="getPlaceholder('waybillTypeId')">
+                                <el-option v-for="item in waybillTypeOptions" :key="item.value" :label="item.label"
+                                    :value="item.value" />
+                            </el-select>
+                        </el-form-item>
+                    </el-col>
                     <!-- 目的国家选择 -->
                     <el-col>
                         <el-form-item :label="getLabel('destCountryCode')">
@@ -69,19 +78,20 @@
                         </div>
                         <div class="btns">
                             <!-- 新增轨迹按钮 -->
-                            <el-button type="primary" @click="handleAdd" :icon="Plus">{{ getButtonText('addTrack')
+                            <el-button type="primary" @click="handleAdd" v-permission="'add'" :icon="Plus">{{
+                                getButtonText('addTrack')
                                 }}</el-button>
                             <!-- 批量删除按钮 -->
                             <el-button type="danger" @click="handleBatchDel" :icon="Delete">{{
                                 getButtonText('deleteTrack')
-                                }}</el-button>
+                            }}</el-button>
                             <!-- 优先抓取按钮 -->
                             <el-button type="warning" @click="handleGrab" :icon="Finished">{{
                                 getButtonText('priorityGrab')
-                                }}</el-button>
+                            }}</el-button>
                             <!-- 导出按钮 -->
                             <el-button type="success" @click="handleExport" :icon="Share">{{ getButtonText('export')
-                                }}</el-button>
+                            }}</el-button>
                         </div>
                     </div>
                 </template>
@@ -137,6 +147,7 @@
 import { getOutstockOrderTraceListApi, outstockOrderTracePrioritizeFetchApi, addOutstockOrderTraceApi, getOutstockOrderTraceStatusApi } from '@/api/outstockApi/trace.js'
 import { getOrgCountryListApi } from '@/api/baseApi/org.js';
 import { getProductShipwayListApi, getProductShipwayBrandListApi, getProductSupplierListApi } from '@/api/productApi/shipway.js'
+import { getOutstockOrderWayBillTypeEnumApi } from '@/api/outstockApi/order.js';
 import trajectoryFormDialog from './add.vue';
 import batchDeleteTraceDialog from './batchDeleteTraceDialog.vue';
 import traceDetailDialog from './traceDetailDialog.vue';
@@ -389,6 +400,7 @@ const delColse = () => {
     delDialogVisible.value = false;
     delData.value = [];
     getList(pagination.value.currentPage, pagination.value.pageSize, orderBy.value);
+    getStatus()
 };
 // 弹窗取消按钮（保留但未使用的 centerDialogVisible）
 const handleDialogCancel = () => {
@@ -420,13 +432,13 @@ const getList = async (currentPage, pageSize, orderBy) => {
 const getStatus = async () => {
     const data = {
         ...trimObjectStrings(initValues.value),
-        podStatusIdList: initValues.value.podStatusIdList
     }
     if (data.orgId.length > 0) {
         data.orgId = data.orgId[data.orgId.length - 1]
     } else {
         delete data.orgId
     }
+    delete data.podStatusIdList
     const res = await getOutstockOrderTraceStatusApi(data)
     statusIdsList.value = res.data
     statusIdsArr.value = [...initValues.value.podStatusIdList]
@@ -481,6 +493,9 @@ const initialFilteredOptions = ref([])
 // 国家数据
 const countryOptions = ref([])
 
+// 运单类型数据
+const waybillTypeOptions = ref([])
+
 // 组件挂载时请求各类下拉数据（公司/客户/国家/服务商/渠道/承运商）
 onMounted(async () => {
     // 获取公司数据并转换为 cascader 需要的树结构
@@ -500,6 +515,9 @@ onMounted(async () => {
     }))
     initialFilteredOptions.value = JSON.parse(JSON.stringify(customerOptions.value));
     companyOptions.value = convertToTree(companyRes.data);
+    // 获取运单类型数据
+    const waybillTypeRes = await getOutstockOrderWayBillTypeEnumApi();
+    waybillTypeOptions.value = waybillTypeRes.data.map(item => ({ label: item.name, value: item.id }))
 
     // 获取国家数据
     const countryRes = await getOrgCountryListApi();

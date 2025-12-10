@@ -6,10 +6,10 @@
                 @row-click="handleRowClick" @page-change="handlePageChange" @sort-change="handleTableSort">
                 <!-- 表格上方按钮 -->
                 <template #table-buttons>
-                    <el-button type="primary" @click="handleAdd" v-permission="'role:add'" :icon="Plus">
+                    <el-button type="primary" @click="handleAdd" v-permission="'add'" :icon="Plus">
                         {{ getButtonText('add') }}
                     </el-button>
-                    <el-button type="danger" @click="handleDel" :icon="DeleteFilled">
+                    <el-button type="danger" @click="handleDel" v-permission="'delete'" :icon="DeleteFilled">
                         {{ getButtonText('del') }}
                     </el-button>
                 </template>
@@ -53,7 +53,7 @@
                 <div class="dialog-footer">
                     <el-button @click="setRoleDialogVisible = false">{{ getButtonText('cancel') }}</el-button>
                     <el-button type="primary" @click="handleSetRoleMenuConfirm">{{ getButtonText('confirm')
-                        }}</el-button>
+                    }}</el-button>
                 </div>
             </template>
         </el-dialog>

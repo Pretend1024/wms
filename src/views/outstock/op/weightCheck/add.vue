@@ -156,7 +156,7 @@
                                 <div class="package-header">
                                     <span class="package-number">包裹 {{ packageIndex + 1 }}</span>
                                     <span class="waybill-number">运单号: {{ formatWaybillNo(packageItem.trackingNo)
-                                        }}</span>
+                                    }}</span>
                                 </div>
 
                                 <div class="package-info-row">
@@ -308,13 +308,13 @@ const canSubmit = computed(() => {
 
 // --- 方法 ---
 
-// 辅助：安全聚焦方法，兼容 Element Plus 组件和原生 DOM
+// 辅助：聚焦方法
 const safeFocus = (refObj) => {
     if (!refObj.value) return;
     if (typeof refObj.value.focus === 'function') {
-        refObj.value.focus(); // Element Plus 推荐方式
+        refObj.value.focus(); 
     } else if (refObj.value.$el && refObj.value.$el.querySelector('input')) {
-        refObj.value.$el.querySelector('input').focus(); // 兜底
+        refObj.value.$el.querySelector('input').focus();
     }
 };
 
@@ -341,7 +341,6 @@ const resetPartialInfo = () => {
 };
 
 const formatWaybillNo = (no) => no && no.length > 4 ? no.slice(0, -4) + '****' : no;
-// 修改点2: 删除 formatDimensions 和 hasDimensions 函数
 
 const handleCodeTypeChange = () => { if (orderData.code) getOrderInfo(); };
 
@@ -397,7 +396,7 @@ const fetchOrderDetails = async (orderId) => {
                 realWeight: '',
                 // 耗材列表
                 consumableList: (pkg.consumablesVOList || []).map(c => ({
-                    id: c.id, // 【关键】原有数据必须保留 ID
+                    id: c.id, 
                     consumablesCode: c.consumablesCode,
                     consumablesName: c.consumablesName,
                     consumablesBarcode: c.consumablesBarcode || '',
@@ -549,7 +548,18 @@ const submitWeighing = async () => {
             playAudio('ok');
             ElMessage.success('提交成功');
             pkg.isCompleted = true;
-            resetPartialInfo();
+
+            const isAllFinished = packageList.value.every(item => item.isCompleted);
+
+            if (isAllFinished) {
+                setTimeout(() => {
+                    resetAllInfo(); // 重置所有信息
+                }, 500);
+            } else {
+                // 如果还有未完成的包裹，只重置局部输入框
+                resetPartialInfo();
+            }
+
         } else {
             playAudio('error');
             smartAlert(res.msg || '提交失败', false);
@@ -626,7 +636,7 @@ onUnmounted(() => window.removeEventListener('keydown', handleKeyDown));
 .module {
     background: #fff;
     border-radius: 8px;
-    padding: 16px;
+    padding: 11px;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
 }
 
@@ -689,7 +699,7 @@ h3 {
 }
 
 .package-list-container {
-    max-height: calc(100vh - 300px);
+    max-height: calc(100vh - 307px);
     overflow-y: auto;
     padding-right: 8px;
 }
@@ -728,7 +738,7 @@ h3 {
     .waybill-number {
         color: #606266;
         font-size: 14px;
-        margin-left: auto;
+        margin-left: 50px;
     }
 }
 
@@ -769,7 +779,6 @@ h3 {
 }
 
 .shortcut-tips-custom {
-    margin-top: 15px;
     background: #333;
     color: #fff;
     border-radius: 6px;

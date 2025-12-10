@@ -32,8 +32,8 @@
                 @selection-change="handleSelectionChange" @row-click="handleRowClick" @page-change="handlePageChange"
                 @sort-change="handleTableSort">
                 <template #table-buttons>
-                    <el-button type="primary" @click="handleAdd" :icon="Plus">{{ getButtonText('add') }}</el-button>
-                    <!-- <el-button type="danger" @click="handleDel" :icon="Delete">{{ getButtonText('del') }}</el-button> -->
+                    <el-button type="primary" @click="handleAdd" v-permission="'add'" :icon="Plus">{{ getButtonText('add') }}</el-button>
+                    <!-- <el-button type="danger" @click="handleDel" v-permission="'delete'" :icon="Delete">{{ getButtonText('del') }}</el-button> -->
                     <!-- <el-dropdown trigger="click">
                         <el-button type="success">
                             {{ getButtonText('audit') }}<el-icon class="el-icon--right"><arrow-down /></el-icon>

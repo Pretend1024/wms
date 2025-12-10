@@ -394,7 +394,7 @@
                             </template>
                             <template #sku="{ row }">
                                 <el-select style="width: 150px;" v-model="row.sku" placeholder="请选择SKU"
-                                    @visible-change="handleSkuVisibleChange">
+                                    @visible-change="handleSkuVisibleChange" filterable>
                                     <!-- 加载状态显示 -->
                                     <template v-if="isSkuLoading">
                                         <el-option disabled label="loading..." />
@@ -474,6 +474,17 @@
                                             </el-upload>
                                         </template>
                                     </el-input>
+                                    <el-input v-model="row.returnNo" placeholder="退货单号" />
+                                    <el-input v-model="row.returnLabelUrl" placeholder="请输入退货运单URL">
+                                        <template #append>
+                                            <el-upload :auto-upload="true"
+                                                :http-request="(options) => handleReturnLabelUrlUpload(options, row)"
+                                                :before-upload="beforeUpload" multiple :show-file-list="false"
+                                                accept=".pdf">
+                                                <el-button icon="Upload" />
+                                            </el-upload>
+                                        </template>
+                                    </el-input>
                                 </div>
                             </template>
 
@@ -503,7 +514,7 @@
                             <template #skus="{ row }">
                                 <div class="tableFormSlot" v-for="(sku, index) in row.skuList" :key="index">
                                     <el-select style="width: 110px;" v-model="sku.sku" placeholder="请选择SKU"
-                                        @visible-change="handleSkuVisibleChange">
+                                        @visible-change="handleSkuVisibleChange" filterable>
                                         <!-- 加载状态显示 -->
                                         <template v-if="isSkuLoading">
                                             <el-option disabled label="加载中..." />
@@ -1052,6 +1063,35 @@ const handleCustomLabelUrlUpload = async (options, row) => {
         loading.close();
     }
 };
+
+// 退货单URL行内上传处理
+const handleReturnLabelUrlUpload = async (options, row) => {
+    const currentFile = options.file;
+    if (!currentFile) return;
+
+    const loading = ElLoading.service({
+        lock: true,
+        target: ".contentDiv",
+        text: 'loading...'
+    });
+
+    try {
+        const res = await uploadApi(currentFile, { path: 'temp' });
+
+        if (res.success) {
+            row.returnLabelUrl = res.data;
+        } else {
+            ElMessage.error(`退货运单上传失败：${res.msg || '服务器异常'}`);
+            row.returnLabelUrl = '';
+        }
+    } catch (error) {
+        ElMessage.error(`退货运单上传出错：${error.msg || '网络异常'}`);
+        row.returnLabelUrl = '';
+    } finally {
+        loading.close();
+    }
+}
+
 // ----------------------------------------------------------增值服务
 const onServiceTypeChange = (row, val) => {
     if (!val) {

@@ -84,10 +84,10 @@
                     <!-- 物流产品 -->
                     <el-col>
                         <el-form-item :label="getLabel('shipwayId')">
-                            <el-select v-model="formData.shipwayId" :placeholder="getPlaceholder('shipwayId')"
-                                clearable>
-                                <el-option v-for="item in shipwayOptions" :key="item.id" :label="item.name"
-                                    :value="item.id" />
+                            <el-select v-model="formData.shipwayId" :placeholder="getPlaceholder('shipwayId')" clearable
+                                filterable>
+                                <el-option v-for="item in shipwayOptions" :key="item.id" :value="item.id"
+                                    :label="`${item.name}(${item.carrierName})`" />
                             </el-select>
                         </el-form-item>
                     </el-col>
@@ -289,7 +289,8 @@
                         </div>
                         <div class="btns">
                             <!-- 新增 -->
-                            <el-button type="primary" @click="handleAdd" :icon="Plus">{{ getButtonText('add')
+                            <el-button type="primary" @click="handleAdd" v-permission="'add'" :icon="Plus">{{
+                                getButtonText('add')
                             }}</el-button>
                             <!-- 导入 -->
                             <el-dropdown trigger="click">
@@ -300,9 +301,9 @@
                                 <template #dropdown>
                                     <el-dropdown-menu>
                                         <el-dropdown-item @click="handleImportAdd">{{ getButtonText('importCreate')
-                                            }}</el-dropdown-item>
+                                        }}</el-dropdown-item>
                                         <el-dropdown-item @click="handleImportUpd">{{ getButtonText('importUpdate')
-                                            }}</el-dropdown-item>
+                                        }}</el-dropdown-item>
                                     </el-dropdown-menu>
                                 </template>
                             </el-dropdown>
@@ -315,12 +316,12 @@
                                 <template #dropdown>
                                     <el-dropdown-menu>
                                         <el-dropdown-item @click="applyNo">{{ getButtonText('applyNo')
-                                            }}</el-dropdown-item>
+                                        }}</el-dropdown-item>
                                         <el-dropdown-item @click="handleImport"> {{ getButtonText('importTrackingNo')
-                                            }}</el-dropdown-item>
+                                        }}</el-dropdown-item>
                                         <el-dropdown-item @click="handleCancelTrackingNo"> {{
                                             getButtonText('cancelTrackingNo')
-                                            }}</el-dropdown-item>
+                                        }}</el-dropdown-item>
                                     </el-dropdown-menu>
                                 </template>
                             </el-dropdown>
@@ -332,14 +333,14 @@
                                 <template #dropdown>
                                     <el-dropdown-menu>
                                         <el-dropdown-item @click="handlePrint(403)"> {{ getButtonText('trackingNo')
-                                            }}</el-dropdown-item>
+                                        }}</el-dropdown-item>
                                         <el-dropdown-item @click="handlePrint(404)">{{ getButtonText('serviceOrder')
-                                            }}</el-dropdown-item>
+                                        }}</el-dropdown-item>
                                         <el-dropdown-item @click="handlePrint(405)">{{ getButtonText('attachment')
-                                            }}</el-dropdown-item>
+                                        }}</el-dropdown-item>
                                         <el-dropdown-item @click="handlePrint(402)">{{
                                             getButtonText('commercialInvoice')
-                                        }}</el-dropdown-item>
+                                            }}</el-dropdown-item>
                                     </el-dropdown-menu>
                                 </template>
                             </el-dropdown>
@@ -352,10 +353,10 @@
                                 <template #dropdown>
                                     <el-dropdown-menu>
                                         <el-dropdown-item @click="handleJoinWave">{{ getButtonText('joinWave')
-                                            }}</el-dropdown-item>
+                                        }}</el-dropdown-item>
                                         <el-dropdown-item @click="handleExitWave"> {{
                                             getButtonText('exitWave')
-                                            }}</el-dropdown-item>
+                                        }}</el-dropdown-item>
                                     </el-dropdown-menu>
                                 </template>
                             </el-dropdown>
@@ -368,10 +369,10 @@
                                 <template #dropdown>
                                     <el-dropdown-menu>
                                         <el-dropdown-item @click="handleInventory">{{ getButtonText('assignStock')
-                                            }}</el-dropdown-item>
+                                        }}</el-dropdown-item>
                                         <el-dropdown-item @click="handleCancelInventory"> {{
                                             getButtonText('cancelAssign')
-                                            }}</el-dropdown-item>
+                                        }}</el-dropdown-item>
                                     </el-dropdown-menu>
                                 </template>
                             </el-dropdown>
@@ -384,17 +385,17 @@
                                 <template #dropdown>
                                     <el-dropdown-menu>
                                         <el-dropdown-item @click="ApplyHoldUp">{{ getButtonText('ApplyHoldUp')
-                                            }}</el-dropdown-item>
+                                        }}</el-dropdown-item>
                                         <el-dropdown-item @click="CancelHoldUp"> {{
                                             getButtonText('CancelHoldUp')
-                                            }}</el-dropdown-item>
+                                        }}</el-dropdown-item>
                                     </el-dropdown-menu>
                                 </template>
                             </el-dropdown>
                             <!-- 问题 -->
                             <el-button type="primary" @click="handleProblem" :icon="Plus">{{
                                 getButtonText('registerProblem')
-                                }}</el-button>
+                            }}</el-button>
                             <!-- 状态修改 -->
                             <el-dropdown trigger="click">
                                 <el-button type="success">
@@ -404,9 +405,9 @@
                                 <template #dropdown>
                                     <el-dropdown-menu>
                                         <el-dropdown-item @click="handleToAllocate">{{ getButtonText('pendingAssign')
-                                            }}</el-dropdown-item>
+                                        }}</el-dropdown-item>
                                         <el-dropdown-item @click="handleToDraft">{{ getButtonText('draft')
-                                            }}</el-dropdown-item>
+                                        }}</el-dropdown-item>
                                     </el-dropdown-menu>
                                 </template>
                             </el-dropdown>
@@ -419,21 +420,22 @@
                                 <template #dropdown>
                                     <el-dropdown-menu>
                                         <el-dropdown-item @click="setWarehouse"> {{ getButtonText('setWarehouse')
-                                            }}</el-dropdown-item>
+                                        }}</el-dropdown-item>
                                         <el-dropdown-item @click="setShipway">{{ getButtonText('setChannel')
-                                            }}</el-dropdown-item>
+                                        }}</el-dropdown-item>
                                     </el-dropdown-menu>
                                 </template>
                             </el-dropdown>
                             <!-- 导出 -->
                             <el-button type="success" @click="handleExport" :icon="Share">{{ getButtonText('export')
-                            }}</el-button>
+                                }}</el-button>
                             <!-- 导出文件 -->
                             <el-button type="info" @click="handleExportAttachment" :icon="Share">{{
                                 getButtonText('exportAttachment')
-                                }}</el-button>
+                            }}</el-button>
                             <!-- 删除 -->
-                            <el-button type="danger" @click="handleDel" :icon="Delete">{{ getButtonText('del')
+                            <el-button type="danger" @click="handleDel" v-permission="'delete'" :icon="Delete">{{
+                                getButtonText('del')
                             }}</el-button>
                         </div>
                     </div>
@@ -447,6 +449,8 @@
                             </el-icon>
                             <span>{{ getButtonText('edit') }}</span>
                         </div>
+                        <span class="cursor-pointer" @click="handleFile(row.id)">附件({{ row.fileQty }})</span>
+                        <span class="cursor-pointer" @click="handleRemark(row.id)">备注({{ row.remarkQty }})</span>
                         <!-- <el-dropdown>
                             <span class="cursor-pointer">
                                 {{ getButtonText('print') }}
@@ -473,9 +477,9 @@
                             <template #dropdown>
                                 <el-dropdown-menu>
                                     <el-dropdown-item @click="handleCopy(row)">{{ getButtonText('copy')
-                                    }}</el-dropdown-item>
-                                    <el-dropdown-item @click="handleCancel(row)">{{ getButtonText('cancelReceipt')
-                                    }}</el-dropdown-item>
+                                        }}</el-dropdown-item>
+                                    <!-- <el-dropdown-item @click="handleCancel(row)">{{ getButtonText('cancelReceipt')
+                                    }}</el-dropdown-item> -->
                                 </el-dropdown-menu>
                             </template>
                         </el-dropdown>
@@ -502,7 +506,7 @@
                 </template>
                 <template #isValiPackage="{ row }">
                     <span :style="{ color: row.isValiPackage ? 'red' : 'green' }">{{ row.isValiPackage ? '是' : '否'
-                        }}</span>
+                    }}</span>
                 </template>
                 <template #isValiLabel="{ row }">
                     <span :style="{ color: row.isValiLabel ? 'red' : 'green' }">{{ row.isValiLabel ? '是' : '否' }}</span>
@@ -524,19 +528,27 @@
                     {{ row.customerCode }}({{ row.customerName }})
                 </template>
                 <!-- 备注 -->
-                <template #remark="{ row }">
+                <!-- <template #remark="{ row }">
                     <span class="copyText" @click="handleRemark(row.id)"> ({{ row.remarkQty }})</span>
                     {{ row.remarkQty > 0 ? row.newestRemark : '' }}
-                </template>
+                    <span class="copyText" @click="handleRemark(row.id)"> {{ row.remarkQty > 0 ? row.newestRemark : ''
+                    }}</span>
+                </template> -->
                 <!-- 附件 -->
-                <template #fileQty="{ row }">
+                <!-- <template #fileQty="{ row }">
                     <span class="copyText" @click="handleFile(row.id)"> ({{ row.fileQty }})</span>
+                </template> -->
+                <!-- 运单就绪 -->
+                <template #trackingNoCount="{ row }">
+                    <span :style="{ color: row.trackingNoCount > 0 ? 'green' : 'red' }">{{ row.trackingNoCount > 0 ? '是'
+                        :
+                        '否' }}</span>
                 </template>
                 <!-- 跟踪单号 -->
-                <template #trackingNoCount="{ row }">
-                    <span class="copyText" v-if="row.trackingNoCount > 0" @click="handleTrackingNo(row.id)">是 ({{
+                <template #trackingNos="{ row }">
+                    <span class="copyText" v-if="row.trackingNoCount > 0" @click="handleTrackingNo(row.id)">({{
                         row.trackingNoCount }})</span>
-                    <span style="color: red;" v-else>否</span>
+                    {{ row.trackingNos }}
                 </template>
                 <!-- 增值服务单号 -->
                 <template #vasOrderNo="{ row }">
@@ -550,16 +562,39 @@
         <!-- 打印弹窗 -->
         <printDialog ref="printDialogRef" :selectionRows="selectionRows" :initValues="initValues" :printType="printType"
             :printRangeValue="1" :showPrintQty="false" :showPrintFormat="showPrintFormat"
-            :onPrintSuccess="handlePrintSuccess">
+            :onPrintSuccess="handlePrintSuccess" :extra-params="printType === 403 ? printData : {}">
+            <template #extraForm>
+                <el-form-item :label="getLabel('waybillTypeId')" v-if="printType === 403">
+                    <el-select v-model="printData.waybillTypeId" :placeholder="getPlaceholder('waybillTypeId')">
+                        <el-option v-for="item in waybillTypeIdOptions" :key="item.value" :label="item.label"
+                            :value="item.value" />
+                    </el-select>
+                </el-form-item>
+            </template>
         </printDialog>
         <!-- 导入运单弹窗 -->
-        <importDialog ref="importDialogRef" />
+        <importDialog ref="importDialogRef" :waybillTypeIdOptions="waybillTypeIdOptions" />
         <!-- 批量设置 -->
         <batchSettingDialog ref="batchDialogRef" :type="currentType" :warehouseOptions="warehouseOptions"
             @confirm="handleDialogConfirm" />
         <!-- 申请单号 -->
         <applyWayBillDialog ref="applyWayBillDialogRef" :selectionRows="selectionRows"
-            @confirm="handleApplyNoConfirm" />
+            :waybillTypeIdOptions="waybillTypeIdOptions" @confirm="handleApplyNoConfirm" />
+        <!-- 取消单号 -->
+        <el-dialog v-model="cancelConfigVisible" title="取消运单号" width="400px" align-center>
+            <el-form-item :label="getLabel('waybillTypeId')">
+                <el-select v-model="cancelWaybillTypeId" :placeholder="getPlaceholder('waybillTypeId')">
+                    <el-option v-for="item in waybillTypeIdOptions" :key="item.value" :label="item.label"
+                        :value="item.value" />
+                </el-select>
+            </el-form-item>
+            <template #footer>
+                <span class="dialog-footer">
+                    <el-button @click="cancelConfigVisible = false">取消</el-button>
+                    <el-button type="primary" @click="submitCancel">确定</el-button>
+                </span>
+            </template>
+        </el-dialog>
         <!-- 备注 -->
         <remarkDialog ref="remarkDialogRef" :id="selectionRows.id" @close="handleDialogClose" />
         <!-- 附件 -->
@@ -631,7 +666,7 @@
 </template>
 <script setup name="出库单">
 import { getOutstockOrderApi, deleteOutstockOrderApi, getOutstockOrderStatusMenuApi } from '@/api/outstockApi/order.js'
-import { outstockOrderTypeApi, outstockOrderBatchSetWarehouseApi, outstockOrderBatchSetChannelApi, outstockOrderApplyTrackingNoApi, outstockOrderCancelTrackingNoApi, outstockOrderStatusApi, outstockOrderCreateWayEnumApi, outstockOrderEcommercePlatformApi, outstockOrderSupplierPushStatusEnumApi, getOutstockOrderTimeFilterEnumApi, getOutstockOrderCountBtnEnumApi, getOutstockOrderExportTypeEnumApi, getOutstockOrderExportZIPApi, getAllocateInventoryApi, getCancelAllocateInventoryApi, getJoinWaveApi, getExitWaveApi, outstockOrderToPendingAllocationApi, outstockOrderToDraftApi } from '@/api/outstockApi/order.js';
+import { outstockOrderTypeApi, outstockOrderBatchSetWarehouseApi, outstockOrderBatchSetChannelApi, outstockOrderApplyTrackingNoApi, outstockOrderCancelTrackingNoApi, outstockOrderStatusApi, outstockOrderCreateWayEnumApi, outstockOrderEcommercePlatformApi, outstockOrderSupplierPushStatusEnumApi, getOutstockOrderTimeFilterEnumApi, getOutstockOrderCountBtnEnumApi, getOutstockOrderExportTypeEnumApi, getOutstockOrderExportZIPApi, getAllocateInventoryApi, getCancelAllocateInventoryApi, getJoinWaveApi, getExitWaveApi, outstockOrderToPendingAllocationApi, outstockOrderToDraftApi, getOutstockOrderWayBillTypeEnumApi } from '@/api/outstockApi/order.js';
 // import { } from '@/api/instockApi/order.js';
 import { outstockOrderApplyHoldUptApi, outstockOrderCancelHoldUpApi, getOrderHoldupStatusApi } from '@/api/outstockApi/holdup.js'
 import { getOrgListCompanyApi } from '@/api/baseApi/org.js';
@@ -798,8 +833,8 @@ const columns = ref([
     { label: '物流产品代码', prop: 'shipwayCode', width: '110', sortable: true },
     { label: '物流品牌代码', prop: 'carrierCode', width: '125', sortable: true },
     { label: '服务商代码', prop: 'supplierCode', width: '140', sortable: true },
-    { label: '物流单号个数', prop: 'trackingNoCount', width: '150', slot: 'trackingNoCount' },
-    { label: '跟踪单号', prop: 'trackingNos', width: '180', sortable: true },
+    { label: '跟踪单号个数', prop: 'trackingNoCount', width: '120', slot: 'trackingNoCount' },
+    { label: '跟踪单号', prop: 'trackingNos', width: '180', sortable: true, slot: 'trackingNos' },
     { label: '增值服务单号', prop: 'vasOrderNo', width: '180', sortable: true, slot: 'vasOrderNo' },
 
     // 商品与库存信息
@@ -855,25 +890,25 @@ const columns = ref([
     { label: '是否需要复核装箱', prop: 'isValiPackageNeed', width: '180', sortable: true, slot: 'isValiPackageNeed' },
     { label: '是否已复核装箱', prop: 'isValiPackage', width: '180', sortable: true, slot: 'isValiPackage' },
     { label: '是否已验证贴单', prop: 'isValiLabel', width: '180', sortable: true, slot: 'isValiLabel' },
-    { label: '物流单打印次数', prop: 'printLabelCount', width: '150', sortable: true }, // 补充字段
-    { label: '拣货单打印次数', prop: 'printOutShelfCount', width: '150', sortable: true }, // 补充字段
+    { label: '物流单打印次数', prop: 'printLabelCount', width: '180', sortable: true }, // 补充字段
+    { label: '拣货单打印次数', prop: 'printOutShelfCount', width: '180', sortable: true }, // 补充字段
 
     // 联系人与附件信息
     { label: '收件人姓名', prop: 'receiverName', width: '150' },
     { label: '收件人电话', prop: 'receiverPhone', width: '140' },
     { label: '寄件人姓名', prop: 'senderName', width: '150' },
     { label: '寄件人电话', prop: 'senderPhone', width: '140' },
-    { label: '附件数量', prop: 'fileQty', width: '125', slot: 'fileQty' },
+    // { label: '附件数量', prop: 'fileQty', width: '125', slot: 'fileQty' },
     { label: '待解决问题数', prop: 'unresolvedProblemQty', width: '150' },
 
     // 其他辅助信息
-    { label: '退货单号', prop: 'returnNo', width: '110', sortable: true },
+    { label: '退货单号', prop: 'returnNos', width: '110', sortable: true },
     { label: '自提代码', prop: 'pickupCode', width: '110' },
     { label: '最新轨迹', prop: 'lastTrace', width: '180', sortable: true },
-    { label: '备注', prop: 'remark', width: '150', slot: 'remark' },
+    { label: '备注', prop: 'remark', width: '150' },//, slot: 'remark'
     { label: '创建时间', prop: 'createdTime', width: '150', sortable: true }, // 补充字段
     { label: '更新时间', prop: 'updatedTime', width: '150', sortable: true },// 补充字段
-    { label: '操作', prop: 'action', width: '150', fixed: 'right', slot: 'customBtn' }
+    { label: '操作', prop: 'action', width: '270', fixed: 'right', slot: 'customBtn' }
 ])
 
 const pagination = ref({
@@ -1097,45 +1132,99 @@ const handleApplyNoConfirm = async (e) => {
 //         });
 // }
 // 取消运单号
-const handleCancelTrackingNo = () => {
+// --- 状态变量 ---
+const cancelConfigVisible = ref(false); // 控制选择弹窗显示
+const cancelWaybillTypeId = ref(10);  // 选中的运单类型ID
+const waybillTypeIdOptions = ref([]);       // 下拉选项数据
+
+// 点击“取消运单号”按钮触发的方法
+const handleCancelTrackingNo = async () => {
     if (selectionRows.value.length === 0) {
-        ElMessage({
-            type: 'warning',
-            message: '请选择要申请运单号的数据！'
-        });
+        ElMessage.warning('请选择要申请运单号的数据！');
         return;
     }
-    ElMessageBox.confirm(
-        `是否要取消${selectionRows.value.length > 0 ? selectionRows.value.length : '该'}条订单的单号?`,
-        '提醒',
-        {
-            confirmButtonText: '确定',
-            cancelButtonText: '取消',
-            type: 'warning'
-        }
-    )
-        .then(async () => {
-            loading.value = true;
-            delDialogVisible.value = true;
-            delData.value = [];
-            promptMessage.value = '操作中...'
-            for (let i = 0; i < selectionRows.value.length; i++) {
-                const res = await outstockOrderCancelTrackingNoApi({ outOrderId: selectionRows.value[i].id });
-                delData.value.push({
-                    id: selectionRows.value[i].orderNo,
-                    msg: res.msg,
-                    success: res.success
-                });
-            }
-            promptMessage.value = '操作完成！'
-        })
-        .catch(() => {
-            ElMessage({
-                type: 'info',
-                message: '已取消删除'
-            });
-        });
+
+    // 重置状态并打开弹窗
+    cancelWaybillTypeId.value = 10;
+    cancelConfigVisible.value = true;
 }
+
+//取消运单确定
+const submitCancel = async () => {
+    // 校验必填
+    if (!cancelWaybillTypeId.value) {
+        ElMessage.warning('请先选择运单类型！');
+        return;
+    }
+
+    // 关闭选择弹窗
+    cancelConfigVisible.value = false;
+
+    loading.value = true;
+    delDialogVisible.value = true; // 打开进度结果弹窗
+    delData.value = [];
+    promptMessage.value = '操作中...';
+
+    try {
+        for (let i = 0; i < selectionRows.value.length; i++) {
+            const res = await outstockOrderCancelTrackingNoApi({
+                outOrderId: selectionRows.value[i].id,
+                waybillTypeId: cancelWaybillTypeId.value
+            });
+
+            delData.value.push({
+                id: selectionRows.value[i].orderNo,
+                msg: res.msg,
+                success: res.success
+            });
+        }
+        promptMessage.value = '操作完成！';
+    } catch (error) {
+        console.error(error);
+        promptMessage.value = '操作异常 terminated';
+    } finally {
+        loading.value = false;
+    }
+}
+// const handleCancelTrackingNo = () => {
+//     if (selectionRows.value.length === 0) {
+//         ElMessage({
+//             type: 'warning',
+//             message: '请选择要申请运单号的数据！'
+//         });
+//         return;
+//     }
+//     ElMessageBox.confirm(
+//         `是否要取消${selectionRows.value.length > 0 ? selectionRows.value.length : '该'}条订单的单号?`,
+//         '提醒',
+//         {
+//             confirmButtonText: '确定',
+//             cancelButtonText: '取消',
+//             type: 'warning'
+//         }
+//     )
+//         .then(async () => {
+//             loading.value = true;
+//             delDialogVisible.value = true;
+//             delData.value = [];
+//             promptMessage.value = '操作中...'
+//             for (let i = 0; i < selectionRows.value.length; i++) {
+//                 const res = await outstockOrderCancelTrackingNoApi({ outOrderId: selectionRows.value[i].id });
+//                 delData.value.push({
+//                     id: selectionRows.value[i].orderNo,
+//                     msg: res.msg,
+//                     success: res.success
+//                 });
+//             }
+//             promptMessage.value = '操作完成！'
+//         })
+//         .catch(() => {
+//             ElMessage({
+//                 type: 'info',
+//                 message: '已取消删除'
+//             });
+//         });
+// }
 // 导入运单
 const handleImport = () => {
     importDialogRef.value.open()
@@ -1625,6 +1714,9 @@ const handleExitWave = async () => {
 const printDialogRef = ref(null)
 const printType = ref(402)
 const showPrintFormat = ref(false)
+const printData = ref({
+    waybillTypeId: 10
+})
 const handlePrint = async (id) => {
     if (selectionRows.value.length === 0) {
         ElMessage({
@@ -1687,13 +1779,13 @@ const getList = async (currentPage, pageSize, orderBy) => {
 const getStatus = async () => {
     const data = {
         ...trimObjectStrings(initValues.value),
-        statusIdList: initValues.value.statusIdList
     }
     if (data.orgId.length > 0) {
         data.orgId = data.orgId[data.orgId.length - 1]
     } else {
         delete data.orgId
     }
+    delete data.statusIdList
     const res = await getOutstockOrderStatusMenuApi(data)
     statusIdsList.value = res.data
     statusIdsArr.value = [...initValues.value.statusIdList]
@@ -1930,9 +2022,16 @@ onMounted(async () => {
                 key: '附件类型',
                 api: getOutstockOrderExportTypeEnumApi(),
                 handleSuccess: (data) => (fileOptions.value = data || [])
+            },
+            {
+                key: '运单类型',
+                api: getOutstockOrderWayBillTypeEnumApi(),
+                handleSuccess: (data) => (waybillTypeIdOptions.value = data.map(item => ({
+                    label: item.name,
+                    value: item.id
+                })) || [])
             }
         ];
-
         //执行所有请求
         const dropdownResults = await Promise.allSettled(
             apiTasks.map((task) => task.api)
