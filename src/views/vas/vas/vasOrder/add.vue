@@ -1,25 +1,27 @@
 <template>
     <div class="viewArea">
         <div class="contentDiv flex-container">
-            <p>基础信息</p>
+            <p>{{ $t('vas_vas_vasOrder_add.basicInfo') }}</p> <!-- 基础信息 -->
             <el-form :model="formData" :rules="rules" ref="formRef" label-width="115px">
                 <el-row>
                     <el-col :span="8">
-                        <el-form-item label="服务标题:" prop="vasTitle">
-                            <el-input v-model.trim="formData.vasTitle" placeholder="请输入服务标题" />
+                        <el-form-item :label="getLabel('vasTitle')" prop="vasTitle">
+                            <el-input v-model.trim="formData.vasTitle" :placeholder="getPlaceholder('vasTitle')" />
                         </el-form-item>
                     </el-col>
                     <el-col :span="8">
-                        <el-form-item label="关联业务类型:" prop="relatedBizType">
-                            <el-select v-model="formData.relatedBizType" placeholder="请选择关联业务类型" clearable>
+                        <el-form-item :label="getLabel('relatedBizType')" prop="relatedBizType">
+                            <el-select v-model="formData.relatedBizType" :placeholder="getPlaceholder('relatedBizType')"
+                                clearable>
                                 <el-option v-for="item in relatedBizTypeOptions" :key="item.id" :label="item.name"
                                     :value="item.id" />
                             </el-select>
                         </el-form-item>
                     </el-col>
                     <el-col :span="8">
-                        <el-form-item label="关联业务单号:" prop="relatedBizNo">
-                            <el-input v-model.trim="formData.relatedBizNo" placeholder="请输入关联业务单号" />
+                        <el-form-item :label="getLabel('relatedBizNo')" prop="relatedBizNo">
+                            <el-input v-model.trim="formData.relatedBizNo"
+                                :placeholder="getPlaceholder('relatedBizNo')" />
                         </el-form-item>
                     </el-col>
                     <el-col :span="8">
@@ -49,19 +51,22 @@
                         </el-form-item>
                     </el-col>
                     <el-col :span="8">
-                        <el-form-item label="预计完成时间:" prop="expectFinishTime">
-                            <el-date-picker v-model="formData.expectFinishTime" type="date" placeholder="选择预计完成时间"
-                                format="YYYY/MM/DD" value-format="YYYY-MM-DD" />
+                        <el-form-item :label="getLabel('expectFinishTime')" prop="expectFinishTime">
+                            <el-date-picker v-model="formData.expectFinishTime" type="date"
+                                :placeholder="getPlaceholder('expectFinishTime')" format="YYYY/MM/DD"
+                                value-format="YYYY-MM-DD" />
                         </el-form-item>
                     </el-col>
                     <el-col :span="8">
-                        <el-form-item label="关联工单:" prop="relatedWorkOrderId">
-                            <el-input v-model.trim="formData.relatedWorkOrderId" placeholder="请输入关联工单" />
+                        <el-form-item :label="getLabel('relatedWorkOrderId')" prop="relatedWorkOrderId">
+                            <el-input v-model.trim="formData.relatedWorkOrderId"
+                                :placeholder="getPlaceholder('relatedWorkOrderId')" />
                         </el-form-item>
                     </el-col>
                     <el-col :span="24">
-                        <el-form-item label="服务描述:" prop="vasDesc">
-                            <el-input type="textarea" v-model="formData.vasDesc" placeholder="请输入客户需求详情" :rows="3" />
+                        <el-form-item :label="getLabel('vasDesc')" prop="vasDesc">
+                            <el-input type="textarea" v-model="formData.vasDesc"
+                                :placeholder="getPlaceholder('vasDesc')" :rows="3" />
                         </el-form-item>
                     </el-col>
                 </el-row>
@@ -69,30 +74,34 @@
 
             <!-- 服务项目信息 标题 -->
             <div class="section-header">
-                <div class="section-title">服务项目信息</div>
+                <div class="section-title">{{ $t('vas_vas_vasOrder_add.serviceItemInfo') }}</div> <!-- 服务项目信息 -->
             </div>
 
             <el-row class="table-container">
                 <el-col :span="24">
                     <generalAddTable ref="itemTableRef" :columns="itemTableColumns" :data="itemTableData">
                         <template #serviceTypeId="{ row }">
-                            <el-select v-model="row.serviceTypeId" placeholder="请选择服务类型" clearable filterable
-                                @change="(val) => onServiceTypeChange(row, val)">
+                            <el-select v-model="row.serviceTypeId"
+                                :placeholder="$t('vas_vas_vasOrder_add.selectServiceType')" clearable filterable
+                                @change="(val) => onServiceTypeChange(row, val)"> <!-- 请选择服务类型 -->
                                 <el-option v-for="item in serviceTypeOptions" :key="item.id" :label="item.name"
                                     :value="item.id" />
                             </el-select>
                         </template>
                         <template #planQty="{ row }">
-                            <el-input v-model.number="row.planQty" placeholder="请输入计划数量" v-number />
+                            <el-input v-model.number="row.planQty"
+                                :placeholder="$t('vas_vas_vasOrder_add.inputPlanQty')" v-number /> <!-- 请输入计划数量 -->
                         </template>
                         <template #unit="{ row }">
-                            <el-select v-model="row.unit" placeholder="请选择单位" clearable filterable disabled>
+                            <el-select v-model="row.unit" :placeholder="$t('vas_vas_vasOrder_add.selectUnit')" clearable
+                                filterable disabled> <!-- 请选择单位 -->
                                 <el-option v-for="item in unitOptions" :key="item.name" :label="item.name"
                                     :value="item.name" />
                             </el-select>
                         </template>
                         <template #sku="{ row, $index }"> <!-- 接收行索引 -->
-                            <el-input v-model="row.sku" @blur="onSingleSkuBlur(row)" placeholder="请输入SKU">
+                            <el-input v-model="row.sku" @blur="onSingleSkuBlur(row)"
+                                :placeholder="$t('vas_vas_vasOrder_add.inputSku')"> <!-- 请输入SKU -->
                                 <template #append>
                                     <!-- 传递当前行索引到弹窗 -->
                                     <el-button icon="More" @click="openSingleSkuDialog($index)" />
@@ -117,13 +126,17 @@
                                     :before-upload="beforeUpload" multiple :show-file-list="false"
                                     class="upload-btn-wrap">
                                     <el-button type="primary" size="small">
-                                        {{ (row.attachments && row.attachments.length > 0) ? '+ 继续上传' : '上传附件' }}
+                                        {{ (row.attachments && row.attachments.length > 0) ?
+                                            $t('vas_vas_vasOrder_add.continueUpload') :
+                                        $t('vas_vas_vasOrder_add.uploadAttachment') }}
+                                        <!-- + 继续上传 / 上传附件 -->
                                     </el-button>
                                 </el-upload>
                             </div>
                         </template>
                         <template #remark="{ row }">
-                            <el-input v-model="row.remark" placeholder="请输入备注" type="textarea" />
+                            <el-input v-model="row.remark" :placeholder="$t('vas_vas_vasOrder_add.inputRemark')"
+                                type="textarea" /> <!-- 请输入备注 -->
                         </template>
                     </generalAddTable>
                 </el-col>
@@ -131,9 +144,11 @@
 
             <!-- 费用信息部分保持不变 -->
             <div class="section-header">
-                <div class="section-title">费用信息</div>
+                <div class="section-title">{{ $t('vas_vas_vasOrder_add.feeInfo') }}</div> <!-- 费用信息 -->
                 <div class="section-action">
-                    <el-button type="primary" @click="fetchFeeData" size="small">系统计算</el-button>
+                    <el-button type="primary" @click="fetchFeeData" size="small">{{
+                        $t('vas_vas_vasOrder_add.systemCalculate')
+                        }}</el-button> <!-- 系统计算 -->
                 </div>
             </div>
 
@@ -142,28 +157,36 @@
                     <generalAddTable ref="feeTableRef" :columns="feeTableColumns" :data="feeTableData"
                         :addRowDefaults="[{ prop: 'createWay', value: 20 }]">
                         <template #feeSubTypeId="{ row }">
-                            <el-select v-model="row.feeSubTypeId" placeholder="请选择费用类型" clearable filterable>
+                            <el-select v-model="row.feeSubTypeId"
+                                :placeholder="$t('vas_vas_vasOrder_add.selectFeeType')" clearable filterable>
+                                <!-- 请选择费用类型 -->
                                 <el-option v-for="item in feeTypeOptions" :key="item.id" :label="item.name"
                                     :value="item.id" />
                             </el-select>
                         </template>
                         <template #feeAmount="{ row }">
-                            <el-input v-model.number="row.feeAmount" placeholder="请输入总费用" v-number />
+                            <el-input v-model.number="row.feeAmount"
+                                :placeholder="$t('vas_vas_vasOrder_add.inputTotalFee')" v-number /> <!-- 请输入总费用 -->
                         </template>
                         <template #currency="{ row }">
-                            <el-select v-model="row.currency" placeholder="请选择货币类型" clearable filterable>
+                            <el-select v-model="row.currency"
+                                :placeholder="$t('vas_vas_vasOrder_add.selectCurrencyType')" clearable filterable>
+                                <!-- 请选择货币类型 -->
                                 <el-option v-for="item in currencyOptions" :key="item.id" :label="item.name"
                                     :value="item.code" />
                             </el-select>
                         </template>
                         <template #createWay="{ row }">
-                            <el-select v-model="row.createWay" placeholder="请选择创建类型" clearable disabled>
+                            <el-select v-model="row.createWay"
+                                :placeholder="$t('vas_vas_vasOrder_add.selectCreateType')" clearable disabled>
+                                <!-- 请选择创建类型 -->
                                 <el-option v-for="item in feeCreateTypeOptions" :key="item.id" :label="item.name"
                                     :value="item.id" />
                             </el-select>
                         </template>
                         <template #remark="{ row }">
-                            <el-input v-model="row.remark" placeholder="请输入费用备注" :disabled="row.createWay == 10" />
+                            <el-input v-model="row.remark" :placeholder="$t('vas_vas_vasOrder_add.inputFeeRemark')"
+                                :disabled="row.createWay == 10" /> <!-- 请输入费用备注 -->
                         </template>
                     </generalAddTable>
                 </el-col>
@@ -173,8 +196,9 @@
             <div class="bottom-space"></div>
             <!-- 粘性按钮 -->
             <div class="btns">
-                <el-button type="primary" @click="handleSave">{{ getButtonText('save') }}</el-button>
-                <el-button @click="handleClose">{{ getButtonText('close') }}</el-button>
+                <el-button type="primary" @click="handleSave">{{ $t('vas_vas_vasOrder_add.save') }}</el-button>
+                <!-- 保存 -->
+                <el-button @click="handleClose">{{ $t('vas_vas_vasOrder_add.close') }}</el-button> <!-- 关闭 -->
             </div>
         </div>
 

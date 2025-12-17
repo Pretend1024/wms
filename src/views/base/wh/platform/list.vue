@@ -88,7 +88,7 @@
     </div>
 </template>
 
-<script setup name='月台列表'>
+<script setup name='月台'>
 import { Plus, Edit } from "@element-plus/icons-vue";
 import canonicalInput from '@/components/table/canonicalInpt.vue';
 import hydTable from "@/components/table/hyd-table.vue";

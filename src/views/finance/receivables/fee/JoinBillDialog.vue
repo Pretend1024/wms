@@ -24,7 +24,7 @@
 
         <template #footer>
             <el-button @click="handleClose">取消</el-button>
-            <el-button type="primary" @click="handleConfirm" :loading="loading">确定</el-button>
+            <el-button type="primary" @click="handleConfirm">确定</el-button>
         </template>
     </el-dialog>
 </template>
@@ -41,10 +41,6 @@ const props = defineProps({
     selectionCount: { // 勾选数量
         type: Number,
         default: 0
-    },
-    loading: { // 按钮loading状态
-        type: Boolean,
-        default: false
     }
 });
 

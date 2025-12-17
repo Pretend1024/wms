@@ -43,6 +43,16 @@
                         <selectDate ref="dateSelectRef" :options="timeTypeOptions"
                             :initialDateRange="selectDateData.dateRange" @change="handleTimeChange"></selectDate>
                     </el-col>
+                    <!-- 业务类型 -->
+                    <el-col>
+                        <el-form-item :label="getLabel('businessId')">
+                            <el-select v-model="formData.businessId" :placeholder="getPlaceholder('businessId')"
+                                clearable>
+                                <el-option v-for="item in businessOptions" :key="item.id" :value="item.id"
+                                    :label="item.name" />
+                            </el-select>
+                        </el-form-item>
+                    </el-col>
                     <!-- 波次号 -->
                     <el-col>
                         <el-form-item :label="getLabel('outWaveNo')">
@@ -214,8 +224,8 @@
                         <el-form-item :label="getLabel('createWay')">
                             <el-select v-model="formData.createWay" :placeholder="getPlaceholder('createWay')"
                                 clearable>
-                                <el-option v-for="item in createWayOptions" :key="item.code" :label="item.name"
-                                    :value="item.code" />
+                                <el-option v-for="item in createWayOptions" :key="item.id" :label="item.name"
+                                    :value="item.id" />
                             </el-select>
                         </el-form-item>
                     </el-col>
@@ -291,7 +301,7 @@
                             <!-- 新增 -->
                             <el-button type="primary" @click="handleAdd" v-permission="'add'" :icon="Plus">{{
                                 getButtonText('add')
-                            }}</el-button>
+                                }}</el-button>
                             <!-- 导入 -->
                             <el-dropdown trigger="click">
                                 <el-button type="success">
@@ -301,9 +311,9 @@
                                 <template #dropdown>
                                     <el-dropdown-menu>
                                         <el-dropdown-item @click="handleImportAdd">{{ getButtonText('importCreate')
-                                        }}</el-dropdown-item>
+                                            }}</el-dropdown-item>
                                         <el-dropdown-item @click="handleImportUpd">{{ getButtonText('importUpdate')
-                                        }}</el-dropdown-item>
+                                            }}</el-dropdown-item>
                                     </el-dropdown-menu>
                                 </template>
                             </el-dropdown>
@@ -316,12 +326,12 @@
                                 <template #dropdown>
                                     <el-dropdown-menu>
                                         <el-dropdown-item @click="applyNo">{{ getButtonText('applyNo')
-                                        }}</el-dropdown-item>
+                                            }}</el-dropdown-item>
                                         <el-dropdown-item @click="handleImport"> {{ getButtonText('importTrackingNo')
-                                        }}</el-dropdown-item>
+                                            }}</el-dropdown-item>
                                         <el-dropdown-item @click="handleCancelTrackingNo"> {{
                                             getButtonText('cancelTrackingNo')
-                                        }}</el-dropdown-item>
+                                            }}</el-dropdown-item>
                                     </el-dropdown-menu>
                                 </template>
                             </el-dropdown>
@@ -333,14 +343,14 @@
                                 <template #dropdown>
                                     <el-dropdown-menu>
                                         <el-dropdown-item @click="handlePrint(403)"> {{ getButtonText('trackingNo')
-                                        }}</el-dropdown-item>
+                                            }}</el-dropdown-item>
                                         <el-dropdown-item @click="handlePrint(404)">{{ getButtonText('serviceOrder')
-                                        }}</el-dropdown-item>
+                                            }}</el-dropdown-item>
                                         <el-dropdown-item @click="handlePrint(405)">{{ getButtonText('attachment')
-                                        }}</el-dropdown-item>
+                                            }}</el-dropdown-item>
                                         <el-dropdown-item @click="handlePrint(402)">{{
                                             getButtonText('commercialInvoice')
-                                            }}</el-dropdown-item>
+                                        }}</el-dropdown-item>
                                     </el-dropdown-menu>
                                 </template>
                             </el-dropdown>
@@ -353,10 +363,10 @@
                                 <template #dropdown>
                                     <el-dropdown-menu>
                                         <el-dropdown-item @click="handleJoinWave">{{ getButtonText('joinWave')
-                                        }}</el-dropdown-item>
+                                            }}</el-dropdown-item>
                                         <el-dropdown-item @click="handleExitWave"> {{
                                             getButtonText('exitWave')
-                                        }}</el-dropdown-item>
+                                            }}</el-dropdown-item>
                                     </el-dropdown-menu>
                                 </template>
                             </el-dropdown>
@@ -369,10 +379,10 @@
                                 <template #dropdown>
                                     <el-dropdown-menu>
                                         <el-dropdown-item @click="handleInventory">{{ getButtonText('assignStock')
-                                        }}</el-dropdown-item>
+                                            }}</el-dropdown-item>
                                         <el-dropdown-item @click="handleCancelInventory"> {{
                                             getButtonText('cancelAssign')
-                                        }}</el-dropdown-item>
+                                            }}</el-dropdown-item>
                                     </el-dropdown-menu>
                                 </template>
                             </el-dropdown>
@@ -385,17 +395,17 @@
                                 <template #dropdown>
                                     <el-dropdown-menu>
                                         <el-dropdown-item @click="ApplyHoldUp">{{ getButtonText('ApplyHoldUp')
-                                        }}</el-dropdown-item>
+                                            }}</el-dropdown-item>
                                         <el-dropdown-item @click="CancelHoldUp"> {{
                                             getButtonText('CancelHoldUp')
-                                        }}</el-dropdown-item>
+                                            }}</el-dropdown-item>
                                     </el-dropdown-menu>
                                 </template>
                             </el-dropdown>
                             <!-- 问题 -->
                             <el-button type="primary" @click="handleProblem" :icon="Plus">{{
                                 getButtonText('registerProblem')
-                            }}</el-button>
+                                }}</el-button>
                             <!-- 状态修改 -->
                             <el-dropdown trigger="click">
                                 <el-button type="success">
@@ -405,9 +415,9 @@
                                 <template #dropdown>
                                     <el-dropdown-menu>
                                         <el-dropdown-item @click="handleToAllocate">{{ getButtonText('pendingAssign')
-                                        }}</el-dropdown-item>
+                                            }}</el-dropdown-item>
                                         <el-dropdown-item @click="handleToDraft">{{ getButtonText('draft')
-                                        }}</el-dropdown-item>
+                                            }}</el-dropdown-item>
                                     </el-dropdown-menu>
                                 </template>
                             </el-dropdown>
@@ -420,23 +430,23 @@
                                 <template #dropdown>
                                     <el-dropdown-menu>
                                         <el-dropdown-item @click="setWarehouse"> {{ getButtonText('setWarehouse')
-                                        }}</el-dropdown-item>
+                                            }}</el-dropdown-item>
                                         <el-dropdown-item @click="setShipway">{{ getButtonText('setChannel')
-                                        }}</el-dropdown-item>
+                                            }}</el-dropdown-item>
                                     </el-dropdown-menu>
                                 </template>
                             </el-dropdown>
                             <!-- 导出 -->
                             <el-button type="success" @click="handleExport" :icon="Share">{{ getButtonText('export')
-                                }}</el-button>
+                            }}</el-button>
                             <!-- 导出文件 -->
                             <el-button type="info" @click="handleExportAttachment" :icon="Share">{{
                                 getButtonText('exportAttachment')
-                            }}</el-button>
+                                }}</el-button>
                             <!-- 删除 -->
                             <el-button type="danger" @click="handleDel" v-permission="'delete'" :icon="Delete">{{
                                 getButtonText('del')
-                            }}</el-button>
+                                }}</el-button>
                         </div>
                     </div>
                 </template>
@@ -477,7 +487,7 @@
                             <template #dropdown>
                                 <el-dropdown-menu>
                                     <el-dropdown-item @click="handleCopy(row)">{{ getButtonText('copy')
-                                        }}</el-dropdown-item>
+                                    }}</el-dropdown-item>
                                     <!-- <el-dropdown-item @click="handleCancel(row)">{{ getButtonText('cancelReceipt')
                                     }}</el-dropdown-item> -->
                                 </el-dropdown-menu>
@@ -506,7 +516,7 @@
                 </template>
                 <template #isValiPackage="{ row }">
                     <span :style="{ color: row.isValiPackage ? 'red' : 'green' }">{{ row.isValiPackage ? '是' : '否'
-                    }}</span>
+                        }}</span>
                 </template>
                 <template #isValiLabel="{ row }">
                     <span :style="{ color: row.isValiLabel ? 'red' : 'green' }">{{ row.isValiLabel ? '是' : '否' }}</span>
@@ -906,6 +916,7 @@ const columns = ref([
     { label: '自提代码', prop: 'pickupCode', width: '110' },
     { label: '最新轨迹', prop: 'lastTrace', width: '180', sortable: true },
     { label: '备注', prop: 'remark', width: '150' },//, slot: 'remark'
+    { label: '创建方式', width: '130', prop: 'createWayName', sortable: true },
     { label: '创建时间', prop: 'createdTime', width: '150', sortable: true }, // 补充字段
     { label: '更新时间', prop: 'updatedTime', width: '150', sortable: true },// 补充字段
     { label: '操作', prop: 'action', width: '270', fixed: 'right', slot: 'customBtn' }

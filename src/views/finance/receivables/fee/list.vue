@@ -1,35 +1,40 @@
 <template>
     <div class="viewArea">
         <el-tabs v-model="activeName" class="tabs">
-            <el-tab-pane label="全部" name="all">
+            <!-- 全部标签 -->
+            <el-tab-pane :label="t('finance_receivables_fee_list.all')" name="all">
                 <AllList v-show="activeName === 'all'" :companyOptions="companyOptions"
                     :warehouseOptions="warehouseOptions" :initialCustomerOptions="initialCustomerOptions"
                     :statusOptions="statusOptions" :createWayOptions="createWayOptions"
                     :currencyOptions="currencyOptions" />
             </el-tab-pane>
 
-            <el-tab-pane label="入库费用" name="inbound">
+            <!-- 入库费用标签 -->
+            <el-tab-pane :label="t('finance_receivables_fee_list.inboundFee')" name="inbound">
                 <InboundList v-show="activeName === 'inbound'" :companyOptions="companyOptions"
                     :warehouseOptions="warehouseOptions" :initialCustomerOptions="initialCustomerOptions"
                     :statusOptions="statusOptions" :createWayOptions="createWayOptions"
                     :currencyOptions="currencyOptions" />
             </el-tab-pane>
 
-            <el-tab-pane label="出库费用" name="outbound">
+            <!-- 出库费用标签 -->
+            <el-tab-pane :label="t('finance_receivables_fee_list.outboundFee')" name="outbound">
                 <OutboundList v-show="activeName === 'outbound'" :companyOptions="companyOptions"
                     :warehouseOptions="warehouseOptions" :initialCustomerOptions="initialCustomerOptions"
                     :statusOptions="statusOptions" :createWayOptions="createWayOptions"
                     :currencyOptions="currencyOptions" />
             </el-tab-pane>
 
-            <el-tab-pane label="仓租费用" name="storage">
+            <!-- 仓租费用标签 -->
+            <el-tab-pane :label="t('finance_receivables_fee_list.storageRentFee')" name="storage">
                 <StorageList v-show="activeName === 'storage'" :companyOptions="companyOptions"
                     :warehouseOptions="warehouseOptions" :initialCustomerOptions="initialCustomerOptions"
                     :statusOptions="statusOptions" :createWayOptions="createWayOptions"
                     :currencyOptions="currencyOptions" />
             </el-tab-pane>
 
-            <el-tab-pane label="增值费用" name="valueAdded">
+            <!-- 增值费用标签 -->
+            <el-tab-pane :label="t('finance_receivables_fee_list.valueAddedFee')" name="valueAdded">
                 <ValueAddedList v-show="activeName === 'valueAdded'" :companyOptions="companyOptions"
                     :warehouseOptions="warehouseOptions" :initialCustomerOptions="initialCustomerOptions"
                     :statusOptions="statusOptions" :createWayOptions="createWayOptions"
@@ -41,6 +46,8 @@
 
 <script setup name="应收费用">
 import { onMounted, ref } from 'vue';
+import { useI18n } from 'vue-i18n'; // 1. 引入I18n核心方法
+
 // 引入组件
 import AllList from './allFee/list.vue';
 import InboundList from './inboundFee/list.vue';
@@ -58,6 +65,12 @@ import {
 } from '@/api/financeApi/receivables.js';
 import { getCurrencyEnumApi } from '@/api/baseApi/index.js'
 
+// 2. 初始化I18n，指定全局作用域（关键解决t is not a function）
+const { t } = useI18n({
+    useScope: 'global' // 强制使用全局I18n实例
+});
+
+// 响应式数据
 const activeName = ref('all'); // 默认显示全部
 const isDataReady = ref(false);
 
@@ -138,8 +151,7 @@ onMounted(async () => {
 
 :deep(.el-tabs__item) {
     font-size: 18px;
-    width: 115px;
-    padding: 0;
+    padding: 0 13px;
 }
 
 :deep(.el-tab-pane) {

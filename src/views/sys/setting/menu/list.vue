@@ -60,7 +60,7 @@
     </div>
 </template>
 
-<script setup name="系统菜单">
+<script setup name="菜单">
 import { ref, computed, onMounted, shallowRef, nextTick } from 'vue';
 import { Plus, Sort, EditPen } from '@element-plus/icons-vue';
 import hydTable from '@/components/table/hyd-table.vue';

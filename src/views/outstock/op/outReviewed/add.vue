@@ -7,8 +7,8 @@
                         <h3>
                             <el-icon>
                                 <Document />
-                            </el-icon>订单识别
-                        </h3>
+                            </el-icon>{{ $t('outstock_op_outReviewed_add.orderIdentify') }}
+                        </h3> <!-- 订单识别 -->
                         <div class="orderIdentifyForm">
                             <el-select v-model="orderData.codeType" @change="handleCodeTypeChange" style="width: 113px;"
                                 :disabled="orderFormDisabled">
@@ -18,7 +18,8 @@
                             <span style="padding: 12px 12px 12px 3px;">:</span>
                             <el-input v-model.trim="orderData.code" :autofocus="true" style="width: 280px;"
                                 @keydown.enter.prevent.stop="getOrderInfo()" ref="numberInputRef"
-                                placeholder="输入出库单号/运单号后回车" :disabled="orderFormDisabled">
+                                :placeholder="$t('outstock_op_outReviewed_add.inputOrderNoOrWaybillNoAndEnter')"
+                                :disabled="orderFormDisabled"> <!-- 输入出库单号/运单号后回车 -->
                                 <template #append>
                                     <el-button :icon="RefreshLeft" @click="resetWaveInfo" />
                                 </template>
@@ -30,13 +31,14 @@
                         <h3>
                             <el-icon>
                                 <Ticket />
-                            </el-icon>运单扫描
-                        </h3>
+                            </el-icon>{{ $t('outstock_op_outReviewed_add.waybillScan') }}
+                        </h3> <!-- 运单扫描 -->
                         <el-form label-width="80px" class="waybillForm">
-                            <el-form-item label="运单号:">
+                            <el-form-item :label="$t('outstock_op_outReviewed_add.waybillNo') + ':'"> <!-- 运单号 -->
                                 <el-input v-model.trim="waybillData.number" @keydown.enter.prevent.stop="matchWaybill"
                                     ref="waybillInputRef" :disabled="!orderInfoLoaded || waybillDisabled"
-                                    placeholder="扫描运单号后回车" />
+                                    :placeholder="$t('outstock_op_outReviewed_add.scanWaybillNoAndEnter')" />
+                                <!-- 扫描运单号后回车 -->
                             </el-form-item>
                         </el-form>
                     </div>
@@ -45,19 +47,23 @@
                         <h3>
                             <el-icon>
                                 <Goods />
-                            </el-icon>商品扫描
-                        </h3>
+                            </el-icon>{{ $t('outstock_op_outReviewed_add.skuScan') }}
+                        </h3> <!-- 商品扫描 -->
                         <el-form label-width="80px" class="skuForm">
-                            <el-form-item label="商品条码:">
+                            <el-form-item :label="$t('outstock_op_outReviewed_add.productBarcode') + ':'"> <!-- 商品条码 -->
                                 <el-input v-model.trim="skuData.barcode" @keydown.enter.prevent.stop="matchSku"
                                     ref="skuInputRef"
                                     :disabled="!currentWaybillMatched || currentWaybillSkuFinished || isCurrentPackageSubmitted"
-                                    placeholder="扫描商品条码后回车" />
+                                    :placeholder="$t('outstock_op_outReviewed_add.scanProductBarcodeAndEnter')" />
+                                <!-- 扫描商品条码后回车 -->
                                 <div class="progress-text" v-if="currentSkuTotal > 0">
-                                    当前进度: {{ currentSkuProgress }}/{{ currentSkuTotal }}
+                                    {{ $t('outstock_op_outReviewed_add.currentProgress') }}: {{ currentSkuProgress }}/{{
+                                        currentSkuTotal }}
+                                    <!-- 当前进度 -->
                                 </div>
                                 <div class="progress-text" v-else>
-                                    当前进度: 请先匹配运单号
+                                    {{ $t('outstock_op_outReviewed_add.currentProgress') }}: {{
+                                        $t('outstock_op_outReviewed_add.pleaseMatchWaybillFirst') }} <!-- 当前进度：请先匹配运单号 -->
                                 </div>
                             </el-form-item>
                         </el-form>
@@ -67,14 +73,16 @@
                         <h3>
                             <el-icon>
                                 <Crop />
-                            </el-icon>耗材扫描
-                        </h3>
+                            </el-icon>{{ $t('outstock_op_outReviewed_add.materialScan') }}
+                        </h3> <!-- 耗材扫描 -->
                         <el-form label-width="80px" class="materialForm">
-                            <el-form-item label="耗材条码:">
+                            <el-form-item :label="$t('outstock_op_outReviewed_add.materialBarcode') + ':'">
+                                <!-- 耗材条码 -->
                                 <el-input v-model.trim="materialData.barcode"
                                     @keydown.enter.prevent.stop="matchMaterial" ref="materialInputRef"
                                     :disabled="!currentWaybillSkuFinished || isCurrentPackageSubmitted"
-                                    placeholder="扫描耗材条码后回车" />
+                                    :placeholder="$t('outstock_op_outReviewed_add.scanMaterialBarcodeAndEnter')" />
+                                <!-- 扫描耗材条码后回车 -->
                             </el-form-item>
                         </el-form>
                     </div>
@@ -82,18 +90,29 @@
                     <div class="submit-section">
                         <el-button type="success" icon="Check" @click="submitReview" :disabled="!canSubmit"
                             class="submit-btn">
-                            提交当前包裹 (Ctrl+Enter)
+                            {{ $t('outstock_op_outReviewed_add.submitCurrentPackage') }} (Ctrl+Enter) <!-- 提交当前包裹 -->
                         </el-button>
                     </div>
 
                     <div class="shortcut-tips-custom">
-                        <div class="shortcut-title">快捷键说明</div>
+                        <div class="shortcut-title">{{ $t('outstock_op_outReviewed_add.shortcutInstructions') }}</div>
+                        <!-- 快捷键说明 -->
                         <ul class="shortcut-list">
-                            <li><span class="shortcut-key">Ctrl+1</span> - 聚焦订单号输入框</li>
-                            <li><span class="shortcut-key">Ctrl+2</span> - 聚焦运单号输入框</li>
-                            <li><span class="shortcut-key">Ctrl+3</span> - 聚焦商品条码输入框</li>
-                            <li><span class="shortcut-key">Ctrl+4</span> - 聚焦耗材条码输入框</li>
-                            <li><span class="shortcut-key">Ctrl+Enter</span> - 提交复核</li>
+                            <li><span class="shortcut-key">Ctrl+1</span> - {{
+                                $t('outstock_op_outReviewed_add.focusOrderNoInput') }}</li>
+                            <!-- 聚焦订单号输入框 -->
+                            <li><span class="shortcut-key">Ctrl+2</span> - {{
+                                $t('outstock_op_outReviewed_add.focusWaybillNoInput') }}</li>
+                            <!-- 聚焦运单号输入框 -->
+                            <li><span class="shortcut-key">Ctrl+3</span> - {{
+                                $t('outstock_op_outReviewed_add.focusProductBarcodeInput') }}
+                            </li> <!-- 聚焦商品条码输入框 -->
+                            <li><span class="shortcut-key">Ctrl+4</span> - {{
+                                $t('outstock_op_outReviewed_add.focusMaterialBarcodeInput') }}
+                            </li> <!-- 聚焦耗材条码输入框 -->
+                            <li><span class="shortcut-key">Ctrl+Enter</span> - {{
+                                $t('outstock_op_outReviewed_add.submitReview') }}</li>
+                            <!-- 提交复核 -->
                         </ul>
                     </div>
                 </div>
@@ -103,31 +122,37 @@
                         <h3>
                             <el-icon>
                                 <InfoFilled />
-                            </el-icon>订单基本信息
-                        </h3>
+                            </el-icon>{{ $t('outstock_op_outReviewed_add.orderBasicInfo') }}
+                        </h3> <!-- 订单基本信息 -->
                         <div class="basic-info-grid">
                             <div class="info-item">
-                                <span class="info-label">出库单号:</span>
+                                <span class="info-label">{{ $t('outstock_op_outReviewed_add.outboundOrderNo') }}:</span>
+                                <!-- 出库单号 -->
                                 <span class="info-value">{{ orderBasicInfo.orderNo || '-' }}</span>
                             </div>
                             <div class="info-item">
-                                <span class="info-label">仓库:</span>
+                                <span class="info-label">{{ $t('outstock_op_outReviewed_add.warehouse') }}:</span>
+                                <!-- 仓库 -->
                                 <span class="info-value">{{ orderBasicInfo.warehouseCode || '-' }}</span>
                             </div>
                             <div class="info-item">
-                                <span class="info-label">客户:</span>
+                                <span class="info-label">{{ $t('outstock_op_outReviewed_add.customer') }}:</span>
+                                <!-- 客户 -->
                                 <span class="info-value">{{ orderBasicInfo.customerName || '-' }}</span>
                             </div>
                             <div class="info-item">
-                                <span class="info-label">客户代码:</span>
+                                <span class="info-label">{{ $t('outstock_op_outReviewed_add.customerCode') }}:</span>
+                                <!-- 客户代码 -->
                                 <span class="info-value">{{ orderBasicInfo.customerCode || '-' }}</span>
                             </div>
                             <div class="info-item">
-                                <span class="info-label">物流产品:</span>
+                                <span class="info-label">{{ $t('outstock_op_outReviewed_add.logisticsProduct')
+                                }}:</span> <!-- 物流产品 -->
                                 <span class="info-value">{{ orderBasicInfo.shipwayCode || '-' }}</span>
                             </div>
                             <div class="info-item">
-                                <span class="info-label">复核开始时间:</span>
+                                <span class="info-label">{{ $t('outstock_op_outReviewed_add.reviewStartTime') }}:</span>
+                                <!-- 复核开始时间 -->
                                 <span class="info-value">{{ orderBasicInfo.startTime || '-' }}</span>
                             </div>
                         </div>
@@ -137,8 +162,10 @@
                         <h3>
                             <el-icon>
                                 <Box />
-                            </el-icon>包裹列表
-                            <span class="package-count">{{ packageList.length }}个包裹</span>
+                            </el-icon>{{ $t('outstock_op_outReviewed_add.packageList') }} <!-- 包裹列表 -->
+                            <span class="package-count">{{ packageList.length }}{{
+                                $t('outstock_op_outReviewed_add.packages') }}</span>
+                            <!-- 个包裹 -->
                         </h3>
                         <div class="package-list-container">
                             <div v-for="(packageItem, packageIndex) in packageList" :key="packageItem.waybillId"
@@ -147,50 +174,74 @@
                                     'completed-package': packageItem.isSubmitted
                                 }">
                                 <div class="package-header">
-                                    <span class="package-number">包裹 {{ packageIndex + 1 }}</span>
-                                    <span class="waybill-number">运单号: {{ formatWaybillNo(packageItem.trackingNo)
-                                    }}</span>
+                                    <span class="package-number">{{ $t('outstock_op_outReviewed_add.package') }} {{
+                                        packageIndex + 1
+                                    }}</span> <!-- 包裹 -->
+                                    <span class="waybill-number">{{ $t('outstock_op_outReviewed_add.waybillNo') }}: {{
+                                        formatWaybillNo(packageItem.trackingNo)
+                                    }}</span> <!-- 运单号 -->
                                     <el-tag v-if="packageItem.isSubmitted" type="success" size="small"
-                                        style="margin-left: auto;">已提交</el-tag>
+                                        style="margin-left: auto;">{{
+                                            $t('outstock_op_outReviewed_add.submitted') }}</el-tag> <!-- 已提交 -->
                                 </div>
 
                                 <div class="table-section">
-                                    <div class="table-title">商品信息</div>
+                                    <div class="table-title">{{ $t('outstock_op_outReviewed_add.productInfo') }}</div>
+                                    <!-- 商品信息 -->
                                     <el-table :data="packageItem.orderSkuItems" border style="width: 100%;"
                                         :row-class-name="getSkuRowClassName">
-                                        <el-table-column prop="barcode" label="商品条码" width="180" />
-                                        <el-table-column prop="skuName" label="品名" show-overflow-tooltip width="200" />
-                                        <el-table-column prop="qty" label="拣货数量" width="100" />
-                                        <el-table-column prop="reviewedQty" label="已复核数量" width="100" />
-                                        <el-table-column label="状态" width="100">
+                                        <el-table-column prop="barcode"
+                                            :label="$t('outstock_op_outReviewed_add.productBarcode')" width="180" />
+                                        <!-- 商品条码 -->
+                                        <el-table-column prop="skuName"
+                                            :label="$t('outstock_op_outReviewed_add.productName')" show-overflow-tooltip
+                                            width="200" /> <!-- 品名 -->
+                                        <el-table-column prop="qty"
+                                            :label="$t('outstock_op_outReviewed_add.pickingQty')" width="100" />
+                                        <!-- 拣货数量 -->
+                                        <el-table-column prop="reviewedQty"
+                                            :label="$t('outstock_op_outReviewed_add.reviewedQty')" width="100" />
+                                        <!-- 已复核数量 -->
+                                        <el-table-column :label="$t('outstock_op_outReviewed_add.status')" width="100">
+                                            <!-- 状态 -->
                                             <template #default="scope">
                                                 <span v-if="scope.row.reviewedQty >= scope.row.qty"
-                                                    style="color: green;">完成</span>
-                                                <span v-else style="color: gray;">进行中</span>
+                                                    style="color: green;">{{ $t('outstock_op_outReviewed_add.completed')
+                                                    }}</span> <!-- 完成 -->
+                                                <span v-else style="color: gray;">{{
+                                                    $t('outstock_op_outReviewed_add.inProgress') }}</span> <!-- 进行中 -->
                                             </template>
                                         </el-table-column>
                                     </el-table>
                                 </div>
 
                                 <div class="table-section">
-                                    <div class="table-title">耗材信息</div>
+                                    <div class="table-title">{{ $t('outstock_op_outReviewed_add.materialInfo') }}</div>
+                                    <!-- 耗材信息 -->
                                     <el-table :data="packageItem.consumableList" border style="width: 100%;"
                                         :row-class-name="getMaterialRowClassName">
-                                        <el-table-column prop="consumablesBarcode" label="耗材条码" width="180" />
-                                        <el-table-column prop="consumablesName" label="耗材名称" show-overflow-tooltip
-                                            width="200" />
-                                        <el-table-column prop="quantity" label="数量" width="150">
+                                        <el-table-column prop="consumablesBarcode"
+                                            :label="$t('outstock_op_outReviewed_add.materialBarcode')" width="180" />
+                                        <!-- 耗材条码 -->
+                                        <el-table-column prop="consumablesName"
+                                            :label="$t('outstock_op_outReviewed_add.materialName')"
+                                            show-overflow-tooltip width="200" /> <!-- 耗材名称 -->
+                                        <el-table-column prop="quantity"
+                                            :label="$t('outstock_op_outReviewed_add.quantity')" width="150"> <!-- 数量 -->
                                             <template #default="scope">
                                                 <el-input v-model="scope.row.quantity" v-intNumber="true" size="small"
                                                     :disabled="packageItem.isSubmitted" style="width: 100%" />
                                             </template>
                                         </el-table-column>
 
-                                        <el-table-column label="操作" width="80" align="center">
+                                        <el-table-column :label="$t('outstock_op_outReviewed_add.operation')" width="80"
+                                            align="center">
+                                            <!-- 操作 -->
                                             <template #default="scope">
                                                 <el-button type="danger" link :icon="Delete"
                                                     @click="removeConsumable(packageItem, scope.$index)"
                                                     :disabled="packageItem.isSubmitted">
+                                                    {{ $t('outstock_op_outReviewed_add.delete') }} <!-- 删除 -->
                                                 </el-button>
                                             </template>
                                         </el-table-column>
@@ -203,18 +254,23 @@
             </div>
         </div>
 
-        <el-dialog v-model="orderSelectDialogVisible" title="选择出库单号" width="700px" :close-on-click-modal="false"
-            align-center>
+        <el-dialog v-model="orderSelectDialogVisible" :title="$t('outstock_op_outReviewed_add.selectOutboundOrderNo')"
+            width="700px" :close-on-click-modal="false" align-center> <!-- 选择出库单号 -->
             <el-table :data="orderList" border style="width: 100%" @row-click="handleOrderRowClick"
                 :row-class-name="getSelectedOrderRowClass">
-                <el-table-column prop="orderNo" label="出库单号" />
-                <el-table-column prop="statusName" label="状态" width="150" />
-                <el-table-column prop="createdTime" label="创建时间" width="200" />
+                <el-table-column prop="orderNo" :label="$t('outstock_op_outReviewed_add.outboundOrderNo')" />
+                <!-- 出库单号 -->
+                <el-table-column prop="statusName" :label="$t('outstock_op_outReviewed_add.status')" width="150" />
+                <!-- 状态 -->
+                <el-table-column prop="createdTime" :label="$t('outstock_op_outReviewed_add.createTime')" width="200" />
+                <!-- 创建时间 -->
             </el-table>
             <template #footer>
                 <div class="dialog-footer">
-                    <el-button @click="orderSelectDialogVisible = false">取消</el-button>
-                    <el-button type="primary" @click="confirmSelectedOrder" :disabled="!selectedOrderId">确定</el-button>
+                    <el-button @click="orderSelectDialogVisible = false">{{ $t('outstock_op_outReviewed_add.cancel')
+                    }}</el-button> <!-- 取消 -->
+                    <el-button type="primary" @click="confirmSelectedOrder" :disabled="!selectedOrderId">{{
+                        $t('outstock_op_outReviewed_add.confirm') }}</el-button> <!-- 确定 -->
                 </div>
             </template>
         </el-dialog>

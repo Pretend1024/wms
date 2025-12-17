@@ -4,53 +4,65 @@
         <el-form ref="formRef" :model="formData" :rules="rules" label-width="100px">
 
             <el-form-item :label="orderNoLabel" prop="orderNo">
-                <el-input v-model="formData.orderNo" :placeholder="`请输入系统存在的${orderNoLabel}`" :disabled="isEditMode" />
+                <el-input v-model="formData.orderNo"
+                    :placeholder="t('finance_receivables_fee_list.inputExistOrderNo', { orderNoLabel })"
+                    :disabled="isEditMode" />
             </el-form-item>
 
-            <el-form-item v-if="!isFixedMainType" label="费用大类" prop="feeMainTypeId">
-                <el-select v-model="formData.feeMainTypeId" placeholder="请选择费用大类" style="width: 100%"
+            <el-form-item v-if="!isFixedMainType" :label="t('finance_receivables_fee_list.feeMainType')"
+                prop="feeMainTypeId">
+                <el-select v-model="formData.feeMainTypeId"
+                    :placeholder="t('finance_receivables_fee_list.selectFeeMainType')" style="width: 100%"
                     :disabled="isEditMode" @change="handleMainTypeChange">
                     <el-option v-for="item in feeMainTypeOptions" :key="item.value" :label="item.label"
                         :value="item.value" />
                 </el-select>
             </el-form-item>
 
-            <el-form-item label="费用小类" prop="feeSubTypeId">
-                <el-select v-model="formData.feeSubTypeId" placeholder="请选择" style="width: 100%" :disabled="isEditMode">
+            <el-form-item :label="t('finance_receivables_fee_list.feeSubType')" prop="feeSubTypeId">
+                <el-select v-model="formData.feeSubTypeId" :placeholder="t('finance_receivables_fee_list.pleaseSelect')"
+                    style="width: 100%" :disabled="isEditMode">
                     <el-option v-for="item in currentFeeTypeOptions" :key="item.value" :label="item.label"
                         :value="item.value" />
                 </el-select>
             </el-form-item>
 
-            <el-form-item label="金额计算公式" prop="expression">
-                <el-input v-model="formData.expression" placeholder="请输入金额计算公式" :disabled="isEditMode" />
+            <el-form-item :label="t('finance_receivables_fee_list.amountFormula')" prop="expression">
+                <el-input v-model="formData.expression"
+                    :placeholder="t('finance_receivables_fee_list.inputAmountFormula')" :disabled="isEditMode" />
             </el-form-item>
 
-            <el-form-item label="币种" prop="currency">
-                <el-select v-model="formData.currency" placeholder="请选择" style="width: 100%" :disabled="isEditMode">
+            <el-form-item :label="t('finance_receivables_fee_list.currency')" prop="currency">
+                <el-select v-model="formData.currency" :placeholder="t('finance_receivables_fee_list.pleaseSelect')"
+                    style="width: 100%" :disabled="isEditMode">
                     <el-option v-for="item in currencyOptions" :key="item.value" :label="item.label"
                         :value="item.value" />
                 </el-select>
             </el-form-item>
 
-            <el-form-item :label="isEditMode ? '原始金额' : '金额'" prop="feeAmount">
+            <el-form-item
+                :label="isEditMode ? t('finance_receivables_fee_list.originalAmount') : t('finance_receivables_fee_list.amount')"
+                prop="feeAmount">
                 <el-input v-model="formData.feeAmount" v-number="3" style="width: 100%" :disabled="isEditMode"
-                    :controls="!isEditMode" placeholder="请输入金额" />
+                    :controls="!isEditMode" :placeholder="t('finance_receivables_fee_list.inputAmount')" />
             </el-form-item>
 
-            <el-form-item v-if="isEditMode" label="确认金额">
-                <el-input v-model="formData.confirmFeeAmount" v-number="3" style="width: 100%" placeholder="请输入确认金额" />
+            <el-form-item v-if="isEditMode" :label="t('finance_receivables_fee_list.confirmAmount')">
+                <el-input v-model="formData.confirmFeeAmount" v-number="3" style="width: 100%"
+                    :placeholder="t('finance_receivables_fee_list.inputConfirmAmount')" />
             </el-form-item>
 
-            <el-form-item label="备注" prop="remark">
-                <el-input v-model="formData.remark" type="textarea" :rows="3" placeholder="请输入备注" />
+            <el-form-item :label="t('finance_receivables_fee_list.remark')" prop="remark">
+                <el-input v-model="formData.remark" type="textarea" :rows="3"
+                    :placeholder="t('finance_receivables_fee_list.inputRemark')" />
             </el-form-item>
         </el-form>
 
         <template #footer>
             <div class="dialog-footer">
-                <el-button @click="handleClose">取消</el-button>
-                <el-button type="primary" @click="handleConfirm" :loading="loading">确定</el-button>
+                <el-button @click="handleClose">{{ t('finance_receivables_fee_list.cancel') }}</el-button>
+                <el-button type="primary" @click="handleConfirm" :loading="loading">{{
+                    t('finance_receivables_fee_list.confirm') }}</el-button>
             </div>
         </template>
     </el-dialog>
@@ -58,7 +70,11 @@
 
 <script setup>
 import { ref, computed, watch, reactive, nextTick } from 'vue';
+import { useI18n } from 'vue-i18n'; // 引入i18n
 import { getFeeMainTypeEnumApi, getFeeTypeEnumApi } from '@/api/financeApi/receivables.js';
+
+// 初始化i18n
+const { t } = useI18n();
 
 // --- Props ---
 const props = defineProps({
@@ -112,33 +128,41 @@ const currentFeeTypeOptions = computed(() => {
     return dynamicFeeTypeOptions.value;
 });
 
-// 计算单号 Label
+// 计算单号 Label（国际化改造）
 const orderNoLabel = computed(() => {
-    // 优先使用当前表单选中的大类ID，如果没选则回退到 props，再没选显示"单号"
+    // 优先使用当前表单选中的大类ID，如果没选则回退到 props，再没选显示"关联单号"
     const currentId = formData.value.feeMainTypeId || props.feeMainTypeId;
-    const map = {
-        1: '入库单号',
-        2: '出库单号',
-        3: '仓租单号',
-        4: '增值单号'
+    const labelMap = {
+        1: t('finance_receivables_fee_list.inboundOrderNo'),
+        2: t('finance_receivables_fee_list.outboundOrderNo'),
+        3: t('finance_receivables_fee_list.storageRentOrderNo'),
+        4: t('finance_receivables_fee_list.valueAddedOrderNo')
     };
-    return map[currentId] || '关联单号';
+    return labelMap[currentId] || t('finance_receivables_fee_list.relatedOrderNo');
 });
 
+// 弹窗标题（国际化改造）
 const dialogTitle = computed(() => {
-    const action = isEditMode.value ? '编辑' : '新增';
+    const action = isEditMode.value ? t('finance_receivables_fee_list.edit') : t('finance_receivables_fee_list.add');
     const currentId = formData.value.feeMainTypeId || props.feeMainTypeId;
-    const typeName = { 1: '入库', 2: '出库', 3: '仓租', 4: '增值' }[currentId] || '';
-    return `${action}${typeName}费用`;
+    const typeNameMap = {
+        1: t('finance_receivables_fee_list.inbound'),
+        2: t('finance_receivables_fee_list.outbound'),
+        3: t('finance_receivables_fee_list.storageRent'),
+        4: t('finance_receivables_fee_list.valueAdded')
+    };
+    const typeName = typeNameMap[currentId] || '';
+    const feeText = t('finance_receivables_fee_list.fee');
+    return `${action}${typeName}${feeText}`;
 });
 
-// --- 校验规则 ---
+// --- 校验规则（国际化改造） ---
 const rules = reactive({
-    orderNo: [{ required: true, message: '请输入单号', trigger: 'blur' }],
-    feeMainTypeId: [{ required: true, message: '请选择费用大类', trigger: 'change' }],
-    feeSubTypeId: [{ required: true, message: '请选择费用小类', trigger: 'change' }],
-    currency: [{ required: true, message: '请选择币种', trigger: 'change' }],
-    feeAmount: [{ required: true, message: '请输入金额', trigger: 'blur' }],
+    orderNo: [{ required: true, message: t('finance_receivables_fee_list.inputOrderNo'), trigger: 'blur' }],
+    feeMainTypeId: [{ required: true, message: t('finance_receivables_fee_list.selectFeeMainType'), trigger: 'change' }],
+    feeSubTypeId: [{ required: true, message: t('finance_receivables_fee_list.pleaseSelect'), trigger: 'change' }],
+    currency: [{ required: true, message: t('finance_receivables_fee_list.pleaseSelect'), trigger: 'change' }],
+    feeAmount: [{ required: true, message: t('finance_receivables_fee_list.inputAmount'), trigger: 'blur' }],
 });
 
 // --- 方法 ---

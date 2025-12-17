@@ -1,37 +1,36 @@
 <template>
     <div class="viewArea">
         <div class="contentDiv flex-container">
-            <p>基础信息</p>
+            <p>{{ $t('vas_vas_vasOrder_info.basicInfo') }}</p> <!-- 基础信息 -->
             <el-form :model="formData" :rules="rules" ref="formRef" label-width="115px">
                 <el-row>
                     <!-- 基础信息字段恢复为新增页面的下拉框样式，保留所有交互 -->
                     <el-col :span="8">
-                        <el-form-item label="服务单号:" prop="vasOrderNo" class="compact-item">
-                            <el-input v-model.trim="formData.vasOrderNo" placeholder="请输入增值服务单号" disabled />
+                        <el-form-item :label="getLabel('vasOrderNo')" prop="vasOrderNo" class="compact-item">
+                            <el-input v-model.trim="formData.vasOrderNo" disabled />
                         </el-form-item>
                     </el-col>
                     <el-col :span="8">
-                        <el-form-item label="服务标题:" prop="vasTitle">
-                            <el-input v-model.trim="formData.vasTitle" placeholder="请输入服务标题" readonly />
+                        <el-form-item :label="getLabel('vasTitle')" prop="vasTitle">
+                            <el-input v-model.trim="formData.vasTitle" readonly />
                         </el-form-item>
                     </el-col>
                     <el-col :span="8">
-                        <el-form-item label="关联业务类型:" prop="relatedBizType">
-                            <el-select v-model="formData.relatedBizType" placeholder="请选择关联业务类型" clearable disabled>
+                        <el-form-item :label="getLabel('relatedBizType')" prop="relatedBizType">
+                            <el-select v-model="formData.relatedBizType" clearable disabled>
                                 <el-option v-for="item in relatedBizTypeOptions" :key="item.id" :label="item.name"
                                     :value="item.id" />
                             </el-select>
                         </el-form-item>
                     </el-col>
                     <el-col :span="8">
-                        <el-form-item label="关联业务单号:" prop="relatedBizNo">
-                            <el-input v-model.trim="formData.relatedBizNo" placeholder="请输入关联业务单号" readonly />
+                        <el-form-item :label="getLabel('relatedBizNo')" prop="relatedBizNo">
+                            <el-input v-model.trim="formData.relatedBizNo" readonly />
                         </el-form-item>
                     </el-col>
                     <el-col :span="8">
                         <el-form-item :label="getLabel('warehouseCode')" prop="warehouseId" required>
-                            <el-select v-model="formData.warehouseId" filterable
-                                :placeholder="getPlaceholder('warehouseCode')" clearable disabled>
+                            <el-select v-model="formData.warehouseId" filterable clearable disabled>
                                 <el-option v-for="item in warehouseOptions" :key="item.code"
                                     :label="`${item.code}-${item.name}`" :value="item.id" />
                             </el-select>
@@ -39,8 +38,7 @@
                     </el-col>
                     <el-col :span="8">
                         <el-form-item :label="getLabel('customerCode')" class="compact-item" prop="customerId">
-                            <el-select v-model="formData.customerId" filterable
-                                :placeholder="getPlaceholder('customerCode')" popper-class="multi-column-select"
+                            <el-select v-model="formData.customerId" filterable popper-class="multi-column-select"
                                 clearable disabled>
                                 <el-option v-for="item in customerOptions" :key="item.value" :label="item.label"
                                     :value="item.value" />
@@ -48,20 +46,19 @@
                         </el-form-item>
                     </el-col>
                     <el-col :span="8">
-                        <el-form-item label="预计完成时间:" prop="expectFinishTime" disabled>
-                            <el-date-picker v-model="formData.expectFinishTime" type="date" placeholder="选择预计完成时间"
-                                format="YYYY/MM/DD" value-format="YYYY-MM-DD" />
+                        <el-form-item :label="getLabel('expectFinishTime')" prop="expectFinishTime">
+                            <el-date-picker v-model="formData.expectFinishTime" type="date" format="YYYY/MM/DD"
+                                value-format="YYYY-MM-DD" disabled />
                         </el-form-item>
                     </el-col>
                     <el-col :span="8">
-                        <el-form-item label="关联工单:" prop="relatedWorkOrderId">
-                            <el-input v-model.trim="formData.relatedWorkOrderId" placeholder="请输入关联工单" readonly />
+                        <el-form-item :label="getLabel('relatedWorkOrderId')" prop="relatedWorkOrderId">
+                            <el-input v-model.trim="formData.relatedWorkOrderId" readonly />
                         </el-form-item>
                     </el-col>
                     <el-col :span="24">
-                        <el-form-item label="服务描述:" prop="vasDesc">
-                            <el-input type="textarea" v-model="formData.vasDesc" placeholder="请输入客户需求详情" :rows="3"
-                                readonly />
+                        <el-form-item :label="getLabel('vasDesc')" prop="vasDesc">
+                            <el-input type="textarea" v-model="formData.vasDesc" :rows="3" readonly />
                         </el-form-item>
                     </el-col>
                 </el-row>
@@ -69,7 +66,7 @@
 
             <!-- 服务项目信息 标题 + 添加明细按钮 -->
             <div class="section-header">
-                <div class="section-title">服务项目信息</div>
+                <div class="section-title">{{ $t('vas_vas_vasOrder_info.serviceItemInfo') }}</div> <!-- 服务项目信息 -->
             </div>
 
             <!-- 服务项目折叠面板 -->
@@ -80,9 +77,11 @@
                         <div class="collapse-header">
                             <span class="collapse-title">
                                 {{ index + 1 + "." }}
-                                {{ item.serviceTypeName || '未选择服务类型' }}
+                                {{ item.serviceTypeName || $t('vas_vas_vasOrder_info.noServiceTypeSelected') }}
+                                <!-- 未选择服务类型 -->
                                 <span v-if="item.sku"> - {{ item.sku }}</span>
-                                <span v-if="item.planQty"> (计划数量: {{ item.planQty }}{{ item.unit }})</span>
+                                <span v-if="item.planQty"> ({{ $t('vas_vas_vasOrder_info.planQty') }}: {{ item.planQty
+                                    }}{{ item.unit }})</span> <!-- 计划数量 -->
                             </span>
                         </div>
                     </template>
@@ -92,35 +91,46 @@
                         :rules="itemFormRules" ref="itemFormRefs[index]">
                         <el-row>
                             <el-col :span="8">
-                                <el-form-item label="服务类型:" prop="serviceTypeId" required>
-                                    <el-select v-model="item.serviceTypeId" placeholder="请选择服务类型" clearable filterable
-                                        @change="(val) => onServiceTypeChange(item, val)" disabled>
+                                <el-form-item :label="$t('vas_vas_vasOrder_info.serviceType') + ':'"
+                                    prop="serviceTypeId" required>
+                                    <!-- 服务类型 -->
+                                    <el-select v-model="item.serviceTypeId"
+                                        :placeholder="$t('vas_vas_vasOrder_info.selectServiceType')" clearable
+                                        filterable @change="(val) => onServiceTypeChange(item, val)" disabled>
+                                        <!-- 请选择服务类型 -->
                                         <el-option v-for="option in serviceTypeOptions" :key="option.id"
                                             :label="option.name" :value="option.id" />
                                     </el-select>
                                 </el-form-item>
                             </el-col>
                             <el-col :span="8">
-                                <el-form-item label="计划数量:" prop="planQty" required>
-                                    <el-input v-model.number="item.planQty" placeholder="请输入计划数量" v-number readonly />
+                                <el-form-item :label="$t('vas_vas_vasOrder_info.planQty') + ':'" prop="planQty"
+                                    required> <!-- 计划数量 -->
+                                    <el-input v-model.number="item.planQty"
+                                        :placeholder="$t('vas_vas_vasOrder_info.inputPlanQty')" v-number readonly />
+                                    <!-- 请输入计划数量 -->
                                 </el-form-item>
                             </el-col>
                             <el-col :span="8">
-                                <el-form-item label="单位:" prop="unit" required>
-                                    <el-select v-model="item.unit" placeholder="请选择单位" clearable filterable disabled>
+                                <el-form-item :label="$t('vas_vas_vasOrder_info.unit') + ':'" prop="unit" required>
+                                    <!-- 单位 -->
+                                    <el-select v-model="item.unit" :placeholder="$t('vas_vas_vasOrder_info.selectUnit')"
+                                        clearable filterable disabled> <!-- 请选择单位 -->
                                         <el-option v-for="option in unitOptions" :key="option.name" :label="option.name"
                                             :value="option.name" />
                                     </el-select>
                                 </el-form-item>
                             </el-col>
                             <el-col :span="8">
-                                <el-form-item label="SKU:" prop="sku">
-                                    <el-input v-model="item.sku" @blur="onSkuBlur(item)" placeholder="请输入SKU" readonly>
+                                <el-form-item :label="$t('vas_vas_vasOrder_info.sku') + ':'" prop="sku"> <!-- SKU -->
+                                    <el-input v-model="item.sku" @blur="onSkuBlur(item)"
+                                        :placeholder="$t('vas_vas_vasOrder_info.inputSku')" readonly> <!-- 请输入SKU -->
                                     </el-input>
                                 </el-form-item>
                             </el-col>
                             <el-col :span="16">
-                                <el-form-item label="服务附件:">
+                                <el-form-item :label="$t('vas_vas_vasOrder_info.serviceAttachment') + ':'">
+                                    <!-- 服务附件 -->
                                     <div class="attachment-container">
                                         <div class="attachment-list"
                                             v-if="item.serviceAttachmentList && item.serviceAttachmentList.length > 0">
@@ -136,33 +146,46 @@
                                 </el-form-item>
                             </el-col>
                             <el-col :span="8">
-                                <el-form-item label="执行人:" prop="executeBy">
+                                <el-form-item :label="$t('vas_vas_vasOrder_info.executor') + ':'" prop="executeBy">
+                                    <!-- 执行人 -->
                                     <!-- <el-select v-model="item.executeBy" filterable placeholder="请输入执行人" clearable>
                                         <el-option v-for="item in operatorUserOptions" :key="item.code"
                                             :label="`${item.code}-${item.name}`" :value="item.code" />
                                     </el-select> -->
-                                    <el-input v-model="item.executeBy" placeholder="请输入执行人" readonly />
+                                    <el-input v-model="item.executeBy"
+                                        :placeholder="$t('vas_vas_vasOrder_info.inputExecutor')" readonly />
+                                    <!-- 请输入执行人 -->
                                 </el-form-item>
                             </el-col>
                             <el-col :span="8">
-                                <el-form-item label="开始处理时间:" prop="startTime">
-                                    <el-date-picker v-model="item.startTime" type="datetime" placeholder="选择开始时间"
+                                <el-form-item :label="$t('vas_vas_vasOrder_info.startProcessingTime') + ':'"
+                                    prop="startTime">
+                                    <!-- 开始处理时间 -->
+                                    <el-date-picker v-model="item.startTime" type="datetime"
+                                        :placeholder="$t('vas_vas_vasOrder_info.selectStartTime')"
                                         format="YYYY/MM/DD HH:mm:ss" value-format="YYYY-MM-DD HH:mm:ss" disabled />
+                                    <!-- 选择开始时间 -->
                                 </el-form-item>
                             </el-col>
                             <el-col :span="8">
-                                <el-form-item label="完成时间:" prop="finishTime">
-                                    <el-date-picker v-model="item.finishTime" type="datetime" placeholder="选择完成时间"
+                                <el-form-item :label="$t('vas_vas_vasOrder_info.completionTime') + ':'"
+                                    prop="finishTime"> <!-- 完成时间 -->
+                                    <el-date-picker v-model="item.finishTime" type="datetime"
+                                        :placeholder="$t('vas_vas_vasOrder_info.selectCompletionTime')"
                                         format="YYYY/MM/DD HH:mm:ss" value-format="YYYY-MM-DD HH:mm:ss" disabled />
+                                    <!-- 选择完成时间 -->
                                 </el-form-item>
                             </el-col>
                             <el-col :span="8">
-                                <el-form-item label="完成数量:" prop="finishQty">
-                                    <el-input v-model.number="item.finishQty" placeholder="请输入完成数量" v-number readonly />
+                                <el-form-item :label="$t('vas_vas_vasOrder_info.completedQty') + ':'" prop="finishQty">
+                                    <!-- 完成数量 -->
+                                    <el-input v-model.number="item.finishQty"
+                                        :placeholder="$t('vas_vas_vasOrder_info.inputCompletedQty')" v-number
+                                        readonly /> <!-- 请输入完成数量 -->
                                 </el-form-item>
                             </el-col>
                             <el-col :span="16">
-                                <el-form-item label="结果附件:">
+                                <el-form-item :label="$t('vas_vas_vasOrder_info.resultAttachment') + ':'"> <!-- 结果附件 -->
                                     <div class="attachment-container">
                                         <!-- 已上传结果附件列表（带删除按钮） -->
                                         <div class="attachment-list"
@@ -179,9 +202,11 @@
                                 </el-form-item>
                             </el-col>
                             <el-col :span="24">
-                                <el-form-item label="备注:" prop="remark">
-                                    <el-input type="textarea" v-model="item.remark" placeholder="请输入备注" :rows="2"
-                                        readonly />
+                                <el-form-item :label="$t('vas_vas_vasOrder_info.remark') + ':'" prop="remark">
+                                    <!-- 备注 -->
+                                    <el-input type="textarea" v-model="item.remark"
+                                        :placeholder="$t('vas_vas_vasOrder_info.inputRemark')" :rows="2" readonly />
+                                    <!-- 请输入备注 -->
                                 </el-form-item>
                             </el-col>
                         </el-row>
@@ -191,35 +216,44 @@
 
             <!-- 费用信息部分（保留新增页面所有功能） -->
             <div class="section-header">
-                <div class="section-title">费用信息</div>
+                <div class="section-title">{{ $t('vas_vas_vasOrder_info.feeInfo') }}</div> <!-- 费用信息 -->
             </div>
             <el-row class="table-container">
                 <el-col :span="24">
                     <generalAddTable ref="feeTableRef" :modelValue="false" :columns="feeTableColumns"
                         :data="feeTableData" :addRowDefaults="[{ prop: 'createWay', value: 20 }]">
                         <template #feeSubTypeId="{ row }">
-                            <el-select v-model="row.feeSubTypeId" placeholder="请选择费用类型" clearable filterable disabled>
+                            <el-select v-model="row.feeSubTypeId"
+                                :placeholder="$t('vas_vas_vasOrder_info.selectFeeType')" clearable filterable disabled>
+                                <!-- 请选择费用类型 -->
                                 <el-option v-for="item in feeTypeOptions" :key="item.id" :label="item.name"
                                     :value="item.id" />
                             </el-select>
                         </template>
                         <template #feeAmount="{ row }">
-                            <el-input v-model.number="row.feeAmount" placeholder="请输入总费用" v-number readonly />
+                            <el-input v-model.number="row.feeAmount"
+                                :placeholder="$t('vas_vas_vasOrder_info.inputTotalFee')" v-number readonly />
+                            <!-- 请输入总费用 -->
                         </template>
                         <template #currency="{ row }">
-                            <el-select v-model="row.currency" placeholder="请选择货币类型" clearable filterable disabled>
+                            <el-select v-model="row.currency"
+                                :placeholder="$t('vas_vas_vasOrder_info.selectCurrencyType')" clearable filterable
+                                disabled> <!-- 请选择货币类型 -->
                                 <el-option v-for="item in currencyOptions" :key="item.id" :label="item.name"
                                     :value="item.code" />
                             </el-select>
                         </template>
                         <template #createWay="{ row }">
-                            <el-select v-model="row.createWay" placeholder="请选择创建类型" clearable disabled>
+                            <el-select v-model="row.createWay"
+                                :placeholder="$t('vas_vas_vasOrder_info.selectCreateType')" clearable disabled>
+                                <!-- 请选择创建类型 -->
                                 <el-option v-for="item in feeCreateTypeOptions" :key="item.id" :label="item.name"
                                     :value="item.id" />
                             </el-select>
                         </template>
                         <template #remark="{ row }">
-                            <el-input v-model="row.remark" placeholder="请输入费用备注" readonly />
+                            <el-input v-model="row.remark" :placeholder="$t('vas_vas_vasOrder_info.inputFeeRemark')"
+                                readonly /> <!-- 请输入费用备注 -->
                         </template>
                     </generalAddTable>
                 </el-col>
@@ -229,7 +263,7 @@
             <div class="bottom-space"></div>
             <!-- 粘性按钮 -->
             <div class="btns">
-                <el-button @click="handleClose">{{ getButtonText('close') }}</el-button>
+                <el-button @click="handleClose">{{ $t('vas_vas_vasOrder_info.close') }}</el-button> <!-- 关闭 -->
             </div>
         </div>
     </div>

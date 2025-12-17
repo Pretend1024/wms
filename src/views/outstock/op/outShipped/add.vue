@@ -9,27 +9,32 @@
                     <div class="module waveInfoModule">
                         <h3><el-icon>
                                 <Postcard />
-                            </el-icon>波次信息查询</h3>
+                            </el-icon>{{ $t('outstock_op_outShipped_add.waveInfoQuery') }}</h3> <!-- 波次信息查询 -->
                         <el-form :model="waveInfo" label-width="80px" class="waveSearchForm">
                             <!-- 新增分拣类型下拉框 -->
-                            <el-form-item label="分拣方式:">
-                                <el-select v-model="pickType" placeholder="选择分拣方式" :disabled="waveInfo.waveId !== ''">
-                                    <el-option label="按照订单" value="0" />
-                                    <el-option label="按照包裹" value="1" />
+                            <el-form-item :label="$t('outstock_op_outShipped_add.sortingMethod') + ':'"> <!-- 分拣方式 -->
+                                <el-select v-model="pickType"
+                                    :placeholder="$t('outstock_op_outShipped_add.selectSortingMethod')"
+                                    :disabled="waveInfo.waveId !== ''"> <!-- 选择分拣方式 -->
+                                    <el-option :label="$t('outstock_op_outShipped_add.byOrder')" value="0" />
+                                    <!-- 按照订单 -->
+                                    <el-option :label="$t('outstock_op_outShipped_add.byPackage')" value="1" />
+                                    <!-- 按照包裹 -->
                                 </el-select>
                             </el-form-item>
-                            <el-form-item label="波次号:">
+                            <el-form-item :label="$t('outstock_op_outShipped_add.waveNo') + ':'"> <!-- 波次号 -->
                                 <el-input v-model.trim="waveInfo.waveNo" @keyup.enter="loadWaveInfo" ref="waveNoRef"
-                                    placeholder="输入波次号后回车">
+                                    :placeholder="$t('outstock_op_outShipped_add.inputWaveNoAndEnter')">
+                                    <!-- 输入波次号后回车 -->
                                     <template #append>
                                         <el-button :icon="RefreshLeft" @click="resetWaveInfo" />
                                     </template>
                                 </el-input>
                             </el-form-item>
-                            <el-form-item label="波次类型:">
+                            <el-form-item :label="$t('outstock_op_outShipped_add.waveType') + ':'"> <!-- 波次类型 -->
                                 <el-input v-model.trim="waveInfo.waveTypeName" readonly />
                             </el-form-item>
-                            <el-form-item label="订单总数:">
+                            <el-form-item :label="$t('outstock_op_outShipped_add.totalOrders') + ':'"> <!-- 订单总数 -->
                                 <el-input v-model.trim="waveInfo.orderQty" readonly />
                             </el-form-item>
                         </el-form>
@@ -39,12 +44,14 @@
                     <div class="module barcodeOperateModule">
                         <h3><el-icon>
                                 <EditPen />
-                            </el-icon>商品分拣操作</h3>
+                            </el-icon>{{ $t('outstock_op_outShipped_add.productSortingOperation') }}</h3>
+                        <!-- 商品分拣操作 -->
                         <el-form label-width="80px" class="barcodeForm">
-                            <el-form-item label="商品条码:">
+                            <el-form-item :label="$t('outstock_op_outShipped_add.productBarcode') + ':'"> <!-- 商品条码 -->
                                 <el-input v-model.trim="currentOp.barcode" @keydown.enter.prevent="submitBarcodeMatch"
-                                    ref="barcodeRef" placeholder="扫描商品条码后回车" :disabled="barcodeDisabled"
-                                    @focus="handleBarcodeFocus" />
+                                    ref="barcodeRef"
+                                    :placeholder="$t('outstock_op_outShipped_add.scanProductBarcodeAndEnter')"
+                                    :disabled="barcodeDisabled" @focus="handleBarcodeFocus" /> <!-- 扫描商品条码后回车 -->
                             </el-form-item>
                         </el-form>
                     </div>
@@ -55,7 +62,7 @@
                             <el-icon>
                                 <Folder />
                             </el-icon>
-                            订单附件打印
+                            {{ $t('outstock_op_outShipped_add.orderAttachmentPrint') }} <!-- 订单附件打印 -->
                             <!-- 显示当前附件所属订单号，仅在有附件时显示 -->
                             <template v-if="attachmentList.length > 0">
                                 <span class="attachment-order-info">
@@ -65,29 +72,36 @@
                         </h3>
                         <!-- 附件表格 -->
                         <el-table :data="attachmentList" border style="width: 100%;" height="250">
-                            <el-table-column prop="fileType" label="文件类型" width="100" />
-                            <el-table-column prop="fileName" label="文件名称" show-overflow-tooltip />
-                            <el-table-column label="操作" width="105">
+                            <el-table-column prop="fileType" :label="$t('outstock_op_outShipped_add.fileType')"
+                                width="100" /> <!-- 文件类型 -->
+                            <el-table-column prop="fileName" :label="$t('outstock_op_outShipped_add.fileName')"
+                                show-overflow-tooltip />
+                            <!-- 文件名称 -->
+                            <el-table-column :label="$t('outstock_op_outShipped_add.operation')" width="105">
+                                <!-- 操作 -->
                                 <template #default="scope">
                                     <!-- 打印按钮在左侧 -->
                                     <el-button type="text" @click="printAttachment(scope.row)"
                                         :disabled="!isPrintableFile(scope.row.fileName)" style="margin-right: 8px;">
-                                        打印
+                                        {{ $t('outstock_op_outShipped_add.print') }} <!-- 打印 -->
                                     </el-button>
                                     <!-- 下载按钮在右侧 -->
                                     <el-button type="text" @click="handleFileAction(scope.row)">
-                                        下载
+                                        {{ $t('outstock_op_outShipped_add.download') }} <!-- 下载 -->
                                     </el-button>
                                 </template>
                             </el-table-column>
                         </el-table>
                         <!-- 新增：打印机选择 + 自动打印复选框 -->
                         <div class="attachmentOperate">
-                            <el-select v-model="selectedPrinter" placeholder="选择打印机" style="width: 220px;">
+                            <el-select v-model="selectedPrinter"
+                                :placeholder="$t('outstock_op_outShipped_add.selectPrinter')" style="width: 220px;">
+                                <!-- 选择打印机 -->
                                 <el-option v-for="printer in printers" :key="printer" :label="printer"
                                     :value="printer" />
                             </el-select>
-                            <el-checkbox v-model="autoPrint" label="自动打印" style="margin-left: 16px;" />
+                            <el-checkbox v-model="autoPrint" :label="$t('outstock_op_outShipped_add.autoPrint')"
+                                style="margin-left: 16px;" /> <!-- 自动打印 -->
                         </div>
                     </div>
                 </div>
@@ -96,7 +110,7 @@
                 <div class="rightSeedingWallPanel">
                     <h3><el-icon>
                             <Grid />
-                        </el-icon>播种墙</h3>
+                        </el-icon>{{ $t('outstock_op_outShipped_add.seedingWall') }}</h3> <!-- 播种墙 -->
                     <div class="seedingWallContainer">
                         <div v-for="item in seedingWallData" :key="item.orderIndex" :class="[
                             'seedingWallItem',
@@ -123,12 +137,16 @@
             <div class="bottomSection">
                 <h3><el-icon>
                         <List />
-                    </el-icon>波次商品明细</h3>
+                    </el-icon>{{ $t('outstock_op_outShipped_add.waveProductDetails') }}</h3> <!-- 波次商品明细 -->
                 <el-table :data="skuItemsData" border style="width: 100%;" :row-class-name="getSkuRowClassName">
-                    <el-table-column prop="skuBarcode" label="商品条码" width="280" />
-                    <el-table-column prop="skuName" label="商品名称" show-overflow-tooltip width="280" />
-                    <el-table-column prop="qty" label="总数量" width="100" />
-                    <el-table-column label="出库订单" width="280">
+                    <el-table-column prop="skuBarcode" :label="$t('outstock_op_outShipped_add.productBarcode')"
+                        width="280" />
+                    <!-- 商品条码 -->
+                    <el-table-column prop="skuName" :label="$t('outstock_op_outShipped_add.productName')"
+                        show-overflow-tooltip width="280" /> <!-- 商品名称 -->
+                    <el-table-column prop="qty" :label="$t('outstock_op_outShipped_add.totalQuantity')" width="100" />
+                    <!-- 总数量 -->
+                    <el-table-column :label="$t('outstock_op_outShipped_add.outboundOrder')" width="280"> <!-- 出库订单 -->
                         <template #default="scope">
                             <div v-for="order in scope.row.allocateOutOrder" :key="order">{{ order }}</div>
                         </template>

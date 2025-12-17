@@ -75,6 +75,9 @@ export const auditCustomerRechargeApi = createPostRequestWithQuery('/finance/rec
 // 获取充值凭证
 export const getCustomerRechargeCertificateApi = createPostRequestWithQuery('/finance/receivables/customerRecharge/viewCertificate')
 
+// 通过客户和币种获取客户充值
+export const getRechargeByCustomerCodeAndCurrencyApi = createPostRequestWithQuery('/finance/receivables/customerRecharge/listByCustomerCodeAndCurrency')
+
 
 // ---------------------------------------------------应收费用
 // 加入账单
@@ -110,3 +113,42 @@ export const getFeeStatusEnumApi = () => {
 export const getFeeCreateWayEnumApi = () => {
     return http.post('/finance/receivables/receivableFee/receivableFeeCreateWayEnum')
 }
+
+
+// ---------------------------------------------------应收账单
+// 获取账单
+export const getBillPageApi = (data) => {
+    return http.post('/finance/receivables/customerBill/page', data)
+}
+// 获取账单详情
+export const getBillByIdApi = createPostRequestWithQuery('/finance/receivables/customerBill/getById')
+// 添加账单
+export const addBillApi = (data) => {
+    return http.post('/finance/receivables/customerBill/add', data)
+}
+// 编辑账单
+export const updBillByIdApi = (data) => {
+    return http.post('/finance/receivables/customerBill/updateById', data)
+}
+// 删除账单
+export const delBillByIdApi = createPostRequestWithQuery('/finance/receivables/customerBill/deleteById')
+// 账单状态枚举
+export const getBillStatusEnumApi = () => {
+    return http.post('/finance/receivables/customerBill/customerBillStatusEnum')
+}
+// 确定账单
+export const confirmBillByIdApi = createPostRequestWithQuery('/finance/receivables/customerBill/confirmCustomerBill')
+// 确定支付
+export const payBillByIdApi = createPostRequestWithQuery('/finance/receivables/customerBill/payBill')
+// 根据id获取账单
+export const getPayBillListByIdApi = (data) => {
+    return http.post('/finance/receivables/customerBill/payBillList', data)
+}
+// 账单分类统计
+export const getFeeCategoryApi = createPostRequestWithQuery('/finance/receivables/receivableFee/feeCategory')
+
+// 账单付款记录
+export const getBillPaymentPageApi = (data) => {
+    return http.post('/finance/receivables/customerPaymentDetail/page', data)
+}
+

@@ -85,7 +85,7 @@
             :promptMessage="promptMessage" />
     </div>
 </template>
-<script setup name="用户列表">
+<script setup name="用户">
 import { Finished, Unlock, Lock, View } from '@element-plus/icons-vue'
 import { getOrgListCompanyApi } from '@/api/baseApi/org.js';
 import { getUserUserListApi, getUserStatusEnumApi, getUserTypeEnumApi, setUserUserUnLockApi, setUserUserLockApi, lookPasswordApi, updatePasswordByAdminApi, setUserUserRoleApi } from '@/api/sysApi/user.js'

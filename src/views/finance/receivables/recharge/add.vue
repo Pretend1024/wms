@@ -58,7 +58,7 @@
             <!-- 充值金额 -->
             <el-col :span="12">
                 <el-form-item :label="getLabel('payAmount')" prop="payAmount">
-                    <el-input v-model.number="formData.payAmount" :placeholder="getPlaceholder('payAmount')" v-number />
+                    <el-input v-model="formData.payAmount" :placeholder="getPlaceholder('payAmount')" v-number="3" />
                 </el-form-item>
             </el-col>
 

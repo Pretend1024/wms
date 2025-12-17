@@ -8,17 +8,20 @@
                             <el-icon>
                                 <Search />
                             </el-icon>
-                            订单识别
+                            {{ $t('outstock_op_returnShelf_add.orderIdentify') }} <!-- 订单识别 -->
                         </h3>
                         <div class="orderIdentifyForm">
                             <el-select v-model="queryConfig.codeType" style="width: 113px;">
-                                <el-option label="运单号" value="1" />
-                                <el-option label="出库单号" value="0" />
+                                <el-option :label="$t('outstock_op_returnShelf_add.waybillNo')" value="1" />
+                                <!-- 运单号 -->
+                                <el-option :label="$t('outstock_op_returnShelf_add.outboundOrderNo')" value="0" />
+                                <!-- 出库单号 -->
                             </el-select>
                             <span style="padding: 12px 12px 12px 3px;">:</span>
                             <el-input v-model.trim="queryConfig.code" :autofocus="true" style="width: 280px;"
-                                @keydown.enter.prevent.stop="handleScanOrder" ref="orderInputRef" placeholder="输入号码后回车"
-                                :disabled="loading || isOrderLocked">
+                                @keydown.enter.prevent.stop="handleScanOrder" ref="orderInputRef"
+                                :placeholder="$t('outstock_op_returnShelf_add.inputNumberAndEnter')"
+                                :disabled="loading || isOrderLocked"> <!-- 输入号码后回车 -->
                                 <template #append>
                                     <el-button :icon="RefreshLeft" @click="resetPage" />
                                 </template>
@@ -31,32 +34,43 @@
                             <el-icon>
                                 <Box />
                             </el-icon>
-                            归位操作
+                            {{ $t('outstock_op_returnShelf_add.returnShelfOperation') }} <!-- 归位操作 -->
                         </h3>
                         <el-form label-width="80px" class="common-form" @submit.prevent>
-                            <el-form-item label="商品条码:">
+                            <el-form-item :label="$t('outstock_op_returnShelf_add.productBarcode') + ':'"> <!-- 商品条码 -->
                                 <el-input v-model.trim="operateForm.barcode" ref="barcodeInputRef"
-                                    placeholder="扫描SKU或条码" @keydown.enter.prevent.stop="handleScanBarcode"
-                                    :disabled="loading">
+                                    :placeholder="$t('outstock_op_returnShelf_add.scanSkuOrBarcode')"
+                                    @keydown.enter.prevent.stop="handleScanBarcode" :disabled="loading">
+                                    <!-- 扫描SKU或条码 -->
                                 </el-input>
                             </el-form-item>
 
                             <div class="current-sku-info" v-if="currentOpItem">
-                                <div class="info-row"><b>SKU:</b> {{ currentOpItem.sku }}</div>
-                                <div class="info-row"><b>品名:</b> {{ currentOpItem.skuNameCn }}</div>
-                                <div class="info-row"><b>原库位:</b> {{ currentOpItem.locationCode }}</div>
-                                <div class="info-row"><b>待归位:</b> <span class="highlight">{{
-                                    getPendingQty(currentOpItem) }}</span></div>
+                                <div class="info-row"><b>{{ $t('outstock_op_returnShelf_add.sku') }}:</b> {{
+                                    currentOpItem.sku }}</div>
+                                <!-- SKU -->
+                                <div class="info-row"><b>{{ $t('outstock_op_returnShelf_add.productName') }}:</b> {{
+                                    currentOpItem.skuNameCn
+                                    }}</div> <!-- 品名 -->
+                                <div class="info-row"><b>{{ $t('outstock_op_returnShelf_add.originalLocation') }}:</b>
+                                    {{
+                                    currentOpItem.locationCode }}</div> <!-- 原库位 -->
+                                <div class="info-row"><b>{{ $t('outstock_op_returnShelf_add.pendingReturn') }}:</b>
+                                    <span class="highlight">{{
+                                        getPendingQty(currentOpItem) }}</span></div> <!-- 待归位 -->
                             </div>
 
-                            <el-form-item label="上架库位:">
+                            <el-form-item :label="$t('outstock_op_returnShelf_add.putawayLocation') + ':'">
+                                <!-- 上架库位 -->
                                 <el-input v-model.trim="operateForm.locationCode" ref="locationInputRef"
-                                    placeholder="扫描库位" @keydown.enter.prevent.stop="handleScanLocation"
-                                    :disabled="!currentOpItem || loading">
+                                    :placeholder="$t('outstock_op_returnShelf_add.scanLocation')"
+                                    @keydown.enter.prevent.stop="handleScanLocation"
+                                    :disabled="!currentOpItem || loading"> <!-- 扫描库位 -->
                                 </el-input>
                             </el-form-item>
 
-                            <el-form-item label="上架数量:">
+                            <el-form-item :label="$t('outstock_op_returnShelf_add.putawayQuantity') + ':'">
+                                <!-- 上架数量 -->
                                 <el-input v-model="operateForm.quantity" v-intNumber ref="qtyInputRef"
                                     style="width: 100%;" @keydown.enter.prevent.stop="handleSubmitShelf"
                                     :disabled="!operateForm.locationCode || loading" />
@@ -71,23 +85,27 @@
                             <el-icon>
                                 <InfoFilled />
                             </el-icon>
-                            订单信息
+                            {{ $t('outstock_op_returnShelf_add.orderInfo') }} <!-- 订单信息 -->
                         </h3>
                         <div class="basic-info-grid">
                             <div class="info-item">
-                                <span class="info-label">出库单号:</span>
+                                <span class="info-label">{{ $t('outstock_op_returnShelf_add.outboundOrderNo') }}:</span>
+                                <!-- 出库单号 -->
                                 <span class="info-value">{{ currentOrder.orderNo || '-' }}</span>
                             </div>
                             <div class="info-item">
-                                <span class="info-label">状态:</span>
+                                <span class="info-label">{{ $t('outstock_op_returnShelf_add.status') }}:</span>
+                                <!-- 状态 -->
                                 <span class="info-value">{{ currentOrder.statusName || '-' }}</span>
                             </div>
                             <div class="info-item">
-                                <span class="info-label">仓库:</span>
+                                <span class="info-label">{{ $t('outstock_op_returnShelf_add.warehouse') }}:</span>
+                                <!-- 仓库 -->
                                 <span class="info-value">{{ currentOrder.warehouseCode || '-' }}</span>
                             </div>
                             <div class="info-item">
-                                <span class="info-label">客户:</span>
+                                <span class="info-label">{{ $t('outstock_op_returnShelf_add.customer') }}:</span>
+                                <!-- 客户 -->
                                 <span class="info-value">{{ currentOrder.customerCode ? currentOrder.customerCode + "("
                                     +
                                     currentOrder.customerName + ")"
@@ -95,7 +113,8 @@
                                     : "-" }}</span>
                             </div>
                             <div class="info-item full-width">
-                                <span class="info-label">跟踪单号:</span>
+                                <span class="info-label">{{ $t('outstock_op_returnShelf_add.trackingNo') }}:</span>
+                                <!-- 跟踪单号 -->
                                 <span class="info-value">{{ currentOrder.trackingNos || '-' }}</span>
                             </div>
                         </div>
@@ -106,22 +125,31 @@
                             <el-icon>
                                 <List />
                             </el-icon>
-                            归位明细
+                            {{ $t('outstock_op_returnShelf_add.returnShelfDetails') }} <!-- 归位明细 -->
                         </h3>
                         <el-table :data="inventoryList" border style="width: 100%; height: 100%;" stripe
                             :row-class-name="tableRowClassName">
-                            <el-table-column prop="sku" label="SKU" width="220" show-overflow-tooltip />
-                            <el-table-column prop="barcode" label="条码" width="220" show-overflow-tooltip />
-                            <el-table-column prop="locationCode" label="原库位" width="220" show-overflow-tooltip />
-                            <el-table-column label="数量统计" align="center">
-                                <el-table-column prop="outQuantity" label="已下架" width="90" />
-                                <el-table-column prop="onQuantity" label="已归位" width="90">
+                            <el-table-column prop="sku" :label="$t('outstock_op_returnShelf_add.sku')" width="220"
+                                show-overflow-tooltip /> <!-- SKU -->
+                            <el-table-column prop="barcode" :label="$t('outstock_op_returnShelf_add.barcode')"
+                                width="220" show-overflow-tooltip /> <!-- 条码 -->
+                            <el-table-column prop="locationCode"
+                                :label="$t('outstock_op_returnShelf_add.originalLocation')" width="220"
+                                show-overflow-tooltip /> <!-- 原库位 -->
+                            <el-table-column :label="$t('outstock_op_returnShelf_add.quantityStatistics')"
+                                align="center"> <!-- 数量统计 -->
+                                <el-table-column prop="outQuantity"
+                                    :label="$t('outstock_op_returnShelf_add.alreadyShelvedOut')" width="90" />
+                                <!-- 已下架 -->
+                                <el-table-column prop="onQuantity"
+                                    :label="$t('outstock_op_returnShelf_add.alreadyReturned')" width="90"> <!-- 已归位 -->
                                     <template #default="scope">
                                         <span style="color: green; font-weight: bold;">{{ scope.row.onQuantity || 0
-                                        }}</span>
+                                            }}</span>
                                     </template>
                                 </el-table-column>
-                                <el-table-column label="待归位" width="90">
+                                <el-table-column :label="$t('outstock_op_returnShelf_add.pendingReturn')" width="90">
+                                    <!-- 待归位 -->
                                     <template #default="scope">
                                         <span style="color: red;">{{ getPendingQty(scope.row) }}</span>
                                     </template>
@@ -133,18 +161,23 @@
             </div>
         </div>
 
-        <el-dialog v-model="orderSelectDialogVisible" title="选择出库单号" width="700px" :close-on-click-modal="false"
-            align-center>
+        <el-dialog v-model="orderSelectDialogVisible" :title="$t('outstock_op_returnShelf_add.selectOutboundOrderNo')"
+            width="700px" :close-on-click-modal="false" align-center> <!-- 选择出库单号 -->
             <el-table :data="orderList" border style="width: 100%" @row-click="handleOrderRowClick"
                 :row-class-name="getSelectedOrderRowClass">
-                <el-table-column prop="orderNo" label="出库单号" />
-                <el-table-column prop="statusName" label="状态" width="150" />
-                <el-table-column prop="createdTime" label="创建时间" width="200" />
+                <el-table-column prop="orderNo" :label="$t('outstock_op_returnShelf_add.outboundOrderNo')" />
+                <!-- 出库单号 -->
+                <el-table-column prop="statusName" :label="$t('outstock_op_returnShelf_add.status')" width="150" />
+                <!-- 状态 -->
+                <el-table-column prop="createdTime" :label="$t('outstock_op_returnShelf_add.createTime')" width="200" />
+                <!-- 创建时间 -->
             </el-table>
             <template #footer>
                 <div class="dialog-footer">
-                    <el-button @click="orderSelectDialogVisible = false">取消</el-button>
-                    <el-button type="primary" @click="confirmSelectedOrder" :disabled="!selectedOrderId">确定</el-button>
+                    <el-button @click="orderSelectDialogVisible = false">{{ $t('outstock_op_returnShelf_add.cancel')
+                        }}</el-button> <!-- 取消 -->
+                    <el-button type="primary" @click="confirmSelectedOrder" :disabled="!selectedOrderId">{{
+                        $t('outstock_op_returnShelf_add.confirm') }}</el-button> <!-- 确定 -->
                 </div>
             </template>
         </el-dialog>

@@ -92,3 +92,8 @@ export const exportOutOrderTraceApi = (data) => {
 export const exportReceivableFeeApi = (data) => {
     return http.post('/finance/receivables/receivableFee/export', { ...data })
 }
+
+// 导出应收账单
+export const exportReceivableBillApi = (data) => {
+    return http.post('/finance/receivables/customerBill/export', { ...data })
+}

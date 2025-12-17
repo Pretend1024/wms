@@ -93,14 +93,14 @@
                 <template #table-buttons>
                     <el-button type="primary" @click="handleAdd" v-permission="'receivableFree:add'" :icon="Plus">{{
                         getButtonText('add') }}</el-button>
-                    <el-button type="danger" @click="handleDel" v-permission="'delete'" :icon="Delete">{{
+                    <el-button type="danger" @click="handleDel" v-permission="'receivableFree:delete'" :icon="Delete">{{
                         getButtonText('del') }}</el-button>
                     <el-button type="success" @click="handleImport" :icon="Upload">{{ getButtonText('importCreate')
-                    }}</el-button>
+                        }}</el-button>
                     <el-button type="success" @click="handleExport" :icon="Share">{{ getButtonText('export')
-                    }}</el-button>
+                        }}</el-button>
                     <el-button type="primary" @click="joinBillVisible = true" :icon="Money">{{ getButtonText('joinBill')
-                    }}</el-button>
+                        }}</el-button>
                 </template>
 
                 <template #customBtn="{ row }">
@@ -131,14 +131,14 @@
             :feeTypeOptions="feeTypeOptions" :currencyOptions="currencyOptions" :loading="dialogLoading"
             @confirm="handleDialogConfirm" />
 
-        <JoinBillDialog v-model="joinBillVisible" :selectionCount="selectionRows.length" :loading="joinBillLoading"
+        <JoinBillDialog v-model="joinBillVisible" :selectionCount="selectionRows.length"
             @confirm="handleJoinBillConfirm" />
 
         <exportDialog ref="exportDialogRef" :selectionRows="selectionRows" :initValues="initValues" :exportType="610">
         </exportDialog>
 
         <batchOperationn :dialogTitle="'操作结果'" :isVisible="resultDialogVisible" :tableData="resultData"
-            :nameField="'id'" :nameLabel="'单号/费用名称'" @close="resultClose" :promptMessage="promptMessage" />
+            :nameField="'id'" :nameLabel="'单号'" @close="resultClose" :promptMessage="promptMessage" />
     </div>
 </template>
 
@@ -367,7 +367,7 @@ const handleDel = () => {
         promptMessage.value = '操作中...';
         for (const row of selectionRows.value) {
             const res = await delFeeByIdApi({ id: row.id });
-            resultData.value.push({ id: `${row.orderNo} - ${row.feeName}`, msg: res.msg, success: res.success });
+            resultData.value.push({ id: `${row.orderNo}`, msg: res.msg, success: res.success });
         }
         promptMessage.value = '操作完成';
         loading.value = false;
@@ -381,13 +381,11 @@ const resultClose = () => {
 
 // 加入账单逻辑
 const joinBillVisible = ref(false);
-const joinBillLoading = ref(false);
 const handleJoinBillConfirm = async (formData) => {
     const params = { option: formData.method, billIdNo: formData.targetBillNo, queryCondition: {} };
     // 如果是按勾选，则传ID列表；如果是按查询条件，则传查询参数
     if (formData.scope === 'selection') params.queryCondition.idList = selectionRows.value.map(item => item.id);
     else params.queryCondition = { ...trimObjectStrings(initValues.value) };
-    joinBillLoading.value = true;
     try {
         const res = await joinBillApi(params);
         smartAlert(res.msg || '加入账单处理完成', res.success, 1000, true);

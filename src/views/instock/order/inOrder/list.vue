@@ -219,7 +219,7 @@
 import { Plus, Delete, Share } from '@element-plus/icons-vue'
 import { getOrgListCompanyApi } from '@/api/baseApi/org.js';
 import { getCustomerLikeQueryApi } from '@/api/baseApi/sku.js'
-import { getOrderInOrderListApi, getInOrderCountGroupByStatusApi, getInstockInOrderFirstLegEnumApi, getInstockInOrderTypeEnumApi, getInstockInOrderBusinessEnumApi, getInstockInOrderCabinetTypeEnumApi, getInstockInOrderCalculateFeeStatusEnumApi, getInstockInOrderArrivalTypeEnumApi, deleteOrderInOrderApi, cancelConfirmOrderInOrderApi, confirmOrderInOrderApi, getInstockInOrderReceiptMethodEnumApi, finishReceiptOrderInOrderApi, confirmEndOrderInOrderApi, cancelEndOrderInOrderApi, updOrderInOrderCancelInReceiptByIdApi } from '@/api/instockApi/order.js';
+import { getOrderInOrderListApi, getInOrderCountGroupByStatusApi, getInstockInOrderFirstLegEnumApi, getInstockInOrderTypeEnumApi, getInstockInOrderBusinessEnumApi, getInstockInOrderCabinetTypeEnumApi, getInstockInOrderCalculateFeeStatusEnumApi, getInstockInOrderArrivalTypeEnumApi, deleteOrderInOrderApi, cancelConfirmOrderInOrderApi, confirmOrderInOrderApi, getInstockInOrderReceiptMethodEnumApi, finishReceiptOrderInOrderApi, confirmEndOrderInOrderApi, cancelEndOrderInOrderApi, updOrderInOrderCancelInReceiptByIdApi, getInstockInOrderCreateWayEnumApi } from '@/api/instockApi/order.js';
 import { getWhWarehouseApi } from '@/api/baseApi/wh.js'
 import hydFilterBox from "@/components/table/hyd-filterBox.vue";
 import hydTable from "@/components/table/hyd-table.vue";
@@ -240,6 +240,7 @@ const formConfig = ref([
     { type: 'select', prop: 'hasRemark', options: [{ label: '是', value: true }, { label: '否', value: false }] },
     { type: 'select', prop: 'calculateFeeStatus', options: [] },
     { type: 'select', prop: 'receiptMethodId', options: [] },
+    { type: 'select', prop: 'createWay', options: [] },
     { type: 'date', prop: 'createdTimeBegin', offsetDays: 30, useEndOfDay: false },
     { type: 'date', prop: 'createdTimeEnd', useEndOfDay: true }
 ])
@@ -327,7 +328,7 @@ const columns = ref([
     { label: '计费时间', prop: 'calculateFeeTime', width: '200', sortable: true },
     { label: '计费次数', prop: 'calculateFeeCount', width: '125' },
     { label: '计费消息', prop: 'calculateFeeMsg', width: '150' },
-    { label: '创建方式', prop: 'createWay', width: '160' },
+    { label: '创建方式', prop: 'createWayName', width: '160', sortable: true },
     { label: '接口类型', prop: 'apiTypeName', width: '105' },
     { label: '更新时间', prop: 'updatedTime', width: '200', sortable: true },
     { label: '创建人', prop: 'createdBy', width: '110' },
@@ -829,6 +830,9 @@ onMounted(async () => {
     // 获取收货方式
     const receiptMethodRes = await getInstockInOrderReceiptMethodEnumApi()
     formConfig.value[5].options = receiptMethodRes.data.map(item => ({ label: item.name, value: item.id }))
+    // 创建方式
+    const createMethodRes = await getInstockInOrderCreateWayEnumApi()
+    formConfig.value[6].options = createMethodRes.data.map(item => ({ label: item.name, value: item.id }))
 })
 // 监听刷新数据
 onActivated(() => {

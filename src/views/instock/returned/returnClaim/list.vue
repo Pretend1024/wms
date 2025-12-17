@@ -91,7 +91,7 @@
         </claimDialog>
     </div>
 </template>
-<script setup name="退件认领">
+<script setup name="认领">
 import { Plus, Delete, Close, Select, Van, SoldOut } from '@element-plus/icons-vue'
 import { smartAlert, trimObjectStrings } from '@/utils/genericMethods.js'
 import batchOperationn from '@/components/messageNotices/batchOperation.vue'

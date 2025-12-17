@@ -31,7 +31,7 @@
                 </template>
                 <template #isConcurrent="{ row }">
                     <span :style="{ color: row.isConcurrent ? 'green' : 'red' }">{{ row.isConcurrent ? '可并发' : '不可并发'
-                    }}</span>
+                        }}</span>
                 </template>
             </hydTable>
         </div>
@@ -50,7 +50,7 @@
     </div>
 </template>
 
-<script setup name='定时任务'>
+<script setup name='自动任务'>
 import { Plus } from "@element-plus/icons-vue";
 import hydTable from "@/components/table/hyd-table.vue";
 import hydFilterBox from "@/components/table/hyd-filterBox.vue";

@@ -118,6 +118,26 @@ const tagMap = {
     出库单复制: {
         zh: '出库单复制',
         en: 'Copy Outbound Order'
+    },
+    应收账单详情: {
+        zh: '应收账单详情',
+        en: 'Receivable Bill Details'
+    },
+    新增增值服务单: {
+        zh: '新增增值服务单',
+        en: 'Add Value-Added Service Order'
+    },
+    编辑增值服务单: {
+        zh: '编辑增值服务单',
+        en: 'Edit Value-Added Service Order'
+    },
+    增值服务单详情: {
+        zh: '增值服务单详情',
+        en: 'Value-Added Service Order Details'
+    },
+    盘点详情: {
+        zh: '盘点详情',
+        en: 'Inventory Details'
     }
 }
 import useUserMenuStore from '@/store/userMenu'

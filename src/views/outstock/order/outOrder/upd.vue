@@ -235,7 +235,7 @@
                                 <el-col :span="6">
                                     <el-button @click="openAddressDialog(true)" type="primary" plain>{{
                                         getButtonText('addressBook')
-                                        }}</el-button>
+                                    }}</el-button>
                                 </el-col>
                             </el-row>
                         </el-form>
@@ -335,7 +335,7 @@
                                 <el-col :span="6">
                                     <el-button @click="openAddressDialog(false)" type="primary" plain>{{
                                         getButtonText('addressBook')
-                                        }}</el-button>
+                                    }}</el-button>
                                 </el-col>
                             </el-row>
                         </el-form>
@@ -743,7 +743,7 @@ const handleSave = async () => {
                 // 格式化增值服务数据为接口要求的vasOrderItemlist格式
                 if (vasItemTableDataLocal[0].serviceTypeId) {
                     data.vasOrderItemList = vasItemTableDataLocal.map(item => {
-                        const attachments = item.attachments && Array.isArray(item.attachments) ? item.attachments : null;
+                        const attachments = item.attachments.length && Array.isArray(item.attachments) ? item.attachments : null;
                         return {
                             ...item,
                             serviceAttachment: attachments ? JSON.stringify(attachments) : null, // 附件JSON字符串

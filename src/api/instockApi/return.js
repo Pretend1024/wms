@@ -35,6 +35,10 @@ export const getInstockReturnReturnOrderTypeEnumApi = () => {
 export const getInstockReturnReturnParcelStatusEnumApi = () => {
     return http.post('/instock/return/returnParcel/statusEnum')
 }
+// 创建方式
+export const getInstockReturnReturnOrderCreateWayEnumApi = () => {
+    return http.post('/instock/return/returnOrder/createWayEnum') 
+}
 
 // -----------------------------------------退件入库
 // 获取退件入库单

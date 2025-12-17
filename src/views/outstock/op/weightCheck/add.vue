@@ -8,20 +8,24 @@
                         <h3>
                             <el-icon>
                                 <Setting />
-                            </el-icon>基础设置
-                        </h3>
+                            </el-icon>{{ $t('outstock_op_weightCheck_add.basicSettings') }}
+                        </h3> <!-- 基础设置 -->
                         <el-form label-width="80px">
-                            <el-form-item label="单位类型:">
-                                <el-select v-model="settings.unitType" placeholder="选择单位" style="width: 100%"
-                                    :disabled="orderInfoLoaded">
+                            <el-form-item :label="$t('outstock_op_weightCheck_add.unitType') + ':'"> <!-- 单位类型 -->
+                                <el-select v-model="settings.unitType"
+                                    :placeholder="$t('outstock_op_weightCheck_add.selectUnit')" style="width: 100%"
+                                    :disabled="orderInfoLoaded"> <!-- 选择单位 -->
                                     <el-option v-for="item in unitOptions" :key="item.value" :label="item.label"
                                         :value="item.value" />
                                 </el-select>
                             </el-form-item>
-                            <el-form-item label="操作选项:">
+                            <el-form-item :label="$t('outstock_op_weightCheck_add.operationOptions') + ':'">
+                                <!-- 操作选项 -->
                                 <div style="display: flex; gap: 15px;">
-                                    <el-checkbox v-model="settings.isOutboundStock" label="自动出库" />
-                                    <el-checkbox v-model="settings.enableMaterialScan" label="扫描耗材" />
+                                    <el-checkbox v-model="settings.isOutboundStock"
+                                        :label="$t('outstock_op_weightCheck_add.autoOutboundStock')" /> <!-- 自动出库 -->
+                                    <el-checkbox v-model="settings.enableMaterialScan"
+                                        :label="$t('outstock_op_weightCheck_add.scanMaterial')" /> <!-- 扫描耗材 -->
                                 </div>
                             </el-form-item>
                         </el-form>
@@ -31,8 +35,8 @@
                         <h3>
                             <el-icon>
                                 <Document />
-                            </el-icon>订单识别
-                        </h3>
+                            </el-icon>{{ $t('outstock_op_weightCheck_add.orderIdentify') }}
+                        </h3> <!-- 订单识别 -->
                         <div class="orderIdentifyForm">
                             <el-select v-model="orderData.codeType" @change="handleCodeTypeChange" style="width: 113px;"
                                 :disabled="orderFormDisabled">
@@ -41,8 +45,9 @@
                             </el-select>
                             <span style="padding: 12px 12px 12px 3px;">:</span>
                             <el-input v-model.trim="orderData.code" :autofocus="true" style="width: 280px;"
-                                @keydown.enter.prevent="getOrderInfo()" ref="numberInputRef" placeholder="输入单号后回车"
-                                :disabled="orderFormDisabled">
+                                @keydown.enter.prevent="getOrderInfo()" ref="numberInputRef"
+                                :placeholder="$t('outstock_op_weightCheck_add.inputOrderNoAndEnter')"
+                                :disabled="orderFormDisabled"> <!-- 输入单号后回车 -->
                                 <template #append>
                                     <el-button :icon="RefreshLeft" @click="resetAllInfo" />
                                 </template>
@@ -54,13 +59,14 @@
                         <h3>
                             <el-icon>
                                 <Ticket />
-                            </el-icon>运单扫描
-                        </h3>
+                            </el-icon>{{ $t('outstock_op_weightCheck_add.waybillScan') }}
+                        </h3> <!-- 运单扫描 -->
                         <el-form label-width="80px" class="waybillForm">
-                            <el-form-item label="运单号:">
+                            <el-form-item :label="$t('outstock_op_weightCheck_add.waybillNo') + ':'"> <!-- 运单号 -->
                                 <el-input v-model.trim="waybillData.number" @keydown.enter.prevent="matchWaybill"
                                     ref="waybillInputRef" :disabled="!orderInfoLoaded || waybillDisabled"
-                                    placeholder="扫描运单号后回车" />
+                                    :placeholder="$t('outstock_op_weightCheck_add.scanWaybillNoAndEnter')" />
+                                <!-- 扫描运单号后回车 -->
                             </el-form-item>
                         </el-form>
                     </div>
@@ -69,13 +75,15 @@
                         <h3>
                             <el-icon>
                                 <ScaleToOriginal />
-                            </el-icon>称重
-                        </h3>
+                            </el-icon>{{ $t('outstock_op_weightCheck_add.weighing') }}
+                        </h3> <!-- 称重 -->
                         <el-form label-width="80px" class="skuForm">
-                            <el-form-item :label="`重量(${currentUnitLabel}):`">
+                            <el-form-item :label="`${$t('outstock_op_weightCheck_add.weight')}(${currentUnitLabel}):`">
+                                <!-- 重量 -->
                                 <el-input v-model.trim="weightData.value" @keydown.enter.prevent="handleWeightEnter"
                                     ref="weightInputRef" type="number" :disabled="!currentWaybillMatched"
-                                    placeholder="输入重量后回车" />
+                                    :placeholder="$t('outstock_op_weightCheck_add.inputWeightAndEnter')" />
+                                <!-- 输入重量后回车 -->
                             </el-form-item>
                         </el-form>
                     </div>
@@ -84,12 +92,15 @@
                         <h3>
                             <el-icon>
                                 <Crop />
-                            </el-icon>耗材扫描
-                        </h3>
+                            </el-icon>{{ $t('outstock_op_weightCheck_add.materialScan') }}
+                        </h3> <!-- 耗材扫描 -->
                         <el-form label-width="80px" class="materialForm">
-                            <el-form-item label="耗材条码:">
+                            <el-form-item :label="$t('outstock_op_weightCheck_add.materialBarcode') + ':'">
+                                <!-- 耗材条码 -->
                                 <el-input v-model.trim="materialData.barcode" @keydown.enter.prevent="matchMaterial"
-                                    ref="materialInputRef" :disabled="!canScanMaterial" placeholder="扫描耗材条码后回车" />
+                                    ref="materialInputRef" :disabled="!canScanMaterial"
+                                    :placeholder="$t('outstock_op_weightCheck_add.scanMaterialBarcodeAndEnter')" />
+                                <!-- 扫描耗材条码后回车 -->
                             </el-form-item>
                         </el-form>
                     </div>
@@ -97,18 +108,29 @@
                     <div class="submit-section">
                         <el-button type="success" icon="Check" @click="submitWeighing" :disabled="!canSubmit"
                             class="submit-btn">
-                            提交 (Ctrl+Enter)
+                            {{ $t('outstock_op_weightCheck_add.submit') }} (Ctrl+Enter) <!-- 提交 -->
                         </el-button>
                     </div>
 
                     <div class="shortcut-tips-custom">
-                        <div class="shortcut-title">快捷键说明</div>
+                        <div class="shortcut-title">{{ $t('outstock_op_weightCheck_add.shortcutInstructions') }}</div>
+                        <!-- 快捷键说明 -->
                         <ul class="shortcut-list">
-                            <li><span class="shortcut-key">Ctrl+1</span> - 聚焦订单号</li>
-                            <li><span class="shortcut-key">Ctrl+2</span> - 聚焦运单号</li>
-                            <li><span class="shortcut-key">Ctrl+3</span> - 聚焦重量</li>
-                            <li><span class="shortcut-key">Ctrl+4</span> - 聚焦耗材</li>
-                            <li><span class="shortcut-key">Ctrl+Enter</span> - 提交</li>
+                            <li><span class="shortcut-key">Ctrl+1</span> - {{
+                                $t('outstock_op_weightCheck_add.focusOrderNo') }}</li>
+                            <!-- 聚焦订单号 -->
+                            <li><span class="shortcut-key">Ctrl+2</span> - {{
+                                $t('outstock_op_weightCheck_add.focusWaybillNo') }}</li>
+                            <!-- 聚焦运单号 -->
+                            <li><span class="shortcut-key">Ctrl+3</span> - {{
+                                $t('outstock_op_weightCheck_add.focusWeight') }}</li>
+                            <!-- 聚焦重量 -->
+                            <li><span class="shortcut-key">Ctrl+4</span> - {{
+                                $t('outstock_op_weightCheck_add.focusMaterial') }}</li>
+                            <!-- 聚焦耗材 -->
+                            <li><span class="shortcut-key">Ctrl+Enter</span> - {{
+                                $t('outstock_op_weightCheck_add.submit') }}</li>
+                            <!-- 提交 -->
                         </ul>
                     </div>
                 </div>
@@ -118,23 +140,27 @@
                         <h3>
                             <el-icon>
                                 <InfoFilled />
-                            </el-icon>订单基本信息
-                        </h3>
+                            </el-icon>{{ $t('outstock_op_weightCheck_add.orderBasicInfo') }}
+                        </h3> <!-- 订单基本信息 -->
                         <div class="basic-info-grid">
                             <div class="info-item">
-                                <span class="info-label">出库单号:</span>
+                                <span class="info-label">{{ $t('outstock_op_weightCheck_add.outboundOrderNo') }}:</span>
+                                <!-- 出库单号 -->
                                 <span class="info-value">{{ orderBasicInfo.orderNo || '-' }}</span>
                             </div>
                             <div class="info-item">
-                                <span class="info-label">仓库:</span>
+                                <span class="info-label">{{ $t('outstock_op_weightCheck_add.warehouse') }}:</span>
+                                <!-- 仓库 -->
                                 <span class="info-value">{{ orderBasicInfo.warehouseCode || '-' }}</span>
                             </div>
                             <div class="info-item">
-                                <span class="info-label">客户:</span>
+                                <span class="info-label">{{ $t('outstock_op_weightCheck_add.customer') }}:</span>
+                                <!-- 客户 -->
                                 <span class="info-value">{{ orderBasicInfo.customerName || '-' }}</span>
                             </div>
                             <div class="info-item">
-                                <span class="info-label">物流渠道:</span>
+                                <span class="info-label">{{ $t('outstock_op_weightCheck_add.logisticsChannel')
+                                    }}:</span> <!-- 物流渠道 -->
                                 <span class="info-value">{{ orderBasicInfo.shipwayCode || '-' }}</span>
                             </div>
                         </div>
@@ -144,8 +170,10 @@
                         <h3>
                             <el-icon>
                                 <Box />
-                            </el-icon>包裹列表
-                            <span class="package-count">{{ packageList.length }}个包裹</span>
+                            </el-icon>{{ $t('outstock_op_weightCheck_add.packageList') }} <!-- 包裹列表 -->
+                            <span class="package-count">{{ packageList.length }}{{
+                                $t('outstock_op_weightCheck_add.packages') }}</span>
+                            <!-- 个包裹 -->
                         </h3>
                         <div class="package-list-container">
                             <div v-for="(packageItem, packageIndex) in packageList"
@@ -154,52 +182,72 @@
                                     'completed-package': packageItem.isCompleted && !packageItem.isMatched
                                 }">
                                 <div class="package-header">
-                                    <span class="package-number">包裹 {{ packageIndex + 1 }}</span>
-                                    <span class="waybill-number">运单号: {{ formatWaybillNo(packageItem.trackingNo)
-                                    }}</span>
+                                    <span class="package-number">{{ $t('outstock_op_weightCheck_add.package') }} {{
+                                        packageIndex + 1
+                                        }}</span> <!-- 包裹 -->
+                                    <span class="waybill-number">{{ $t('outstock_op_weightCheck_add.waybillNo') }}: {{
+                                        formatWaybillNo(packageItem.trackingNo)
+                                        }}</span> <!-- 运单号 -->
                                 </div>
 
                                 <div class="package-info-row">
                                     <div class="pkg-info-item highlight">
-                                        <span class="label">当前重量:</span>
+                                        <span class="label">{{ $t('outstock_op_weightCheck_add.currentWeight')
+                                            }}:</span> <!-- 当前重量 -->
                                         <span class="value">
                                             {{ packageItem.realWeight ? packageItem.realWeight : '-' }}
                                             {{ packageItem.realWeight ? currentUnitLabel : '' }}
 
                                             <span v-if="packageItem.outWeightKg || packageItem.outWeightLb"
                                                 style="font-size: 13px; color: #666; margin-left: 8px; font-weight: normal;">
-                                                (出库: {{ packageItem.outWeightKg || 0 }}kg / {{ packageItem.outWeightLb
-                                                    || 0 }}lb)
+                                                ({{ $t('outstock_op_weightCheck_add.outbound') }}: {{
+                                                packageItem.outWeightKg || 0 }}kg
+                                                / {{ packageItem.outWeightLb
+                                                    || 0 }}lb) <!-- 出库 -->
                                             </span>
                                         </span>
                                     </div>
                                 </div>
 
                                 <div class="table-section">
-                                    <div class="table-title">商品信息</div>
+                                    <div class="table-title">{{ $t('outstock_op_weightCheck_add.productInfo') }}</div>
+                                    <!-- 商品信息 -->
                                     <el-table :data="packageItem.orderSkuItems" border style="width: 100%;"
                                         size="small">
-                                        <el-table-column prop="barcode" label="商品条码" />
-                                        <el-table-column prop="skuName" label="品名" show-overflow-tooltip />
-                                        <el-table-column prop="pickFinishedQty" label="已拣数量" width="100"
-                                            align="center" />
+                                        <el-table-column prop="barcode"
+                                            :label="$t('outstock_op_weightCheck_add.productBarcode')" />
+                                        <!-- 商品条码 -->
+                                        <el-table-column prop="skuName"
+                                            :label="$t('outstock_op_weightCheck_add.productName')"
+                                            show-overflow-tooltip /> <!-- 品名 -->
+                                        <el-table-column prop="pickFinishedQty"
+                                            :label="$t('outstock_op_weightCheck_add.pickedQty')" width="100"
+                                            align="center" /> <!-- 已拣数量 -->
                                     </el-table>
                                 </div>
 
                                 <div class="table-section">
-                                    <div class="table-title">耗材信息</div>
+                                    <div class="table-title">{{ $t('outstock_op_weightCheck_add.materialInfo') }}</div>
+                                    <!-- 耗材信息 -->
                                     <el-table :data="packageItem.consumableList" border style="width: 100%;"
                                         size="small">
-                                        <el-table-column prop="consumablesCode" label="耗材代码" />
-                                        <el-table-column prop="consumablesName" label="耗材名称" show-overflow-tooltip />
-                                        <el-table-column label="数量" width="140" align="center">
+                                        <el-table-column prop="consumablesCode"
+                                            :label="$t('outstock_op_weightCheck_add.materialCode')" /> <!-- 耗材代码 -->
+                                        <el-table-column prop="consumablesName"
+                                            :label="$t('outstock_op_weightCheck_add.materialName')"
+                                            show-overflow-tooltip /> <!-- 耗材名称 -->
+                                        <el-table-column :label="$t('outstock_op_weightCheck_add.quantity')" width="140"
+                                            align="center">
+                                            <!-- 数量 -->
                                             <template #default="{ row }">
                                                 <el-input-number v-model="row.quantity" :min="1" size="small"
                                                     style="width: 110px;" :disabled="packageItem.isCompleted"
                                                     @change="() => { }" />
                                             </template>
                                         </el-table-column>
-                                        <el-table-column label="操作" width="60" align="center">
+                                        <el-table-column :label="$t('outstock_op_weightCheck_add.operation')" width="60"
+                                            align="center">
+                                            <!-- 操作 -->
                                             <template #default="{ $index }">
                                                 <el-button type="danger" link :icon="Delete"
                                                     :disabled="packageItem.isCompleted"
@@ -215,18 +263,23 @@
             </div>
         </div>
 
-        <el-dialog v-model="orderSelectDialogVisible" title="选择出库单号" width="700px" :close-on-click-modal="false"
-            align-center>
+        <el-dialog v-model="orderSelectDialogVisible" :title="$t('outstock_op_weightCheck_add.selectOutboundOrderNo')"
+            width="700px" :close-on-click-modal="false" align-center> <!-- 选择出库单号 -->
             <el-table :data="orderList" border style="width: 100%" @row-click="handleOrderRowClick"
                 :row-class-name="getSelectedOrderRowClass">
-                <el-table-column prop="orderNo" label="出库单号" />
-                <el-table-column prop="statusName" label="状态" width="150" />
-                <el-table-column prop="createdTime" label="创建时间" width="200" />
+                <el-table-column prop="orderNo" :label="$t('outstock_op_weightCheck_add.outboundOrderNo')" />
+                <!-- 出库单号 -->
+                <el-table-column prop="statusName" :label="$t('outstock_op_weightCheck_add.status')" width="150" />
+                <!-- 状态 -->
+                <el-table-column prop="createdTime" :label="$t('outstock_op_weightCheck_add.createTime')" width="200" />
+                <!-- 创建时间 -->
             </el-table>
             <template #footer>
                 <div class="dialog-footer">
-                    <el-button @click="orderSelectDialogVisible = false">取消</el-button>
-                    <el-button type="primary" @click="confirmSelectedOrder" :disabled="!selectedOrderId">确定</el-button>
+                    <el-button @click="orderSelectDialogVisible = false">{{ $t('outstock_op_weightCheck_add.cancel')
+                        }}</el-button> <!-- 取消 -->
+                    <el-button type="primary" @click="confirmSelectedOrder" :disabled="!selectedOrderId">{{
+                        $t('outstock_op_weightCheck_add.confirm') }}</el-button> <!-- 确定 -->
                 </div>
             </template>
         </el-dialog>
@@ -312,7 +365,7 @@ const canSubmit = computed(() => {
 const safeFocus = (refObj) => {
     if (!refObj.value) return;
     if (typeof refObj.value.focus === 'function') {
-        refObj.value.focus(); 
+        refObj.value.focus();
     } else if (refObj.value.$el && refObj.value.$el.querySelector('input')) {
         refObj.value.$el.querySelector('input').focus();
     }
@@ -396,7 +449,7 @@ const fetchOrderDetails = async (orderId) => {
                 realWeight: '',
                 // 耗材列表
                 consumableList: (pkg.consumablesVOList || []).map(c => ({
-                    id: c.id, 
+                    id: c.id,
                     consumablesCode: c.consumablesCode,
                     consumablesName: c.consumablesName,
                     consumablesBarcode: c.consumablesBarcode || '',

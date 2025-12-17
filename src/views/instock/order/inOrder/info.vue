@@ -23,11 +23,6 @@
                         </el-form-item>
                     </el-col>
                     <el-col :span="6">
-                        <el-form-item label="入库类型:">
-                            <el-input v-model.trim="formData.typeName" readonly />
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="6">
                         <el-form-item label="业务类型:">
                             <el-input v-model.trim="formData.businessName" readonly />
                         </el-form-item>

@@ -25,7 +25,8 @@
             <!-- 信用额度（必需，数字） -->
             <el-col :span="24">
                 <el-form-item :label="getLabel('creditAmount')" prop="creditAmount">
-                    <el-input v-model="formData.creditAmount" :placeholder="getPlaceholder('creditAmount')" v-number />
+                    <el-input v-model="formData.creditAmount" :placeholder="getPlaceholder('creditAmount')"
+                        v-number="3" />
                 </el-form-item>
             </el-col>
 

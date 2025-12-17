@@ -8,18 +8,20 @@
                             <el-icon>
                                 <Document />
                             </el-icon>
-                            订单识别
+                            {{ $t('outstock_op_printFile_add.orderIdentify') }} <!-- 订单识别 -->
                         </h3>
                         <div class="orderIdentifyForm">
                             <el-select v-model="queryConfig.codeType" @change="handleCodeTypeChange"
                                 style="width: 113px;">
-                                <el-option label="运单号" value="1" />
-                                <el-option label="出库单号" value="0" />
+                                <el-option :label="$t('outstock_op_printFile_add.waybillNo')" value="1" /> <!-- 运单号 -->
+                                <el-option :label="$t('outstock_op_printFile_add.outboundOrderNo')" value="0" />
+                                <!-- 出库单号 -->
                             </el-select>
                             <span style="padding: 12px 12px 12px 3px;">:</span>
                             <el-input v-model.trim="queryConfig.code" :autofocus="true" style="width: 280px;"
-                                @keydown.enter.prevent.stop="handleScan" ref="scanInputRef" placeholder="输入号码后回车"
-                                :disabled="loading">
+                                @keydown.enter.prevent.stop="handleScan" ref="scanInputRef"
+                                :placeholder="$t('outstock_op_printFile_add.inputNumberAndEnter')" :disabled="loading">
+                                <!-- 输入号码后回车 -->
                                 <template #append>
                                     <el-button :icon="RefreshLeft" @click="resetPage" />
                                 </template>
@@ -32,22 +34,29 @@
                             <el-icon>
                                 <Printer />
                             </el-icon>
-                            打印配置
+                            {{ $t('outstock_op_printFile_add.printConfig') }} <!-- 打印配置 -->
                         </h3>
                         <el-form label-width="80px" class="common-form">
-                            <el-form-item label="打印内容:">
-                                <el-select v-model="printContentType" placeholder="请选择">
-                                    <el-option label="运单&附件" value="1" />
+                            <el-form-item :label="$t('outstock_op_printFile_add.printContent') + ':'"> <!-- 打印内容 -->
+                                <el-select v-model="printContentType"
+                                    :placeholder="$t('outstock_op_printFile_add.pleaseSelect')">
+                                    <!-- 请选择 -->
+                                    <el-option :label="$t('outstock_op_printFile_add.waybillAndAttachment')"
+                                        value="1" /> <!-- 运单&附件 -->
                                 </el-select>
                             </el-form-item>
-                            <el-form-item label="打印机:">
-                                <el-select v-model="selectedPrinter" placeholder="选择打印机">
+                            <el-form-item :label="$t('outstock_op_printFile_add.printer') + ':'"> <!-- 打印机 -->
+                                <el-select v-model="selectedPrinter"
+                                    :placeholder="$t('outstock_op_printFile_add.selectPrinter')">
+                                    <!-- 选择打印机 -->
                                     <el-option v-for="printer in printers" :key="printer" :label="printer"
                                         :value="printer" />
                                 </el-select>
                             </el-form-item>
-                            <el-form-item label="选项:">
-                                <el-checkbox v-model="autoPrint" label="识别后自动打印" />
+                            <el-form-item :label="$t('outstock_op_printFile_add.options') + ':'"> <!-- 选项 -->
+                                <el-checkbox v-model="autoPrint"
+                                    :label="$t('outstock_op_printFile_add.autoPrintAfterIdentify')" />
+                                <!-- 识别后自动打印 -->
                             </el-form-item>
                         </el-form>
                     </div>
@@ -57,23 +66,27 @@
                             <el-icon>
                                 <InfoFilled />
                             </el-icon>
-                            当前订单信息
+                            {{ $t('outstock_op_printFile_add.currentOrderInfo') }} <!-- 当前订单信息 -->
                         </h3>
                         <div class="basic-info-grid">
                             <div class="info-item full-width">
-                                <span class="info-label">出库单号:</span>
+                                <span class="info-label">{{ $t('outstock_op_printFile_add.outboundOrderNo') }}:</span>
+                                <!-- 出库单号 -->
                                 <span class="info-value">{{ currentOrder.orderNo || '-' }}</span>
                             </div>
                             <div class="info-item full-width">
-                                <span class="info-label">跟踪单号:</span>
+                                <span class="info-label">{{ $t('outstock_op_printFile_add.trackingNo') }}:</span>
+                                <!-- 跟踪单号 -->
                                 <span class="info-value">{{ currentOrder.trackingNos || '-' }}</span>
                             </div>
                             <div class="info-item">
-                                <span class="info-label">物流产品:</span>
+                                <span class="info-label">{{ $t('outstock_op_printFile_add.logisticsProduct') }}:</span>
+                                <!-- 物流产品 -->
                                 <span class="info-value">{{ currentOrder.shipwayCode || '-' }}</span>
                             </div>
                             <div class="info-item">
-                                <span class="info-label">承运商:</span>
+                                <span class="info-label">{{ $t('outstock_op_printFile_add.carrier') }}:</span>
+                                <!-- 承运商 -->
                                 <span class="info-value">{{ currentOrder.carrierCode || '-' }}</span>
                             </div>
                         </div>
@@ -84,14 +97,17 @@
                             <el-icon>
                                 <Folder />
                             </el-icon>
-                            附件列表
+                            {{ $t('outstock_op_printFile_add.attachmentList') }} <!-- 附件列表 -->
                         </h3>
                         <el-table :data="currentAttachments" border style="width: 100%;" height="250">
-                            <el-table-column prop="fileName" label="文件名称" show-overflow-tooltip />
-                            <el-table-column label="操作" width="80" align="center">
+                            <el-table-column prop="fileName" :label="$t('outstock_op_printFile_add.fileName')"
+                                show-overflow-tooltip />
+                            <!-- 文件名称 -->
+                            <el-table-column :label="$t('outstock_op_printFile_add.operation')" width="80"
+                                align="center"> <!-- 操作 -->
                                 <template #default="scope">
                                     <el-button type="primary" link @click="previewAttachment(scope.row)">
-                                        预览
+                                        {{ $t('outstock_op_printFile_add.preview') }} <!-- 预览 -->
                                     </el-button>
                                 </template>
                             </el-table-column>
@@ -105,27 +121,35 @@
                             <el-icon>
                                 <List />
                             </el-icon>
-                            操作记录
+                            {{ $t('outstock_op_printFile_add.operationRecords') }} <!-- 操作记录 -->
                         </h3>
                         <div class="table-container">
                             <el-table :data="historyList" border style="width: 100%; height: 100%;">
-                                <el-table-column prop="scanNo" label="扫描单号" width="160" show-overflow-tooltip />
+                                <el-table-column prop="scanNo" :label="$t('outstock_op_printFile_add.scanNo')"
+                                    width="160" show-overflow-tooltip /> <!-- 扫描单号 -->
 
-                                <el-table-column label="订单信息" min-width="180">
+                                <el-table-column :label="$t('outstock_op_printFile_add.orderInfo')" min-width="180">
+                                    <!-- 订单信息 -->
                                     <template #default="scope">
-                                        <div class="cell-line">单号: <b>{{ scope.row.orderNo }}</b></div>
-                                        <div class="cell-line sub-text">跟踪: {{ scope.row.trackingNos }}</div>
+                                        <div class="cell-line">{{ $t('outstock_op_printFile_add.orderNo') }}: <b>{{
+                                            scope.row.orderNo }}</b></div> <!-- 单号 -->
+                                        <div class="cell-line sub-text">{{ $t('outstock_op_printFile_add.tracking') }}:
+                                            {{ scope.row.trackingNos }}</div> <!-- 跟踪 -->
                                     </template>
                                 </el-table-column>
 
-                                <el-table-column label="物流信息" width="180" show-overflow-tooltip>
+                                <el-table-column :label="$t('outstock_op_printFile_add.logisticsInfo')" width="180"
+                                    show-overflow-tooltip> <!-- 物流信息 -->
                                     <template #default="scope">
-                                        <div class="cell-line">渠道: {{ scope.row.shipwayCode }}</div>
-                                        <div class="cell-line sub-text">承运: {{ scope.row.carrierCode }}</div>
+                                        <div class="cell-line">{{ $t('outstock_op_printFile_add.channel') }}: {{
+                                            scope.row.shipwayCode }}</div> <!-- 渠道 -->
+                                        <div class="cell-line sub-text">{{ $t('outstock_op_printFile_add.carrierShort')
+                                        }}: {{ scope.row.carrierCode }}</div> <!-- 承运 -->
                                     </template>
                                 </el-table-column>
 
-                                <el-table-column label="附件" min-width="240" show-overflow-tooltip>
+                                <el-table-column :label="$t('outstock_op_printFile_add.attachments')" min-width="240"
+                                    show-overflow-tooltip> <!-- 附件 -->
                                     <template #default="scope">
                                         <div class="attachment-tags">
                                             <el-tag v-for="(file, index) in scope.row.attachments" :key="index"
@@ -136,11 +160,16 @@
                                     </template>
                                 </el-table-column>
 
-                                <el-table-column prop="operateTime" label="操作时间" width="85" show-overflow-tooltip />
-                                <el-table-column label="操作" width="120" fixed="right">
+                                <el-table-column prop="operateTime" :label="$t('outstock_op_printFile_add.operateTime')"
+                                    width="85" show-overflow-tooltip /> <!-- 操作时间 -->
+                                <el-table-column :label="$t('outstock_op_printFile_add.operation')" width="120"
+                                    fixed="right">
+                                    <!-- 操作 -->
                                     <template #default="scope">
-                                        <el-button type="primary" link @click="rePrintRow(scope.row)">打印</el-button>
-                                        <el-button type="danger" link @click="deleteRow(scope.$index)">删除</el-button>
+                                        <el-button type="primary" link @click="rePrintRow(scope.row)">{{
+                                            $t('outstock_op_printFile_add.print') }}</el-button> <!-- 打印 -->
+                                        <el-button type="danger" link @click="deleteRow(scope.$index)">{{
+                                            $t('outstock_op_printFile_add.delete') }}</el-button> <!-- 删除 -->
                                     </template>
                                 </el-table-column>
                             </el-table>
@@ -156,18 +185,23 @@
             </div>
         </div>
 
-        <el-dialog v-model="orderSelectDialogVisible" title="选择出库单号" width="700px" :close-on-click-modal="false"
-            align-center>
+        <el-dialog v-model="orderSelectDialogVisible" :title="$t('outstock_op_printFile_add.selectOutboundOrderNo')"
+            width="700px" :close-on-click-modal="false" align-center> <!-- 选择出库单号 -->
             <el-table :data="orderList" border style="width: 100%" @row-click="handleOrderRowClick"
                 :row-class-name="getSelectedOrderRowClass">
-                <el-table-column prop="orderNo" label="出库单号" />
-                <el-table-column prop="statusName" label="状态" width="150" />
-                <el-table-column prop="createdTime" label="创建时间" width="200" />
+                <el-table-column prop="orderNo" :label="$t('outstock_op_printFile_add.outboundOrderNo')" />
+                <!-- 出库单号 -->
+                <el-table-column prop="statusName" :label="$t('outstock_op_printFile_add.status')" width="150" />
+                <!-- 状态 -->
+                <el-table-column prop="createdTime" :label="$t('outstock_op_printFile_add.createTime')" width="200" />
+                <!-- 创建时间 -->
             </el-table>
             <template #footer>
                 <div class="dialog-footer">
-                    <el-button @click="orderSelectDialogVisible = false">取消</el-button>
-                    <el-button type="primary" @click="confirmSelectedOrder" :disabled="!selectedOrderId">确定</el-button>
+                    <el-button @click="orderSelectDialogVisible = false">{{ $t('outstock_op_printFile_add.cancel')
+                    }}</el-button> <!-- 取消 -->
+                    <el-button type="primary" @click="confirmSelectedOrder" :disabled="!selectedOrderId">{{
+                        $t('outstock_op_printFile_add.confirm') }}</el-button> <!-- 确定 -->
                 </div>
             </template>
         </el-dialog>
@@ -319,9 +353,9 @@ const processOrder = async (orderData) => {
     // 1. 填充基本信息
     currentOrder.orderId = orderData.id;
     currentOrder.orderNo = orderData.orderNo;
-    currentOrder.trackingNos = orderData.trackingNos || ''; 
-    currentOrder.shipwayCode = orderData.shipwayCode || ''; 
-    currentOrder.carrierCode = orderData.carrierCode || ''; 
+    currentOrder.trackingNos = orderData.trackingNos || '';
+    currentOrder.shipwayCode = orderData.shipwayCode || '';
+    currentOrder.carrierCode = orderData.carrierCode || '';
 
     // 2. 获取附件
     try {

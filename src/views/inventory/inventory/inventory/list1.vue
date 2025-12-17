@@ -42,9 +42,18 @@
                         </el-form-item>
                     </el-col>
                     <el-col>
-                        <el-form-item :label="getLabel('inOrderNoList')">
-                            <canonicalInput v-model:listName="formData.inOrderNoList"
-                                :placeholder="getPlaceholder('inOrderNoList')" clearable>
+                        <el-form-item :label="getLabel('businessId')">
+                            <el-select v-model="formData.businessId" :placeholder="getPlaceholder('businessId')"
+                                clearable>
+                                <el-option v-for="item in businessOptions" :key="item.value" :label="item.label"
+                                    :value="item.value" />
+                            </el-select>
+                        </el-form-item>
+                    </el-col>
+                    <el-col>
+                        <el-form-item :label="getLabel('sourceNoList')">
+                            <canonicalInput v-model:listName="formData.sourceNoList"
+                                :placeholder="getPlaceholder('sourceNoList')" clearable>
                             </canonicalInput>
                         </el-form-item>
                     </el-col>
@@ -122,9 +131,9 @@
                 <template #table-buttons>
                     <el-button type="warning" @click="handleLock" :icon="Lock">{{ getButtonText('freeze') }}</el-button>
                     <el-button type="warning" @click="handleUnLock" :icon="Unlock">{{ getButtonText('unfreeze')
-                    }}</el-button>
+                        }}</el-button>
                     <el-button type="success" @click="handleExport" :icon="Share">{{ getButtonText('export')
-                    }}</el-button>
+                        }}</el-button>
                 </template>
                 <!-- 使用插槽来自定义列内容，假如我们需要在操作列中添加按钮 -->
                 <template #customBtn="{ row, column, index }">
@@ -168,7 +177,7 @@
                     <el-popover trigger="hover" placement="top" width="auto" @show="getQtyPopoverData(row, 1)"
                         :show-after="600">
                         <template #reference>
-                            <p style="cursor: pointer;">{{ row.qtyTotal }}</p>
+                            <p style="cursor: pointer;color: blue;">{{ row.qtyTotal }}</p>
                         </template>
                         <qtyTable :data="qtyPopoverDataMap.get(`${row.id}_1`)?.data || []"
                             :loading="qtyPopoverDataMap.get(`${row.id}_1`)?.loading || false" />
@@ -179,7 +188,7 @@
                     <el-popover trigger="hover" placement="top" width="auto" @show="getQtyPopoverData(row, 2)"
                         :show-after="600">
                         <template #reference>
-                            <p style="cursor: pointer;">{{ row.qtyAvail }}</p>
+                            <p style="cursor: pointer;color: blue;">{{ row.qtyAvail }}</p>
                         </template>
                         <qtyTable :data="qtyPopoverDataMap.get(`${row.id}_2`)?.data || []"
                             :loading="qtyPopoverDataMap.get(`${row.id}_2`)?.loading || false" />
@@ -190,7 +199,7 @@
                     <el-popover trigger="hover" placement="top" width="auto" @show="getQtyPopoverData(row, 3)"
                         :show-after="600">
                         <template #reference>
-                            <p style="cursor: pointer;">{{ row.qtyLock }}</p>
+                            <p style="cursor: pointer;color: blue;">{{ row.qtyLock }}</p>
                         </template>
                         <qtyTable :data="qtyPopoverDataMap.get(`${row.id}_3`)?.data || []"
                             :loading="qtyPopoverDataMap.get(`${row.id}_3`)?.loading || false" />
@@ -247,10 +256,12 @@ import qtyTable from './qtyTable.vue';
 import qtyLockForm from './qtyLockForm.vue';
 import qtyTotalForm from './qtyTotalForm.vue';
 import canonicalInput from '@/components/table/canonicalInpt.vue';
-import { getInventoryInventoryPageApi, getInventoryInventoryStatusApi, postInventoryInventoryUnlockApi, postInventoryInventoryLockApi, getInventoryListQtyDetailPageApi, getInventoryInventoryInventoryViewEnumApi, postInventoryInventoryAdjustQtyApi, postInventoryInventoryLockQtyApi } from '@/api/inventoryApi/inventory.js'
+import { getInstockInOrderBusinessEnumApi } from '@/api/instockApi/order.js';
+import { getInventoryInventoryPageApi, getInventoryInventoryStatusApi, postInventoryInventoryUnlockApi, postInventoryInventoryLockApi, getInventoryListQtyDetailPageApi, getInventoryInventoryInventoryViewEnumApi, postInventoryInventoryAdjustQtyApi, postInventoryInventoryLockQtyApi, getInventoryInventoryCreateWayEnumApi } from '@/api/inventoryApi/inventory.js'
 // 搜索表单配置项------------------------------------------------
 // 配置表单项，使用所有支持的类型
 const formConfig = ref([
+    { type: 'select', prop: 'createWay', options: [] },
     { type: 'date', label: '创建时间', prop: 'createdTimeBegin', useEndOfDay: false },
     { type: 'date', label: '截至时间', prop: 'createdTimeEnd', useEndOfDay: true },
 ])
@@ -325,7 +336,8 @@ const columns = ref([
     { label: '总数', prop: 'qtyTotal', width: '125', sortable: true, slot: 'qtyTotal' },
     { label: '可用数', prop: 'qtyAvail', width: '135', sortable: true, slot: 'qtyAvail' },
     { label: '锁定数', prop: 'qtyLock', width: '145', sortable: true, slot: 'qtyLock' },
-    { label: '入库单号', prop: 'inOrderNo', width: '150', sortable: true },
+    { label: '业务类型', prop: 'businessName', width: '120', sortable: true, sortAlias: 'businessId' },
+    { label: '来源单号', prop: 'sourceNo', width: '150', sortable: true },
     { label: '批次号', prop: 'batchNo', width: '110' },
     { label: '上架日期', prop: 'inShelfDate', width: '200' },
     { label: '品名', prop: 'skuName', width: '170', sortable: true, slot: 'skuName' },
@@ -333,6 +345,7 @@ const columns = ref([
     { label: 'sku宽', prop: 'width', width: '150', sortable: true },
     { label: 'sku高', prop: 'height', width: '150', sortable: true },
     { label: 'sku体积', prop: 'skuVolume', width: '145', sortable: true },
+    { label: '创建方式', prop: 'createWayName', width: '160', sortable: true },
     { label: '创建时间', prop: 'createdTime', width: '200', sortable: true },
     { label: '创建人', prop: 'createdBy', width: '110' },
     { label: '更新时间', prop: 'updatedTime', width: '200', sortable: true },
@@ -413,8 +426,8 @@ const handleLock = () => {
         .then(async () => {
             loading.value = true;
             delDialogVisible.value = true;
-              delData.value = []; 
-promptMessage.value = '操作中...'
+            delData.value = [];
+            promptMessage.value = '操作中...'
             successValue.value = '冻结成功'
             for (let i = 0; i < selectionRows.value.length; i++) {
                 console.log('冻结的行数据:', { id: selectionRows.value[i].id })
@@ -457,8 +470,8 @@ const handleUnLock = () => {
             loading.value = true;
 
             delDialogVisible.value = true;
-              delData.value = []; 
-promptMessage.value = '操作中...'
+            delData.value = [];
+            promptMessage.value = '操作中...'
             successValue.value = '解除冻结成功'
             for (let i = 0; i < selectionRows.value.length; i++) {
                 console.log('解除冻结的行数据:', { id: selectionRows.value[i].id })
@@ -594,6 +607,8 @@ const initialFilteredOptions = ref([])
 const qualityOptions = ref([])
 // 状态
 const statusOptions = ref([])
+// 业务类型
+const businessOptions = ref([])
 
 onMounted(async () => {
     // 初始化标签数据
@@ -626,12 +641,18 @@ onMounted(async () => {
         label: item.code + '(' + item.name + ')',
         value: item.code
     }))
+    // 业务类型
+    const businessRes = await getInstockInOrderBusinessEnumApi()
+    businessOptions.value = businessRes.data.map(item => ({ label: item.name, value: item.id }))
     // 品质
     const qualityRes = await getOrderQualityEnumApi()
     qualityOptions.value = qualityRes.data.map(item => ({ label: item.name, value: item.id }))
     // 获取状态数据
     const statusRes = await getInventoryInventoryStatusApi();
     statusOptions.value = statusRes.data.map(item => ({ label: item.name, value: item.id }))
+    // 创建方式
+    const createWayRes = await getInventoryInventoryCreateWayEnumApi();
+    formConfig.value[0].options = createWayRes.data.map(item => ({ label: item.name, value: item.id }))
 })
 
 </script>

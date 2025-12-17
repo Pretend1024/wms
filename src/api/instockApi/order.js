@@ -61,6 +61,11 @@ export const getInstockInOrderReceiptMethodEnumApi = () => {
 export const getInstockInOrderArrivalTypeEnumApi = () => {
     return http.post('/instock/order/inOrder/arrivalTypeEnum')
 }
+// 获取创建方式
+export const getInstockInOrderCreateWayEnumApi = () => {
+    return http.post('/instock/order/inOrder/createWayEnum')
+}
+
 // 获取状态栏
 export const getInOrderCountGroupByStatusApi = (data) => {
     return http.post('/instock/order/inOrder/countGroupByStatus', { ...data })
@@ -171,6 +176,10 @@ export const getInstockInAppointmentTypeEnumApi = () => {
 // 送仓类型
 export const getInstockInAppointmentDeliveryTypeEnumApi = () => {
     return http.post('/instock/appointment/inAppointment/deliveryTypeEnum')
+}
+// 创建方式
+export const getInstockInAppointmentCreateWayEnumApi = () => {
+    return http.post('/instock/appointment/inAppointment/createWayEnum')
 }
 // 修改预约状态
 export const updInstockInAppointmentStatusApi = createPostRequestWithQuery('/instock/appointment/inAppointment/updateStatus')

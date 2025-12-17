@@ -31,7 +31,7 @@
                 @selection-change="handleSelectionChange" @row-click="handleRowClick" @page-change="handlePageChange"
                 @sort-change="handleTableSort">
                 <template #table-buttons>
-                    <el-button type="primary" @click="handleAdd" v-permission="'add'" :icon="Plus">{{
+                    <el-button type="primary" @click="handleAdd" v-permission="'customerRecharge:add'" :icon="Plus">{{
                         getButtonText('add') }}</el-button>
                     <!-- 审核 -->
                     <el-dropdown trigger="click">
@@ -50,8 +50,9 @@
                     <!-- 导出 -->
                     <el-button type="success" @click="handleExport" :icon="Share">{{ getButtonText('export')
                     }}</el-button>
-                    <el-button type="danger" @click="handleDel" v-permission="'delete'" :icon="Delete">{{
-                        getButtonText('del')
+                    <el-button type="danger" @click="handleDel" v-permission="'customerRecharge:delete'"
+                        :icon="Delete">{{
+                            getButtonText('del')
                         }}</el-button>
                 </template>
                 <template #customBtn="{ row }">
@@ -184,11 +185,14 @@ const columns = ref([
     { label: '公司', prop: 'orgName', width: '175', fixed: 'left', sortable: true },
     { label: '客户', prop: 'customerCode', width: '180', slot: 'customer', fixed: 'left', sortable: true },
     { label: '付款方式', prop: 'paywayName', width: '120', sortable: true },
+    { label: '充值单号', prop: 'rechargeNo', width: '120' },
     { label: '状态', prop: 'statusName', width: '120', sortable: true, slot: 'statusName' },
     { label: '币种', prop: 'currency', width: '80', sortable: true },
     { label: '充值金额', prop: 'payAmount', width: '120' },
     { label: '充值前余额', prop: 'balanceBefore', width: '120' },
     { label: '充值后余额', prop: 'balanceAfter', width: '120' },
+    { label: '已使用金额', prop: 'usedAmount', width: '120' },
+    { label: '剩余金额', prop: 'remainingAmount', width: '120' },
     { label: '收款账户名', prop: 'collectionAccountNum', width: '150' },
     { label: '交易单号', prop: 'transactionId', width: '180' },
     { label: '支付结果', prop: 'platformStatusName', width: '120', sortable: true },

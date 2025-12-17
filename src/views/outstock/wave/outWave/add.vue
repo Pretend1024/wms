@@ -56,6 +56,15 @@
                                 value-format="YYYY-MM-DD HH:mm:ss" clearable required />
                         </el-form-item>
                     </el-col>
+                    <!-- 业务类型 -->
+                    <el-col :span="12">
+                        <el-form-item label="业务类型">
+                            <el-select v-model="formData.businessId">
+                                <el-option v-for="(item) in businessOptions" :label="item.label" :value="item.value"
+                                    :key="item.value" />
+                            </el-select>
+                        </el-form-item>
+                    </el-col>
                     <!-- 发货渠道：多选中下拉，最多显示2个选中标签 -->
                     <el-col :span="12">
                         <el-form-item label="发货渠道" prop="shipwayCodes">
@@ -125,13 +134,14 @@ import { getWhWarehouseApi } from '@/api/baseApi/wh.js';
 import { getProductShipwayListApi } from '@/api/productApi/shipway.js';
 import { getOutstockWaveTypeEnumApi, addOutstockWaveTaskApi } from '@/api/outstockApi/wave.js';
 import { getOrgListCompanyApi } from '@/api/baseApi/org.js';
+import { getInstockInOrderBusinessEnumApi } from '@/api/instockApi/order.js';
 
 // 工具/常量导入：国际化、通用方法
 import { getButtonText } from '@/utils/i18n/i18nLabels.js';
 import { smartAlert, trimObjectStrings } from '@/utils/genericMethods.js';
 
 // 组件/路由/状态导入：外部组件、路由实例、标签页/刷新状态管理
-import inventoryRangeForm from '../../order/outOrder/inventoryRangeForm.vue';
+import inventoryRangeForm from '@/views/outstock/order/outOrder/inventoryRangeForm.vue';
 import router from '@/router/index.js';
 import tagsStore from '@/store/tags.js';
 import { useRefreshStore } from '@/store/refresh.js';
@@ -149,6 +159,7 @@ const inventoryData = reactive({
     locationCodes: null, // 库位编码（字符串，多值用逗号分隔）
     excludeZoneCodes: null, // 排除库区（字符串，多值用逗号分隔）
     excludeLocationCodes: null, // 排除库位（字符串，多值用逗号分隔）
+    businessId: null, // 业务类型
     priorityList: [] // 分配优先级ID数组（与子组件排序对应）
 });
 
@@ -160,6 +171,7 @@ const rules = reactive({
 // 接收弹窗返回的选中数据，并处理成表单提交前格式
 const handleTemplateSelect = (selectedData) => {
     if (!selectedData) return; // 防止无数据时报错
+    console.log('选中模板数据：', selectedData); // 调试日志
 
     // 1. 处理「数组类型字段」：模板中存储的是JSON字符串，需转成数组（与formData格式对齐）
     formData.warehouseCodes = selectedData.warehouseCodes
@@ -179,6 +191,7 @@ const handleTemplateSelect = (selectedData) => {
     formData.orderEndTime = selectedData.orderEndTime || null;
 
     formData.isDistinguishShipway = selectedData.isDistinguishShipway || false; // 渠道区分：默认false
+    formData.businessId = selectedData.businessId || null; // 业务类型：默认null
 
     // 4. 处理「波次类型配置」：按typeName匹配模板的min/max，与原表单波次逻辑完全对齐
     waveTypeList.forEach(item => {
@@ -282,6 +295,8 @@ const inventoryRangeFormRef = ref(null); // 库存范围组件引用
 const warehouseOptions = ref([]); // 仓库下拉选项
 const customerOptions = ref([]); // 客户下拉选项
 const shipwayOptions = ref([]); // 发货渠道下拉选项
+const businessOptions = ref([]); // 业务类型下拉选项
+
 
 // 5. 核心业务数据：波次类型列表（表格数据）、表单提交数据
 const waveTypeList = reactive([]); // 波次类型配置表格数据
@@ -506,6 +521,13 @@ onMounted(async () => {
         warehouseOptions.value = warehouseRes.data.map(item => ({
             label: item.code + '-' + item.name, // 显示「编码-名称」
             value: item.code
+        }));
+
+        // 业务类型
+        const businessRes = await getInstockInOrderBusinessEnumApi();
+        businessOptions.value = businessRes.data.map(item => ({
+            label: item.name,
+            value: item.id
         }));
 
         // 获取公司数据

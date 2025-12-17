@@ -138,6 +138,16 @@ export const buttonTextMap = {
         zh: '打印箱唛',
         en: 'Print Box Label'
     },
+    // 打印库位
+    printLocation: {
+        zh: '打印库位',
+        en: 'Print Location'
+    },
+    // 打印明细
+    printDetail: {
+        zh: '打印明细',
+        en: 'Print Detail'
+    },
     resetPassword: {
         zh: '重置密码',
         en: 'Reset Password'
@@ -571,6 +581,21 @@ export const buttonTextMap = {
     authorize: {
         zh: '授权',
         en: 'Authorize'
+    },
+    // 支付
+    pay: {
+        zh: '支付',
+        en: 'Pay'
+    },
+    // 作废
+    invalid: {
+        zh: '作废',
+        en: 'Invalid'
+    },
+    // 完成
+    complete: {
+        zh: '完成',
+        en: 'Complete'
     }
 }
 const labelsMap = {
@@ -601,6 +626,12 @@ const labelsMap = {
             "placeholderZh": "请输入客户",
         },
         "warehouseCode": {
+            "zh": "仓库:",
+            "en": "Warehouse Code:",
+            "placeholderEn": "Please Select Warehouse Code",
+            "placeholderZh": "请选择仓库",
+        },
+        "warehouseId": {
             "zh": "仓库:",
             "en": "Warehouse Code:",
             "placeholderEn": "Please Select Warehouse Code",
@@ -1789,6 +1820,12 @@ const labelsMap = {
             "en": "Max Batches:",
             "placeholderZh": "请输入最大批次数",
             "placeholderEn": "Enter Max Batches"
+        },
+        "qualityId":{
+            "zh": "品质:",
+            "en": "Quality:",
+            "placeholderZh": "请选择品质",
+            "placeholderEn": "Select Quality"
         }
     },
     "base_wh_platform_list": {
@@ -2125,6 +2162,12 @@ const labelsMap = {
             "en": "Planned Goods Qty:",
             "placeholderZh": "请输入计划商品件数",
             "placeholderEn": "Enter Planned Goods Qty"
+        },
+        "createWay": {
+            "zh": "创建方式:",
+            "en": "Create Way:",
+            "placeholderZh": "请选择创建方式",
+            "placeholderEn": "Select Create Way"
         }
     },
 
@@ -2230,6 +2273,12 @@ const labelsMap = {
             "en": "Is Checked:",
             "placeholderZh": "请选择是否清点",
             "placeholderEn": "Select Is Checked"
+        },
+        "createWay": {
+            "zh": "创建方式:",
+            "en": "Create Way:",
+            "placeholderZh": "请选择创建方式",
+            "placeholderEn": "Select Create Way"
         }
     },
     "instock_returned_returnClaim_list": {
@@ -2360,6 +2409,12 @@ const labelsMap = {
             "en": "Receipt Method:",
             "placeholderZh": "请选择收货方式",
             "placeholderEn": "Select Receipt Method"
+        },
+        "createWay": {
+            "zh": "创建方式:",
+            "en": "Create Way:",
+            "placeholderZh": "请选择创建方式",
+            "placeholderEn": "Select Create Way"
         }
     },
     "outstock_order_outOrder_list": {
@@ -2386,6 +2441,12 @@ const labelsMap = {
             "en": "Cust. Ord. No.:",
             "placeholderZh": "请输入客户订单号",
             "placeholderEn": "Enter Cust. Ord. No."
+        },
+        "businessId": {
+            "zh": "业务类型:",
+            "en": "Biz Type:",
+            "placeholderZh": "请选择业务类型",
+            "placeholderEn": "Select Biz Type"
         },
         "ecOrderNo": {
             "zh": "电商单号:",
@@ -4696,12 +4757,17 @@ const labelsMap = {
         }
     },
     "inventory_inventory_inventory_list1": {
-
-        "inOrderNoList": {
-            "zh": "入库单号:",
-            "en": "Inb. Ord. No.:",
-            "placeholderZh": "请输入入库单号",
-            "placeholderEn": "Enter Inb. Ord. No."
+        "businessId": {
+            "zh": "业务类型:",
+            "en": "Business Type:",
+            "placeholderZh": "请选择业务类型",
+            "placeholderEn": "Select Business Type"
+        },
+        "sourceNoList": {
+            "zh": "来源单号:",
+            "en": "Source No.:",
+            "placeholderZh": "请输入来源单号",
+            "placeholderEn": "Enter Source No."
         },
         "zoneCode": {
             "zh": "库区:",
@@ -4744,14 +4810,20 @@ const labelsMap = {
             "en": "Shelf Date:",
             "placeholderZh": "请选择上架日期",
             "placeholderEn": "Select Shelf Date"
-        }
+        },
+        "createWay": {
+            "zh": "创建方式:",
+            "en": "Creation Method:",
+            "placeholderZh": "请选择创建方式",
+            "placeholderEn": "Select Creation Method"
+        },
     },
     "inventory_inventory_inventory_list2": {
-        "inOrderNoList": {
-            "zh": "入库单号:",
-            "en": "Inb. Ord. No.:",
-            "placeholderZh": "请输入入库单号",
-            "placeholderEn": "Enter Inb. Ord. No."
+        "sourceNoList": {
+            "zh": "来源单号:",
+            "en": "Source No.:",
+            "placeholderZh": "请输入来源单号",
+            "placeholderEn": "Enter Source No."
         },
         "zoneCode": {
             "zh": "库区:",
@@ -4794,14 +4866,20 @@ const labelsMap = {
             "en": "Shelf Date:",
             "placeholderZh": "请选择上架日期",
             "placeholderEn": "Select Shelf Date"
-        }
+        },
+        "createWay": {
+            "zh": "创建方式:",
+            "en": "Creation Method:",
+            "placeholderZh": "请选择创建方式",
+            "placeholderEn": "Select Creation Method"
+        },
     },
     "inventory_inventory_inventory_list3": {
-        "inOrderNoList": {
-            "zh": "入库单号:",
-            "en": "Inb. Ord. No.:",
-            "placeholderZh": "请输入入库单号",
-            "placeholderEn": "Enter Inb. Ord. No."
+        "sourceNoList": {
+            "zh": "来源单号:",
+            "en": "Source No.:",
+            "placeholderZh": "请输入来源单号",
+            "placeholderEn": "Enter Source No."
         },
         "zoneCode": {
             "zh": "库区:",
@@ -4844,7 +4922,13 @@ const labelsMap = {
             "en": "Shelf Date:",
             "placeholderZh": "请选择上架日期",
             "placeholderEn": "Select Shelf Date"
-        }
+        },
+        "createWay": {
+            "zh": "创建方式:",
+            "en": "Creation Method:",
+            "placeholderZh": "请选择创建方式",
+            "placeholderEn": "Select Creation Method"
+        },
     },
 
     "inventory_adjust_inventoryAdjust_list": {
@@ -4861,9 +4945,9 @@ const labelsMap = {
             "placeholderEn": "Enter Inv. Check No."
         },
         "typeId": {
-            "zh": "盘点类型:",
+            "zh": "调整类型:",
             "en": "Check Type:",
-            "placeholderZh": "请选择盘点类型",
+            "placeholderZh": "请选择调整类型",
             "placeholderEn": "Select Check Type"
         },
         "adjustNoList": {
@@ -5987,6 +6071,132 @@ const labelsMap = {
             "placeholderEn": "Please Enter Related Business Doc. No."
         }
     },
+    "vas_vas_vasOrder_add": {
+        "vasTitle": {
+            "zh": "服务标题:",
+            "en": "Service Title:",
+            "placeholderZh": "请输入服务标题",
+            "placeholderEn": "Please Enter Service Title"
+        },
+        "relatedBizType": {
+            "zh": "关联业务类型:",
+            "en": "Related Business Type:",
+            "placeholderZh": "请选择关联业务类型",
+            "placeholderEn": "Please Select Related Business Type"
+        },
+        "relatedBizNo": {
+            "zh": "关联业务单号:",
+            "en": "Related Business No.:",
+            "placeholderZh": "请输入关联业务单号",
+            "placeholderEn": "Please Enter Related Business Doc. No."
+        },
+        "expectFinishTime": {
+            "zh": "预计完成时间:",
+            "en": "Expected Finish Time:",
+            "placeholderZh": "请选择预计完成时间",
+            "placeholderEn": "Please Select Expected Finish Time"
+        },
+        "relatedWorkOrderId": {
+            "zh": "关联工单:",
+            "en": "Related Work Order:",
+            "placeholderZh": "请选择关联工单",
+            "placeholderEn": "Please Select Related Work Order"
+        },
+        "vasDesc": {
+            "zh": "服务描述:",
+            "en": "Service Description:",
+            "placeholderZh": "请输入服务描述",
+            "placeholderEn": "Please Enter Service Description"
+        }
+    },
+    "vas_vas_vasOrder_info": {
+        "vasTitle": {
+            "zh": "服务标题:",
+            "en": "Service Title:",
+            "placeholderZh": "请输入服务标题",
+            "placeholderEn": "Please Enter Service Title"
+        },
+        "relatedBizType": {
+            "zh": "关联业务类型:",
+            "en": "Related Business Type:",
+            "placeholderZh": "请选择关联业务类型",
+            "placeholderEn": "Please Select Related Business Type"
+        },
+        "relatedBizNo": {
+            "zh": "关联业务单号:",
+            "en": "Related Business No.:",
+            "placeholderZh": "请输入关联业务单号",
+            "placeholderEn": "Please Enter Related Business Doc. No."
+        },
+        "expectFinishTime": {
+            "zh": "预计完成时间:",
+            "en": "Expected Finish Time:",
+            "placeholderZh": "请选择预计完成时间",
+            "placeholderEn": "Please Select Expected Finish Time"
+        },
+        "relatedWorkOrderId": {
+            "zh": "关联工单:",
+            "en": "Related Work Order:",
+            "placeholderZh": "请选择关联工单",
+            "placeholderEn": "Please Select Related Work Order"
+        },
+        "vasDesc": {
+            "zh": "服务描述:",
+            "en": "Service Description:",
+            "placeholderZh": "请输入服务描述",
+            "placeholderEn": "Please Enter Service Description"
+        },
+        "vasOrderNo": {
+            "zh": "服务单号:",
+            "en": "Service Order No.:",
+            "placeholderZh": "请输入服务单号",
+            "placeholderEn": "Please Enter Service Order No."
+        },
+    },
+    "vas_vas_vasOrder_upd": {
+        "vasOrderNo": {
+            "zh": "服务单号:",
+            "en": "Service Order No.:",
+            "placeholderZh": "请输入服务单号",
+            "placeholderEn": "Please Enter Service Order No."
+        },
+        "vasTitle": {
+            "zh": "服务标题:",
+            "en": "Service Title:",
+            "placeholderZh": "请输入服务标题",
+            "placeholderEn": "Please Enter Service Title"
+        },
+        "relatedBizType": {
+            "zh": "关联业务类型:",
+            "en": "Related Business Type:",
+            "placeholderZh": "请选择关联业务类型",
+            "placeholderEn": "Please Select Related Business Type"
+        },
+        "relatedBizNo": {
+            "zh": "关联业务单号:",
+            "en": "Related Business No.:",
+            "placeholderZh": "请输入关联业务单号",
+            "placeholderEn": "Please Enter Related Business Doc. No."
+        },
+        "expectFinishTime": {
+            "zh": "预计完成时间:",
+            "en": "Expected Finish Time:",
+            "placeholderZh": "请选择预计完成时间",
+            "placeholderEn": "Please Select Expected Finish Time"
+        },
+        "relatedWorkOrderId": {
+            "zh": "关联工单:",
+            "en": "Related Work Order:",
+            "placeholderZh": "请选择关联工单",
+            "placeholderEn": "Please Select Related Work Order"
+        },
+        "vasDesc": {
+            "zh": "服务描述:",
+            "en": "Service Description:",
+            "placeholderZh": "请输入服务描述",
+            "placeholderEn": "Please Enter Service Description"
+        }
+    },
     outstock_trace_outTrack_list: {
         'outOrderNo': {
             zh: '订单号:',
@@ -6451,6 +6661,78 @@ const labelsMap = {
             "en": "Remark:",
             "placeholderZh": "请输入备注",
             "placeholderEn": "Please Enter Remark"
+        }
+    },
+    "finance_receivables_receivableBills_list": {
+        "billNo": {
+            "zh": "账单编号:",
+            "en": "Bill No.:",
+            "placeholderZh": "请输入账单编号",
+            "placeholderEn": "Please Enter Bill No."
+        },
+        "currency": {
+            "zh": "币种:",
+            "en": "Currency:",
+            "placeholderZh": "请输入币种",
+            "placeholderEn": "Please Enter Currency"
+        },
+        "billStatusId": {
+            "zh": "账单状态:",
+            "en": "Bill Status:",
+            "placeholderZh": "请选择账单状态",
+            "placeholderEn": "Please Select Bill Status"
+        },
+        "isOverdue": {
+            "zh": "是否逾期:",
+            "en": "Is Overdue:",
+            "placeholderZh": "请选择是否逾期",
+            "placeholderEn": "Please Select Is Overdue"
+        }
+    },
+    "product_shipway_addressValid_list": {
+        "configName": {
+            "zh": "配置名称:",
+            "en": "Config Name:",
+            "placeholderZh": "请输入配置名称",
+            "placeholderEn": "Please Enter Config Name"
+        },
+        "carrierCode": {
+            "zh": "承运商:",
+            "en": "Carrier:",
+            "placeholderZh": "请选择承运商",
+            "placeholderEn": "Please Select Carrier"
+        },
+        "countryCode": {
+            "zh": "国家代码:",
+            "en": "Country Code:",
+            "placeholderZh": "请输入国家代码",
+            "placeholderEn": "Please Enter Country Code"
+        },
+        "statusId": {
+            "zh": "状态:",
+            "en": "Status:",
+            "placeholderZh": "请选择状态",
+            "placeholderEn": "Please Select Status"
+        }
+    },
+    "inventory_check_inventoryCheck_list": {
+        "checkNo": {
+            "zh": "盘点单号:",
+            "en": "Check No.:",
+            "placeholderZh": "请输入盘点单号",
+            "placeholderEn": "Please Enter Check No."
+        },
+        "checkTypeId": {
+            "zh": "盘点方式:",
+            "en": "Check Type:",
+            "placeholderZh": "请选择盘点方式",
+            "placeholderEn": "Please Select Check Type"
+        },
+        "statusId": {
+            "zh": "盘点状态:",
+            "en": "Check Status:",
+            "placeholderZh": "请选择盘点状态",
+            "placeholderEn": "Please Select Check Status"
         }
     }
 }

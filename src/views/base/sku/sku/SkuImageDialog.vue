@@ -5,10 +5,10 @@
         <div class="header-info">
             <el-descriptions :column="3" border size="small">
                 <el-descriptions-item label="客户代码">{{ skuData.customerCode + '(' + skuData.customerName + ')' || '-'
-                }}</el-descriptions-item>
+                    }}</el-descriptions-item>
                 <el-descriptions-item label="SKU">{{ skuData.sku || '-' }}</el-descriptions-item>
                 <el-descriptions-item label="品名">{{ skuData.nameCn + '/' + skuData.nameEn || '-'
-                }}</el-descriptions-item>
+                    }}</el-descriptions-item>
             </el-descriptions>
         </div>
 
@@ -57,7 +57,7 @@
                         <template #default="{ row }">
                             <el-button v-if="row.url !== localMainImgUrl" link type="primary" size="small"
                                 @click.stop="handleSetMain(row)">设为主图</el-button>
-                            <el-tag v-else type="success" size="small" style="margin-right: 12px">当前主图</el-tag>
+                            <el-tag v-else type="success" size="small" style="margin-right: 2px">当前主图</el-tag>
 
                             <el-button link type="danger" size="small" @click.stop="handleDelete(row)">删除</el-button>
                         </template>
@@ -80,7 +80,7 @@ import { ElMessage, ElMessageBox } from 'element-plus'
 import { Upload, Picture } from '@element-plus/icons-vue'
 import { uploadApi } from '@/api/baseApi/index.js'
 // 预留接口位置
-// import { getSkuImagesApi, saveSkuImageApi, deleteSkuImageApi, setMainSkuImageApi } from '@/api/baseApi/sku.js'
+import { getSkuImgListApi, addSkuImgDataApi, delBasicAddressApi, updateSkuMainImgApi } from '@/api/baseApi/sku.js'
 
 const props = defineProps({
     modelValue: {
@@ -99,7 +99,7 @@ const loading = ref(false)
 const imgList = ref([])
 const currentIndex = ref(0)
 const isDataChanged = ref(false)
-const localMainImgUrl = ref('') // 新增：本地维护的主图URL
+const localMainImgUrl = ref('')
 
 const isVisible = computed({
     get: () => props.modelValue,
@@ -150,9 +150,9 @@ const handleClose = () => {
 const getImages = async () => {
     loading.value = true
     try {
-        const res = await mockGetImages(props.skuData.id)
+        const res = await getSkuImgListApi({ skuId: props.skuData.id })
         if (res.success) {
-            imgList.value = res.data || []
+            imgList.value = res.data.rows || []
             if (imgList.value.length > 0 && currentIndex.value >= imgList.value.length) {
                 currentIndex.value = 0
             }
@@ -171,7 +171,7 @@ const customUpload = async (options) => {
         const res = await uploadApi(file, { path: 'temp' })
         if (res.success) {
             const fileUrl = res.data
-            const saveRes = await mockSaveImage({
+            const saveRes = await addSkuImgDataApi({
                 skuId: props.skuData.id,
                 url: fileUrl
             })
@@ -205,7 +205,8 @@ const handleRowClick = (row) => {
 // 设为主图
 const handleSetMain = async (row) => {
     try {
-        const res = await mockSetMain(row.id, props.skuData.id)
+        console.log(row)
+        const res = await updateSkuMainImgApi({ mainImgUrl: row.url, id: props.skuData.id })
         if (res.success) {
             ElMessage.success('设置主图成功')
             isDataChanged.value = true
@@ -226,7 +227,7 @@ const handleDelete = (row) => {
         type: 'warning'
     }).then(async () => {
         try {
-            const res = await mockDeleteImage(row.id)
+            const res = await delBasicAddressApi({ id: row.id })
             if (res.success) {
                 ElMessage.success('删除成功')
                 isDataChanged.value = true

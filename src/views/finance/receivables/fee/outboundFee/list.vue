@@ -84,14 +84,14 @@
                 <template #table-buttons>
                     <el-button type="primary" @click="handleAdd" v-permission="'receivableFree:add'" :icon="Plus">{{
                         getButtonText('add') }}</el-button>
-                    <el-button type="danger" @click="handleDel" v-permission="'delete'" :icon="Delete">{{
+                    <el-button type="danger" @click="handleDel" v-permission="'receivableFree:delete'" :icon="Delete">{{
                         getButtonText('del') }}</el-button>
                     <el-button type="success" @click="handleImport" :icon="Upload">{{ getButtonText('importCreate')
-                        }}</el-button>
+                    }}</el-button>
                     <el-button type="success" @click="handleExport" :icon="Share">{{ getButtonText('export')
-                        }}</el-button>
+                    }}</el-button>
                     <el-button type="primary" @click="joinBillVisible = true" :icon="Money">{{ getButtonText('joinBill')
-                        }}</el-button>
+                    }}</el-button>
                 </template>
                 <template #customBtn="{ row }">
                     <div style="display: flex;">
@@ -117,12 +117,12 @@
         <FeeDialog v-model="centerDialogVisible" :dialogMode="dialogMode" :feeMainTypeId="2" :initData="editInitData"
             :feeTypeOptions="feeTypeOptions" :currencyOptions="currencyOptions" :loading="dialogLoading"
             @confirm="handleDialogConfirm" />
-        <JoinBillDialog v-model="joinBillVisible" :selectionCount="selectionRows.length" :loading="joinBillLoading"
+        <JoinBillDialog v-model="joinBillVisible" :selectionCount="selectionRows.length"
             @confirm="handleJoinBillConfirm" />
         <exportDialog ref="exportDialogRef" :selectionRows="selectionRows" :initValues="initValues" :exportType="610">
         </exportDialog>
         <batchOperationn :dialogTitle="'操作结果'" :isVisible="resultDialogVisible" :tableData="resultData"
-            :nameField="'id'" :nameLabel="'单号/费用名称'" @close="resultClose" :promptMessage="promptMessage" />
+            :nameField="'id'" :nameLabel="'单号'" @close="resultClose" :promptMessage="promptMessage" />
     </div>
 </template>
 
@@ -252,19 +252,19 @@ const handleDel = () => {
     if (selectionRows.value.length === 0) return ElMessage.warning('请选择要删除的数据！');
     ElMessageBox.confirm(`是否要删除${selectionRows.value.length}条数据?`, '提醒', { confirmButtonText: '确定', cancelButtonText: '取消', type: 'warning' }).then(async () => {
         loading.value = true; resultData.value = []; resultDialogVisible.value = true; promptMessage.value = '操作中...';
-        for (const row of selectionRows.value) { const res = await delFeeByIdApi({ id: row.id }); resultData.value.push({ id: `${row.orderNo} - ${row.feeName}`, msg: res.msg, success: res.success }); }
+        for (const row of selectionRows.value) { const res = await delFeeByIdApi({ id: row.id }); resultData.value.push({ id: `${row.orderNo}`, msg: res.msg, success: res.success }); }
         promptMessage.value = '操作完成'; loading.value = false;
     }).catch(() => { });
 };
 const resultClose = () => { resultDialogVisible.value = false; getList(pagination.value.currentPage, pagination.value.pageSize); };
 
 // 加入账单逻辑
-const joinBillVisible = ref(false); const joinBillLoading = ref(false);
+const joinBillVisible = ref(false);
 const handleJoinBillConfirm = async (formData) => {
     // typeId: 20 代表出库账单类型
     const params = { option: formData.method, billIdNo: formData.targetBillNo, queryCondition: {} };
     if (formData.scope === 'selection') params.queryCondition.idList = selectionRows.value.map(item => item.id); else params.queryCondition = { ...trimObjectStrings(initValues.value) };
-    joinBillLoading.value = true; try { const res = await joinBillApi(params); smartAlert(res.msg, res.success, 1000, true); if (res.success) { joinBillVisible.value = false; getList(pagination.value.currentPage, pagination.value.pageSize); } } catch (e) { console.error(e); smartAlert('操作异常', false); }
+    try { const res = await joinBillApi(params); smartAlert(res.msg, res.success, 1000, true); if (res.success) { joinBillVisible.value = false; getList(pagination.value.currentPage, pagination.value.pageSize); } } catch (e) { console.error(e); smartAlert('操作异常', false); }
 };
 const handleImport = () => router.push({ name: '导入文件', params: { typeId: 610, typeName: '出库单应收费用' } });
 const exportDialogRef = ref(null); const handleExport = () => exportDialogRef.value.openExportDialog();

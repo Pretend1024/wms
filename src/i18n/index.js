@@ -11,6 +11,7 @@ const i18n = createI18n({
     legacy: false, // 兼容模式
     locale: lang, // 默认语言
     fallbackLocale: 'en', // 回退语言
+    globalInjection: true, // 全局注入 $t 函数
     messages
 });
 

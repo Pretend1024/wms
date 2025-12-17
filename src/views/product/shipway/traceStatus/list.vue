@@ -28,6 +28,8 @@
                         getButtonText('del') }}</el-button>
                     <el-button type="warning" @click="handleRefresh" :icon="Refresh">{{ getButtonText('refreshCache')
                     }}</el-button>
+                    <el-button type="success" @click="handleTest" :icon="Connection">{{ getButtonText('test')
+                    }}</el-button>
                 </template>
                 <!-- 使用插槽来自定义列内容，假如我们需要在操作列中添加按钮 -->
                 <template #customBtn="{ row }">
@@ -62,10 +64,10 @@
     </div>
 </template>
 <script setup name="轨迹解析">
-import { getBasicTraceStatusPageApi, addBasicTraceStatusApi, updBasicTraceStatusApi, delBasicTraceStatusApi, getBasicTraceStatusByIdApi, getBasicTraceStatusConditionTypeEnumApi, getBasicTraceStatusLogicTypeEnumApi, getBasicTraceStatusRefreshCacheApi } from '@/api/productApi/shipway.js'
+import { getBasicTraceStatusPageApi, addBasicTraceStatusApi, updBasicTraceStatusApi, delBasicTraceStatusApi, getBasicTraceStatusByIdApi, getBasicTraceStatusConditionTypeEnumApi, getBasicTraceStatusLogicTypeEnumApi, getBasicTraceStatusRefreshCacheApi, getBasicTraceStatusTestApi } from '@/api/productApi/shipway.js'
 import { getOutstockOrderTraceNodeEnumApi } from '@/api/outstockApi/trace.js'
 
-import { Plus, Delete, Refresh } from '@element-plus/icons-vue'
+import { Plus, Delete, Refresh, Connection } from '@element-plus/icons-vue'
 import { smartAlert, trimObjectStrings } from '@/utils/genericMethods.js'
 import hydFilterBox from "@/components/table/hyd-filterBox.vue";
 import hydTable from "@/components/table/hyd-table.vue";
@@ -300,6 +302,42 @@ const handleRefresh = async () => {
         });
 }
 
+// 测试
+const handleTest = () => {
+    ElMessageBox.prompt('请输入轨迹内容', '测试', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        inputPlaceholder: '请输入测试内容',
+        inputErrorMessage: '内容不能为空',
+        inputValidator: (value) => {
+            return !!value || '请输入轨迹内容'
+        }
+    })
+        .then(async ({ value }) => {
+            // 添加 Loading 效果
+            const loadingInstance = ElLoading.service({
+                lock: true,
+                text: 'loading...',
+            })
+            try {
+                const res = await getBasicTraceStatusTestApi({ testTraceConfig: value })
+                const msg = `状态名称: ${res.data.name}， 状态ID: ${res.data.id}， 是否客户可见: ${res.data.value ? '是' : '否'}`;
+                // 统一提示
+                smartAlert(msg, false, 1000)
+            } catch (error) {
+                console.error('测试接口调用失败:', error)
+            } finally {
+                // 关闭 Loading
+                loadingInstance.close()
+            }
+        })
+        .catch(() => {
+            ElMessage({
+                type: 'info',
+                message: '已取消'
+            })
+        })
+}
 
 // 获取列表
 const getList = async (currentPage, pageSize, orderBy) => {

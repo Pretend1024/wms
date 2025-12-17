@@ -45,6 +45,11 @@
                                 value-format="YYYY-MM-DD HH:mm:ss" clearable :disabled="true" />
                         </el-form-item>
                     </el-col>
+                    <el-col :span="12">
+                        <el-form-item label="业务类型">
+                            <el-input v-model="formData.businessName" :disabled="true" />
+                        </el-form-item>
+                    </el-col>
 
                     <el-col :span="12">
                         <el-form-item label="发货渠道" prop="shipwayCodes">
@@ -185,6 +190,7 @@ const formData = reactive({
     outShelfTimeEnd: '',
     outShelfBy: '',
     remark: '',
+    businessName: null,
     orderQty: null,
     skuQty: null,
     goodsQty: null,
@@ -244,7 +250,7 @@ const inventoryData = reactive({
 // 接收弹窗返回的选中数据，并处理成表单提交前格式
 const handleTemplateSelect = (selectedData) => {
     if (!selectedData) return; // 防止无数据时报错
-
+    
     // 1. 处理「数组类型字段」：模板中存储的是JSON字符串，需转成数组（与formData格式对齐）
     formData.warehouseCodes = selectedData.warehouseCodes
         ? JSON.parse(selectedData.warehouseCodes)
@@ -264,6 +270,8 @@ const handleTemplateSelect = (selectedData) => {
     formData.orderEndTime = selectedData.orderEndTime || '';
 
     formData.isDistinguishShipway = selectedData.isDistinguishShipway || false; // 渠道区分：默认false
+
+    formData.businessName = selectedData.businessName || null; // 业务类型：默认null
 
     // 4. 处理「波次类型配置」：按typeName匹配模板的min/max，与原表单波次逻辑完全对齐
     waveTypeList.forEach(item => {

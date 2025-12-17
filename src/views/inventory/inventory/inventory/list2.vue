@@ -210,12 +210,13 @@ import LogForm from './logTable.vue';
 import qtyTable from './qtyTable.vue';
 import listDetail from './listDetail2.vue';
 import canonicalInput from '@/components/table/canonicalInpt.vue';
-import { getInventoryInventoryPageApi, getInventoryListQtyDetailPageApi, getInventoryInventoryInventoryViewEnumApi, postInventoryInventoryAdjustQtyApi, postInventoryInventoryLockQtyApi } from '@/api/inventoryApi/inventory.js'
+import { getInventoryInventoryPageApi, getInventoryListQtyDetailPageApi, getInventoryInventoryInventoryViewEnumApi, postInventoryInventoryAdjustQtyApi, postInventoryInventoryLockQtyApi, getInventoryInventoryCreateWayEnumApi } from '@/api/inventoryApi/inventory.js'
 import { useI18n } from 'vue-i18n';
 const { t } = useI18n();
 // 搜索表单配置项------------------------------------------------
 // 配置表单项，使用所有支持的类型
 const formConfig = ref([
+    { type: 'select', prop: 'createWay', options: [] },
     { type: 'date', label: '创建时间', prop: 'createdTimeBegin', useEndOfDay: false },
     { type: 'date', label: '截至时间', prop: 'createdTimeEnd', useEndOfDay: true },
 ])
@@ -288,7 +289,7 @@ const columns = ref([
     { label: '总数', prop: 'qtyTotal', width: '125', sortable: true, slot: 'qtyTotal' },
     { label: '可用数', prop: 'qtyAvail', width: '135', sortable: true, slot: 'qtyAvail' },
     { label: '锁定数', prop: 'qtyLock', width: '145', sortable: true, slot: 'qtyLock' },
-    // { label: '入库单号', prop: 'inOrderNo', width: '150', sortable: true },
+    // { label: '入库单号', prop: 'sourceNo', width: '150', sortable: true },
     // { label: '批次号', prop: 'batchNo', width: '110' },
     // { label: '上架日期', prop: 'inShelfDate', width: '200' },
     { label: '品名', prop: 'skuName', width: '170', sortable: true, slot: 'skuName' },
@@ -296,6 +297,7 @@ const columns = ref([
     { label: 'sku宽', prop: 'width', width: '150', sortable: true },
     { label: 'sku高', prop: 'height', width: '150', sortable: true },
     { label: 'sku体积', prop: 'skuVolume', width: '145', sortable: true },
+    { label: '创建方式', prop: 'createWayName', width: '160', sortable: true },
     { label: '创建时间', prop: 'createdTime', width: '200', sortable: true },
     { label: '创建人', prop: 'createdBy', width: '110' },
     { label: '更新时间', prop: 'updatedTime', width: '200', sortable: true },
@@ -488,6 +490,9 @@ onMounted(async () => {
     // 品质
     const qualityRes = await getOrderQualityEnumApi()
     qualityOptions.value = qualityRes.data.map(item => ({ label: item.name, value: item.id }))
+    // 创建方式
+    const createWayRes = await getInventoryInventoryCreateWayEnumApi();
+    formConfig.value[0].options = createWayRes.data.map(item => ({ label: item.name, value: item.id }))
 })
 
 </script>

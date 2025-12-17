@@ -51,7 +51,7 @@
                 <template #table-buttons>
                     <!-- 手动开启 -->
                     <el-button type="primary" @click="handleStart" :icon="Position">{{ getButtonText('manualStart')
-                    }}</el-button>
+                        }}</el-button>
                 </template>
                 <template #statusName="{ row }">
                     <span :style="{ color: row.holdUpStatus !== 2 ? 'green' : 'red' }">{{ row.holdUpStatusName }}</span>
@@ -161,6 +161,7 @@ const columns = ref([
     { label: ' 已建波次数量 ', prop: 'waveCount', width: '140', sortable: true },
     { label: ' 状态', prop: 'statusName', width: '120', sortable: true },
     { label: ' 上次进度反馈时间 ', prop: 'progressTime', width: '200', sortable: true },
+    { label: '业务类型', prop: 'businessName', width: '120', sortable: true, sortAlias: 'businessId' },
     { label: ' 渠道代码 ', prop: 'shipwayCodes', width: '140' },
     { label: ' 是否区分渠道 ', prop: 'isDistinguishShipway', width: '140', sortable: true, slot: 'isDistinguishShipway' },
     { label: ' 是否区分库区 ', prop: 'isDistinguishZoneCode', width: '140', sortable: true, slot: 'isDistinguishZoneCode' },

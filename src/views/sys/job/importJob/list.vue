@@ -73,7 +73,7 @@
     </div>
 </template>
 
-<script setup name='导入任务'>
+<script setup name='导入'>
 import { Close } from "@element-plus/icons-vue";
 import hydTable from "@/components/table/hyd-table.vue";
 import hydFilterBox from "@/components/table/hyd-filterBox.vue";

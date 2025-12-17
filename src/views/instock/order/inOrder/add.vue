@@ -29,14 +29,6 @@
                             </el-select>
                         </el-form-item>
                     </el-col>
-                    <!-- <el-col :span="12">
-                        <el-form-item label="入库类型:" prop="typeId">
-                            <el-select v-model="formData.typeId" value-key="id" placeholder="请选择入库类型">
-                                <el-option v-for="item in typeOptions" :key="item.id" :label="item.name"
-                                    :value="item.id" />
-                            </el-select>
-                        </el-form-item>
-                    </el-col> -->
                     <el-col :span="12">
                         <el-form-item label="业务类型:" prop="businessId">
                             <el-select v-model="formData.businessId" value-key="id" placeholder="请选择业务类型">
@@ -252,8 +244,6 @@ const customerOptions = ref([]);
 const warehouseOptions = ref([])
 // 头程类型
 const firstLegOptions = ref([])
-// 入库类型
-const typeOptions = ref([])
 // 业务类型
 const businessOptions = ref([])
 // 货柜型号
@@ -272,9 +262,6 @@ onMounted(async () => {
     // 头程类型
     const firstLegRes = await getInstockInOrderFirstLegEnumApi()
     firstLegOptions.value = firstLegRes.data
-    // 入库类型
-    const typeRes = await getInstockInOrderTypeEnumApi()
-    typeOptions.value = typeRes.data
     // 业务类型
     const businessRes = await getInstockInOrderBusinessEnumApi()
     businessOptions.value = businessRes.data

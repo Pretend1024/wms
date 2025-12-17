@@ -306,6 +306,8 @@ export const getBasicTraceStatusLogicTypeEnumApi = () => {
 export const getBasicTraceStatusRefreshCacheApi = () => {
     return http.post('/product/shipway/traceStatus/refreshCache')
 }
+// 轨迹测试
+export const getBasicTraceStatusTestApi = createPostRequestWithQuery('/outstock/trace/outTrace/testTraceConfig')
 
 
 // ---------------------------------------------------------计费项目
@@ -329,4 +331,42 @@ export const getFeeUnitTypeEnumApi = createPostRequestWithQuery('product/price/p
 // 价格维度
 export const getFeePriceDimensionEnumApi = () => {
     return http.post('product/price/priceItem/priceDimensionEnum')
+}
+
+
+// ---------------------------------------------------------地址校验
+// 获取地址校验
+export const getAddressValidPageApi = (data) => {
+    return http.post('/product/shipway/addressValid/page', data)
+}
+// 添加地址校验
+export const addAddressValidApi = (data) => {
+    return http.post('/product/shipway/addressValid/add', data, { headers: { 'loading': true } })
+}
+// 编辑地址校验
+export const updAddressValidApi = (data) => {
+    return http.post('/product/shipway/addressValid/updateById', data, { headers: { 'loading': true } })
+}
+// 地址校验详情
+export const getAddressValidByIdApi = createPostRequestWithQuery('/product/shipway/addressValid/getById')
+// 删除地址校验
+export const delAddressValidApi = createPostRequestWithQuery('/product/shipway/addressValid/deleteById')
+// 校验配置状态枚举
+export const getAddressValidStatusEnumApi = () => {
+    return http.post('/product/shipway/addressValid/statusEnum')
+}
+// 校验类型枚举
+export const getAddressValidateTypeEnumApi = () => {
+    return http.post('/product/shipway/addressValid/typeEnum')
+}
+// 校验地址字段
+export const getAddressValidateFieldNameEnumApi = () => {
+    return http.post('/product/shipway/addressValid/fieldNameEnum')
+}
+// 禁用/启用地址校验配置
+export const updAddressValidStatusApi = createPostRequestWithQuery('/product/shipway/addressValid/updateStatus')
+
+// 地址测试
+export const getAddressValidTestApi = (data) => {
+    return http.post('/product/shipway/addressValid/test', data)
 }

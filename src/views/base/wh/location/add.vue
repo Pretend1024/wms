@@ -35,6 +35,14 @@
                 </el-form-item>
             </el-col>
             <el-col :span="12">
+                <el-form-item :label="getLabel('qualityId')" prop="qualityId">
+                    <el-select v-model="formData.qualityId" :placeholder="getPlaceholder('qualityId')" clearable>
+                        <el-option v-for="item in qualityEnumOptions" :key="item.value" :label="item.label"
+                            :value="item.value" />
+                    </el-select>
+                </el-form-item>
+            </el-col>
+            <el-col :span="12">
                 <el-form-item :label="getLabel('code')" prop="code">
                     <el-input v-model="formData.code" :placeholder="getPlaceholder('code')" />
                 </el-form-item>
@@ -114,6 +122,10 @@ const props = defineProps({
     statusEnumOptions: {
         type: Array,
         required: true
+    },
+    qualityEnumOptions: {
+        type: Array,
+        required: true
     }
 
 });
@@ -132,6 +144,9 @@ const rules = {
     ],
     statusId: [
         { required: true, message: '请选择状态', trigger: 'change' }
+    ],
+    qualityId: [
+        { required: true, message: '请选择品质', trigger: 'change' }
     ],
     code: [
         { required: true, message: '请输入库位代码', trigger: 'blur' },

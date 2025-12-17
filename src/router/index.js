@@ -366,7 +366,27 @@ const routes = [
                 meta: {
                     langKey: '编辑工单',
                 }
-            }
+            },
+            {
+                path: '/finance/receivables/receivableBills/info/:name/:id/',
+                name: '应收账单详情',
+                component: () => import('@/views/finance/receivables/receivableBills/info.vue'),
+                props: true,
+                meta: {
+                    keepAlive: true, // 该组件需要被缓存
+                    langKey: '应收账单详情',
+                }
+            },
+            {
+                path: '/inventory/check/inventoryCheck/info/:name/:id/',
+                name: '盘点详情',
+                component: () => import('@/views/inventory/check/inventoryCheck/info.vue'),
+                props: true,
+                meta: {
+                    keepAlive: true, // 该组件需要被缓存
+                    langKey: '盘点详情',
+                }
+            },
         ]
     },
     {

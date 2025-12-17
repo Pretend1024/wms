@@ -58,7 +58,7 @@
     </div>
 </template>
 
-<script setup name='消息通知'>
+<script setup name='通知'>
 import { ref, computed, onMounted } from 'vue';
 import { Plus, DeleteFilled } from "@element-plus/icons-vue";
 import hydTable from "@/components/table/hyd-table.vue";

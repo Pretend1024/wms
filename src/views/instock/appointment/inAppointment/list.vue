@@ -139,7 +139,7 @@
 <script setup name="预约单">
 import { Plus, Place, Close, Check } from '@element-plus/icons-vue'
 import { smartAlert, trimObjectStrings } from '@/utils/genericMethods.js'
-import { getInstockInAppointmentListApi, addInstockInAppointmentApi, updInstockInAppointmentApi, getInstockInAppointmentStatusEnumApi, getInstockInAppointmentTypeEnumApi, updInstockInAppointmentStatusApi, checkInInstockInAppointmentApi, getInstockInAppointmentDeliveryTypeEnumApi, getInstockInAppointmentCountGroupByStatusApi } from '@/api/instockApi/order.js'
+import { getInstockInAppointmentListApi, addInstockInAppointmentApi, updInstockInAppointmentApi, getInstockInAppointmentStatusEnumApi, getInstockInAppointmentTypeEnumApi, updInstockInAppointmentStatusApi, checkInInstockInAppointmentApi, getInstockInAppointmentDeliveryTypeEnumApi, getInstockInAppointmentCountGroupByStatusApi, getInstockInAppointmentCreateWayEnumApi } from '@/api/instockApi/order.js'
 import { getWhWarehouseApi, getWhPlatformSelectApi } from "@/api/baseApi/wh.js";
 import { getCustomerLikeQueryApi } from '@/api/baseApi/sku.js'
 import hydFilterBox from "@/components/table/hyd-filterBox.vue";
@@ -163,6 +163,7 @@ const formConfig = ref([
         ]
     },
     { type: 'select', label: '送仓类型', prop: 'deliveryTypeId', options: [] },
+    { type: 'select', prop: 'createWay', options: [] },
     { type: 'date', label: '创建时间', prop: 'createdTimeBegin', offsetDays: 30, useEndOfDay: false },
     { type: 'date', label: '截至时间', prop: 'createdTimeEnd', useEndOfDay: true },
 ])
@@ -209,7 +210,7 @@ const columns = ref([
     { label: '签到时间', prop: 'checkinTime', width: '200' },
     { label: '是否迟到', prop: 'isLateCheckin', width: '85', slot: 'isLateCheckin' },
     { label: '送仓类型', prop: 'deliveryTypeName', width: '170', sortable: true },
-    { label: '单据来源', prop: 'createWay', width: '210', sortable: true },
+    { label: '创建方式', prop: 'createWayName', width: '130', sortable: true },
     { label: '备注', prop: 'remark', width: '250' },
     { label: '创建时间', prop: 'createdTime', width: '200', sortable: true },
     { label: '创建人', prop: 'createdBy', width: '110' },
@@ -508,6 +509,12 @@ onMounted(async () => {
     customerOptions.value = result.data.map(item => ({
         value: item.code,
         label: item.code + '(' + item.name + ')'
+    }))
+    // 创建方式
+    const res5 = await getInstockInAppointmentCreateWayEnumApi()
+    formConfig.value[4].options = res5.data.map(item => ({
+        value: item.id,
+        label: item.name
     }))
 })
 

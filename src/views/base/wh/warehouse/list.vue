@@ -57,7 +57,7 @@
     </div>
 </template>
 
-<script setup name='仓库列表'>
+<script setup name='仓库'>
 import { Plus } from "@element-plus/icons-vue";
 import hydTable from "@/components/table/hyd-table.vue";
 import hydFilterBox from "@/components/table/hyd-filterBox.vue";

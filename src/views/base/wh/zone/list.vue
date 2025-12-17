@@ -69,7 +69,7 @@
             successValue="删除成功" @close="delColse" :promptMessage="promptMessage" />
     </div>
 </template>
-<script setup name="库区列表">
+<script setup name="库区">
 import { Plus, Delete } from '@element-plus/icons-vue'
 import { smartAlert, trimObjectStrings } from '@/utils/genericMethods.js'
 import hydFilterBox from "@/components/table/hyd-filterBox.vue";

@@ -50,11 +50,6 @@
                         </el-form-item>
                     </el-col>
                     <el-col :span="6">
-                        <el-form-item label="入库单类型:">
-                            <el-input v-model.trim="orderInfo.typeName" readonly />
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="6">
                         <el-form-item label="业务类型:">
                             <el-input v-model.trim="orderInfo.businessName" readonly />
                         </el-form-item>
@@ -191,7 +186,7 @@
             <template #footer>
                 <div class="dialog-footer">
                     <el-button @click="centerDialogVisible = false, orderId = ''">{{ getButtonText('cancel')
-                    }}</el-button>
+                        }}</el-button>
                     <el-button type="primary" @click="handleDialogConfirm">{{ getButtonText('confirm') }}</el-button>
                 </div>
             </template>
@@ -595,5 +590,9 @@ const showSuccessAlert = (message, state) => {
     height: 150px;
     width: 800px;
     font-size: 18px;
+}
+
+:deep(.el-form-item) {
+    margin-bottom: 11px;
 }
 </style>

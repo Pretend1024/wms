@@ -1,4 +1,5 @@
 import http from '@/utils/request/request'
+import { createPostRequestWithQuery } from '@/utils/request/createPostRequestWithQuery'
 // ---------------------------------------------------------SKU
 // 获取sku仓库信息
 export const getSkuSkuListApi = (data) => {
@@ -89,6 +90,21 @@ export const updateSkuStatusApi = (queryParams) => {
 
     return http.post(url);
 };
+
+// 获取sku图片
+export const getSkuImgListApi = (data) => {
+    return http.post('/base/sku/skuImg/page', { ...data })
+}
+// 添加sku图片
+export const addSkuImgDataApi = (data) => {
+    return http.post('/base/sku/skuImg/add', { ...data }, { headers: { 'loading': true } })
+}
+// 删除sku图片
+export const delBasicAddressApi = createPostRequestWithQuery('/base/sku/skuImg/deleteById')
+// 设置SKU主图
+export const updateSkuMainImgApi = (data) => {
+    return http.post('/base/sku/sku/updateByMainImgUrl', { ...data })
+}
 
 // ----------------------------------------------------------SKU映射
 // 获取sku映射信息

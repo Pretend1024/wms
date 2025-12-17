@@ -24,6 +24,11 @@ export const postInventoryInventoryAdjustQtyApi = (data) => {
     return http.post('/inventory/adjust/inventoryAdjust/add', { ...data })
 }
 
+// 创建方式
+export const getInventoryInventoryCreateWayEnumApi = () => {
+    return http.post('/inventory/inventory/inventory/createWayEnum')
+}
+
 // 获取数量详情
 export const getInventoryListQtyDetailPageApi = (data) => {
     return http.post('/inventory/inventory/inventoryLog/listQtyDetail', { ...data })
@@ -68,6 +73,11 @@ export const getInventoryInventoryLogListLogApi = (data) => {
 // 详情列表inventory/inventory/inventory/listDetail
 export const getInventoryInventoryListDetailApi = (data) => {
     return http.post('/inventory/inventory/inventory/listDetail', { ...data })
+}
+
+// 商品品质
+export const getInventoryInventoryQualityEnumApi = () => {
+    return http.post('/inventory/inventory/inventory/qualityEnum')
 }
 
 // -------------------------------库存快照

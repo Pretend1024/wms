@@ -8,19 +8,22 @@
                         <h3>
                             <el-icon>
                                 <Box />
-                            </el-icon>出库操作
+                            </el-icon>{{ $t('outstock_op_outbound_add.outboundOperation') }} <!-- 出库操作 -->
                         </h3>
                         <el-form :model="formData" label-position="top" class="operation-form">
 
                             <el-form-item>
                                 <template #label>
                                     <div class="custom-label">
-                                        <span>服务商</span>
-                                        <el-checkbox v-model="formData.verifySupplier" size="small">校验服务商</el-checkbox>
+                                        <span>{{ $t('outstock_op_outbound_add.supplier') }}</span> <!-- 服务商 -->
+                                        <el-checkbox v-model="formData.verifySupplier" size="small">{{
+                                            $t('outstock_op_outbound_add.verifySupplier') }}</el-checkbox>
+                                        <!-- 校验服务商 -->
                                     </div>
                                 </template>
-                                <el-select v-model="formData.supplierId" placeholder="请选择服务商" filterable clearable
-                                    @change="handleSupplierChange">
+                                <el-select v-model="formData.supplierId"
+                                    :placeholder="$t('outstock_op_outbound_add.supplier')" filterable clearable
+                                    @change="handleSupplierChange"> <!-- placeholder：服务商 -->
                                     <el-option v-for="item in supplierOptions" :key="item.id" :label="item.name"
                                         :value="item.id" />
                                 </el-select>
@@ -29,20 +32,23 @@
                             <el-form-item>
                                 <template #label>
                                     <div class="custom-label">
-                                        <span>服务商渠道</span>
-                                        <el-checkbox v-model="formData.verifyChannel" size="small">校验渠道</el-checkbox>
+                                        <span>{{ $t('outstock_op_outbound_add.supplierChannel') }}</span> <!-- 服务商渠道 -->
+                                        <el-checkbox v-model="formData.verifyChannel" size="small">{{
+                                            $t('outstock_op_outbound_add.verifyChannel') }}</el-checkbox> <!-- 校验渠道 -->
                                     </div>
                                 </template>
-                                <el-select v-model="formData.channelId" placeholder="请选择渠道" filterable clearable
-                                    :disabled="!formData.supplierId">
+                                <el-select v-model="formData.channelId"
+                                    :placeholder="$t('outstock_op_outbound_add.supplierChannel')" filterable clearable
+                                    :disabled="!formData.supplierId"> <!-- placeholder：服务商渠道 -->
                                     <el-option v-for="item in channelOptions" :key="item.id"
-                                        :label="item.supplierCode + '(' + item.name + ')'" :value="item.id" />
+                                        :label="item.code + '(' + item.name + ')'" :value="item.id" />
                                 </el-select>
                             </el-form-item>
 
-                            <el-form-item label="跟踪单号">
+                            <el-form-item :label="$t('outstock_op_outbound_add.trackingNo')"> <!-- label：跟踪单号 -->
                                 <el-input ref="trackingInputRef" v-model.trim="formData.trackingNo"
-                                    placeholder="扫描或输入跟踪单号后回车" clearable @keydown.enter.prevent="handleScan">
+                                    :placeholder="$t('outstock_op_outbound_add.scanOrInputTrackingNo')" clearable
+                                    @keydown.enter.prevent="handleScan"> <!-- placeholder：扫描或输入跟踪单号后回车 -->
                                     <template #prefix>
                                         <el-icon>
                                             <Aim />
@@ -57,15 +63,17 @@
                         <h3>
                             <el-icon>
                                 <DataAnalysis />
-                            </el-icon>今日出库统计
+                            </el-icon>{{ $t('outstock_op_outbound_add.todayOutboundStats') }} <!-- 今日出库统计 -->
                         </h3>
                         <div class="stats-grid">
                             <div class="stats-card pending">
-                                <div class="stats-label">待出库数</div>
+                                <div class="stats-label">{{ $t('outstock_op_outbound_add.pendingOutbound') }}</div>
+                                <!-- 待出库数 -->
                                 <div class="stats-value">{{ statistics.pending }}</div>
                             </div>
                             <div class="stats-card success">
-                                <div class="stats-label">今日出库数</div>
+                                <div class="stats-label">{{ $t('outstock_op_outbound_add.todayOutbound') }}</div>
+                                <!-- 今日出库数 -->
                                 <div class="stats-value">{{ statistics.today }}</div>
                             </div>
                         </div>
@@ -77,48 +85,62 @@
                         <h3>
                             <el-icon>
                                 <List />
-                            </el-icon>操作记录
-                            <el-button link type="primary" size="small" @click="clearLogs"
-                                style="margin-left: auto;">清空</el-button>
+                            </el-icon>{{ $t('outstock_op_outbound_add.operationRecords') }} <!-- 操作记录 -->
+                            <el-button link type="primary" size="small" @click="clearLogs" style="margin-left: auto;">{{
+                                $t('outstock_op_outbound_add.clear')
+                                }}</el-button> <!-- 清空 -->
                         </h3>
                         <el-table :data="logList" border stripe height="100%" style="width: 100%">
-                            <el-table-column prop="trackingNo" label="跟踪单号" min-width="200" show-overflow-tooltip />
-                            <el-table-column prop="supplierName" label="服务商" min-width="210" show-overflow-tooltip />
-                            <el-table-column prop="channelName" label="渠道" min-width="210" show-overflow-tooltip />
-                            <el-table-column prop="result" label="操作结果" min-width="220">
+                            <el-table-column prop="trackingNo" :label="$t('outstock_op_outbound_add.trackingNo')"
+                                min-width="200" show-overflow-tooltip /> <!-- label：跟踪单号 -->
+                            <el-table-column prop="supplierName" :label="$t('outstock_op_outbound_add.supplier')"
+                                min-width="210" show-overflow-tooltip /> <!-- label：服务商 -->
+                            <el-table-column prop="channelName" :label="$t('outstock_op_outbound_add.supplierChannel')"
+                                min-width="210" show-overflow-tooltip /> <!-- label：服务商渠道 -->
+                            <el-table-column prop="result" :label="$t('outstock_op_outbound_add.operationResult')"
+                                min-width="220">
+                                <!-- label：操作结果 -->
                                 <template #default="{ row }">
                                     <el-tag :type="row.success ? 'success' : 'danger'" effect="dark" size="small">
-                                        {{ row.success ? '成功' : '失败' }}
+                                        {{ row.success ? $t('outstock_op_outbound_add.success') :
+                                            $t('outstock_op_outbound_add.failure') }} <!-- success：成功；failure：失败 -->
                                     </el-tag>
                                     <span v-if="!row.success" class="error-msg">{{ row.msg }}</span>
                                 </template>
                             </el-table-column>
-                            <el-table-column prop="time" label="操作时间" width="160" />
+                            <el-table-column prop="time" :label="$t('outstock_op_outbound_add.operationTime')"
+                                width="160" />
+                            <!-- label：操作时间 -->
                         </el-table>
                     </div>
                 </div>
             </div>
         </div>
 
-        <el-dialog v-model="orderSelectDialogVisible" title="选择出库单号" width="700px" :close-on-click-modal="false"
-            align-center>
+        <el-dialog v-model="orderSelectDialogVisible" :title="$t('outstock_op_outbound_add.selectOutboundOrderNo')"
+            width="700px" :close-on-click-modal="false" align-center> <!-- title：选择出库单号 -->
             <el-table :data="orderList" border style="width: 100%" @row-click="handleOrderRowClick"
                 :row-class-name="getSelectedOrderRowClass">
-                <el-table-column prop="orderNo" label="出库单号" />
-                <el-table-column prop="statusName" label="状态" width="150" />
-                <el-table-column prop="createdTime" label="创建时间" width="200" />
+                <el-table-column prop="orderNo" :label="$t('outstock_op_outbound_add.outboundOrderNo')" />
+                <!-- label：出库单号 -->
+                <el-table-column prop="statusName" :label="$t('outstock_op_outbound_add.status')" width="150" />
+                <!-- label：状态 -->
+                <el-table-column prop="createdTime" :label="$t('outstock_op_outbound_add.createTime')" width="200" />
+                <!-- label：创建时间 -->
             </el-table>
             <template #footer>
                 <div class="dialog-footer">
-                    <el-button @click="orderSelectDialogVisible = false">取消</el-button>
-                    <el-button type="primary" @click="confirmSelectedOrder" :disabled="!selectedOrderId">确定</el-button>
+                    <el-button @click="orderSelectDialogVisible = false">{{ $t('outstock_op_outbound_add.cancel')
+                    }}</el-button> <!-- 取消 -->
+                    <el-button type="primary" @click="confirmSelectedOrder" :disabled="!selectedOrderId">{{
+                        $t('outstock_op_outbound_add.confirm') }}</el-button> <!-- 确定 -->
                 </div>
             </template>
         </el-dialog>
     </div>
 </template>
 
-<script setup name="出库扫描">
+<script setup name="出库">
 import { ref, reactive, nextTick, onMounted } from 'vue';
 import { ElMessage, ElLoading } from 'element-plus';
 import { Box, Aim, DataAnalysis, List } from '@element-plus/icons-vue';

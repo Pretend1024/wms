@@ -47,6 +47,15 @@
                         </el-form-item>
                     </el-col>
                     <el-col>
+                        <el-form-item :label="getLabel('qualityId')" class="compact-item">
+                            <el-select v-model="formData.qualityId" :placeholder="getPlaceholder('qualityId')"
+                                clearable>
+                                <el-option v-for="item in qualityEnumOptions" :key="item.value" :label="item.label"
+                                    :value="item.value" />
+                            </el-select>
+                        </el-form-item>
+                    </el-col>
+                    <el-col>
                         <el-form-item :label="getLabel('saturation')" class="compact-item">
                             <el-select v-model="formData.saturation" :placeholder="getPlaceholder('saturation')"
                                 clearable>
@@ -136,7 +145,7 @@
             <!-- 动态加载新增或编辑的表单组件 -->
             <component :is="currentForm" ref="childFormRef" :formData="addData"
                 :sizeTypeEnumOptions="sizeTypeEnumOptions" :warehouseEnumOptions="warehouseEnumOptions"
-                :statusEnumOptions="statusEnumOptions" />
+                :statusEnumOptions="statusEnumOptions" :qualityEnumOptions="qualityEnumOptions" />
             <template #footer>
                 <div class="dialog-footer">
                     <el-button @click="handleDialogCancel"> 取消</el-button>
@@ -171,6 +180,7 @@ import printDialog from '@/components/print-export-importDialog/printDialog.vue'
 import exportDialog from '@/components/print-export-importDialog/exportDialog.vue';
 import { ElMessage, ElMessageBox } from 'element-plus';
 import { smartAlert, trimObjectStrings } from '@/utils/genericMethods.js'
+import { getInventoryInventoryQualityEnumApi } from '@/api/inventoryApi/inventory.js'
 import { getWhLocationListApi, addWhLocationApi, updWhLocationApi, delWhLocationApi, getWhWarehouseApi, getWhZoneEnumApi, getWhLocationSizeTypeEnumApi, getWhLocationStatusEnumApi, getWhLocationSaturationEnumApi } from '@/api/baseApi/wh.js'
 import { useI18n } from 'vue-i18n';
 const { t } = useI18n();
@@ -240,6 +250,7 @@ const columns = ref([
     { label: '库区代码', prop: 'zoneCode', width: '120', fixed: 'left', sortable: true },
     { label: '库位代码', prop: 'code', width: '170', fixed: 'left', sortable: true },
     { label: '状态', prop: 'statusName', width: '120', slot: 'statusName', sortable: true },
+    { label: '品质', prop: 'qualityName', width: '120', sortable: true },
     { label: '尺寸类型', prop: 'sizeTypeName', width: '120', sortable: true },
     { label: '长(CM)', prop: 'length', width: '110', sortable: true },
     { label: '宽(CM)', prop: 'width', width: '110', sortable: true },
@@ -483,6 +494,8 @@ const selectWh = async (value) => {
 const statusEnumOptions = ref([]);
 // 库位饱和度下拉框数据
 const saturationOptions = ref([])
+// 质量下拉框数据
+const qualityEnumOptions = ref([])
 
 onMounted(async () => {
     // 获取仓库下拉框数据
@@ -502,8 +515,13 @@ onMounted(async () => {
     }));
     // 获取库位饱和度下拉框数据
     const saturationRes = await getWhLocationSaturationEnumApi();
-    console.log('饱和度数据:', saturationRes.data);
     saturationOptions.value = saturationRes.data.map(item => ({
+        label: item.name,
+        value: item.id
+    }));
+    // 获取质量下拉框数据
+    const qualityRes = await getInventoryInventoryQualityEnumApi();
+    qualityEnumOptions.value = qualityRes.data.map(item => ({
         label: item.name,
         value: item.id
     }));

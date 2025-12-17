@@ -49,7 +49,8 @@ export const columnTextMap = {
         "inventoryGoodsQty": { "zh": "库存件数", "en": "Inventory Goods Quantity" },
         "inventoryGoodsVolume": { "zh": "库存体积(M³)", "en": "Inventory Volume (M³)" },
         "batchNoQty": { "zh": "最大批次数", "en": "Max. Batch Qty." },
-        "skuQty": { "zh": "最大SKU个数", "en": "Max. SKU Qty." }
+        "skuQty": { "zh": "最大SKU个数", "en": "Max. SKU Qty." },
+        "qualityName": { "zh": "品质", "en": "Quality" },
     },
 
     "base_wh_warehouse_list": {
@@ -274,29 +275,6 @@ export const columnTextMap = {
         "platformSku": { "zh": "平台SKU", "en": "Platform SKU" },
         "sku": { "zh": "SKU", "en": "SKU" }
     },
-    "base_wh_location_list": {
-        "warehouseCode": { "zh": "仓库", "en": "Warehouse" },
-        "zoneCode": { "zh": "库区代码", "en": "Zone" },
-        "code": { "zh": "库位代码", "en": "Location Code" },
-        "statusName": { "zh": "状态", "en": "Status" },
-        "sizeTypeName": { "zh": "尺寸类型", "en": "Size Type" },
-        "length": { "zh": "长(CM)", "en": "Length (CM)" },
-        "width": { "zh": "宽(CM)", "en": "Width (CM)" },
-        "height": { "zh": "高(CM)", "en": "Height (CM)" },
-        "volume": { "zh": "体积(M³)", "en": "Volume (M³)" },
-        "lineNumber": { "zh": "动线号", "en": "Line No." },
-        "xcoord": { "zh": "x坐标", "en": "X Coord." },
-        "ycoord": { "zh": "y坐标", "en": "Y Coord." },
-        "zcoord": { "zh": "z坐标", "en": "Z Coord." },
-        "accessEase": { "zh": "存取难度", "en": "Access Difficulty" },
-        "distanceToDock": { "zh": "与月台间距", "en": "Dist. to Dock" },
-        "saturation": { "zh": "饱和度", "en": "Saturation" },
-        "inventorySkuQty": { "zh": "库存SKU个数", "en": "Inv. SKU Qty." },
-        "inventoryGoodsQty": { "zh": "库存件数", "en": "Inv. Goods Qty" },
-        "inventoryGoodsVolume": { "zh": "库存体积(M³)", "en": "Inv. Volume (M³)" },
-        "batchNoQty": { "zh": "最大批次数", "en": "Max. Batch Qty." },
-        "skuQty": { "zh": "最大SKU个数", "en": "Max. SKU Qty." }
-    },
     "base_wh_locationSizeType_list": {
         "name": { "zh": "名称", "en": "Name" },
         "code": { "zh": "代码", "en": "Code" },
@@ -475,7 +453,7 @@ export const columnTextMap = {
         "checkinTime": { "zh": "签到时间", "en": "Check-in Time" },
         "isLateCheckin": { "zh": "是否迟到", "en": "Is Late" },
         "deliveryTypeName": { "zh": "送仓类型", "en": "Delivery Type" },
-        "createWay": { "zh": "单据来源", "en": "Document Source" }
+        "createWayName": { "zh": "创建方式", "en": "Creation Method" },
     },
     "instock_op_inReceipt_list": {
         "orgName": { "zh": "公司", "en": "Company" },
@@ -584,7 +562,8 @@ export const columnTextMap = {
         "isShortage": { "zh": "是否缺货", "en": "Is Shortage" },
         "printLabelCount": { "zh": "物流单打印次数", "en": "Logistics Label Print Count" },
         "printOutShelfCount": { "zh": "拣货单打印次数", "en": "Pick List Print Count" },
-        "palletQty": { "zh": "托盘数", "en": "Pallet Quantity" }
+        "palletQty": { "zh": "托盘数", "en": "Pallet Quantity" },
+        "createWayName": { "zh": "创建方式", "en": "Creation Method" }
     },
     "instock_order_inOrder_list": {
         "orgName": { "zh": "公司", "en": "Company" },
@@ -618,7 +597,7 @@ export const columnTextMap = {
         "calculateFeeTime": { "zh": "计费时间", "en": "Billing Time" },
         "calculateFeeCount": { "zh": "计费次数", "en": "Billing Count" },
         "calculateFeeMsg": { "zh": "计费消息", "en": "Billing Message" },
-        "createWay": { "zh": "创建方式", "en": "Creation Method" },
+        "createWayName": { "zh": "创建方式", "en": "Creation Method" },
         "apiTypeName": { "zh": "接口类型", "en": "API Type" }
     },
     "instock_return_returnOrder_list": {
@@ -637,7 +616,7 @@ export const columnTextMap = {
         "checkTime": { "zh": "清点时间", "en": "Check Time" },
         "inShelfTime": { "zh": "上架时间", "en": "Shelf Time" },
         "signTime": { "zh": "签收时间", "en": "Sign Time" },
-        "createWay": { "zh": "创建方式", "en": "Creation Method" }
+        "createWayName": { "zh": "创建方式", "en": "Creation Method" }
     },
     "instock_returned_returnClaim_list": {
         "carrierName": { "zh": "承运商名称", "en": "Carrier Name" },
@@ -651,6 +630,7 @@ export const columnTextMap = {
         "destroyTime": { "zh": "销毁时间", "en": "Destruction Time" }
     },
     "inventory_inventory_inventory_list1": {
+        "businessName": { "zh": "业务类型", "en": "Business Type" },
         "orgName": { "zh": "公司", "en": "Company" },
         "warehouseCode": { "zh": "仓库", "en": "Warehouse" },
         "customerName": { "zh": "客户", "en": "Customer" },
@@ -662,7 +642,7 @@ export const columnTextMap = {
         "qtyTotal": { "zh": "总数", "en": "Tot. Qty." },
         "qtyAvail": { "zh": "可用数", "en": "Avail. Qty." },
         "qtyLock": { "zh": "锁定数", "en": "Locked Qty." },
-        "inOrderNo": { "zh": "入库单号", "en": "Inb. Ord. No." },
+        "sourceNo": { "zh": "来源单号", "en": "Source No." },
         "batchNo": { "zh": "批次号", "en": "Batch No." },
         "inShelfDate": { "zh": "上架日期", "en": "Shelf Date" },
         "skuName": { "zh": "品名", "en": "Product Name" },
@@ -675,7 +655,7 @@ export const columnTextMap = {
         "changeQty": { "zh": "操作数量", "en": "Operation Qty." },
         "qtyAfter": { "zh": "操作后数量", "en": "Qty. After Operation" },
         "opRefNo": { "zh": "单据号码", "en": "Document No." },
-
+        "createWayName": { "zh": "创建方式", "en": "Creation Method" }
     },
     "inventory_inventory_inventory_list2": {
         "orgName": { "zh": "公司", "en": "Company" },
@@ -689,7 +669,7 @@ export const columnTextMap = {
         "qtyTotal": { "zh": "总数", "en": "Tot. Qty." },
         "qtyAvail": { "zh": "可用数", "en": "Avail. Qty." },
         "qtyLock": { "zh": "锁定数", "en": "Locked Qty." },
-        "inOrderNo": { "zh": "入库单号", "en": "Inb. Ord. No." },
+        "sourceNo": { "zh": "来源单号", "en": "Source No." },
         "batchNo": { "zh": "批次号", "en": "Batch No." },
         "inShelfDate": { "zh": "上架日期", "en": "Shelf Date" },
         "skuName": { "zh": "品名", "en": "Product Name" },
@@ -703,6 +683,7 @@ export const columnTextMap = {
         "qtyAfter": { "zh": "操作后数量", "en": "Qty. After Operation" },
         "opRefNo": { "zh": "单据号码", "en": "Document No." },
         "instockDays": { "zh": "库龄", "en": "Inventory Age" },
+        "createWayName": { "zh": "创建方式", "en": "Creation Method" }
     },
     "inventory_inventory_inventory_list3": {
         "orgName": { "zh": "公司", "en": "Company" },
@@ -716,7 +697,7 @@ export const columnTextMap = {
         "qtyTotal": { "zh": "总数", "en": "Tot. Qty." },
         "qtyAvail": { "zh": "可用数", "en": "Avail. Qty." },
         "qtyLock": { "zh": "锁定数", "en": "Locked Qty." },
-        "inOrderNo": { "zh": "入库单号", "en": "Inb. Ord. No." },
+        "sourceNo": { "zh": "来源单号", "en": "Source No." },
         "batchNo": { "zh": "批次号", "en": "Batch No." },
         "inShelfDate": { "zh": "上架日期", "en": "Shelf Date" },
         "skuName": { "zh": "品名", "en": "Product Name" },
@@ -730,6 +711,7 @@ export const columnTextMap = {
         "qtyAfter": { "zh": "操作后数量", "en": "Qty. After Operation" },
         "opRefNo": { "zh": "单据号码", "en": "Document No." },
         "instockDays": { "zh": "库龄", "en": "Inventory Age" },
+        "createWayName": { "zh": "创建方式", "en": "Creation Method" }
     },
     "inventory_adjust_inventoryAdjust_list": {
         "adjustNo": { "zh": "调整单号", "en": "Adjustment No." },
@@ -1013,7 +995,8 @@ export const columnTextMap = {
         "excludeLocationCodes": { "zh": "排除库位", "en": "Excluded Locations" },
         "allocationPriorityList": { "zh": "库存分配优先级", "en": "Inventory Allocation Priority List" },
         "shipwayCode": { "zh": "物流产品", "en": "Logistics Product Code" },
-        "carrierCode": { "zh": "承运商", "en": "Logistics Brand Code" }
+        "carrierCode": { "zh": "承运商", "en": "Logistics Brand Code" },
+        "businessName": { "zh": "业务类型", "en": "Business Type" }
     },
     "finance_basic_collectionAccount_list": {
         "paywayName": { "zh": "支付类型", "en": "Payment Type" },
@@ -1082,6 +1065,9 @@ export const columnTextMap = {
         "remark": { "zh": "备注", "en": "Remark" },
         "auditorName": { "zh": "审核人", "en": "Auditor Name" },
         "auditTime": { "zh": "审核时间", "en": "Audit Time" },
+        "remainingAmount": { "zh": "剩余金额", "en": "Remaining Amount" },
+        "usedAmount": { "zh": "已使用金额", "en": "Used Amount" },
+        "rechargeNo": { "zh": "充值单号", "en": "Recharge No." },
         "paywayName": { "zh": "付款方式", "en": "Payment Method" },
     },
     "vas_vas_vasOrder_list": {
@@ -1229,6 +1215,84 @@ export const columnTextMap = {
         "priceDimensionName": { "zh": "价格维度", "en": "Price Dimension" },
         "isMandatory": { "zh": "是否必选", "en": "Is Mandatory" },
         "sortNo": { "zh": "排序", "en": "Sort Number" }
+    },
+    "finance_receivables_receivableBills_list": {
+        "billNo": { "zh": "账单编号", "en": "Bill No." },
+        "currency": { "zh": "币种代码", "en": "Currency Code" },
+        "exchangeRate": { "zh": "汇率", "en": "Exchange Rate" },
+        "billStartDate": { "zh": "账单起始日期", "en": "Start Date" },
+        "billEndDate": { "zh": "账单结束日期", "en": "End Date" },
+        "totalFeeAmount": { "zh": "总金额", "en": "Total Fee Amount" },
+        "unpaidAmount": { "zh": "待支付金额", "en": "Unpaid Amount" },
+        "deductibleAmount": { "zh": "抵扣金额", "en": "Deductible Amount" },
+        "alreadyPaidAmount": { "zh": "已支付金额", "en": "Already Paid Amount" },
+        "billStatusName": { "zh": "账单状态", "en": "Bill Status" },
+        "paymentDeadline": { "zh": "付款截止日期", "en": "Payment Deadline" },
+        "isOverdue": { "zh": "是否逾期", "en": "Is Overdue" },
+        "confirmTime": { "zh": "确认时间", "en": "Confirmation Time" },
+        "confirmBy": { "zh": "确认人", "en": "Confirmer" },
+        "closeTime": { "zh": "结清时间", "en": "Close Time" },
+        "attachment": { "zh": "附件", "en": "Attachment" },
+        "salesUserCode": { "zh": "销售用户", "en": "Sales User" },
+    },
+    "finance_receivables_receivableBills_info": {
+        "orderNo": { "zh": "关联单号", "en": "Related Order No." },
+        "inOrderCreatedTime": { "zh": "入库日期", "en": "Inbound Date" },
+        "outOrderCreatedTime": { "zh": "出库日期", "en": "Outbound Date" },
+        "feeTypeName": { "zh": "费用类型", "en": "Fee Type" },
+        "feeName": { "zh": "费用名称", "en": "Fee Name" },
+        "createWayName": { "zh": "创建方式", "en": "Creation Method" },
+        "currency": { "zh": "币种", "en": "Currency" },
+        "feeAmount": { "zh": "金额", "en": "Amount" },
+        "confirmFeeAmount": { "zh": "确认金额", "en": "Confirmed Amount" },
+        "statusName": { "zh": "状态", "en": "Status" },
+        "destCountryName": { "zh": "目的国家", "en": "Destination Country" },
+        "supplierName": { "zh": "服务商", "en": "Service Provider" },
+        "carrierCode": { "zh": "承运商", "en": "Carrier" },
+        "containerType": { "zh": "货柜型号", "en": "Container Type" },
+        "containerNumber": { "zh": "货柜号", "en": "Container No." },
+        "whPriceProjectCode": { "zh": "报价方案", "en": "Quote Scheme" },
+        "expression": { "zh": "费用金额公式", "en": "Fee Amount Formula" },
+        "confirmTime": { "zh": "确认时间", "en": "Confirmation Time" },
+        "confirmBy": { "zh": "确认人", "en": "Confirmer" },
+        "salesUserCode": { "zh": "销售用户", "en": "Sales User" },
+        "outOrderNo": { "zh": "出库单号", "en": "Outbound Order No." },
+        "vasOrderNo": { "zh": "增值服务单号", "en": "Value-added Service Order No." },
+        "feeMainTypeName": { "zh": "费用大类", "en": "Fee Main Type" },
+        "feeSubTypeName": { "zh": "费用小类", "en": "Fee Sub Type" },
+        "confirmFeeAmount": { "zh": "确认金额", "en": "Confirmed Amount" },
+        "orderCreatedTime": { "zh": "关联单据创建时间", "en": "Related Order Creation Time" },
+        "billNo": { "zh": "账单编号", "en": "Bill No." },
+        "priceProjectCode": { "zh": "报价方案", "en": "Quote Scheme" },
+        "shippedTime": { "zh": "发货时间", "en": "Shipment Time" },
+        "sku": { "zh": "SKU", "en": "SKU" },
+        "invQty": { "zh": "库存数量", "en": "Inventory Qty" },
+        "skuLength": { "zh": "SKU长度(CM)", "en": "SKU Length (CM)" },
+        "skuWidth": { "zh": "SKU宽度(CM)", "en": "SKU Width (CM)" },
+        "skuHeight": { "zh": "SKU高度(CM)", "en": "SKU Height (CM)" },
+        "skuVolume": { "zh": "SKU体积(M³)", "en": "SKU Volume (M³)" },
+        "totalVolume": { "zh": "库存总体积(M³)", "en": "Total Volume (M³)" },
+        "inShelfDate": { "zh": "上架日期", "en": "Shelf-on Date" },
+        "inStockDays": { "zh": "在库天数", "en": "In-stock Days" },
+        "feeDate": { "zh": "计费日期", "en": "Fee Date" },
+        "rentprice": { "zh": "租金单价", "en": "Rent Price" },
+    },
+    "product_shipway_addressValid_list": {
+        "configName": { "zh": "配置名称", "en": "Configuration Name" },
+        "carrierCode": { "zh": "关联承运商", "en": "Associated Carrier" },
+        "countryCode": { "zh": "关联国家", "en": "Associated Country" },
+        "ruleCount": { "zh": "规则数量", "en": "Rule Count" },
+        "statusName": { "zh": "状态", "en": "Status" }
+    },
+    "inventory_check_inventoryCheck_list": {
+        "checkNo": { "zh": "盘点单号", "en": "Check Number" },
+        "checkTypeName": { "zh": "盘点方式", "en": "Check Type" },
+        "statusId": { "zh": "状态", "en": "Status" },
+        "totalAdd": { "zh": "总盘盈数", "en": "Total Add" },
+        "totalSub": { "zh": "总盘亏数", "en": "Total Sub" },
+        "accuracyRate": { "zh": "库位准确率", "en": "Accuracy Rate" },
+        "skuQty": { "zh": "涉及SKU个数", "en": "SKU Quantity" },
+        "locationQty": { "zh": "涉及库位个数", "en": "Location Quantity" }
     }
 }
 import router from '@/router/index.js'

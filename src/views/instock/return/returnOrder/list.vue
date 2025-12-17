@@ -60,9 +60,10 @@
                 @sort-change="handleTableSort">
                 <!-- 在表格上方通过 slot 插入按钮 -->
                 <template #table-buttons>
-                    <el-button type="primary" @click="handleAdd" v-permission="'add'" :icon="Plus">{{ getButtonText('add') }}</el-button>
+                    <el-button type="primary" @click="handleAdd" v-permission="'add'" :icon="Plus">{{
+                        getButtonText('add') }}</el-button>
                     <el-button type="success" @click="handleExport" :icon="Share">{{ getButtonText('export')
-                    }}</el-button>
+                        }}</el-button>
                 </template>
                 <!-- 使用插槽来自定义列内容，假如我们需要在操作列中添加按钮 -->
                 <template #customBtn="{ row }">
@@ -116,13 +117,13 @@
             :nameLabel="'退件单号'" :successValue="successValue" @close="delColse" :promptMessage="promptMessage" />
     </div>
 </template>
-<script setup name="退件单">
+<script setup name="退货入库单">
 import { Plus, Share } from '@element-plus/icons-vue'
 import { smartAlert, trimObjectStrings } from '@/utils/genericMethods.js'
 import { getWhWarehouseApi } from '@/api/baseApi/wh.js'
 import { getCustomerLikeQueryApi } from '@/api/baseApi/sku.js'
 import { getOrgListCompanyApi } from '@/api/baseApi/org.js';
-import { getInstockReturnReturnOrderApi, getInstockReturnReturnOrderStatusEnumApi, getInstockReturnReturnOrderTypeEnumApi, updInstockReturnReturnOrderStatusApi, destroyInstockReturnReturnParcelApi, shelfInstockReturnReturnProductApi, delInstockReturnReturnOrderApi } from '@/api/instockApi/return.js'
+import { getInstockReturnReturnOrderApi, getInstockReturnReturnOrderStatusEnumApi, getInstockReturnReturnOrderTypeEnumApi, updInstockReturnReturnOrderStatusApi, destroyInstockReturnReturnParcelApi, shelfInstockReturnReturnProductApi, delInstockReturnReturnOrderApi, getInstockReturnReturnOrderCreateWayEnumApi } from '@/api/instockApi/return.js'
 import batchOperationn from '@/components/messageNotices/batchOperation.vue'
 import canonicalInput from '@/components/table/canonicalInpt.vue';
 import hydFilterBox from "@/components/table/hyd-filterBox.vue";
@@ -141,6 +142,7 @@ const formConfig = ref([
             { label: '是', value: true }, { label: '否', value: false }
         ]
     },
+    { type: 'select', prop: 'createWay', options: [] },
     { type: 'date', label: '创建时间', prop: 'createdTimeBegin', useEndOfDay: false, offsetDays: 30 },
     { type: 'date', label: '截至时间', prop: 'createdTimeEnd', useEndOfDay: true }
 ])
@@ -186,7 +188,7 @@ const columns = ref([
     { label: '清点时间', width: '200', prop: 'checkTime', sortable: true },
     { label: '上架时间', width: '200', prop: 'inShelfTime', sortable: true },
     { label: '签收时间', width: '200', prop: 'signTime', sortable: true },
-    { label: '创建方式', width: '200', prop: 'createWay', sortable: true },
+    { label: '创建方式', width: '130', prop: 'createWayName', sortable: true },
     { label: '备注', width: '225', prop: 'remark' },
     { label: '创建人', width: '100', prop: 'createdBy' },
     { label: '创建时间', width: '200', prop: 'createdTime', sortable: true },
@@ -368,6 +370,9 @@ onMounted(async () => {
     // 获取类型
     const res2 = await getInstockReturnReturnOrderTypeEnumApi()
     formConfig.value[0].options = res2.data.map(item => ({ label: item.name, value: item.id }))
+    // 创建方式
+    const res3 = await getInstockReturnReturnOrderCreateWayEnumApi()
+    formConfig.value[3].options = res3.data.map(item => ({ label: item.name, value: item.id }))
 })
 // 监听刷新数据
 onActivated(() => {
