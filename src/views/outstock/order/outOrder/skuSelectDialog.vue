@@ -124,7 +124,7 @@ async function getList() {
             customerCode: props.customerCode
         };
         const res = await getSkuSkuListApi(trimObjectStrings(data));
-        tableData.value = res.data.rows;
+        tableData.value = Object.freeze(res.data.rows);
         total.value = res.data.total; // 设置总条数
         await nextTick();
         tableRef.value.clearSelection();

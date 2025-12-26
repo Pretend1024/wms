@@ -190,7 +190,7 @@ const getList = async (page, pageSize, orderByStr = orderBy.value) => {
         };
         const res = await getInventoryMvPageApi(params);
         if (res.success) {
-            tableData.value = res.data.rows || [];
+            tableData.value = Object.freeze(res.data.rows) || [];
             footer.value = res.data.footer ? res.data.footer[0] : {};
             pagination.value = { currentPage: res.data.page, pageSize: pageSize, total: res.data.total };
         } else {

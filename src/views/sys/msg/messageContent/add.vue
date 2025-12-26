@@ -173,7 +173,7 @@ async function getList() {
             pageSize: 1000
         }
         const res = await getUserUserListApi(trimObjectStrings(data))
-        tableData.value = res.data.rows
+        tableData.value = Object.freeze(res.data.rows)
         if (dialogVisible.value) {
             await nextTick()
             tableRef.value.clearSelection()

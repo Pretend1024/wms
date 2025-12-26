@@ -39,10 +39,10 @@
                         getButtonText('lock') }}</el-button>
                     <el-button type="warning" @click="handleUnlock" v-permission="'user:unLock'" :icon="Unlock">{{
                         getButtonText('unlock')
-                        }}</el-button>
+                    }}</el-button>
                     <el-button type="danger" @click="handleLeave" v-permission="'leaveJob'" :icon="Remove">{{
                         getButtonText('resign')
-                        }}</el-button>
+                    }}</el-button>
 
                 </template>
                 <!-- 使用插槽来自定义列内容，假如我们需要在操作列中添加按钮 -->
@@ -86,7 +86,7 @@
                 <div class="dialog-footer">
                     <el-button @click="setRoleDialogVisible = false">{{ getButtonText('cancel') }}</el-button>
                     <el-button type="primary" @click="handleSetRoleMenuConfirm">{{ getButtonText('confirm')
-                        }}</el-button>
+                    }}</el-button>
                 </div>
             </template>
         </el-dialog>
@@ -156,7 +156,11 @@ const columns = ref([
     { label: '用户代码', prop: 'userCode', width: '130', sortable: true },
     { label: '用户状态', prop: 'userStatusName', width: '120', sortable: true, slot: 'userStatusName' },
     { label: '角色', prop: 'roleName', width: '130', sortable: true },
-    { label: '在职状态', prop: 'statusName', width: '120', slot: 'statusName', sortable: true },
+    {
+        label: '在职状态', prop: 'statusName', width: '120', slot: 'statusName', sortable: true, filters: [], filterMethod: ({ value, row }) => {
+            return row.statusId === value
+        }
+    },
     { label: '入职时间', prop: 'entryTime', width: '180', sortable: true },
     { label: '民族', prop: 'nationName', width: '100', sortable: true },
     { label: '国家', prop: 'countryName', width: '100', sortable: true },
@@ -445,7 +449,7 @@ const getList = async (currentPage, pageSize, orderBy) => {
         orderBy,
         ...trimObjectStrings(initValues.value),
     })
-    tableData.value = res.data.rows
+    tableData.value = Object.freeze(res.data.rows)
     loading.value = false
     pagination.value = {
         currentPage: res.data.page,
@@ -479,6 +483,13 @@ onMounted(async () => {
     formConfig.value[2] = {
         ...formConfig.value[2],
         options: statusMenu.value,
+    }
+
+    // 赋值给对应的列
+    const statusCol = columns.value.find(col => col.prop === 'statusName')
+    if (statusCol) {
+        statusCol.filters = statusMenu.value
+        console.log('statusCol', columns.value)
     }
     // 获取公司数据
     const companyRes = await getOrgListCompanyApi();

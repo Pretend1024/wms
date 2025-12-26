@@ -76,7 +76,7 @@ async function getList() {
             customerCode: props.customerCode
         };
         const res = await getBasicAddressPageApi(trimObjectStrings(data));
-        tableData.value = res.data.rows;
+        tableData.value = Object.freeze(res.data.rows);
         total.value = res.data.total; // 设置总条数
     } finally {
         loading.value = false;

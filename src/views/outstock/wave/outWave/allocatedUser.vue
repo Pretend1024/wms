@@ -124,7 +124,7 @@ async function getUsersList() {
         });
 
         const res = await getOrgEmployeeListApi(reqParams);
-        tableData.value = res.data.rows;
+        tableData.value = Object.freeze(res.data.rows);
         total.value = res.data.total;
 
         // 清空选中状态

@@ -274,7 +274,7 @@ const getList = async (currentPage, pageSize, orderBy) => {
         orderBy,
         remoteId: props.infoData.id
     });
-    tableData.value = res.data.rows;
+    tableData.value = Object.freeze(res.data.rows);
     pagination.value = {
         currentPage: res.data.page,
         pageSize: pageSize,

@@ -181,7 +181,7 @@ const getFileList = async () => {
             outOrderId: outOrderId.value,
         });
 
-        tableData.value = res.data.rows || [];
+        tableData.value = Object.freeze(res.data.rows) || [];
         pagination.total = res.data.total || 0;
         pagination.currentPage = res.data.page || 1;
     } catch (error) {

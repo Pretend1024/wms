@@ -118,7 +118,7 @@ async function getList() {
         };
 
         const res = await getSkuSkuListApi(params);
-        tableData.value = res.data.rows || [];
+        tableData.value = Object.freeze(res.data.rows) || [];
         total.value = res.data.total || 0;
 
         // 等待DOM渲染完成后，再进行程序化选中（避免表格未渲染导致选中失败）

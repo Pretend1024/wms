@@ -131,7 +131,7 @@ const handleDialogCancel = () => {
 // 获取列表数据
 const getList = async () => {
     const res = await getProductShipwayRemoteApi({});
-    tableData.value = res.data.rows;
+    tableData.value = Object.freeze(res.data.rows);
     currentPartition.value = tableData.value.length > 0 ? tableData.value[0].id : null;
     handleSelect(tableData.value[0]);
 };

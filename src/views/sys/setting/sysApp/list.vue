@@ -103,7 +103,7 @@ const getList = async () => {
             ...trimObjectStrings(initValues.value)
         };
         const res = await getSysAppListApi(params);
-        tableData.value = res.data.rows;
+        tableData.value = Object.freeze(res.data.rows);
         pagination.value.total = res.data.total;
     } finally {
         loading.value = false;

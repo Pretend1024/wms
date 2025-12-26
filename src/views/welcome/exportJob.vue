@@ -300,7 +300,7 @@ const getList = async (currentPage, pageSize, orderBy) => {
         self: true,
         ...trimObjectStrings(initValues.value)
     })
-    tableData.value = res.data.rows
+    tableData.value = Object.freeze(res.data.rows)
     loading.value = false
     pagination.value = {
         currentPage: res.data.page,

@@ -123,7 +123,7 @@ async function getList() {
             customerId: props.customerId
         };
         const res = await getSkuSkuListApi(trimObjectStrings(data));
-        tableData.value = res.data.rows;
+        tableData.value = Object.freeze(res.data.rows);
         total.value = res.data.total; // 设置总条数
         await nextTick();
         // 回显已选中行的高亮状态

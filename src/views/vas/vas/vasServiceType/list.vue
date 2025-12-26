@@ -417,7 +417,7 @@ const getList = async (currentPage, pageSize, orderByStr) => {
             orderBy: orderByStr,
             ...trimObjectStrings(initValues.value)
         });
-        tableData.value = res.data.rows;
+        tableData.value = Object.freeze(res.data.rows);
         footer.value = res.data.footer[0];
         pagination.value = {
             currentPage: res.data.page,

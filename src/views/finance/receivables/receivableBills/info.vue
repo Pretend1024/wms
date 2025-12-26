@@ -216,7 +216,7 @@ const getFeeList = async () => {
         };
         const res = await getFeePageApi(params);
         if (res.success) {
-            tableData.value = res.data.rows || [];
+            tableData.value = Object.freeze(res.data.rows) || [];
             pagination.value.total = res.data.total || 0;
         } else {
             tableData.value = [];
@@ -282,7 +282,7 @@ const getPaymentList = async () => {
         };
         const res = await getBillPaymentPageApi(params);
         if (res.success) {
-            paymentTableData.value = res.data.rows || [];
+            paymenttableData.value = Object.freeze(res.data.rows) || [];
             paymentPagination.total = res.data.total || 0;
         } else {
             paymentTableData.value = [];

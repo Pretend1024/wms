@@ -318,7 +318,7 @@ const getList = async (page, pageSize, orderByStr = orderBy.value) => {
     try {
         const params = { ...trimObjectStrings(initValues.value) };
         const res = await getFeePageApi({ page, pageSize, orderBy: orderByStr, ...params });
-        tableData.value = res.data.rows || [];
+        tableData.value = Object.freeze(res.data.rows) || [];
         footer.value = res.data.footer ? res.data.footer[0] : {};
         pagination.value = { currentPage: res.data.page, pageSize, total: res.data.total };
         await getFeeStatAmount();

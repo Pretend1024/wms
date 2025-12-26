@@ -308,7 +308,7 @@ const getList = async (currentPage, pageSize, orderBy) => {
         orderBy,
         ...trimObjectStrings(initValues.value)
     })
-    tableData.value = res.data.rows
+    tableData.value = Object.freeze(res.data.rows)
     footer.value = res.data.footer[0]
     // console.log('表格数据:', tableData.value)
     loading.value = false

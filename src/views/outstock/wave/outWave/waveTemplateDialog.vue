@@ -103,7 +103,7 @@ const fetchTableData = async () => {
             taskName: filterForm.value.taskName,
             isTemplate: true
         });
-        tableData.value = res.data.rows || [];
+        tableData.value = Object.freeze(res.data.rows) || [];
         pagination.value.total = res.data.total || 0;
     } catch (error) {
         console.error('加载波次模板失败：', error);

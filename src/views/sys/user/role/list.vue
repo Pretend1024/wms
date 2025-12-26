@@ -272,7 +272,7 @@ const getList = async (currentPage, pageSize, orderBy) => {
         pageSize: pageSize,
         orderBy
     });
-    tableData.value = res.data.rows;
+    tableData.value = Object.freeze(res.data.rows);
     loading.value = false;
     pagination.value = {
         currentPage: res.data.page,

@@ -393,7 +393,7 @@ const getList = async (currentPage, pageSize, orderBy) => {
         ...initValues.value
     };
     const res = await getInventorySnPageApi(requestData);
-    tableData.value = res.data.rows;
+    tableData.value = Object.freeze(res.data.rows);
     footer.value = res.data.footer[0];
     loading.value = false;
     pagination.value = {

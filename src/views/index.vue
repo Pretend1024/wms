@@ -12,7 +12,7 @@
                 <el-main>
                     <router-view v-slot="{ Component, route }">
                         <div class="router-view-container">
-                            <transition name="page-transition">
+                            <transition :name="route.meta.noAnimation ? '' : 'page-transition'">
                                 <keep-alive :include="cacheTagsList">
                                     <component :is="Component" :key="route.fullPath + (route.meta.refreshKey || 0)" />
                                 </keep-alive>
