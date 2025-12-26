@@ -101,7 +101,7 @@
                                             <el-form-item :label="getLabel('insuranceCurrency')">
                                                 <el-select v-model="formData.insuranceCurrency" clearable disabled>
                                                     <el-option v-for="item in currencyOptions" :key="item.id"
-                                                        :label="item.name" :value="item.code" />
+                                                        :label="item.name" :value="item.id" />
                                                 </el-select>
                                             </el-form-item>
                                         </el-col>
@@ -218,7 +218,7 @@
                                         <el-col :span="6">
                                             <el-button @click="openAddressDialog(true)" type="primary" plain disabled>{{
                                                 getButtonText('addressBook')
-                                            }}</el-button>
+                                                }}</el-button>
                                         </el-col>
                                     </el-row>
                                 </el-form>
@@ -450,12 +450,8 @@
                                         <div class="tableFormSlot" v-for="(sku, index) in row.skuList" :key="index">
                                             <el-select style="width: 110px;" v-model="sku.sku" placeholder="请选择SKU"
                                                 @visible-change="handleSkuVisibleChange" disabled>
-                                                <!-- 加载状态显示 -->
-                                                <template v-if="isSkuLoading">
-                                                    <el-option disabled label="加载中..." />
-                                                </template>
                                                 <!-- 正常选项列表 -->
-                                                <template v-else>
+                                                <template>
                                                     <el-option v-for="item in selectSkuList" :key="item.sku"
                                                         :label="item.sku" :value="item.sku" />
                                                 </template>
@@ -536,11 +532,11 @@
                         :data="statusNodesData">
                         <template #isSuccess="{ row }">
                             <span :style="{ color: row.isSuccess ? 'green' : 'red' }">{{ row.isSuccess ? '是' : '否'
-                            }}</span>
+                                }}</span>
                         </template>
                         <template #isEnd="{ row }">
                             <span :style="{ color: row.isEnd ? 'green' : 'red' }">{{ row.isEnd ? '是' : '否'
-                            }}</span>
+                                }}</span>
                         </template>
                     </generalAddTable>
                 </el-tab-pane>
@@ -549,7 +545,7 @@
                         :data="logData">
                         <template #isSuccess="{ row }">
                             <span :style="{ color: row.isSuccess ? 'green' : 'red' }">{{ row.isSuccess ? '成功' : '失败'
-                            }}</span>
+                                }}</span>
                         </template>
                         <template #message="{ row }">
                             <div v-html="row.message"></div>
@@ -624,7 +620,7 @@
                                         <div v-if="item.skus && item.skus.length">
                                             <div v-for="(sku, i) in JSON.parse(item.skus)" :key="i" class="sku-item">{{
                                                 sku.sku
-                                                }} * {{ sku.qty }}</div>
+                                            }} * {{ sku.qty }}</div>
                                         </div>
                                     </el-descriptions-item>
                                 </el-descriptions>
@@ -664,7 +660,7 @@
                         :data="holdupData">
                         <template #statusName="{ row }">
                             <span :style="{ color: row.holdUpStatus !== 2 ? 'green' : 'red' }">{{ row.holdUpStatusName
-                                }}</span>
+                            }}</span>
                         </template>
                         <template #customer="{ row }">
                             {{ row.customerCode }}({{ row.customerName }})
@@ -691,7 +687,7 @@
 
 <script setup name="出库单详情">
 import { getProductShipwayTypeEnumApi, getProductShipwayListApi, getProductShipwayBrandListApi, getProductSupplierListApi } from '@/api/productApi/shipway.js'
-import { getCurrencyEnumApi } from '@/api/baseApi/index.js';
+import { getCurrencyListApi } from '@/api/baseApi/index.js';
 import { getOrderQualityEnumApi } from '@/api/instockApi/order.js'
 import { getInstockInOrderBusinessEnumApi } from '@/api/instockApi/order.js';
 import { getBasicConsumablesListEnumApi } from '@/api/baseApi/consumables.js'
@@ -699,7 +695,8 @@ import { getVasServiceTypeListApi, getVasServiceTypeUnitEnumApi } from '@/api/va
 
 import generalAddTable from '@/components/table/generalAddTable.vue'
 import { getOrgCountryListApi } from '@/api/baseApi/org.js';
-import { outstockOrderCreateTypeApi, outstockOrderAddressTypeApi, outstockOrderStatusApi, outstockOrderTypeApi, getOutstockOrderDetailApi, outstockOrderEcommercePlatformApi, outstockOrderAttachmentTypeApi, getOutstockOrderProblemApi, getOutstockOrderTrackApi, getOutstockOrderStatusApi, getOutstockOrderHoldupApi } from '@/api/outstockApi/order.js'
+import { outstockOrderCreateTypeApi, outstockOrderAddressTypeApi, outstockOrderStatusApi, outstockOrderTypeApi, getOutstockOrderDetailApi, outstockOrderEcommercePlatformApi, getOutstockOrderProblemApi, getOutstockOrderTrackApi, getOutstockOrderStatusApi, getOutstockOrderHoldupApi } from '@/api/outstockApi/order.js'
+import { getTemplateApi } from '@/api/baseApi/index.js';
 import { getLabel } from '@/utils/i18n/i18nLabels.js';
 import { getWhWarehouseApi } from '@/api/baseApi/wh.js'
 import { uploadApi } from '@/api/baseApi/index.js'
@@ -832,13 +829,10 @@ async function onSkuBlur(row) {
 
 // 已选择SKU列表
 const selectSkuList = ref([]);
-// 加载状态
-const isSkuLoading = ref(false);
 // 处理下拉框显示/隐藏事件
 const handleSkuVisibleChange = (visible) => {
     // 当下拉框显示时执行逻辑
     if (visible) {
-        isSkuLoading.value = true;
         setTimeout(() => {
             const rawSkuList = skuListTableRef.value.getTableData();
             // 不区分大小写去重：以小写sku为键，保留完整对象
@@ -854,7 +848,6 @@ const handleSkuVisibleChange = (visible) => {
             });
             const uniqueSkus = Object.values(skuMap);
             selectSkuList.value = uniqueSkus;
-            isSkuLoading.value = false;
         }, 200);
     }
 };
@@ -1366,8 +1359,11 @@ onMounted(async () => {
             },
             {
                 key: "货币类型",
-                api: getCurrencyEnumApi(),
-                handleSuccess: (data) => (currencyOptions.value = data || []),
+                api: getCurrencyListApi(),
+                handleSuccess: (data) => (currencyOptions.value = data.map(item => ({
+                    id: item.currency,
+                    name: item.remark
+                })) || []),
             },
             {
                 key: "商品品质",
@@ -1406,7 +1402,7 @@ onMounted(async () => {
             },
             {
                 key: "附件类型",
-                api: outstockOrderAttachmentTypeApi(),
+                api: getTemplateApi({ atypeId: 2, btypeId: 401 }),
                 handleSuccess: (data) => (fileTypeOptions.value = data || []),
             },
             {

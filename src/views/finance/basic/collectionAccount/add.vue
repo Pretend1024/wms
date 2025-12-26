@@ -26,7 +26,7 @@
                 <el-form-item :label="getLabel('currency')" prop="currency">
                     <el-select v-model="formData.currency" :placeholder="getPlaceholder('currency')" clearable>
                         <el-option v-for="item in currencyEnum" :key="item.code" :label="item.name"
-                            :value="item.code" />
+                            :value="item.id" />
                     </el-select>
                 </el-form-item>
             </el-col>
@@ -144,7 +144,7 @@
 
 <script setup>
 import { ref, defineProps, defineExpose, computed, onMounted } from 'vue';
-import { getCurrencyEnumApi } from '@/api/baseApi/index.js';
+import { getCurrencyListApi } from '@/api/baseApi/index.js';
 
 // 1. 新增props：接收父组件传的回显数据（initData），修正paymentMethodEnum类型为Array
 const props = defineProps({
@@ -304,8 +304,12 @@ const currencyEnum = ref([]);
 
 onMounted(async () => {
     try {
-        const res = await getCurrencyEnumApi();
-        currencyEnum.value = res.data;
+        const res = await getCurrencyListApi();
+        currencyEnum.value = res.data.map(item => ({
+            id: item.currency,
+            name: item.remark
+        }));
+        ;
     } catch (error) {
         console.error('获取币种选项失败：', error);
     }
@@ -325,9 +329,6 @@ defineExpose({
     },
     // 新增：暴露当前表单数据给父组件（如需提交时获取）
     getFormData: () => {
-        if (formData.value.orgId && Array.isArray(formData.value.orgId)) {
-            formData.value.orgId = formData.value.orgId[formData.value.orgId.length - 1];
-        }
         return formData.value;
     }
 });
@@ -335,7 +336,8 @@ defineExpose({
 const cascaderRef = ref(null);
 const parentProps = {
     checkStrictly: true,
-    expandTrigger: 'hover'
+    expandTrigger: 'hover',
+    emitPath: false,
 };
 // 公司选择
 const handleCascaderChange = async (e) => {

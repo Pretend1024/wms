@@ -21,7 +21,7 @@ const props = defineProps({
 
 const tableData = shallowRef([]);
 const columns = ref([
-    { label: '入库单号', prop: 'inOrderNo', width: '180' },
+    { label: '来源单号', prop: 'sourceNo', width: '180' },
     { label: '状态', prop: 'statusName', width: '100' },
     { label: '上架日期', prop: 'inShelfDate', width: '140' },
     { label: '库龄', prop: 'instockDays', width: '100' },

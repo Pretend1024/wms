@@ -109,6 +109,14 @@ export const getFeeTypeEnumApi = createPostRequestWithQuery('/finance/receivable
 export const getFeeStatusEnumApi = () => {
     return http.post('/finance/receivables/receivableFee/receivableFeeStatusEnum')
 }
+// 状态统计
+export const getFeeStatusCountApi = (data) => {
+    return http.post('/finance/receivables/receivableFee/countGroupByStatus', data)
+}
+// 金额统计
+export const getFeeStatAmountApi = (data) => {
+    return http.post('/finance/receivables/receivableFee/statAmount', data)
+}
 // 创建方式
 export const getFeeCreateWayEnumApi = () => {
     return http.post('/finance/receivables/receivableFee/receivableFeeCreateWayEnum')
@@ -150,5 +158,14 @@ export const getFeeCategoryApi = createPostRequestWithQuery('/finance/receivable
 // 账单付款记录
 export const getBillPaymentPageApi = (data) => {
     return http.post('/finance/receivables/customerPaymentDetail/page', data)
+}
+
+// 账单状态统计
+export const getBillStatusCountApi = (data) => {
+    return http.post('/finance/receivables/customerBill/countGroupByStatus', data)
+}
+// 账单金额统计
+export const getBillStatAmountApi = (data) => {
+    return http.post('/finance/receivables/customerBill/statAmount', data)
 }
 

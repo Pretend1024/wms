@@ -238,9 +238,6 @@ const handleSubmit = async () => {
                     target: ".contentDiv",
                     text: 'Loading'
                 });
-                if (Array.isArray(formData.value.orgId)) {
-                    formData.value.orgId = formData.value.orgId[formData.value.orgId.length - 1];
-                }
 
                 const data = {
                     ...formData.value,
@@ -279,7 +276,8 @@ const companyOptions = ref([]);
 const cascaderRef = ref([]); // 修改为数组引用
 const parentProps = {
     checkStrictly: true,
-    expandTrigger: 'hover'
+    expandTrigger: 'hover',
+    emitPath: false,
 };
 // 公司改变事件
 const handleCascaderChange = async (index) => {

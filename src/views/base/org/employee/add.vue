@@ -389,12 +389,13 @@ const companyOptions = ref([]);
 const cascaderRef = ref(null);
 const parentProps = {
     checkStrictly: true,
-    expandTrigger: 'hover'
+    expandTrigger: 'hover',
+    emitPath: false,
 };
 // 公司改变事件
 const handleCascaderChange = async () => {
     // 如果值为空，清空部门数据
-    if (!formData.value.orgId || formData.value.orgId.length === 0) {
+    if (!formData.value.orgId) {
         departmentOptions.value = [];
         formData.value.departmentId = '';
         return;
@@ -402,7 +403,7 @@ const handleCascaderChange = async () => {
     nextTick(() => {
         cascaderRef.value.togglePopperVisible()
     });
-    const res = await getOrgListDepartmentApi({ parentId: formData.value.orgId[formData.value.orgId.length - 1] });
+    const res = await getOrgListDepartmentApi({ parentId: formData.value.orgId });
     // 清空选择的部门
     formData.value.departmentId = '';
     departmentOptions.value = res.data;
@@ -420,7 +421,6 @@ const handleSave = async () => {
         if (valid) {
             const form = {
                 ...formData.value,
-                orgId: formData.value.orgId[formData.value.orgId.length - 1],
                 warehouseIds: whCheckedList.value,
                 customerIds: cusCheckedList.value,
                 warehouseScope: whSwitch.value ? dataPermScopeEnum.value[0] : dataPermScopeEnum.value[1],

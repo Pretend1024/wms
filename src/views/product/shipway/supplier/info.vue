@@ -185,7 +185,8 @@ const companyOptions = ref([]);
 const cascaderRef = ref([]); // 修改为数组引用
 const parentProps = {
     checkStrictly: true,
-    expandTrigger: 'hover'
+    expandTrigger: 'hover',
+    emitPath: false,
 };
 // 公司改变事件
 const handleCascaderChange = async (index) => {

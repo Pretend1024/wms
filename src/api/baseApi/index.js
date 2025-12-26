@@ -26,9 +26,14 @@ export const uploadApi = (file, queryParams = {}) => {
 export const getImportHandlerWayEnumApi = () => {
     return http.post('/base/common/enums/importHandlerWayEnum')
 }
-// 获取币种
+
+// 获取汇率币种
 export const getCurrencyEnumApi = () => {
     return http.post('/base/common/enums/currencyEnum')
+}
+// 获取币种
+export const getCurrencyListApi = () => {
+    return http.post('/finance/basic/currency/listCurrency')
 }
 
 // 格式

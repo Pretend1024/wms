@@ -64,7 +64,7 @@
                 <el-form-item label="盘点方式" prop="checkTypeId">
                     <el-radio-group v-model="formData.checkTypeId">
                         <el-radio v-for="item in checkTypeOptions" :key="item.value" :label="item.value">{{ item.label
-                            }}</el-radio>
+                        }}</el-radio>
                     </el-radio-group>
                 </el-form-item>
             </el-col>
@@ -148,10 +148,6 @@ const getFormData = () => {
     } else {
         data.customerId = '';
     }
-    // 判断 orgId 是否为数组，取最后一个值
-    if (Array.isArray(data.orgId)) {
-        data.orgId = data.orgId[data.orgId.length - 1];
-    }
     delete data.customerIds;
     return data;
 };
@@ -182,7 +178,8 @@ onMounted(async () => {
 const cascaderRef = ref(null);
 const parentProps = {
     checkStrictly: true,
-    expandTrigger: 'hover'
+    expandTrigger: 'hover',
+    emitPath: false,
 };
 const customerOptions = ref([]);
 // 公司改变事件
@@ -192,7 +189,7 @@ const handleCascaderChange = async (e) => {
             cascaderRef.value.togglePopperVisible()
         });
     }
-    const orgId = e ? e[e.length - 1] : '';
+    const orgId = e ? e : '';
     const result = await getCustomerLikeQueryApi({ keyword: '*', orgId });
     customerOptions.value = result.data.map(item => ({
         value: item.id,

@@ -130,7 +130,6 @@
 <script setup>
 import { ref, defineProps, defineExpose, computed, onMounted, watch, nextTick } from 'vue';
 import { ElMessage, ElLoading } from 'element-plus';
-import { getCurrencyEnumApi } from '@/api/baseApi/index.js';
 import { getCustomerLikeQueryApi } from '@/api/baseApi/sku.js';
 // 导入收款账户列表接口
 import { getCollectionAccountListByConditionsApi } from '@/api/financeApi/basic.js';
@@ -203,11 +202,11 @@ const formRef = ref(null);
 const cascaderRef = ref(null);
 const customerOptions = ref([]);         // 客户选项列表
 const collectionAccountOptions = ref([]); // 收款账户选项列表
-const currencyEnum = ref([]);            // 币种列表
 
 const parentProps = {
     checkStrictly: true,
-    expandTrigger: 'hover'
+    expandTrigger: 'hover',
+    emitPath: false,
 };
 
 // 解构props中的isDisabled，方便模板使用
@@ -232,7 +231,6 @@ const rules = ref({
     ],
     payAmount: [
         { required: true, message: '请输入充值金额', trigger: 'blur' },
-        { type: 'number', min: 0.01, message: '充值金额必须大于0', trigger: 'blur' }
     ],
     certificate: [
         { required: (rule, value) => formData.value.paywayId === 10 && !isDisabled, message: '请上传充值凭证', trigger: 'change' }
@@ -260,7 +258,7 @@ const handleCascaderChange = async (value) => {
         });
     }
 
-    const orgId = value ? value[value.length - 1] : '';
+    const orgId = value ? value : '';
     formData.value.orgId = orgId;
     // 清空所有关联字段（含新增的回调时间）
     formData.value.customerCode = '';
@@ -424,15 +422,8 @@ const handleViewCertificate = () => {
     }
 };
 
-// 初始化：获取币种列表 + 回显数据
+// 初始化：回显数据
 onMounted(async () => {
-    // 获取币种列表
-    try {
-        const res = await getCurrencyEnumApi();
-        currencyEnum.value = res.data;
-    } catch (error) {
-        console.error('获取币种选项失败：', error);
-    }
 
     // 回显编辑数据（包含新增的platformCallbackTime）
     if (Object.keys(props.initData).length > 0) {

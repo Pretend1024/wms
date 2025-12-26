@@ -15,7 +15,7 @@
                 <el-form-item :label="getLabel('currency')" prop="currency">
                     <el-select v-model="formData.currency" value-key="id" filterable
                         :placeholder="getPlaceholder('currency')">
-                        <el-option v-for="item in nationOptions" :key="item.id" :label="item.name" :value="item.code" />
+                        <el-option v-for="item in nationOptions" :key="item.id" :label="item.name" :value="item.id" />
                     </el-select>
                 </el-form-item>
             </el-col>

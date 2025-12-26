@@ -2,6 +2,7 @@
   "UserName": "用户名字",
   "LastActivity": "最近访问",
   "Download": "我的下载",
+  "MyImport": "我的导入",
   "OrderTrend": "订单趋势",
   "OrderPercentage": "订单比例",
   "PerDiem": "按天",
@@ -78,6 +79,7 @@
   "ruleGroup": "规则配置组 (满足任意一个规则组即可匹配)",
   "yes": "是",
   "no": "否",
+  "fullScreen": "全屏",
   "base_org_organization_list": {
     "addTitle": "新增部门",
     "updTitle": "编辑部门"
@@ -175,7 +177,8 @@
     "checkTitle": "查看详情"
   },
   "sys_job_importJob_list": {
-    "checkTitle": "查看详情"
+    "checkTitle": "查看详情",
+    "resultTitle": "结果详情"
   },
   "sys_job_scheduleJob_list": {
     "addTitle": "新增定时任务",
@@ -194,7 +197,8 @@
     "updTitle": "编辑角色"
   },
   "instock_returned_returnClaim_list": {
-    "title": "退货认领"
+    "title": "退货认领",
+    "addTitle": "新增认领"
   },
   "instock_inventory_inventorySn_list": {
     "addTitle": "新增SN",
@@ -259,6 +263,11 @@
   "product_price_priceItem_list": {
     "addTitle": "新增计费项目",
     "updTitle": "编辑计费项目"
+  },
+  "sys_setting_sysApp_list": {
+    "addTitle": "新增版本",
+    "updTitle": "编辑版本",
+    "infoTitle": "版本详情"
   },
   "outstock_op_outbound_add": {
     "outboundOperation": "出库操作",

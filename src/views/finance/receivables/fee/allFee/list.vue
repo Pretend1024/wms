@@ -48,14 +48,14 @@
                             </el-select>
                         </el-form-item>
                     </el-col>
-                    <el-col>
+                    <!-- <el-col>
                         <el-form-item :label="getLabel('statusId')">
                             <el-select v-model="formData.statusId" :placeholder="getPlaceholder('statusId')" clearable>
                                 <el-option v-for="item in statusOptions" :key="item.value" :label="item.label"
                                     :value="item.value" />
                             </el-select>
                         </el-form-item>
-                    </el-col>
+                    </el-col> -->
                     <el-col>
                         <el-form-item :label="getLabel('createWayId')">
                             <el-select v-model="formData.createWay" :placeholder="getPlaceholder('createWayId')"
@@ -91,16 +91,51 @@
                 @selection-change="handleSelectionChange" @page-change="handlePageChange" @sort-change="handleTableSort"
                 :tableId="'finance/receivables/fee/list/allFee'">
                 <template #table-buttons>
-                    <el-button type="primary" @click="handleAdd" v-permission="'receivableFree:add'" :icon="Plus">{{
-                        getButtonText('add') }}</el-button>
-                    <el-button type="danger" @click="handleDel" v-permission="'receivableFree:delete'" :icon="Delete">{{
-                        getButtonText('del') }}</el-button>
-                    <el-button type="success" @click="handleImport" :icon="Upload">{{ getButtonText('importCreate')
-                        }}</el-button>
-                    <el-button type="success" @click="handleExport" :icon="Share">{{ getButtonText('export')
-                        }}</el-button>
-                    <el-button type="primary" @click="joinBillVisible = true" :icon="Money">{{ getButtonText('joinBill')
-                        }}</el-button>
+                    <div class="tableTopButtons">
+                        <div class="statusIds">
+                            <el-checkbox-group v-model="statusIdsArr" @change="handleStatusChange">
+                                <el-checkbox v-for="item in statusIdsList" :key="item.id" :label="item.id">
+                                    {{ item.name + '[' + item.qty + ']' }}
+                                </el-checkbox>
+                            </el-checkbox-group>
+                        </div>
+                        <div class="btns">
+                            <div class="amount-statistic-container">
+                                <div class="stat-loading" v-if="statLoading">金额统计加载中...</div>
+                                <div class="stat-content" v-else>
+                                    <div v-for="item in statData" :key="item.id" class="stat-item">
+                                        <div class="stat-name">{{ item.name + ':' || '费用统计' }}</div>
+                                        <div class="currency-list">
+                                            <div v-for="currencyItem in item.currencyAmounts"
+                                                :key="currencyItem.currency" class="currency-item">
+                                                <span class="currency-label">{{
+                                                    currencyItem.currency ? currencyItem.currency + '：' : '' }}</span>
+                                                <span class="currency-amount">{{ currencyItem.totalFeeAmount ?
+                                                    currencyItem.totalFeeAmount.toFixed(3) : '暂无'
+                                                    }}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="stat-empty" v-if="statData.length === 0">暂无统计数据</div>
+                                </div>
+                            </div>
+                            <el-button type="primary" @click="handleAdd" v-permission="'receivableFree:add'"
+                                :icon="Plus">{{
+                                    getButtonText('add') }}</el-button>
+                            <el-button type="danger" @click="handleDel" v-permission="'receivableFree:delete'"
+                                :icon="Delete">{{
+                                    getButtonText('del') }}</el-button>
+                            <el-button type="success" @click="handleImport" :icon="Upload">{{
+                                getButtonText('importCreate')
+                            }}</el-button>
+                            <el-button type="success" @click="handleExport" :icon="Share">{{ getButtonText('export')
+                            }}</el-button>
+                            <el-button type="primary" @click="joinBillVisible = true" :icon="Money">{{
+                                getButtonText('joinBill')
+                            }}</el-button>
+
+                        </div>
+                    </div>
                 </template>
 
                 <template #customBtn="{ row }">
@@ -159,7 +194,6 @@ import FeeDialog from '../FeeDialog.vue';
 
 // 引入工具函数
 import { smartAlert, trimObjectStrings } from '@/utils/genericMethods.js';
-import { getButtonText, getLabel, getPlaceholder } from '@/utils/i18n/i18nLabels';
 
 // 引入API接口
 import {
@@ -169,7 +203,9 @@ import {
     delFeeByIdApi,
     joinBillApi,
     getFeeTypeEnumApi,
-    getFeeMainTypeEnumApi
+    getFeeMainTypeEnumApi,
+    getFeeStatusCountApi,
+    getFeeStatAmountApi, // 金额统计接口
 } from '@/api/financeApi/receivables.js';
 import { getCustomerLikeQueryApi } from '@/api/baseApi/sku.js';
 
@@ -192,12 +228,16 @@ const feeMainTypeOptions = ref([]);
 const feeTypeOptions = ref([]);
 
 const cascaderRef = ref(null);
-const parentProps = { checkStrictly: true, expandTrigger: 'hover' };
+const parentProps = {
+    checkStrictly: true,
+    expandTrigger: 'hover',
+    emitPath: false,
+};
 
 // 搜索表单配置和初始值
 const formConfig = ref([]);
 const initValues = ref({
-    orgId: [],
+    orgId: '',
     warehouseCode: '',
     customerCodeList: [],
     feeMainTypeId: '',
@@ -206,6 +246,7 @@ const initValues = ref({
     createWay: '',
     orderNoList: [],
     billNoList: [],
+    statusIdList: [],
 });
 
 // 时间选择相关逻辑
@@ -236,6 +277,10 @@ const selectionRows = ref([]); // 当前选中的行
 const orderBy = ref(''); // 排序字段
 const pagination = ref({ currentPage: 1, pageSize: 100, total: 0 });
 
+// 新增：金额统计相关变量
+const statData = ref([]); // 金额统计数据
+const statLoading = ref(false); // 金额统计加载状态
+
 // 表格列定义
 const columns = ref([
     { label: '公司', prop: 'orgName', width: '120', sortable: true, fixed: 'left' },
@@ -252,7 +297,7 @@ const columns = ref([
     { label: '账单编号', prop: 'billNo', width: '160' },
     { label: '备注', prop: 'remark', width: '200' },
     { label: '关联单号', prop: 'orderNo', width: '160', sortable: true },
-    { label: '关联单据创建时间', prop: 'orderCreatedTime', width: '200' },
+    { label: '关联单据创建时间', prop: 'orderCreatedTime', width: '200', sortable: true },
     { label: '创建方式', prop: 'createWayName', width: '120', sortable: true },
     { label: '创建人', prop: 'createdBy', width: '110' },
     { label: '创建时间', prop: 'createdTime', width: '200', sortable: true },
@@ -268,12 +313,13 @@ const handleTimeChange = (data) => selectDateData.value = data;
 const handleSearch = (data) => {
     initValues.value = {
         ...data,
-        orgId: Array.isArray(data.orgId) && data.orgId.length > 0 ? data.orgId[data.orgId.length - 1] : '',
         timeType: selectDateData.value.dateType,
         timeBegin: selectDateData.value.dateRange ? selectDateData.value.dateRange[0] : '',
         timeEnd: selectDateData.value.dateRange ? selectDateData.value.dateRange[1] : '',
+        statusIdList: statusIdsArr.value,
     };
     getList(1, pagination.value.pageSize);
+    getStatus()
 };
 
 // 点击重置按钮触发
@@ -281,11 +327,28 @@ const handleReset = (data) => {
     selectDateData.value = { dateType: 10, dateRange: getDefaultDateRange() };
     initValues.value = { ...data, orgId: '', feeSubTypeId: '', dateType: 10, dateRange: getDefaultDateRange() };
     feeTypeOptions.value = [];
+    statusIdsArr.value = []
     handleCascaderChange();
     getList(1, pagination.value.pageSize);
+    getStatus()
 };
 
-// 获取表格数据列表
+// 新增：获取金额统计数据
+const getFeeStatAmount = async () => {
+    statLoading.value = true;
+    try {
+        const params = { ...trimObjectStrings(initValues.value) };
+        const res = await getFeeStatAmountApi(params);
+        statData.value = res.data || [];
+    } catch (e) {
+        console.error('金额统计接口调用失败：', e);
+        statData.value = [];
+    } finally {
+        statLoading.value = false;
+    }
+};
+
+// 获取表格数据列表（修改：调用后同步获取金额统计）
 const getList = async (page, pageSize, orderByStr = orderBy.value) => {
     loading.value = true;
     try {
@@ -294,6 +357,8 @@ const getList = async (page, pageSize, orderByStr = orderBy.value) => {
         tableData.value = res.data.rows || [];
         footer.value = res.data.footer ? res.data.footer[0] : {};
         pagination.value = { currentPage: res.data.page, pageSize, total: res.data.total };
+        // 同步获取金额统计
+        await getFeeStatAmount();
     } catch (e) {
         console.error(e);
         tableData.value = [];
@@ -404,8 +469,7 @@ const handleExport = () => exportDialogRef.value.openExportDialog();
 // 公司联级选择器变化时，更新客户列表
 const handleCascaderChange = async (e) => {
     if (e) nextTick(() => cascaderRef.value.togglePopperVisible());
-    const orgId = e ? e[e.length - 1] : '';
-    const result = await getCustomerLikeQueryApi({ keyword: '*', orgId });
+    const result = await getCustomerLikeQueryApi({ keyword: '*', orgId: e });
     customerOptions.value = result.data.map(item => ({ value: item.code, label: `${item.code}(${item.name})` }));
 };
 
@@ -418,6 +482,32 @@ const handleMainTypeChange = async (val) => {
         feeTypeOptions.value = res.data.map(i => ({ label: i.name, value: i.id }));
     }
 };
+// 获状态栏
+const getStatus = async () => {
+    const data = {
+        ...trimObjectStrings(initValues.value),
+    }
+    delete data.statusIdList
+    const res = await getFeeStatusCountApi(data)
+    statusIdsList.value = res.data
+    statusIdsArr.value = [...initValues.value.statusIdList]
+}
+// 状态栏
+const statusIdsList = ref([])
+// 状态栏数组
+const statusIdsArr = ref([])
+// 状态改变事件
+const handleStatusChange = async (e) => {
+    loading.value = true;
+    let list = [...statusIdsArr.value];
+
+    if (list.includes(null)) {
+        list = [];
+    }
+
+    initValues.value.statusIdList = list;
+    getList(pagination.value.currentPage, pagination.value.pageSize, orderBy.value);
+}
 
 // 组件挂载时初始化数据
 onMounted(async () => {
@@ -440,5 +530,95 @@ onMounted(async () => {
 
 :deep(.el-tag--info) {
     width: 45px;
+}
+
+// 金额统计区域样式
+.amount-statistic-container {
+    height: 32px;
+    display: flex;
+    align-items: center;
+    padding: 0 12px;
+    background: #f8f9fa;
+    border: 1px solid #e9ecef;
+    overflow-x: auto;
+    overflow-y: hidden;
+    white-space: nowrap;
+
+    &::-webkit-scrollbar {
+        width: 6px;
+        height: 6px;
+    }
+
+    &::-webkit-scrollbar-track {
+        background: #f1f1f1;
+        border-radius: 3px;
+    }
+
+    &::-webkit-scrollbar-thumb {
+        background: #c1c1c1;
+        border-radius: 3px;
+    }
+
+    &::-webkit-scrollbar-thumb:hover {
+        background: #a8a8a8;
+    }
+
+    .stat-loading {
+        color: #666;
+        font-size: 12px;
+        flex-shrink: 0;
+    }
+
+    .stat-content {
+        display: flex;
+        align-items: center;
+        flex-shrink: 0;
+
+        .stat-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-shrink: 0;
+
+            .stat-name {
+                color: #333333;
+                font-size: 14px;
+                font-weight: 600;
+                flex-shrink: 0;
+                margin-right: 4px;
+                margin-left: 8px;
+            }
+
+            .currency-list {
+                display: flex;
+                gap: 12px;
+                flex-shrink: 0;
+
+                .currency-item {
+                    display: flex;
+                    align-items: center;
+                    font-size: 14px;
+                    flex-shrink: 0;
+
+                    .currency-label {
+                        color: #666;
+                    }
+
+                    .currency-amount {
+                        color: #e6a23c;
+                        font-weight: 500;
+                    }
+                }
+            }
+        }
+
+        .stat-empty {
+            color: #999;
+            font-size: 12px;
+            text-align: center;
+            width: 100%;
+            flex-shrink: 0;
+        }
+    }
 }
 </style>

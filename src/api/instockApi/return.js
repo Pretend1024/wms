@@ -37,7 +37,7 @@ export const getInstockReturnReturnParcelStatusEnumApi = () => {
 }
 // 创建方式
 export const getInstockReturnReturnOrderCreateWayEnumApi = () => {
-    return http.post('/instock/return/returnOrder/createWayEnum') 
+    return http.post('/instock/return/returnOrder/createWayEnum')
 }
 
 // -----------------------------------------退件入库
@@ -75,7 +75,7 @@ export const getReturnOrderDestroyTypeEnumApi = () => {
     return http.post('/instock/returned/returnClaim/destroyTypeEnum')
 }
 // 验证认领
-export const verifyReturnOrderClaimApi = createPostRequestWithQuery('/instock/returned/returnClaim/checkTrackingNos')
+export const verifyReturnOrderClaimApi = createPostRequestWithQuery('/instock/returned/returnClaim/claimByTrackingNos')
 
 // 认领销毁
 export const destroyReturnOrderClaimApi = createPostRequestWithQuery('/instock/returned/returnClaim/destroy')

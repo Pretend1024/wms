@@ -1,9 +1,8 @@
 <template>
     <div class="table-container">
         <slot name="button"></slot>
-        <el-table :data="localData" border stripe :height="'95%'" style="width: 100%"
-            :row-class-name="props.getRowClass" :show-summary="hasSummary" :summary-method="summaryMethod">
-            <!-- 序号列 -->
+        <el-table :data="localData" border stripe style="width: 100%" :row-class-name="props.getRowClass"
+            :show-summary="hasSummary" :summary-method="summaryMethod">
             <el-table-column :label="indexLabel" width="55" fixed="left">
                 <template #default="{ $index }">
                     <div class="row-index-cell">
@@ -12,20 +11,23 @@
                 </template>
             </el-table-column>
 
-            <!-- 动态数据列 -->
-            <el-table-column v-for="(col, idx) in columns" :key="idx" :label="col.label" v-bind="getColumnProps(col)">
+            <el-table-column v-for="(col, idx) in columns" :key="idx" v-bind="getColumnProps(col)">
+                <template #header>
+                    <span>{{ col.label }}</span>
+                    <span v-if="col.required" style="color: #f56c6c; margin-right: 4px;">*</span>
+                </template>
+
                 <template v-if="col.slot" #default="scope">
-                    <!-- 增加 key 强制重渲染，保证每行输入都生效 -->
                     <div :key="`${scope.$index}-${col.prop}`">
                         <slot :name="col.slot" v-bind="scope" />
                     </div>
                 </template>
+
                 <template v-if="col.headerSlot" #header="scope">
                     <slot :name="col.headerSlot" v-bind="scope" />
                 </template>
             </el-table-column>
 
-            <!-- 操作列 - 支持插槽自定义 -->
             <el-table-column label="操作" width="130" fixed="right" v-if="controlsVisible">
                 <template #default="{ $index }">
                     <div class="btn-group">
@@ -42,14 +44,12 @@
 import { defineProps, defineEmits, reactive, watch, computed, defineExpose } from 'vue';
 
 const props = defineProps({
+    // columns 项现在支持 required: true 属性
     columns: { type: Array, required: true },
     data: { type: Array, default: () => [] },
     indexLabel: { type: String, default: '序号' },
-    // 控制按钮的显示，默认显示
     controlsVisible: { type: Boolean, default: true },
-    // 添加按钮的文字，可由外部传入，默认"添加行"
     addButtonText: { type: String, default: '添加行' },
-    // 行样式
     getRowClass: { type: Function, default: () => ({}) },
     summaryColumns: { type: Array, default: () => [] },
     summaryLabel: { type: String, default: '合计' }
@@ -75,10 +75,10 @@ function emptyRow() {
     return row;
 }
 
-// 获取列属性
+// 获取列属性 (过滤掉非原生的 el-table-column 属性，如 required 和 slot)
 function getColumnProps(col) {
     const p = {};
-    ['prop', 'width', 'fixed', 'showOverflowTooltip'].forEach(k => {
+    ['prop', 'width', 'fixed', 'showOverflowTooltip', 'align'].forEach(k => {
         if (col[k] !== undefined) p[k] = col[k];
     });
     return p;
@@ -90,7 +90,7 @@ function addRowAtEnd() {
     emit('update:data', [...localData]);
 }
 
-// 在指定位置后添加新行（保留此方法，如需内部调用）
+// 在指定位置后添加新行
 function addRow(index) {
     localData.splice(index + 1, 0, emptyRow());
     emit('update:data', [...localData]);
@@ -108,7 +108,6 @@ const hasSummary = computed(() => Array.isArray(props.summaryColumns) && props.s
 function summaryMethod({ columns, data }) {
     if (!hasSummary.value) return [];
     return columns.map((col, index) => {
-        // 第一列显示合计文字
         if (index === 0) {
             return props.summaryLabel;
         }
@@ -131,14 +130,11 @@ defineExpose({
 </script>
 
 <style scoped lang="scss">
+/* 样式部分保持不变 */
 .table-container {
     position: relative;
     margin-bottom: 16px;
     height: 90%;
-}
-
-.add-row-btn {
-    margin-bottom: 10px;
 }
 
 .row-index-cell {
@@ -149,14 +145,10 @@ defineExpose({
     height: 34px;
 }
 
-.delete-btn {
-    color: #f56c6c;
-    text-align: center;
-    cursor: pointer;
-
-    &:hover {
-        background-color: #f5e4e7;
-    }
+.btn-group {
+    display: flex;
+    gap: 8px;
+    justify-content: center;
 }
 
 :deep(.el-table__header-wrapper th) {
@@ -174,7 +166,6 @@ defineExpose({
     padding: 5px 0;
 }
 
-// 行样式
 :deep(.el-table__body-wrapper tbody tr.danger-row td) {
     background-color: #ffd4d4 !important;
 }

@@ -2,7 +2,7 @@
     <div class="viewArea">
         <div class="contentDiv">
             <p>基础信息</p>
-            <el-form :model="formData" :rules='rules' ref="formRef" label-width="115px">
+            <el-form :model="formData" :rules="rules" ref="formRef" label-width="115px">
                 <el-row>
                     <el-col :span="6">
                         <el-form-item label="仓库代码:" prop="warehouseCode">
@@ -22,7 +22,7 @@
                         </el-form-item>
                     </el-col>
                     <el-col :span="6">
-                        <el-form-item label="退件单号:" prop="orderNo">
+                        <el-form-item label="退件单号:">
                             <el-input v-model.trim="formData.orderNo" readonly />
                         </el-form-item>
                     </el-col>
@@ -35,321 +35,283 @@
                         </el-form-item>
                     </el-col>
                     <el-col :span="6">
-                        <el-form-item label="原出库单号:">
+                        <el-form-item label="原出库单号:" >
                             <el-input v-model.trim="formData.sourceOrderNo" />
                         </el-form-item>
                     </el-col>
-
                     <el-col :span="18">
                         <el-form-item label="备注:">
                             <el-input type="textarea" autosize v-model="formData.remark" />
                         </el-form-item>
                     </el-col>
-
                 </el-row>
             </el-form>
+
             <p style="margin-top: 20px;">退件包裹</p>
             <div class="tableDiv">
                 <returnOrderTable ref="parcelTableRef" :columns="parcelColumns" :data="parcelTableData"
                     @update:data="parcelTableData = $event" addButtonText="添加包裹">
-                    <template #trackingNo="scope">
-                        <el-input v-model="scope.row.trackingNo" placeholder="请输入物流跟踪号" />
+                    <template #trackingNo="{ row }">
+                        <el-input v-model="row.trackingNo" placeholder="请输入物流跟踪号" />
                     </template>
-                    <template #carrierCode="scope">
-                        <el-select v-model="scope.row.carrierCode" placeholder="请选择承运商">
+                    <template #carrierCode="{ row }">
+                        <el-select v-model="row.carrierCode" placeholder="请选择承运商">
                             <el-option v-for="item in carrierOptions" :label="item.label" :value="item.value"
                                 :key="item.value" />
                         </el-select>
                     </template>
-                    <template #length="scope">
+                    <template #length="{ row }">
                         <div style="display: flex;">
-                            <el-input v-model="scope.row.length" v-number placeholder="长" />
-                            <el-input v-model="scope.row.width" v-number placeholder="宽" />
-                            <el-input v-model="scope.row.height" v-number placeholder="高" />
+                            <el-input v-model="row.length" v-number placeholder="长" />
+                            <el-input v-model="row.width" v-number placeholder="宽" />
+                            <el-input v-model="row.height" v-number placeholder="高" />
                         </div>
                     </template>
-                    <template #weight="scope">
-                        <el-input v-model="scope.row.weight" v-number placeholder="输入重量" />
+                    <template #weight="{ row }">
+                        <el-input v-model="row.weight" v-number placeholder="重量" />
                     </template>
-                    <template #remark="scope">
-                        <el-input v-model="scope.row.remark" placeholder="请输入备注" />
+                    <template #remark="{ row }">
+                        <el-input v-model="row.remark" placeholder="备注" />
                     </template>
                 </returnOrderTable>
             </div>
+
             <p style="margin-top: 20px;">退件商品</p>
             <div class="tableDiv">
-                <returnOrderTable ref="forecastTableRef" :columns="forecastColumns" :data="forecastTableData"
-                    @update:data="forecastTableData = $event" addButtonText="添加商品">
-                    <template #sku="scope">
-                        <el-input v-model="scope.row.sku" placeholder="请输入/扫描sku" />
+                <receiptTable ref="forecastTableRef" :columns="forecastColumns" :data="forecastTableData"
+                    :merge-cols="['sku', 'fnsku', 'barcode', 'productName', 'forecastQty', 'remark']"
+                    :summary-columns="['forecastQty', 'receivedQty']" @update:data="forecastTableData = $event">
+                    <template #sku="{ row }">
+                        <el-input v-model="row.sku" placeholder="SKU" />
                     </template>
-                    <template #fnsku="scope">
-                        <el-input v-model="scope.row.fnsku" placeholder="请输入FNSKU" />
+                    <template #fnsku="{ row }">
+                        <el-input v-model="row.fnsku" placeholder="FNSKU" />
                     </template>
-                    <template #barcode="scope">
-                        <el-input v-model="scope.row.barcode" placeholder="请输入商品条码" />
+                    <template #barcode="{ row }">
+                        <el-input v-model="row.barcode" placeholder="条码" />
                     </template>
-                    <template #productName="scope">
-                        <el-input v-model="scope.row.productName" placeholder="请输入商品名称" />
+                    <template #productName="{ row }">
+                        <el-input v-model="row.productName" placeholder="品名" />
                     </template>
-                    <template #forecastQty="scope">
-                        <el-input v-model="scope.row.forecastQty" v-number placeholder="输入预报数量" />
+                    <template #forecastQty="{ row }">
+                        <el-input v-model="row.forecastQty" v-number />
                     </template>
-                    <template #remark="scope">
-                        <el-input v-model="scope.row.remark" placeholder="请输入备注" />
+                    <template #qualityId="{ row }">
+                        <el-select v-model="row.qualityId" placeholder="品质">
+                            <el-option v-for="item in qualityOptions" :key="item.value" :label="item.label"
+                                :value="item.value" />
+                        </el-select>
                     </template>
-                </returnOrderTable>
+                    <template #receivedQty="{ row }">
+                        <el-input v-model="row.receivedQty" v-number placeholder="实收" />
+                    </template>
+                </receiptTable>
             </div>
+
             <p style="margin-top: 20px;">附件信息</p>
             <div class="uploadDiv">
                 <el-upload ref="uploadRef" class="uploadView" v-model:file-list="fileList" drag :show-file-list="false"
                     multiple :auto-upload="true" :http-request="handleUpload" :before-upload="beforeUpload" :limit="5">
                     <el-icon class="el-icon--upload"><upload-filled /></el-icon>
-                    <div class="el-upload__text">
-                        拖放文件 或 <em>点击选择</em>
-                    </div>
+                    <div class="el-upload__text">拖放文件 或 <em>点击选择</em></div>
                     <template #tip>
-                        <div class="tip">
-                            <!-- 上传文件地址展示区域 -->
-                            <div v-if="uploadedFiles.length > 0" class="uploaded-files">
-                                <ul>
-                                    <li v-for="(file, index) in uploadedFiles" :key="index" class="file-item">
-                                        <a :href="file.url" target="_blank" rel="noopener noreferrer" class="file-link">
-                                            {{ file.name }}
-                                        </a>
-                                        <div @click="handleDeleteFile(index)" class="delete-btn">
-                                            删除
-                                        </div>
-                                    </li>
-                                </ul>
-                            </div>
+                        <div v-if="uploadedFiles.length > 0" class="uploaded-files">
+                            <ul>
+                                <li v-for="(file, index) in uploadedFiles" :key="index" class="file-item">
+                                    <a :href="file.url" target="_blank" class="file-link">{{ file.name }}</a>
+                                    <div @click="handleDeleteFile(index)" class="delete-btn">删除</div>
+                                </li>
+                            </ul>
                         </div>
                     </template>
                 </el-upload>
             </div>
+
             <div class="bottomDiv">
-                <el-button type="primary" @click="handleSubmit">{{getButtonText ('save') }}</el-button>
-                <el-button @click="handleClose">{{getButtonText ('close') }}</el-button>
+                <el-button type="primary" @click="handleSubmit">{{ getButtonText('save') }}</el-button>
+                <el-button @click="handleClose">{{ getButtonText('close') }}</el-button>
             </div>
         </div>
     </div>
-
 </template>
 
 <script setup name="编辑退件单">
+import { ref, onMounted } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
+import { ElLoading, ElMessage } from 'element-plus'
+import { UploadFilled } from '@element-plus/icons-vue'
 import { getWhWarehouseApi } from '@/api/baseApi/wh.js'
 import { getCustomerLikeQueryApi } from '@/api/baseApi/sku.js'
 import { getProductShipwayBrandListApi } from '@/api/productApi/shipway.js'
-import { getInstockReturnReturnOrderTypeEnumApi, updInstockReturnReturnOrderApi, getInstockReturnReturnParcelStatusEnumApi, getInstockReturnReturnOrderInfoApi } from '@/api/instockApi/return.js'
-import returnOrderTable from '@/components/table/returnOrder-table.vue'
+import {
+    getInstockReturnReturnOrderTypeEnumApi,
+    updInstockReturnReturnOrderApi,
+    getInstockReturnReturnOrderInfoApi
+} from '@/api/instockApi/return.js'
+import { getOrderQualityEnumApi } from '@/api/instockApi/order.js'
 import { uploadApi } from '@/api/baseApi/index.js'
 import { smartAlert } from '@/utils/genericMethods.js'
-import { useRoute } from 'vue-router';
-import router from '@/router/index.js'
-const route = useRoute()
+import { getButtonText } from '@/utils/i18n/i18nLabels'
+import returnOrderTable from '@/components/table/returnOrder-table.vue'
+import receiptTable from '../returnOrderIn/receiptTable.vue' // 使用要求的路径
 import tagsStore from '@/store/tags.js'
-let useTagsStore = tagsStore()
 import { useRefreshStore } from '@/store/refresh.js'
+
+const route = useRoute()
+const router = useRouter()
+const useTagsStore = tagsStore()
 const refreshStore = useRefreshStore()
 
-const poros = defineProps({
-    id: {
-        type: String,
-        default: ''
-    }
+const props = defineProps({
+    id: { type: String, default: '' }
 });
 
-const formRef = ref(null);
-// 表单数据
+const formRef = ref(null)
 const formData = ref({
-    orderNo: '', // 退件单号
-    warehouseCode: '', // 仓库代码
-    customerCode: '', // 客户代码
-    typeId: '', // 退件类型
-    sourceOrderNo: '', // 原出库单号
-    remark: '' // 备注
-});
-
-const rules = {
-    typeId: [
-        { required: true, message: '请选择退件类型', trigger: 'change' }
-    ],
-    warehouseCode: [
-        { required: true, message: '请选择仓库代码', trigger: 'change' }
-    ],
-    customerCode: [
-        { required: true, message: '请选择客户代码', trigger: 'change' }
-    ],
-    orderNo: [
-        { required: true, message: '请输入退件单号', trigger: 'blur' }
-    ],
-    sourceOrderNo: [
-        { required: true, message: '请输入原出库单号', trigger: 'blur' }
-    ]
-};
-
-// 表格数据
-const parcelTableData = ref([]);
-const forecastTableData = ref([]);
-const parcelTableRef = ref(null);
-const forecastTableRef = ref(null);
-const parcelColumns = [
-    { label: '物流跟踪号', prop: 'trackingNo', width: '220', slot: 'trackingNo' },
-    { label: '承运商', prop: 'carrierCode', width: '180', slot: 'carrierCode' },
-    { label: '尺寸(CM) 长-宽-高', prop: 'length', width: '340', slot: 'length' },
-    { label: '重量(KG)', prop: 'weight', width: '150', slot: 'weight' },
-    { label: '备注', prop: 'remark', width: '300', slot: 'remark' },
-]
-const forecastColumns = [
-    { label: 'SKU', prop: 'sku', width: '220', slot: 'sku' },
-    { label: '预报数量', prop: 'forecastQty', width: '170', slot: 'forecastQty' },
-    { label: 'FNSKU(选填)', prop: 'fnsku', width: '180', slot: 'fnsku' },
-    { label: '商品条码(选填)', prop: 'barcode', width: '280', slot: 'barcode' },
-    { label: '商品名称(选填)', prop: 'productName', width: '170', slot: 'productName' },
-    { label: '备注(选填)', prop: 'remark', width: '300', slot: 'remark' },
-]
-// 保存
-const handleSubmit = async () => {
-    await formRef.value.validate(async (valid) => {
-        if (valid) {
-            try {
-                const returnParcelAddDTOList = parcelTableRef.value.getData();
-                const returnProductForecastAddDTOList = forecastTableRef.value.getData();
-                let returnAttachmentAddDTOList = [];
-                if (uploadedFiles.value.length > 0) {
-                    returnAttachmentAddDTOList = uploadedFiles.value.map(file => ({
-                        attachmentName: file.name,
-                        attachmentUrl: file.url,
-                        parcelId: '',
-                        sku: ''
-                    }));
-                }
-                const data = {
-                    ...formData.value,
-                    returnParcelAddDTOList,
-                    returnProductForecastAddDTOList,
-                    returnAttachmentAddDTOList
-                };
-
-                const res = await updInstockReturnReturnOrderApi(data);
-                if (res.success) {
-                    refreshStore.shouldRefreshReturnOrderList = true;
-                    useTagsStore.tagsStore = useTagsStore.tagsStore.filter(item => item.path !== route.fullPath);
-                    router.push('/instock/return/returnOrder/list');
-                }
-                smartAlert(res.msg, res.success, 1000);
-            } catch (error) {
-                console.warn('子表单校验失败:', error);
-            }
-        }
-    });
-};
-
-// 关闭
-const handleClose = () => {
-    // 在标签页中删除当前页
-    useTagsStore.tagsStore = useTagsStore.tagsStore.filter(item => item.path !== route.fullPath)
-    router.push({ path: '/instock/return/returnOrder/list' })
-}
-
-// 上传文件相关
-const fileList = ref([])
-const uploadedFiles = ref([]) // 存储已上传的文件信息（包含名称和地址）
-
-// 文件类型校验保持不变
-const beforeUpload = (file) => {
-    if (uploadedFiles.value.length >= 5) {
-        smartAlert('最多上传5个文件', false)
-        return false
-    }
-    // 可以新增文件类型和大小校验
-    const isLt2M = file.size / 1024 / 1024 < 2;
-    if (!isLt2M) {
-        smartAlert('上传文件大小不能超过 2MB!', false)
-        return false
-    }
-    return true
-}
-
-// 上传文件处理
-const handleUpload = async (options) => {
-    const loadingInstance = ElLoading.service({ lock: true, text: '文件上传中...' })
-    try {
-        const res = await uploadApi(options.file, { path: 'temp' })
-        if (res.success) {
-            // 将上传成功的文件信息添加到列表
-            uploadedFiles.value.push({
-                name: options.file.name, // 文件名
-                url: res.data // 后端返回的文件地址
-            })
-            smartAlert(`文件 "${options.file.name}" 上传成功`, true, 1000)
-        } else {
-            smartAlert(`文件 "${options.file.name}" 上传失败: ${res.msg}`, false)
-        }
-    } catch (error) {
-        console.error('上传失败:', error)
-        smartAlert(`文件 "${options.file.name}" 上传失败`, false)
-    } finally {
-        loadingInstance.close()
-    }
-}
-
-// 删除已上传文件
-const handleDeleteFile = (index) => {
-    uploadedFiles.value.splice(index, 1)
-}
-
-// 筛选客户代码
-const customerOptions = ref([]);
-// 仓库下拉框数据
-const warehouseOptions = ref([])
-// 类型下拉框数据
-const typeOptions = ref([])
-// 承运商下拉框数据
-const carrierOptions = ref([])
-onMounted(async () => {
-    const loading = ElLoading.service({
-        lock: true,
-        target: ".contentDiv",
-        text: 'Loading'
-    })
-    // 仓库数据
-    const warehouseRes = await getWhWarehouseApi()
-    warehouseOptions.value = warehouseRes.data.map(item => ({
-        label: item.code + '(' + item.name + ')',
-        value: item.code
-    }))
-    // 退件类型
-    const typeRes = await getInstockReturnReturnOrderTypeEnumApi()
-    typeOptions.value = typeRes.data.map(item => ({
-        label: item.name,
-        value: item.id
-    }))
-    // 承运商数据
-    const carrierRes = await getProductShipwayBrandListApi()
-    carrierOptions.value = carrierRes.data.map(item => ({
-        label: item.name,
-        value: item.code
-    }))
-    const result = await getCustomerLikeQueryApi({ keyword: '*' });
-    customerOptions.value = result.data.map(item => ({
-        value: item.code,
-        label: item.code + '(' + item.name + ')'
-    }))
-    // 获取详情
-    const res = await getInstockReturnReturnOrderInfoApi({ id: poros.id });
-    if (res.success) {
-        formData.value = res.data;
-        parcelTableData.value = res.data.returnParcelList || [];
-        forecastTableData.value = res.data.returnProductForecastList || [];
-        uploadedFiles.value = res.data.returnAttachmentList.map(file => ({
-            name: file.attachmentName,
-            url: file.attachmentUrl
-        }));
-    }
-    loading.close();
+    id: '', orderNo: '', warehouseCode: '', customerCode: '', typeId: '', sourceOrderNo: '', remark: '', statusId: ''
 })
 
+const rules = {
+    typeId: [{ required: true, message: '请选择退件类型', trigger: 'change' }],
+}
+
+// 表格配置
+const parcelTableData = ref([])
+const forecastTableData = ref([])
+const parcelTableRef = ref(null)
+const forecastTableRef = ref(null)
+const uploadedFiles = ref([])
+const fileList = ref([])
+
+const parcelColumns = [
+    { label: '物流跟踪号', prop: 'trackingNo', width: '220', slot: 'trackingNo', required: true },
+    { label: '承运商', prop: 'carrierCode', width: '150', slot: 'carrierCode' },
+    { label: '尺寸(CM) 长-宽-高', prop: 'length', width: '260', slot: 'length' },
+    { label: '重量(KG)', prop: 'weight', width: '100', slot: 'weight' },
+    { label: '备注', prop: 'remark', width: '200', slot: 'remark' },
+]
+
+const forecastColumns = [
+    { label: 'SKU', prop: 'sku', width: '180', slot: 'sku', required: true },
+    { label: 'FNSKU', prop: 'fnsku', width: '180', slot: 'fnsku' },
+    { label: '品名', prop: 'productName', width: '180', slot: 'productName' },
+    { label: '预报数量', prop: 'forecastQty', width: '120', slot: 'forecastQty', required: true },
+    { label: '品质', prop: 'qualityId', width: '150', slot: 'qualityId' },
+    { label: '清点数量', prop: 'receivedQty', width: '120', slot: 'receivedQty' },
+    { label: '备注', prop: 'remark', width: '200', slot: 'remark' },
+]
+
+// 下拉数据
+const warehouseOptions = ref([]); const customerOptions = ref([]); const typeOptions = ref([]);
+const carrierOptions = ref([]); const qualityOptions = ref([]);
+
+onMounted(async () => {
+    const loading = ElLoading.service({ lock: true, text: 'Loading' })
+    try {
+        const [wh, type, carrier, quality, cust, info] = await Promise.all([
+            getWhWarehouseApi(),
+            getInstockReturnReturnOrderTypeEnumApi(),
+            getProductShipwayBrandListApi(),
+            getOrderQualityEnumApi(),
+            getCustomerLikeQueryApi({ keyword: '*' }),
+            getInstockReturnReturnOrderInfoApi({ id: props.id || route.query.id })
+        ])
+
+        warehouseOptions.value = wh.data.map(i => ({ label: `${i.code}(${i.name})`, value: i.code }))
+        typeOptions.value = type.data.map(i => ({ label: i.name, value: i.id }))
+        carrierOptions.value = carrier.data.map(i => ({ label: i.name, value: i.code }))
+        qualityOptions.value = quality.data.map(i => ({ label: i.name, value: i.id }))
+        customerOptions.value = cust.data.map(i => ({ label: `${i.code}(${i.name})`, value: i.code }))
+
+        if (info.success) {
+            formData.value = info.data
+            parcelTableData.value = info.data.returnParcelList || []
+            // 合并预报和实收数据用于展示
+            forecastTableData.value = mergeData(info.data.returnProductList || [], info.data.returnReceiptList || [])
+            uploadedFiles.value = (info.data.returnAttachmentList || []).map(f => ({
+                name: f.attachmentName, url: f.attachmentUrl
+            }))
+        }
+    } finally { loading.close() }
+})
+
+// 提交
+const handleSubmit = async () => {
+    await formRef.value.validate(async (valid) => {
+        if (!valid) return
+        const loading = ElLoading.service({ lock: true, text: 'Saving...' })
+        try {
+            const formattedGoods = forecastTableRef.value.getFormattedData()
+
+            const submitData = {
+                id: formData.value.id,
+                sourceOrderNo: formData.value.sourceOrderNo,
+                typeId: formData.value.typeId,
+                statusId: formData.value.statusId,
+                remark: formData.value.remark,
+                // 包裹列表
+                returnParcelAddDTOList: parcelTableRef.value.getData().map(p => ({ ...p, returnOrderId: formData.value.id })),
+                // 商品列表 (去重后的预报)
+                returnProductAddDTOList: Array.from(new Set(formattedGoods.map(g => g.sku))).map(sku => {
+                    const origin = formattedGoods.find(g => g.sku === sku)
+                    return { sku, fnsku: origin.fnsku, barcode: origin.barcode, productName: origin.productName, forecastQty: origin.forecastQty, remark: origin.remark }
+                }),
+                // 具体的清点实收详情
+                receiptAddDTOList: formattedGoods.filter(g => g.receivedQty > 0).map(g => ({
+                    returnOrderId: formData.value.id, sku: g.sku, qualityId: g.qualityId, receivedQty: g.receivedQty, remark: g.remark
+                })),
+                // 附件
+                returnAttachmentAddDTOList: uploadedFiles.value.map(f => ({
+                    returnOrderId: formData.value.id, attachmentName: f.name, attachmentUrl: f.url, isCustomerAdd: true
+                }))
+            }
+
+            const res = await updInstockReturnReturnOrderApi(submitData)
+            smartAlert(res.msg, res.success, 1000)
+            if (res.success) {
+                refreshStore.shouldRefreshReturnOrderList = true
+                handleClose()
+            }
+        } finally { loading.close() }
+    })
+}
+
+const handleClose = () => {
+    useTagsStore.tagsStore = useTagsStore.tagsStore.filter(item => item.path !== route.fullPath)
+    router.push('/instock/return/returnOrder/list')
+}
+
+// 上传
+const beforeUpload = (file) => (uploadedFiles.value.length < 5) || (smartAlert('最多上传5个文件', false) && false)
+const handleUpload = async (options) => {
+    const res = await uploadApi(options.file, { path: 'temp' })
+    if (res.success) uploadedFiles.value.push({ name: options.file.name, url: res.data })
+}
+const handleDeleteFile = (index) => uploadedFiles.value.splice(index, 1)
+
+// 合并函数逻辑
+function mergeData(forecast, receipt) {
+    const result = []
+    const skuMap = new Map()
+    forecast.forEach(f => skuMap.set(f.sku, { ...f, receivedQty: 0, qualityId: 10 }))
+    receipt.forEach(r => {
+        if (skuMap.has(r.sku)) {
+            const existing = skuMap.get(r.sku)
+            if (existing._used) {
+                result.push({ ...existing, forecastQty: 0, receivedQty: r.receivedQty, qualityId: r.qualityId })
+            } else {
+                existing.receivedQty = r.receivedQty
+                existing.qualityId = r.qualityId
+                existing._used = true
+                result.push(existing)
+            }
+        } else {
+            result.push({ ...r, forecastQty: 0 })
+        }
+    })
+    forecast.forEach(f => { if (!skuMap.get(f.sku)._used) result.push(skuMap.get(f.sku)) })
+    return result.map(({ _used, ...rest }) => rest)
+}
 </script>
 
 <style scoped lang="scss">
@@ -359,64 +321,54 @@ onMounted(async () => {
     width: 1200px;
 }
 
-.bottomDiv {
-    margin-top: 10px;
+.tableDiv {
     width: 1200px;
-    display: flex;
-    justify-content: center;
+    margin-bottom: 20px;
 }
 
 .uploadDiv {
     width: 1200px;
 }
 
-// 上传样式
+.bottomDiv {
+    width: 1200px;
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+}
+
 .uploaded-files {
     background-color: #f5f7fa;
     border-radius: 4px;
-    margin-top: 5px;
+    margin-top: 10px;
 
     ul {
-        padding: 0 10px;
-        font-size: 16px;
+        padding: 0 15px;
+        list-style: none;
     }
-}
 
-.file-item {
-    display: flex;
-    align-items: center;
-    margin: 3px 0;
-    padding: 8px 0;
-    border-bottom: 1px dashed #e4e7ed;
-}
+    .file-item {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 8px 0;
+        border-bottom: 1px dashed #ddd;
+    }
 
-.file-item:last-child {
-    border-bottom: none;
-}
+    .file-link {
+        color: #409eff;
+        text-decoration: none;
 
-.file-link {
-    word-break: break-all;
-    color: #409eff;
-    text-decoration: none;
-}
+        &:hover {
+            text-decoration: underline;
+        }
+    }
 
-.file-link:hover {
-    text-decoration: underline;
-}
-
-.delete-btn {
-    color: #f56c6c;
-    padding: 8px;
-    font-size: 16px;
-    margin-left: auto;
-}
-
-.delete-btn:hover {
-    cursor: pointer;
-    background-color: #f56c6c23;
-}
-
-:deep(.el-upload-dragger) {
-    padding: 5px 0;
+    .delete-btn {
+        color: #f56c6c;
+        cursor: pointer;
+        font-size: 14px;
+        margin-left: 20px;
+    }
 }
 </style>

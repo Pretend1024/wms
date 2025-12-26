@@ -119,7 +119,6 @@ const initValues = ref({
 // 搜索事件
 const handleSearch = (data) => {
     loading.value = true;
-    data.orgId = data.orgId.length > 0 ? data.orgId[data.orgId.length - 1] : ''
     initValues.value = {
         ...data,
     }
@@ -326,7 +325,8 @@ const companyOptions = ref([]);
 const cascaderRef = ref(null);
 const parentProps = {
     checkStrictly: true,
-    expandTrigger: 'hover'
+    expandTrigger: 'hover',
+    emitPath: false,
 };
 // 公司改变事件
 const handleCascaderChange = async (e) => {
@@ -335,8 +335,7 @@ const handleCascaderChange = async (e) => {
             cascaderRef.value.togglePopperVisible()
         });
     }
-    const orgId = e ? e[e.length - 1] : '';
-    const result = await api.getCustomerLikeQueryApi({ keyword: '*', orgId });
+    const result = await api.getCustomerLikeQueryApi({ keyword: '*', orgId: e });
     customerOptions.value = result.data.map(item => ({
         value: item.code,
         label: item.code + '(' + item.name + ')'

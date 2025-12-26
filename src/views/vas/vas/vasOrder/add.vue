@@ -128,7 +128,7 @@
                                     <el-button type="primary" size="small">
                                         {{ (row.attachments && row.attachments.length > 0) ?
                                             $t('vas_vas_vasOrder_add.continueUpload') :
-                                        $t('vas_vas_vasOrder_add.uploadAttachment') }}
+                                            $t('vas_vas_vasOrder_add.uploadAttachment') }}
                                         <!-- + 继续上传 / 上传附件 -->
                                     </el-button>
                                 </el-upload>
@@ -148,7 +148,7 @@
                 <div class="section-action">
                     <el-button type="primary" @click="fetchFeeData" size="small">{{
                         $t('vas_vas_vasOrder_add.systemCalculate')
-                        }}</el-button> <!-- 系统计算 -->
+                    }}</el-button> <!-- 系统计算 -->
                 </div>
             </div>
 
@@ -173,7 +173,7 @@
                                 :placeholder="$t('vas_vas_vasOrder_add.selectCurrencyType')" clearable filterable>
                                 <!-- 请选择货币类型 -->
                                 <el-option v-for="item in currencyOptions" :key="item.id" :label="item.name"
-                                    :value="item.code" />
+                                    :value="item.id" />
                             </el-select>
                         </template>
                         <template #createWay="{ row }">
@@ -221,7 +221,7 @@ import {
 import { getOrgListCompanyApi } from '@/api/baseApi/org.js';
 import { getCustomerLikeQueryApi, getSkuSkuDataBySkuApi } from '@/api/baseApi/sku.js'
 import { getWhWarehouseApi } from '@/api/baseApi/wh.js'
-import { getCurrencyEnumApi } from '@/api/baseApi/index.js';
+import { getCurrencyListApi } from '@/api/baseApi/index.js';
 import { ref, reactive, onMounted, nextTick } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import generalAddTable from '@/components/table/generalAddTable.vue';
@@ -269,7 +269,8 @@ const companyOptions = ref([]);
 const cascaderRef = ref(null);
 const parentProps = {
     checkStrictly: true,
-    expandTrigger: 'hover'
+    expandTrigger: 'hover',
+    emitPath: false,
 };
 // 公司改变事件
 const handleCascaderChange = async (e) => {
@@ -278,7 +279,7 @@ const handleCascaderChange = async (e) => {
             cascaderRef.value.togglePopperVisible()
         });
     }
-    const orgId = e ? e[e.length - 1] : '';
+    const orgId = e ? e : '';
     const result = await getCustomerLikeQueryApi({ keyword: '*', orgId });
     customerOptions.value = result.data.map(item => ({ id: item.code, label: `${item.code}(${item.name})`, value: item.id }))
 };
@@ -343,7 +344,6 @@ const handleSave = async () => {
 
         const submitData = {
             ...formData,
-            orgId: formData.orgId[formData.orgId.length - 1],
             vasOrderItemList: formatItemList,
             vasOrderFeeList: (formatFeeList.length === 1 && Object.keys(formatFeeList[0]).length === 1 && 'createWay' in formatFeeList[0]) ? [] : formatFeeList
         };
@@ -542,7 +542,12 @@ onMounted(async () => {
             { key: "客户", api: getCustomerLikeQueryApi({ keyword: "*" }), handleSuccess: (data) => (customerOptions.value = data.map((item) => ({ id: item.code, label: `${item.code}(${item.name})`, value: item.id }))) },
             { key: "服务类型", api: getVasServiceTypeListApi(), handleSuccess: (data) => (serviceTypeOptions.value = data || []) },
             { key: "费用类型", api: getVasOrderFeeTypeEnumApi(), handleSuccess: (data) => (feeTypeOptions.value = data || []) },
-            { key: "货币类型", api: getCurrencyEnumApi(), handleSuccess: (data) => (currencyOptions.value = data || []) },
+            {
+                key: "货币类型", api: getCurrencyListApi(), handleSuccess: (data) => (currencyOptions.value = data.map(item => ({
+                    id: item.currency,
+                    name: item.remark
+                })) || [])
+            },
             { key: "费用创建类型", api: getVasOrderFeeCreateTypeEnumApi(), handleSuccess: (data) => (feeCreateTypeOptions.value = data || []) },
             { key: "服务单位", api: getVasServiceTypeUnitEnumApi(), handleSuccess: (data) => (unitOptions.value = data || []) }
         ];

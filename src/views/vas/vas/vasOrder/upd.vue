@@ -100,7 +100,7 @@
                                 <!-- 未选择服务类型 -->
                                 <span v-if="item.sku"> - {{ item.sku }}</span>
                                 <span v-if="item.planQty"> ({{ $t('vas_vas_vasOrder_upd.planQty') }}: {{ item.planQty
-                                    }}{{ item.unit }})</span> <!-- 计划数量 -->
+                                }}{{ item.unit }})</span> <!-- 计划数量 -->
                             </span>
                             <el-button type="text" style="margin-right: 10px;" size="mini"
                                 @click.stop="deleteServiceItem(index)">
@@ -297,7 +297,7 @@
                                 :placeholder="$t('vas_vas_vasOrder_upd.selectCurrencyType')" clearable filterable>
                                 <!-- 请选择货币类型 -->
                                 <el-option v-for="item in currencyOptions" :key="item.id" :label="item.name"
-                                    :value="item.code" />
+                                    :value="item.id" />
                             </el-select>
                         </template>
                         <template #createWay="{ row }">
@@ -348,7 +348,7 @@ import { getOrgListCompanyApi } from '@/api/baseApi/org.js';
 import { getUserOperatorUserListApi } from '@/api/sysApi/user.js'
 import { getCustomerLikeQueryApi, getSkuSkuDataBySkuApi } from '@/api/baseApi/sku.js'
 import { getWhWarehouseApi } from '@/api/baseApi/wh.js'
-import { getCurrencyEnumApi } from '@/api/baseApi/index.js';
+import { getCurrencyListApi } from '@/api/baseApi/index.js';
 import { ref, reactive, onMounted, nextTick, toRefs } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import generalAddTable from '@/components/table/generalAddTable.vue';
@@ -410,7 +410,8 @@ const companyOptions = ref([]);
 const cascaderRef = ref(null);
 const parentProps = {
     checkStrictly: true,
-    expandTrigger: 'hover'
+    expandTrigger: 'hover',
+    emitPath: false,
 };
 // 公司改变事件
 const handleCascaderChange = async (e) => {
@@ -419,7 +420,7 @@ const handleCascaderChange = async (e) => {
             cascaderRef.value.togglePopperVisible()
         });
     }
-    const orgId = e ? e[e.length - 1] : '';
+    const orgId = e ? e : '';
     const result = await getCustomerLikeQueryApi({ keyword: '*', orgId });
     customerOptions.value = result.data.map(item => ({ id: item.code, label: `${item.code}(${item.name})`, value: item.id }))
 };
@@ -949,7 +950,12 @@ onMounted(async () => {
         { key: "客户", api: getCustomerLikeQueryApi({ keyword: "*" }), handleSuccess: (data) => (customerOptions.value = data.map((item) => ({ id: item.code, label: `${item.code}(${item.name})`, value: item.id }))) },
         { key: "服务类型", api: getVasServiceTypeListApi(), handleSuccess: (data) => (serviceTypeOptions.value = data || []) },
         { key: "费用类型", api: getVasOrderFeeTypeEnumApi(), handleSuccess: (data) => (feeTypeOptions.value = data || []) },
-        { key: "货币类型", api: getCurrencyEnumApi(), handleSuccess: (data) => (currencyOptions.value = data || []) },
+        {
+            key: "货币类型", api: getCurrencyListApi(), handleSuccess: (data) => (currencyOptions.value = data.map(item => ({
+                id: item.currency,
+                name: item.remark
+            })) || [])
+        },
         { key: "费用创建类型", api: getVasOrderFeeCreateTypeEnumApi(), handleSuccess: (data) => (feeCreateTypeOptions.value = data || []) },
         { key: "服务单位", api: getVasServiceTypeUnitEnumApi(), handleSuccess: (data) => (unitOptions.value = data || []) },
         { key: "执行人", api: getUserOperatorUserListApi(), handleSuccess: (data) => { operatorUserOptions.value = data || []; } },

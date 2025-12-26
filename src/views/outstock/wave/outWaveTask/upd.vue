@@ -237,7 +237,7 @@ const handleClose = () => {
 
 // 关键：定义库存范围数据，结构与inventoryRangeForm组件的formData完全对齐
 const inventoryData = reactive({
-    inOrderIds: '', // 入库单（字符串，多值用逗号分隔）
+    inOrderNoList: '', // 入库单（字符串，多值用逗号分隔）
     onShelfStartTime: '', // 上架开始时间（YYYY-MM-DD）
     onShelfEndTime: '', // 上架结束时间（YYYY-MM-DD）
     zoneCodes: '', // 库区编码（字符串，多值用逗号分隔）
@@ -250,7 +250,7 @@ const inventoryData = reactive({
 // 接收弹窗返回的选中数据，并处理成表单提交前格式
 const handleTemplateSelect = (selectedData) => {
     if (!selectedData) return; // 防止无数据时报错
-    
+
     // 1. 处理「数组类型字段」：模板中存储的是JSON字符串，需转成数组（与formData格式对齐）
     formData.warehouseCodes = selectedData.warehouseCodes
         ? JSON.parse(selectedData.warehouseCodes)
@@ -263,7 +263,7 @@ const handleTemplateSelect = (selectedData) => {
     formData.shipwayCodes = selectedData.shipwayCodes
         ? JSON.parse(selectedData.shipwayCodes)
         : []; // 发货渠道：数组格式
-    formData.orgId = selectedData.orgId ? [selectedData.orgId] : []; // 公司ID：数组格式
+    formData.orgId = selectedData.orgId ? selectedData.orgId : ''; // 公司ID：数组格式
 
     // 2. 处理「订单时间字段」：直接复用模板时间（格式与date-picker输出一致：YYYY-MM-DD HH:mm:ss）
     formData.orderStartTime = selectedData.orderStartTime || '';
@@ -344,7 +344,7 @@ const handleTemplateSelect = (selectedData) => {
 
     // 3. 核心：库存范围数据处理（按子组件字段格式解析）
     // 3.1 基础库存字段（字符串类型，多值用逗号分隔）
-    inventoryData.inOrderIds = selectedData.inOrderIds || ''; // 入库单：直接赋值字符串
+    inventoryData.inOrderNoList = selectedData.inOrderNoList || ''; // 入库单：直接赋值字符串
     inventoryData.zoneCodes = selectedData.zoneCodes || ''; // 库区：直接赋值字符串（子组件用逗号分隔多值）
     inventoryData.locationCodes = selectedData.locationCodes || ''; // 库位：同上
     inventoryData.excludeZoneCodes = selectedData.excludeZoneCodes || ''; // 排除库区：同上
@@ -418,7 +418,8 @@ const companyOptions = ref([]);
 const cascaderRef = ref(null);
 const parentProps = {
     checkStrictly: true,
-    expandTrigger: 'hover'
+    expandTrigger: 'hover',
+    emitPath: false,
 };
 onMounted(async () => {
     try {

@@ -1,7 +1,7 @@
 <template>
     <el-dialog v-model="visible" :title="$t('instock_returned_returnClaim_list.title')" width="450" align-center
         :show-close="false" :close-on-click-modal="false" destroy-on-close>
-        <el-form ref="formRef" :model="formData" label-width="110px" style="height: 70px;">
+        <el-form ref="formRef" :model="formData" label-width="90px" style="height: 70px;">
             <el-form-item :label="getLabel('orderNo')" v-if="!isMulti">
                 <el-input v-model="formData.orderNo" clearable :placeholder="getPlaceholder('orderNo')" />
             </el-form-item>
@@ -78,6 +78,6 @@ defineExpose({
 
 <style scoped>
 :deep(.formatted-input-wrapper) {
-    width: 80%;
+    width: 100%;
 }
 </style>

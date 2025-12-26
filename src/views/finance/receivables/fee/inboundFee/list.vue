@@ -82,16 +82,50 @@
                 @selection-change="handleSelectionChange" @page-change="handlePageChange" @sort-change="handleTableSort"
                 :tableId="'finance/receivables/fee/list/inboundFee'">
                 <template #table-buttons>
-                    <el-button type="primary" @click="handleAdd" v-permission="'receivableFree:add'" :icon="Plus">{{
-                        getButtonText('add') }}</el-button>
-                    <el-button type="danger" @click="handleDel" v-permission="'receivableFree:delete'" :icon="Delete">{{
-                        getButtonText('del') }}</el-button>
-                    <el-button type="success" @click="handleImport" :icon="Upload">{{ getButtonText('importCreate')
-                    }}</el-button>
-                    <el-button type="success" @click="handleExport" :icon="Share">{{ getButtonText('export')
-                    }}</el-button>
-                    <el-button type="primary" @click="joinBillVisible = true" :icon="Money">{{ getButtonText('joinBill')
-                    }}</el-button>
+                    <div class="tableTopButtons">
+                        <div class="statusIds">
+                            <el-checkbox-group v-model="statusIdsArr" @change="handleStatusChange">
+                                <el-checkbox v-for="item in statusIdsList" :key="item.id" :label="item.id">
+                                    {{ item.name + '[' + item.qty + ']' }}
+                                </el-checkbox>
+                            </el-checkbox-group>
+                        </div>
+                        <div class="btns">
+                            <div class="amount-statistic-container">
+                                <div class="stat-loading" v-if="statLoading">金额统计加载中...</div>
+                                <div class="stat-content" v-else>
+                                    <div v-for="item in statData" :key="item.id" class="stat-item">
+                                        <div class="stat-name">{{ item.name + ':' || '费用统计' }}</div>
+                                        <div class="currency-list">
+                                            <div v-for="currencyItem in item.currencyAmounts"
+                                                :key="currencyItem.currency" class="currency-item">
+                                                <span class="currency-label">{{
+                                                    currencyItem.currency ? currencyItem.currency + '：' : '' }}</span>
+                                                <span class="currency-amount">{{ currencyItem.totalFeeAmount ?
+                                                    currencyItem.totalFeeAmount.toFixed(3) : '暂无'
+                                                }}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="stat-empty" v-if="statData.length === 0">暂无统计数据</div>
+                                </div>
+                            </div>
+                            <el-button type="primary" @click="handleAdd" v-permission="'receivableFree:add'"
+                                :icon="Plus">{{
+                                    getButtonText('add') }}</el-button>
+                            <el-button type="danger" @click="handleDel" v-permission="'receivableFree:delete'"
+                                :icon="Delete">{{
+                                    getButtonText('del') }}</el-button>
+                            <el-button type="success" @click="handleImport" :icon="Upload">{{
+                                getButtonText('importCreate')
+                                }}</el-button>
+                            <el-button type="success" @click="handleExport" :icon="Share">{{ getButtonText('export')
+                                }}</el-button>
+                            <el-button type="primary" @click="joinBillVisible = true" :icon="Money">{{
+                                getButtonText('joinBill')
+                                }}</el-button>
+                        </div>
+                    </div>
                 </template>
                 <template #customBtn="{ row }">
                     <div style="display: flex;">
@@ -140,7 +174,16 @@ import JoinBillDialog from '../JoinBillDialog.vue';
 import FeeDialog from '../FeeDialog.vue';
 import { smartAlert, trimObjectStrings } from '@/utils/genericMethods.js';
 import { getButtonText, getLabel, getPlaceholder } from '@/utils/i18n/i18nLabels';
-import { getFeePageApi, addFeeApi, updFeeByIdApi, delFeeByIdApi, joinBillApi, getFeeTypeEnumApi } from '@/api/financeApi/receivables.js';
+import {
+    getFeePageApi,
+    addFeeApi,
+    updFeeByIdApi,
+    delFeeByIdApi,
+    joinBillApi,
+    getFeeTypeEnumApi,
+    getFeeStatusCountApi, // 新增
+    getFeeStatAmountApi  // 新增
+} from '@/api/financeApi/receivables.js';
 import { getCustomerLikeQueryApi } from '@/api/baseApi/sku.js';
 
 const router = useRouter();
@@ -156,12 +199,16 @@ const { companyOptions, warehouseOptions, statusOptions, createWayOptions, curre
 const customerOptions = ref([]);
 const feeTypeOptions = ref([]);
 const cascaderRef = ref(null);
-const parentProps = { checkStrictly: true, expandTrigger: 'hover' };
+const parentProps = {
+    checkStrictly: true,
+    expandTrigger: 'hover',
+    emitPath: false,
+};
 
 const formConfig = ref([]);
 // 初始化查询参数：feeMainTypeId 固定为 1 (入库)
 const initValues = ref({
-    orgId: [], warehouseCode: '', customerCodeList: [], feeSubTypeId: '', statusId: '', createWay: '', orderNoList: [], billNoList: [], feeMainTypeId: 1
+    orgId: '', warehouseCode: '', customerCodeList: [], feeSubTypeId: '', statusId: '', createWay: '', orderNoList: [], billNoList: [], feeMainTypeId: 1, statusIdList: []
 });
 
 const dateSelectRef = ref(null);
@@ -181,13 +228,19 @@ const selectionRows = ref([]);
 const orderBy = ref('');
 const pagination = ref({ currentPage: 1, pageSize: 100, total: 0 });
 
-// 表格列定义（入库费用特定列）
+// 新增：金额统计与状态栏相关变量
+const statData = ref([]);
+const statLoading = ref(false);
+const statusIdsList = ref([]);
+const statusIdsArr = ref([]);
+
+// 表格列定义
 const columns = ref([
     { label: '公司', prop: 'orgName', width: '120', sortable: true, fixed: 'left' },
     { label: '仓库', prop: 'warehouseCode', width: '100', sortable: true, fixed: 'left' },
     { label: '客户', prop: 'customerCode', width: '180', sortable: true, fixed: 'left', slot: 'customer' },
     { label: '账单编号', prop: 'billNo', width: '160' },
-    { label: '入库单号', prop: 'orderNo', width: '160', sortable: true }, // 区别点：入库单号
+    { label: '入库单号', prop: 'orderNo', width: '160', sortable: true },
     { label: '入库日期', prop: 'orderCreatedTime', width: '200' },
     { label: '费用小类', prop: 'feeSubTypeName', width: '120', sortable: true },
     { label: '创建方式', prop: 'createWayName', width: '120', sortable: true },
@@ -211,29 +264,78 @@ const columns = ref([
 ]);
 
 const handleTimeChange = (data) => selectDateData.value = data;
+
+// 金额统计接口
+const getFeeStatAmount = async () => {
+    statLoading.value = true;
+    try {
+        const params = { ...trimObjectStrings(initValues.value) };
+        const res = await getFeeStatAmountApi(params);
+        statData.value = res.data || [];
+    } catch (e) {
+        console.error(e); statData.value = [];
+    } finally {
+        statLoading.value = false;
+    }
+};
+
+// 状态栏接口
+const getStatus = async () => {
+    const data = { ...trimObjectStrings(initValues.value) };
+    delete data.statusIdList;
+    const res = await getFeeStatusCountApi(data);
+    statusIdsList.value = res.data;
+    statusIdsArr.value = [...initValues.value.statusIdList];
+};
+
 // 查询操作
 const handleSearch = (data) => {
-    initValues.value = { ...data, orgId: Array.isArray(data.orgId) && data.orgId.length > 0 ? data.orgId[data.orgId.length - 1] : '', timeType: selectDateData.value.dateType, timeBegin: selectDateData.value.dateRange ? selectDateData.value.dateRange[0] : '', timeEnd: selectDateData.value.dateRange ? selectDateData.value.dateRange[1] : '' };
+    initValues.value = {
+        ...data,
+        timeType: selectDateData.value.dateType,
+        timeBegin: selectDateData.value.dateRange ? selectDateData.value.dateRange[0] : '',
+        timeEnd: selectDateData.value.dateRange ? selectDateData.value.dateRange[1] : '',
+        statusIdList: statusIdsArr.value,
+        feeMainTypeId: 1
+    };
     getList(1, pagination.value.pageSize);
+    getStatus();
 };
-// 重置操作：重置时需保留 feeMainTypeId = 1
+
+// 重置操作
 const handleReset = (data) => {
     selectDateData.value = { dateType: 10, dateRange: getDefaultDateRange() };
-    initValues.value = { ...data, orgId: '', dateType: 10, dateRange: getDefaultDateRange(), feeMainTypeId: 1 };
-    handleCascaderChange(); getList(1, pagination.value.pageSize);
+    initValues.value = { ...data, orgId: '', dateType: 10, dateRange: getDefaultDateRange(), feeMainTypeId: 1, statusIdList: [] };
+    statusIdsArr.value = [];
+    handleCascaderChange();
+    getList(1, pagination.value.pageSize);
+    getStatus();
 };
+
 // 获取列表
 const getList = async (page, pageSize, orderByStr = orderBy.value) => {
     loading.value = true;
     try {
         const params = { ...trimObjectStrings(initValues.value) };
         const res = await getFeePageApi({ page, pageSize, orderBy: orderByStr, ...params });
-        tableData.value = res.data.rows || []; footer.value = res.data.footer ? res.data.footer[0] : {}; pagination.value = { currentPage: res.data.page, pageSize, total: res.data.total };
+        tableData.value = res.data.rows || [];
+        footer.value = res.data.footer ? res.data.footer[0] : {};
+        pagination.value = { currentPage: res.data.page, pageSize, total: res.data.total };
+        await getFeeStatAmount();
     } catch (e) { console.error(e); tableData.value = []; } finally { loading.value = false; }
 };
+
 const handleSelectionChange = (val) => selectionRows.value = val;
 const handlePageChange = ({ pageSize, currentPage }) => getList(currentPage, pageSize);
 const handleTableSort = (sort) => { orderBy.value = sort; getList(pagination.value.currentPage, pagination.value.pageSize); };
+
+// 状态改变事件
+const handleStatusChange = async (e) => {
+    let list = [...statusIdsArr.value];
+    if (list.includes(null)) list = [];
+    initValues.value.statusIdList = list;
+    getList(1, pagination.value.pageSize);
+};
 
 // 弹窗逻辑
 const centerDialogVisible = ref(false); const dialogMode = ref('add'); const editInitData = ref({}); const dialogLoading = ref(false);
@@ -243,7 +345,7 @@ const handleDialogConfirm = async (formData) => {
     dialogLoading.value = true;
     try {
         let res = dialogMode.value === 'add' ? await addFeeApi({ ...formData }) : await updFeeByIdApi({ id: formData.id, confirmFeeAmount: formData.confirmFeeAmount, remark: formData.remark });
-        smartAlert(res.msg, res.success, 1000); if (res.success) { centerDialogVisible.value = false; getList(pagination.value.currentPage, pagination.value.pageSize); }
+        smartAlert(res.msg, res.success, 1000); if (res.success) { centerDialogVisible.value = false; getList(pagination.value.currentPage, pagination.value.pageSize); getStatus(); }
     } catch (e) { console.error(e); } finally { dialogLoading.value = false; }
 };
 
@@ -257,22 +359,26 @@ const handleDel = () => {
         promptMessage.value = '操作完成'; loading.value = false;
     }).catch(() => { });
 };
-const resultClose = () => { resultDialogVisible.value = false; getList(pagination.value.currentPage, pagination.value.pageSize); };
+const resultClose = () => { resultDialogVisible.value = false; getList(pagination.value.currentPage, pagination.value.pageSize); getStatus(); };
 
 // 加入账单逻辑
 const joinBillVisible = ref(false);
 const handleJoinBillConfirm = async (formData) => {
-    // typeId: 10 代表入库账单类型
     const params = { option: formData.method, billIdNo: formData.targetBillNo, queryCondition: {} };
     if (formData.scope === 'selection') params.queryCondition.idList = selectionRows.value.map(item => item.id); else params.queryCondition = { ...trimObjectStrings(initValues.value) };
-    try { const res = await joinBillApi(params); smartAlert(res.msg, res.success, 1000, true); if (res.success) { joinBillVisible.value = false; getList(pagination.value.currentPage, pagination.value.pageSize); } } catch (e) { console.error(e); smartAlert('操作异常', false); }
+    try { const res = await joinBillApi(params); smartAlert(res.msg, res.success, 1000, true); if (res.success) { joinBillVisible.value = false; getList(pagination.value.currentPage, pagination.value.pageSize); getStatus(); } } catch (e) { console.error(e); smartAlert('操作异常', false); }
 };
 const handleImport = () => router.push({ name: '导入文件', params: { typeId: 610, typeName: '入库单应收费用' } });
 const exportDialogRef = ref(null); const handleExport = () => exportDialogRef.value.openExportDialog();
-const handleCascaderChange = async (e) => { if (e) nextTick(() => cascaderRef.value.togglePopperVisible()); const orgId = e ? e[e.length - 1] : ''; const result = await getCustomerLikeQueryApi({ keyword: '*', orgId }); customerOptions.value = result.data.map(item => ({ value: item.code, label: `${item.code}(${item.name})` })); };
+const handleCascaderChange = async (e) => { if (e) nextTick(() => cascaderRef.value.togglePopperVisible()); const result = await getCustomerLikeQueryApi({ keyword: '*', orgId: e }); customerOptions.value = result.data.map(item => ({ value: item.code, label: `${item.code}(${item.name})` })); };
 
-// 初始化：获取费用大类为1（入库）的费用小类列表
-onMounted(async () => { customerOptions.value = props.initialCustomerOptions; const feeTypeRes = await getFeeTypeEnumApi({ mainTypeId: 1 }); feeTypeOptions.value = feeTypeRes.data.map(i => ({ label: i.name, value: i.id })); });
+// 初始化
+onMounted(async () => {
+    customerOptions.value = props.initialCustomerOptions;
+    const feeTypeRes = await getFeeTypeEnumApi({ mainTypeId: 1 });
+    feeTypeOptions.value = feeTypeRes.data.map(i => ({ label: i.name, value: i.id }));
+    getStatus();
+});
 </script>
 
 <style scoped lang="scss">
@@ -288,5 +394,95 @@ onMounted(async () => { customerOptions.value = props.initialCustomerOptions; co
 
 :deep(.el-tag--info) {
     width: 45px;
+}
+
+// 金额统计区域样式
+.amount-statistic-container {
+    height: 32px;
+    display: flex;
+    align-items: center;
+    padding: 0 12px;
+    background: #f8f9fa;
+    border: 1px solid #e9ecef;
+    overflow-x: auto;
+    overflow-y: hidden;
+    white-space: nowrap;
+
+    &::-webkit-scrollbar {
+        width: 6px;
+        height: 6px;
+    }
+
+    &::-webkit-scrollbar-track {
+        background: #f1f1f1;
+        border-radius: 3px;
+    }
+
+    &::-webkit-scrollbar-thumb {
+        background: #c1c1c1;
+        border-radius: 3px;
+    }
+
+    &::-webkit-scrollbar-thumb:hover {
+        background: #a8a8a8;
+    }
+
+    .stat-loading {
+        color: #666;
+        font-size: 12px;
+        flex-shrink: 0;
+    }
+
+    .stat-content {
+        display: flex;
+        align-items: center;
+        flex-shrink: 0;
+
+        .stat-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-shrink: 0;
+
+            .stat-name {
+                color: #333333;
+                font-size: 14px;
+                font-weight: 600;
+                flex-shrink: 0;
+                margin-right: 4px;
+                margin-left: 8px;
+            }
+
+            .currency-list {
+                display: flex;
+                gap: 12px;
+                flex-shrink: 0;
+
+                .currency-item {
+                    display: flex;
+                    align-items: center;
+                    font-size: 14px;
+                    flex-shrink: 0;
+
+                    .currency-label {
+                        color: #666;
+                    }
+
+                    .currency-amount {
+                        color: #e6a23c;
+                        font-weight: 500;
+                    }
+                }
+            }
+        }
+
+        .stat-empty {
+            color: #999;
+            font-size: 12px;
+            text-align: center;
+            width: 100%;
+            flex-shrink: 0;
+        }
+    }
 }
 </style>

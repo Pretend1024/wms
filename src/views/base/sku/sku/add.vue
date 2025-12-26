@@ -68,7 +68,7 @@
                         <el-form-item label="币种代码:">
                             <el-select v-model="formData.currency" value-key="id" filterable placeholder="请选择币种">
                                 <el-option v-for="item in nationOptions" :key="item.id" :label="item.name"
-                                    :value="item.code" />
+                                    :value="item.id" />
                             </el-select>
                         </el-form-item>
                     </el-col>
@@ -235,7 +235,7 @@
 import * as api from '@/api/baseApi/sku.js'
 import { uploadApi } from '@/api/baseApi/index.js';
 import { getOrgCountryListApi } from '@/api/baseApi/org.js';
-import { getCurrencyEnumApi } from '@/api/baseApi/index.js';
+import { getCurrencyListApi } from '@/api/baseApi/index.js';
 import { smartAlert } from '@/utils/genericMethods.js'
 import { useRoute } from 'vue-router';
 import router from '@/router/index.js'
@@ -533,8 +533,12 @@ onMounted(async () => {
     const countryRes = await getOrgCountryListApi();
     countryOptions.value = countryRes.data
     // 获取币种数据
-    const nationRes = await getCurrencyEnumApi();
-    nationOptions.value = nationRes.data
+    const nationRes = await getCurrencyListApi();
+    nationOptions.value = nationRes.data.map(item => ({
+        id: item.currency,
+        name: item.remark
+    }));
+
     // 获取带电类型
     const electrifiedRes = await api.getSkuElectrifiedEnumListApi();
     electrifiedOptions.value = electrifiedRes.data

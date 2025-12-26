@@ -140,23 +140,23 @@
                             <div v-loading="docLoading">
                                 <div v-if="docInfo.hasData">
                                     <div class="info-row"><span class="label">{{ getColumnText('bizNo')
-                                    }}：</span><span>{{
+                                            }}：</span><span>{{
                                                 docInfo.bizNo
                                             }}</span></div>
                                     <div class="info-row"><span class="label">{{ getColumnText('bizStatusName')
-                                    }}：</span><span>{{ docInfo.bizStatusName
+                                            }}：</span><span>{{ docInfo.bizStatusName
                                             }}</span></div>
                                     <div class="info-row"><span class="label">{{ getColumnText('createUserName')
-                                    }}：</span><span>{{ docInfo.createUserName
+                                            }}：</span><span>{{ docInfo.createUserName
                                             }}</span></div>
                                     <div class="info-row"><span class="label">{{ getColumnText('createTime')
-                                    }}：</span><span>{{ docInfo.createTime
+                                            }}：</span><span>{{ docInfo.createTime
                                             }}</span></div>
                                     <div class="info-row"><span class="label">{{ getColumnText('customerName')
-                                    }}：</span><span>{{ docInfo.customerName
+                                            }}：</span><span>{{ docInfo.customerName
                                             }}</span></div>
                                     <div class="info-row"><span class="label">{{ getColumnText('orgName')
-                                    }}：</span><span>{{ docInfo.orgName
+                                            }}：</span><span>{{ docInfo.orgName
                                             }}</span></div>
                                 </div>
                                 <div v-else class="no-data">
@@ -206,7 +206,8 @@ const cascaderRef = ref(null);
 
 const parentProps = {
     checkStrictly: true,
-    expandTrigger: 'hover'
+    expandTrigger: 'hover',
+    emitPath: false,
 };
 
 // 表单数据
@@ -345,7 +346,7 @@ const handleCascaderChange = async (val) => {
     if (val) {
         nextTick(() => cascaderRef.value && cascaderRef.value.togglePopperVisible());
     }
-    const orgId = val ? val[val.length - 1] : '';
+    const orgId = val ? val : '';
     formData.customerId = ''; // 清空已选客户
     const result = await getCustomerLikeQueryApi({ keyword: '*', orgId });
     if (result && result.data) {
@@ -444,7 +445,6 @@ const submitForm = async (isDraft) => {
         }
         const submitData = {
             ...formData,
-            orgId: Array.isArray(formData.orgId) ? formData.orgId[formData.orgId.length - 1] : formData.orgId,
             secondTypeId: formData.secondTypeId || '',
             isDraft: isDraft
         };

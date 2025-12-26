@@ -115,10 +115,10 @@
                         <div class="btns">
                             <el-button type="primary" @click="handleAdd" v-permission="'add'" :icon="Plus">{{
                                 getButtonText('add')
-                            }}</el-button>
+                                }}</el-button>
                             <el-button type="danger" @click="handleDel" v-permission="'delete'" :icon="Delete">{{
                                 getButtonText('del')
-                            }}</el-button>
+                                }}</el-button>
                             <!-- <el-button type="warning" @click="handleConfirm" :icon="Finished">确认</el-button>
                             <el-button type="warning" @click="handleCancelConfirm" :icon="Minus">取消确认</el-button> -->
                             <el-dropdown trigger="click">
@@ -137,7 +137,7 @@
                                 </template>
                             </el-dropdown>
                             <el-button type="success" @click="handleExport" :icon="Share">{{ getButtonText('export')
-                                }}</el-button>
+                            }}</el-button>
                             <!-- <el-button type="info" @click="handlePrint" :icon="Printer">{{getButtonText ('print') }}</el-button> -->
                         </div>
                     </div>
@@ -189,9 +189,9 @@
                             <template #dropdown>
                                 <el-dropdown-menu>
                                     <el-dropdown-item @click="handleCopy(row)">{{ getButtonText('copy')
-                                        }}</el-dropdown-item>
+                                    }}</el-dropdown-item>
                                     <el-dropdown-item @click="handleCancel(row)">{{ getButtonText('cancelReceipt')
-                                        }}</el-dropdown-item>
+                                    }}</el-dropdown-item>
                                 </el-dropdown-menu>
                             </template>
                         </el-dropdown>
@@ -270,9 +270,13 @@ const initValues = ref({
 // 搜索事件
 const handleSearch = (data) => {
     loading.value = true;
+    const statusIdList = ref(statusIdsArr.value)
+    if (statusIdList.value.includes(null)) {
+        statusIdList.value = [];
+    }
     initValues.value = {
         ...data,
-        statusIdList: statusIdsArr.value
+        statusIdList: statusIdList.value
     }
     getList(pagination.value.currentPage, pagination.value.pageSize, orderBy.value)
     getStatus()
@@ -721,7 +725,6 @@ const getList = async (currentPage, pageSize, orderBy) => {
         pageSize: pageSize,
         orderBy,
         ...trimObjectStrings(initValues.value),
-        orgId: initValues.value.orgId[initValues.value.orgId.length - 1]
     })
     tableData.value = res.data.rows
     footer.value = res.data.footer[0]
@@ -754,6 +757,7 @@ const handleStatusChange = async (e) => {
     }
 
     initValues.value.statusIdList = list;
+    console.log('选中的状态:', initValues.value.statusIdList)
     getList(pagination.value.currentPage, pagination.value.pageSize, orderBy.value);
 }
 // 公司数据
@@ -761,7 +765,8 @@ const companyOptions = ref([]);
 const cascaderRef = ref(null);
 const parentProps = {
     checkStrictly: true,
-    expandTrigger: 'hover'
+    expandTrigger: 'hover',
+    emitPath: false,
 };
 // 公司改变事件
 const handleCascaderChange = async (e) => {
@@ -770,7 +775,7 @@ const handleCascaderChange = async (e) => {
             cascaderRef.value.togglePopperVisible()
         });
     }
-    const orgId = e ? e[e.length - 1] : '';
+    const orgId = e ? e : '';
     const result = await getCustomerLikeQueryApi({ keyword: '*', orgId });
     customerOptions.value = result.data.map(item => ({
         value: item.code,

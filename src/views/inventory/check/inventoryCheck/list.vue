@@ -127,7 +127,7 @@
     </div>
 </template>
 
-<script setup name="盘点管理">
+<script setup name="盘点">
 import { ref, computed, onMounted, nextTick, shallowRef } from 'vue';
 import { Plus, Delete, EditPen, DocumentCopy, CircleCheck, Select } from '@element-plus/icons-vue';
 import { ElLoading, ElMessage, ElMessageBox } from 'element-plus';
@@ -204,7 +204,11 @@ const customerOptions = ref([]);
 const warehouseOptions = ref([]);
 const checkTypeOptions = ref([]);
 const cascaderRef = ref(null);
-const parentProps = { checkStrictly: true, expandTrigger: 'hover' };
+const parentProps = {
+    checkStrictly: true,
+    expandTrigger: 'hover',
+    emitPath: false,
+};
 
 //状态栏
 const statusIdsList = ref([]);
@@ -215,11 +219,6 @@ const getStatus = async () => {
     const data = {
         ...trimObjectStrings(initValues.value),
     };
-    if (data.orgId && data.orgId.length > 0) {
-        data.orgId = data.orgId[data.orgId.length - 1];
-    } else {
-        delete data.orgId;
-    }
     delete data.statusIdList;
 
     try {
@@ -248,9 +247,6 @@ const handleStatusChange = () => {
 // --- 搜索与重置修改 ---
 const handleSearch = (data) => {
     loading.value = true;
-    if (Array.isArray(data.orgId)) {
-        data.orgId = data.orgId.length > 0 ? data.orgId[data.orgId.length - 1] : '';
-    }
     initValues.value = {
         ...data,
         statusIdList: statusIdsArr.value,
@@ -309,7 +305,7 @@ const handleTableSort = (sortString) => {
 
 const handleCascaderChange = async (e) => {
     if (e) nextTick(() => cascaderRef.value?.togglePopperVisible());
-    const orgId = e ? e[e.length - 1] : '';
+    const orgId = e ? e: '';
     const result = await getCustomerLikeQueryApi({ keyword: '*', orgId });
     customerOptions.value = result.data.map(item => ({
         value: item.id,

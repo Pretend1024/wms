@@ -117,6 +117,10 @@ const getList = async (currentPage, pageSize) => {
     }
     loading.value = false
 }
+const getOpType = async (e) => {
+    const res = await getInventoryInventoryLogOpTypeApi({ qtyType: e })
+    opTypeOptions.value = res.data.map(item => ({ label: item.name, value: item.id }))
+}
 const tags = ref([])
 const view = ref(1)
 const qtyType = ref(1)
@@ -125,6 +129,7 @@ const tagsItemClick = (item) => {
     view.value = item.value
     qtyType.value = item.value
     getList(pagination.value.currentPage, pagination.value.pageSize)
+    getOpType(qtyType.value)
 }
 // 操作类型选项
 const opTypeOptions = ref([])
@@ -132,8 +137,7 @@ onMounted(async () => {
     // 日志参数
     const qtyTypeRes = await getInventoryInventoryLogQtyTypeApi()
     tags.value = qtyTypeRes.data.map(item => ({ label: item.name, value: item.id }))
-    const opTypeRes = await getInventoryInventoryLogOpTypeApi()
-    opTypeOptions.value = opTypeRes.data.map(item => ({ label: item.name, value: item.id }))
+    getOpType(qtyType.value)
 })
 
 </script>

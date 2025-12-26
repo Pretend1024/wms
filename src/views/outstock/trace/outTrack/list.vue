@@ -195,15 +195,11 @@ const formConfig = ref([
 ])
 
 // 初始化表单数据（用于 hydFilterBox 的 initial-value）
-const initValues = ref({
-    orgId: [],
-})
+const initValues = ref({})
 
 // 搜索事件 - 接收经过表单组件整理后的查询条件
 const handleSearch = (data) => {
     loading.value = true;
-    // 如果 orgId 为数组（级联选择），取最后一级 id
-    data.orgId = data.orgId.length > 0 ? data.orgId[data.orgId.length - 1] : ''
     initValues.value = {
         ...data,
         podStatusIdList: statusIdsArr.value,
@@ -215,7 +211,6 @@ const handleSearch = (data) => {
 // 重置事件 - 重置查询条件并刷新列表
 const handleReset = (data) => {
     loading.value = true;
-    data.orgId = data.orgId.length > 0 ? data.orgId[data.orgId.length - 1] : ''
     initValues.value = {
         ...data,
         podStatusIdList: [],
@@ -433,11 +428,6 @@ const getStatus = async () => {
     const data = {
         ...trimObjectStrings(initValues.value),
     }
-    if (data.orgId.length > 0) {
-        data.orgId = data.orgId[data.orgId.length - 1]
-    } else {
-        delete data.orgId
-    }
     delete data.podStatusIdList
     const res = await getOutstockOrderTraceStatusApi(data)
     statusIdsList.value = res.data
@@ -468,7 +458,8 @@ const companyOptions = ref([]);
 const cascaderRef = ref(null);
 const parentProps = {
     checkStrictly: true,
-    expandTrigger: 'hover'
+    expandTrigger: 'hover',
+    emitPath: false,
 };
 
 // 公司改变事件：切换客户下拉的 orgId 过滤，并尝试关闭级联浮层
@@ -478,7 +469,7 @@ const handleCascaderChange = async (e) => {
             cascaderRef.value.togglePopperVisible()
         });
     }
-    const orgId = e ? e[e.length - 1] : '';
+    const orgId = e ? e : '';
     const result = await api.getCustomerLikeQueryApi({ keyword: '*', orgId });
     customerOptions.value = result.data.map(item => ({
         value: item.code,

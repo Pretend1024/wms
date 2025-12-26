@@ -119,9 +119,7 @@ const initValues = ref({
 // 搜索事件
 const handleSearch = (data) => {
     loading.value = true;
-    if (Array.isArray(data.orgId)) {
-        data.orgId = data.orgId.length > 0 ? data.orgId[data.orgId.length - 1] : '';
-    }
+
     initValues.value = { ...data };
     getList(pagination.value.currentPage, pagination.value.pageSize, orderBy.value);
 };
@@ -397,7 +395,11 @@ const getList = async (currentPage, pageSize, orderByStr) => {
 // 公司级联数据、支付方式、账户状态枚举加载
 const companyOptions = ref([]);
 const cascaderRef = ref(null);
-const parentProps = { checkStrictly: true, expandTrigger: 'hover' };
+const parentProps = {
+    checkStrictly: true,
+    expandTrigger: 'hover',
+    emitPath: false,
+};
 const paymentMethodEnum = ref([]);
 const accountStatusEnum = ref([]);
 

@@ -42,6 +42,15 @@
                         </el-form-item>
                     </el-col>
                     <el-col>
+                        <el-form-item :label="getLabel('businessId')">
+                            <el-select v-model="formData.businessId" :placeholder="getPlaceholder('businessId')"
+                                clearable>
+                                <el-option v-for="item in businessOptions" :key="item.value" :label="item.label"
+                                    :value="item.value" />
+                            </el-select>
+                        </el-form-item>
+                    </el-col>
+                    <el-col>
                         <el-form-item :label="getLabel('zoneCode')">
                             <el-select v-model="formData.zoneCode" :placeholder="getPlaceholder('zoneCode')" clearable>
                                 <el-option v-for="item in zoneEnumOptions" :key="item.typeId"
@@ -192,7 +201,7 @@
         </el-dialog>
         <!-- 导出弹窗 -->
         <exportDialog ref="exportDialogRef" :selectionRows="selectionRows" :initValues="initValues"
-            :otherParameters="{ view }" :exportType="300">
+            :extraParams="{ view }" :exportType="300">
         </exportDialog>
     </div>
 </template>
@@ -210,6 +219,7 @@ import LogForm from './logTable.vue';
 import qtyTable from './qtyTable.vue';
 import listDetail from './listDetail2.vue';
 import canonicalInput from '@/components/table/canonicalInpt.vue';
+import { getInstockInOrderBusinessEnumApi } from '@/api/instockApi/order.js';
 import { getInventoryInventoryPageApi, getInventoryListQtyDetailPageApi, getInventoryInventoryInventoryViewEnumApi, postInventoryInventoryAdjustQtyApi, postInventoryInventoryLockQtyApi, getInventoryInventoryCreateWayEnumApi } from '@/api/inventoryApi/inventory.js'
 import { useI18n } from 'vue-i18n';
 const { t } = useI18n();
@@ -253,13 +263,6 @@ const handleSearch = (data) => {
     fieldsToDelete.forEach(field => {
         delete initValues.value[field];
     });
-    // 判断是否有orgId，没有则删除
-    if (!data.orgId) {
-        delete initValues.value.orgId;
-    } else {
-        initValues.value.orgId = data.orgId[data.orgId.length - 1]
-    }
-
     getList(pagination.value.currentPage, pagination.value.pageSize, orderBy.value, true);
 }
 // 重置事件
@@ -281,6 +284,7 @@ const columns = ref([
     { label: '仓库代码', prop: 'warehouseCode', width: '135', sortable: true, fixed: 'left' },
     { label: '客户', prop: 'customerName', width: '200', slot: 'customer', fixed: 'left' },
     { label: '状态', prop: 'statusName', width: '110', sortable: true, slot: 'status' },
+    { label: '业务类型', prop: 'businessName', width: '120', sortable: true, sortAlias: 'businessId' },
     { label: '库区', prop: 'zoneCode', width: '115' },
     { label: '库位', prop: 'locationCode', width: '180', sortable: true },
     { label: 'sku', prop: 'sku', width: '150' },
@@ -431,12 +435,15 @@ const getList = async (currentPage, pageSize, orderBy, isparameter) => {
 const warehouseOptions = ref([])
 // 库区下拉框数据
 const zoneEnumOptions = ref([]);
+// 业务类型
+const businessOptions = ref([])
 // 公司数据
 const companyOptions = ref([]);
 const cascaderRef = ref(null);
 const parentProps = {
     checkStrictly: true,
-    expandTrigger: 'hover'
+    expandTrigger: 'hover',
+    emitPath: false,
 };
 // 公司改变事件
 const handleCascaderChange = async (e) => {
@@ -445,7 +452,7 @@ const handleCascaderChange = async (e) => {
             cascaderRef.value.togglePopperVisible()
         });
     }
-    const orgId = e ? e[e.length - 1] : '';
+    const orgId = e ? e : '';
     const result = await getCustomerLikeQueryApi({ keyword: '*', orgId });
     customerOptions.value = result.data.map(item => ({
         value: item.code,
@@ -481,6 +488,9 @@ onMounted(async () => {
         }));
     };
     companyOptions.value = convertToTree(companyRes.data);
+    // 业务类型
+    const businessRes = await getInstockInOrderBusinessEnumApi()
+    businessOptions.value = businessRes.data.map(item => ({ label: item.name, value: item.id }))
     // 仓库数据
     const warehouseRes = await getWhWarehouseApi()
     warehouseOptions.value = warehouseRes.data.map(item => ({

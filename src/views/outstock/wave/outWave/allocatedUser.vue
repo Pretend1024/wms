@@ -120,7 +120,7 @@ async function getUsersList() {
             ...initValues.value,
             page: page.value,
             pageSize: pageSize.value,
-            orgId: initValues.value.orgId ? initValues.value.orgId[initValues.value.orgId.length - 1] : null
+            orgId: initValues.value.orgId ? initValues.value.orgId : null
         });
 
         const res = await getOrgEmployeeListApi(reqParams);
@@ -175,7 +175,8 @@ const delColse = () => {
 const cascaderRef = ref(null);
 const parentProps = {
     checkStrictly: true,
-    expandTrigger: 'hover'
+    expandTrigger: 'hover',
+    emitPath: false,
 };
 // 公司改变事件
 const handleCascaderChange = async (e) => {

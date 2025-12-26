@@ -356,6 +356,26 @@ export const columnTextMap = {
         "endTime": { "zh": "结束时间", "en": "End Time" },
         "elapsedTime": { "zh": "耗时(s)", "en": "Elapsed Time (s)" }
     },
+    "myImport": {
+        "jobNo": { "zh": "导入编号", "en": "Import No." },
+        "typeName": { "zh": "导入类型", "en": "Import Type" },
+        "templateName": { "zh": "模板名称", "en": "Template Name" },
+        "statusName": { "zh": "状态", "en": "Status" },
+        "importParam": { "zh": "导入参数", "en": "Import Parameters" },
+        "importTotal": { "zh": "导入总数", "en": "Total Imports" },
+        "customerName": { "zh": "客户名称", "en": "Customer Name" },
+        "fileSize": { "zh": "文件大小", "en": "File Size" },
+        "fileUrl": { "zh": "文件路径", "en": "File Path" },
+        "handlerWayName": { "zh": "处理方式", "en": "Handling Method" },
+        "returnMessage": { "zh": "返回消息", "en": "Return Message" },
+        "feedbackMsg": { "zh": "进度反馈消息", "en": "Prog. Feedback Msg." },
+        "feedbackTime": { "zh": "进度反馈时间", "en": "Prog. Feedback Time" },
+        "localFileUrl": { "zh": "本地文件路径", "en": "Local File Path" },
+        "async": { "zh": "是否异步", "en": "Is Async." },
+        "startTime": { "zh": "开始时间", "en": "Start Time" },
+        "endTime": { "zh": "结束时间", "en": "End Time" },
+        "elapsedTime": { "zh": "耗时(s)", "en": "Elapsed Time (s)" }
+    },
     "sys_job_scheduleJob_list": {
         "jobGroupName": { "zh": "任务分组", "en": "Job Group" },
         "jobName": { "zh": "任务名称", "en": "Job Name" },
@@ -658,6 +678,7 @@ export const columnTextMap = {
         "createWayName": { "zh": "创建方式", "en": "Creation Method" }
     },
     "inventory_inventory_inventory_list2": {
+        "businessName": { "zh": "业务类型", "en": "Business Type" },
         "orgName": { "zh": "公司", "en": "Company" },
         "warehouseCode": { "zh": "仓库", "en": "Warehouse" },
         "customerName": { "zh": "客户", "en": "Customer" },
@@ -683,9 +704,11 @@ export const columnTextMap = {
         "qtyAfter": { "zh": "操作后数量", "en": "Qty. After Operation" },
         "opRefNo": { "zh": "单据号码", "en": "Document No." },
         "instockDays": { "zh": "库龄", "en": "Inventory Age" },
-        "createWayName": { "zh": "创建方式", "en": "Creation Method" }
+        "createWayName": { "zh": "创建方式", "en": "Creation Method" },
+        "sourceNo2": { "zh": "来源单号", "en": "Source No." },
     },
     "inventory_inventory_inventory_list3": {
+        "businessName": { "zh": "业务类型", "en": "Business Type" },
         "orgName": { "zh": "公司", "en": "Company" },
         "warehouseCode": { "zh": "仓库", "en": "Warehouse" },
         "customerName": { "zh": "客户", "en": "Customer" },
@@ -711,7 +734,8 @@ export const columnTextMap = {
         "qtyAfter": { "zh": "操作后数量", "en": "Qty. After Operation" },
         "opRefNo": { "zh": "单据号码", "en": "Document No." },
         "instockDays": { "zh": "库龄", "en": "Inventory Age" },
-        "createWayName": { "zh": "创建方式", "en": "Creation Method" }
+        "createWayName": { "zh": "创建方式", "en": "Creation Method" },
+        "sourceNo": { "zh": "来源单号", "en": "Source No." }
     },
     "inventory_adjust_inventoryAdjust_list": {
         "adjustNo": { "zh": "调整单号", "en": "Adjustment No." },
@@ -735,6 +759,7 @@ export const columnTextMap = {
         "warehouseCode": { "zh": "仓库", "en": "Warehouse" },
         "sku": { "zh": "SKU", "en": "SKU" },
         "inOrderNo": { "zh": "入库订单号", "en": "Inb. Ord. No." },
+        "sourceNo": { "zh": "来源单号", "en": "Source No." },
         "batchNo": { "zh": "收货批次号", "en": "Recv. Batch No." },
         "inShelfDate": { "zh": "上架日期", "en": "Shelf Date" },
         "zoneCode": { "zh": "库区", "en": "Zone" },
@@ -761,6 +786,7 @@ export const columnTextMap = {
         "locationCode": { "zh": "库位号", "en": "Location Code" },
         "outOrderNo": { "zh": "出库单号", "en": "Outb. Ord. No." },
         "shippedTime": { "zh": "发货时间", "en": "Shipped Time" },
+        "salesUserCode": { "zh": "销售用户", "en": "Sales User Code" }
     },
     "inventory_inventory_inventorySnapshot_list": {
         "snapshotDate": { "zh": "快照日期", "en": "Snapshot Date" },
@@ -770,6 +796,7 @@ export const columnTextMap = {
         "statusName": { "zh": "状态", "en": "Status" },
         "zoneCode": { "zh": "库区", "en": "Zone" },
         "locationCode": { "zh": "库位", "en": "Location Code" },
+        "sourceNo": { "zh": "来源单号", "en": "Source No." },
         "sku": { "zh": "SKU", "en": "SKU" },
         "qualityName": { "zh": "品质", "en": "Quality" },
         "qtyTotal": { "zh": "总数", "en": "Tot. Qty." },
@@ -785,7 +812,14 @@ export const columnTextMap = {
         "skuVolume": { "zh": "SKU体积", "en": "SKU Volume" },
         "createdTime": { "zh": "库存创建时间", "en": "Inventory Creation Time" },
         "createdBy": { "zh": "库存创建人", "en": "Inventory Created By" },
-        "snapshotTime": { "zh": "快照创建时间", "en": "Snapshot Creation Time" }
+        "snapshotTime": { "zh": "快照创建时间", "en": "Snapshot Creation Time" },
+        "opTypeName": { "zh": "操作类型", "en": "Operation Type" },
+        "qtyBefore": { "zh": "操作前数量", "en": "Qty. Before Operation" },
+        "changeQty": { "zh": "操作数量", "en": "Operation Qty." },
+        "qtyAfter": { "zh": "操作后数量", "en": "Qty. After Operation" },
+        "opRefNo": { "zh": "单据号码", "en": "Document No." },
+        "instockDays": { "zh": "库龄", "en": "Inventory Age" },
+        "createWayName": { "zh": "创建方式", "en": "Creation Method" }
     },
     "product_shipway_carrier_list": {
         "code": { "zh": "承运商代码", "en": "Carrier Code" },
@@ -988,7 +1022,7 @@ export const columnTextMap = {
         "orderQtyMax4": { "zh": "类型 4 最大订单数", "en": "Max Order Qty (Type 4)" },
         "finishTime": { "zh": "结束时间", "en": "Finish Time" },
         "remark": { "zh": "备注", "en": "Remark" },
-        "inOrderIds": { "zh": "指定入库单", "en": "Designated Inbound Order IDs" },
+        "inOrderNoList": { "zh": "指定入库单", "en": "Designated Inbound Order IDs" },
         "onShelfStartTime": { "zh": "上架开始时间", "en": "Shelf-on Start Time" },
         "onShelfEndTime": { "zh": "上架结束时间", "en": "Shelf-on End Time" },
         "locationCodes": { "zh": "指定库位", "en": "Designated Locations" },
@@ -1224,7 +1258,6 @@ export const columnTextMap = {
         "billEndDate": { "zh": "账单结束日期", "en": "End Date" },
         "totalFeeAmount": { "zh": "总金额", "en": "Total Fee Amount" },
         "unpaidAmount": { "zh": "待支付金额", "en": "Unpaid Amount" },
-        "deductibleAmount": { "zh": "抵扣金额", "en": "Deductible Amount" },
         "alreadyPaidAmount": { "zh": "已支付金额", "en": "Already Paid Amount" },
         "billStatusName": { "zh": "账单状态", "en": "Bill Status" },
         "paymentDeadline": { "zh": "付款截止日期", "en": "Payment Deadline" },
@@ -1293,6 +1326,20 @@ export const columnTextMap = {
         "accuracyRate": { "zh": "库位准确率", "en": "Accuracy Rate" },
         "skuQty": { "zh": "涉及SKU个数", "en": "SKU Quantity" },
         "locationQty": { "zh": "涉及库位个数", "en": "Location Quantity" }
+    },
+    "inventory_mv_inventoryMv_list": {
+        "mvNo": { "zh": "移库单号", "en": "Move Number" },
+        "statusId": { "zh": "状态", "en": "Status" },
+        "fromWarehouseCode": { "zh": "移出仓库", "en": "From Warehouse" },
+        "toWarehouseCode": { "zh": "移入仓库", "en": "To Warehouse" },
+        "customerName": { "zh": "客户名称", "en": "Customer Name" },
+    },
+    "sys_setting_sysApp_list": {
+        "typeName": { "zh": "APP类型", "en": "APP Type" },
+        "versionNo": { "zh": "版本号", "en": "Version No." },
+        "fileUrl": { "zh": "安装包URL", "en": "Install Package URL" },
+        "publishPage": { "zh": "发布页URL", "en": "Publish Page URL" },
+
     }
 }
 import router from '@/router/index.js'
@@ -1308,7 +1355,7 @@ const getRouteKey = () => {
     let routeKey = currentRoute.replace(/^\//, '').replace(/\//g, '_')
 
     // 关键修改：将非贪婪匹配+?改为贪婪匹配+，确保匹配到最后一个符合条件的后缀
-    const suffixMatch = routeKey.match(/^(.+_(list1|list2|list3|list|upd|add|info|copyAdd)).*$/)
+    const suffixMatch = routeKey.match(/^(.+_(list1|list2|list3|list|upd|add|info|copyAdd|myImport)).*$/)
     if (suffixMatch) {
         routeKey = suffixMatch[1]
     }

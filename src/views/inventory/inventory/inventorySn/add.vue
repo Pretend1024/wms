@@ -43,11 +43,11 @@
                     <el-input v-model="formData.sn" :placeholder="getPlaceholder('sn')" />
                 </el-form-item>
             </el-col>
-            <el-col :span="8">
+            <!-- <el-col :span="8">
                 <el-form-item :label="getLabel('shippedTime')">
                     <el-input v-model="formData.shippedTime" readonly disabled />
                 </el-form-item>
-            </el-col>
+            </el-col> -->
             <!-- 收货时间（选填） -->
             <el-col :span="8">
                 <el-form-item :label="getLabel('receiptTime')">

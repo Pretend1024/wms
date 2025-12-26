@@ -110,7 +110,7 @@
                         getButtonText('del') }}</el-button>
                     <el-button type="warning" @click="handleAudit" v-permission="'updateStatus'" :icon="Finished">{{
                         getButtonText('audit')
-                        }}</el-button>
+                    }}</el-button>
 
                     <el-dropdown trigger="click" v-permission="'sku:importAdd,sku:importUpd'">
                         <el-button type="success">
@@ -119,18 +119,18 @@
                         <template #dropdown>
                             <el-dropdown-menu>
                                 <el-dropdown-item @click="handleImportAdd">{{ getButtonText('importCreate')
-                                }}</el-dropdown-item>
+                                    }}</el-dropdown-item>
                                 <el-dropdown-item @click="handleImportUpd">{{ getButtonText('importUpdate')
-                                }}</el-dropdown-item>
+                                    }}</el-dropdown-item>
                             </el-dropdown-menu>
                         </template>
                     </el-dropdown>
                     <el-button type="success" @click="handleExport" v-permission="'export'" :icon="Share">{{
                         getButtonText('export')
-                        }}</el-button>
+                    }}</el-button>
                     <el-button type="info" @click="handlePrint" v-permission="'print'" :icon="Printer">{{
                         getButtonText('print')
-                        }}</el-button>
+                    }}</el-button>
                 </template>
                 <!-- 使用插槽来自定义列内容，假如我们需要在操作列中添加按钮 -->
                 <template #customBtn="{ row }">
@@ -154,7 +154,7 @@
                 </template>
                 <template #isCheckedSize="{ row }">
                     <span :style="{ color: row.isCheckedSize ? 'green' : 'red' }">{{ row.isCheckedSize ? '是' : '否'
-                        }}</span>
+                    }}</span>
                 </template>
                 <template #actualLength="{ row }">
                     <span>{{ row.length }}</span>
@@ -266,7 +266,6 @@ const handleSearch = (data) => {
     // 根据data.way的值来删掉不需要的字段
     initValues.value = {
         ...data,
-        orgId: data.orgId ? data.orgId[data.orgId.length - 1] : ''
     }
     // 定义所有可能的字段
     const fields = way.value.map(item => item.value);
@@ -539,7 +538,8 @@ const companyOptions = ref([]);
 const cascaderRef = ref(null);
 const parentProps = {
     checkStrictly: true,
-    expandTrigger: 'hover'
+    expandTrigger: 'hover',
+    emitPath: false,
 };
 // 公司改变事件
 const handleCascaderChange = async (e) => {
@@ -548,8 +548,7 @@ const handleCascaderChange = async (e) => {
             cascaderRef.value.togglePopperVisible()
         });
     }
-    const orgId = e ? e[e.length - 1] : '';
-    const result = await api.getCustomerLikeQueryApi({ keyword: '*', orgId });
+    const result = await api.getCustomerLikeQueryApi({ keyword: '*', orgId: e });
     customerOptions.value = result.data.map(item => ({
         value: item.code,
         label: item.code + '(' + item.name + ')'

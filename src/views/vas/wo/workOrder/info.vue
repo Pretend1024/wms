@@ -277,14 +277,14 @@ const companyOptions = ref([]);
 const departmentOptions = ref([]);
 const employeeOptions = ref([]);
 const assignForm = reactive({
-    orgId: [],
     departmentId: '',
     employeeId: '',
     remark: ''
 });
 const parentProps = {
     checkStrictly: true,
-    expandTrigger: 'hover'
+    expandTrigger: 'hover',
+    emitPath: false,
 };
 const assignRules = {
     orgId: [{ required: true, message: '请选择公司', trigger: 'change' }],
@@ -440,8 +440,8 @@ const handleCascaderChange = async (e) => {
     departmentOptions.value = [];
     employeeOptions.value = [];
 
-    if (e && e.length > 0) {
-        const orgId = e[e.length - 1];
+    if (e) {
+        const orgId = e;
         const res = await getOrgListDepartmentApi({ parentId: orgId });
         departmentOptions.value = res.data || [];
     }
@@ -451,7 +451,7 @@ const handleDepartmentChange = async (deptId) => {
     assignForm.employeeId = ''; // 清空人员
     employeeOptions.value = [];
     if (deptId) {
-        const orgId = assignForm.orgId[assignForm.orgId.length - 1];
+        const orgId = assignForm.orgId;
         const res = await getOrgEmployeeListApi({ orgId: orgId, departmentId: deptId });
         employeeOptions.value = res.data.rows || [];
     }
@@ -459,7 +459,7 @@ const handleDepartmentChange = async (deptId) => {
 
 const resetAssignForm = () => {
     if (assignFormRef.value) assignFormRef.value.resetFields();
-    assignForm.orgId = [];
+    assignForm.orgId = '';
     departmentOptions.value = [];
     employeeOptions.value = [];
 };

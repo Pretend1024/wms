@@ -136,9 +136,7 @@ const { t } = useI18n();
 const formConfig = ref([])
 
 // 初始化表单数据
-const initValues = ref({
-    orgId: [],
-})
+const initValues = ref({})
 const dateSelectRef = ref(null)
 const timeTypeOptions = ref([])
 // 初始化日期范围
@@ -456,7 +454,6 @@ const getList = async (currentPage, pageSize, orderBy) => {
         pageSize: pageSize,
         orderBy,
         ...trimObjectStrings(initValues.value),
-        orgId: initValues.value.orgId[initValues.value.orgId.length - 1]
     })
     tableData.value = res.data.rows
     loading.value = false
@@ -471,11 +468,6 @@ const getList = async (currentPage, pageSize, orderBy) => {
 const getStatus = async () => {
     const data = {
         ...trimObjectStrings(initValues.value),
-    }
-    if (data.orgId.length > 0) {
-        data.orgId = data.orgId[data.orgId.length - 1]
-    } else {
-        delete data.orgId
     }
     delete data.statusIdList
     const res = await getOutstockOrderProblemStatusCountApi(data)
@@ -503,7 +495,8 @@ const companyOptions = ref([]);
 const cascaderRef = ref(null);
 const parentProps = {
     checkStrictly: true,
-    expandTrigger: 'hover'
+    expandTrigger: 'hover',
+    emitPath: false,
 };
 // 公司改变事件
 const handleCascaderChange = async (e) => {
@@ -512,7 +505,7 @@ const handleCascaderChange = async (e) => {
             cascaderRef.value.togglePopperVisible()
         });
     }
-    const orgId = e ? e[e.length - 1] : '';
+    const orgId = e ? e : '';
     const result = await getCustomerLikeQueryApi({ keyword: '*', orgId });
     customerOptions.value = result.data.map(item => ({
         value: item.code,

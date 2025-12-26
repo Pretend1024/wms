@@ -301,7 +301,7 @@
                             <!-- 新增 -->
                             <el-button type="primary" @click="handleAdd" v-permission="'add'" :icon="Plus">{{
                                 getButtonText('add')
-                                }}</el-button>
+                            }}</el-button>
                             <!-- 导入 -->
                             <el-dropdown trigger="click">
                                 <el-button type="success">
@@ -311,9 +311,9 @@
                                 <template #dropdown>
                                     <el-dropdown-menu>
                                         <el-dropdown-item @click="handleImportAdd">{{ getButtonText('importCreate')
-                                            }}</el-dropdown-item>
+                                        }}</el-dropdown-item>
                                         <el-dropdown-item @click="handleImportUpd">{{ getButtonText('importUpdate')
-                                            }}</el-dropdown-item>
+                                        }}</el-dropdown-item>
                                     </el-dropdown-menu>
                                 </template>
                             </el-dropdown>
@@ -326,12 +326,12 @@
                                 <template #dropdown>
                                     <el-dropdown-menu>
                                         <el-dropdown-item @click="applyNo">{{ getButtonText('applyNo')
-                                            }}</el-dropdown-item>
+                                        }}</el-dropdown-item>
                                         <el-dropdown-item @click="handleImport"> {{ getButtonText('importTrackingNo')
-                                            }}</el-dropdown-item>
+                                        }}</el-dropdown-item>
                                         <el-dropdown-item @click="handleCancelTrackingNo"> {{
                                             getButtonText('cancelTrackingNo')
-                                            }}</el-dropdown-item>
+                                        }}</el-dropdown-item>
                                     </el-dropdown-menu>
                                 </template>
                             </el-dropdown>
@@ -343,14 +343,14 @@
                                 <template #dropdown>
                                     <el-dropdown-menu>
                                         <el-dropdown-item @click="handlePrint(403)"> {{ getButtonText('trackingNo')
-                                            }}</el-dropdown-item>
+                                        }}</el-dropdown-item>
                                         <el-dropdown-item @click="handlePrint(404)">{{ getButtonText('serviceOrder')
-                                            }}</el-dropdown-item>
+                                        }}</el-dropdown-item>
                                         <el-dropdown-item @click="handlePrint(405)">{{ getButtonText('attachment')
-                                            }}</el-dropdown-item>
+                                        }}</el-dropdown-item>
                                         <el-dropdown-item @click="handlePrint(402)">{{
                                             getButtonText('commercialInvoice')
-                                        }}</el-dropdown-item>
+                                            }}</el-dropdown-item>
                                     </el-dropdown-menu>
                                 </template>
                             </el-dropdown>
@@ -363,10 +363,10 @@
                                 <template #dropdown>
                                     <el-dropdown-menu>
                                         <el-dropdown-item @click="handleJoinWave">{{ getButtonText('joinWave')
-                                            }}</el-dropdown-item>
+                                        }}</el-dropdown-item>
                                         <el-dropdown-item @click="handleExitWave"> {{
                                             getButtonText('exitWave')
-                                            }}</el-dropdown-item>
+                                        }}</el-dropdown-item>
                                     </el-dropdown-menu>
                                 </template>
                             </el-dropdown>
@@ -379,10 +379,10 @@
                                 <template #dropdown>
                                     <el-dropdown-menu>
                                         <el-dropdown-item @click="handleInventory">{{ getButtonText('assignStock')
-                                            }}</el-dropdown-item>
+                                        }}</el-dropdown-item>
                                         <el-dropdown-item @click="handleCancelInventory"> {{
                                             getButtonText('cancelAssign')
-                                            }}</el-dropdown-item>
+                                        }}</el-dropdown-item>
                                     </el-dropdown-menu>
                                 </template>
                             </el-dropdown>
@@ -395,17 +395,17 @@
                                 <template #dropdown>
                                     <el-dropdown-menu>
                                         <el-dropdown-item @click="ApplyHoldUp">{{ getButtonText('ApplyHoldUp')
-                                            }}</el-dropdown-item>
+                                        }}</el-dropdown-item>
                                         <el-dropdown-item @click="CancelHoldUp"> {{
                                             getButtonText('CancelHoldUp')
-                                            }}</el-dropdown-item>
+                                        }}</el-dropdown-item>
                                     </el-dropdown-menu>
                                 </template>
                             </el-dropdown>
                             <!-- 问题 -->
                             <el-button type="primary" @click="handleProblem" :icon="Plus">{{
                                 getButtonText('registerProblem')
-                                }}</el-button>
+                            }}</el-button>
                             <!-- 状态修改 -->
                             <el-dropdown trigger="click">
                                 <el-button type="success">
@@ -415,9 +415,9 @@
                                 <template #dropdown>
                                     <el-dropdown-menu>
                                         <el-dropdown-item @click="handleToAllocate">{{ getButtonText('pendingAssign')
-                                            }}</el-dropdown-item>
+                                        }}</el-dropdown-item>
                                         <el-dropdown-item @click="handleToDraft">{{ getButtonText('draft')
-                                            }}</el-dropdown-item>
+                                        }}</el-dropdown-item>
                                     </el-dropdown-menu>
                                 </template>
                             </el-dropdown>
@@ -430,23 +430,23 @@
                                 <template #dropdown>
                                     <el-dropdown-menu>
                                         <el-dropdown-item @click="setWarehouse"> {{ getButtonText('setWarehouse')
-                                            }}</el-dropdown-item>
+                                        }}</el-dropdown-item>
                                         <el-dropdown-item @click="setShipway">{{ getButtonText('setChannel')
-                                            }}</el-dropdown-item>
+                                        }}</el-dropdown-item>
                                     </el-dropdown-menu>
                                 </template>
                             </el-dropdown>
                             <!-- 导出 -->
                             <el-button type="success" @click="handleExport" :icon="Share">{{ getButtonText('export')
-                            }}</el-button>
+                                }}</el-button>
                             <!-- 导出文件 -->
                             <el-button type="info" @click="handleExportAttachment" :icon="Share">{{
                                 getButtonText('exportAttachment')
-                                }}</el-button>
+                            }}</el-button>
                             <!-- 删除 -->
                             <el-button type="danger" @click="handleDel" v-permission="'delete'" :icon="Delete">{{
                                 getButtonText('del')
-                                }}</el-button>
+                            }}</el-button>
                         </div>
                     </div>
                 </template>
@@ -487,7 +487,7 @@
                             <template #dropdown>
                                 <el-dropdown-menu>
                                     <el-dropdown-item @click="handleCopy(row)">{{ getButtonText('copy')
-                                    }}</el-dropdown-item>
+                                        }}</el-dropdown-item>
                                     <!-- <el-dropdown-item @click="handleCancel(row)">{{ getButtonText('cancelReceipt')
                                     }}</el-dropdown-item> -->
                                 </el-dropdown-menu>
@@ -516,7 +516,7 @@
                 </template>
                 <template #isValiPackage="{ row }">
                     <span :style="{ color: row.isValiPackage ? 'red' : 'green' }">{{ row.isValiPackage ? '是' : '否'
-                        }}</span>
+                    }}</span>
                 </template>
                 <template #isValiLabel="{ row }">
                     <span :style="{ color: row.isValiLabel ? 'red' : 'green' }">{{ row.isValiLabel ? '是' : '否' }}</span>
@@ -550,7 +550,7 @@
                 </template> -->
                 <!-- 运单就绪 -->
                 <template #trackingNoCount="{ row }">
-                    <span :style="{ color: row.trackingNoCount > 0 ? 'green' : 'red' }">{{ row.trackingNoCount > 0 ? '是'
+                    <span :style="{ color: row.isTrackingNoReady ? 'green' : 'red' }">{{ row.isTrackingNoReady ? '是'
                         :
                         '否' }}</span>
                 </template>
@@ -647,7 +647,7 @@
         <el-dialog v-model="waveDialogVisible" title="加入波次" width="800" align-center :close-on-click-modal="false"
             destroy-on-close>
             <el-form :model="waveFormData" label-width="110px">
-                <el-form-item :label="getLabel('isJoin')" prop="inOrderIds">
+                <el-form-item :label="getLabel('isJoin')" prop="inOrderNoList">
                     <el-select v-model="waveFormData.isJoin" :placeholder="getPlaceholder('isJoin')" clearable>
                         <el-option label="加入波次" :value="true" />
                         <el-option label="创建波次" :value="false" />
@@ -657,7 +657,7 @@
                     <el-input v-model.trim="waveFormData.waveNo" :placeholder="getPlaceholder('outWaveNo')" clearable />
                 </el-form-item>
             </el-form>
-            <inventoryRangeForm v-if="!waveFormData.isJoin" ref="inventoryRangeFormRef"></inventoryRangeForm>
+            <inventoryRangeForm ref="inventoryRangeFormRef"></inventoryRangeForm>
             <template #footer>
                 <div class="dialog-footer">
                     <el-button @click="waveDialogVisible = false"> {{ getButtonText('cancel') }}</el-button>
@@ -677,8 +677,9 @@
 <script setup name="出库单">
 import { getOutstockOrderApi, deleteOutstockOrderApi, getOutstockOrderStatusMenuApi } from '@/api/outstockApi/order.js'
 import { outstockOrderTypeApi, outstockOrderBatchSetWarehouseApi, outstockOrderBatchSetChannelApi, outstockOrderApplyTrackingNoApi, outstockOrderCancelTrackingNoApi, outstockOrderStatusApi, outstockOrderCreateWayEnumApi, outstockOrderEcommercePlatformApi, outstockOrderSupplierPushStatusEnumApi, getOutstockOrderTimeFilterEnumApi, getOutstockOrderCountBtnEnumApi, getOutstockOrderExportTypeEnumApi, getOutstockOrderExportZIPApi, getAllocateInventoryApi, getCancelAllocateInventoryApi, getJoinWaveApi, getExitWaveApi, outstockOrderToPendingAllocationApi, outstockOrderToDraftApi, getOutstockOrderWayBillTypeEnumApi } from '@/api/outstockApi/order.js';
-// import { } from '@/api/instockApi/order.js';
 import { outstockOrderApplyHoldUptApi, outstockOrderCancelHoldUpApi, getOrderHoldupStatusApi } from '@/api/outstockApi/holdup.js'
+import { getTemplateApi } from '@/api/baseApi/index.js';
+import { exportJobAddApi } from '@/api/sysApi/job.js';
 import { getOrgListCompanyApi } from '@/api/baseApi/org.js';
 import { getOrgCountryListApi } from '@/api/baseApi/org.js';
 import { getCustomerLikeQueryApi } from '@/api/baseApi/sku.js'
@@ -706,7 +707,6 @@ const refreshStore = useRefreshStore()
 import { getLabel } from '@/utils/i18n/i18nLabels.js';
 
 import { getProductShipwayTypeEnumApi, getProductShipwayListApi, getProductShipwayBrandListApi, getProductSupplierListApi } from '@/api/productApi/shipway.js'
-import { getCurrencyEnumApi } from '@/api/baseApi/index.js';
 // import { } from '@/api/instockApi/order.js'
 import { getCustomerApiTypeEnumApi } from "@/api/baseApi/cust.js";
 import { getWhZoneEnumApi } from '@/api/baseApi/wh.js'
@@ -727,7 +727,7 @@ const formConfig = ref([
 
 // 初始化表单数据
 const initValues = ref({
-    orgId: [],
+    orgId: '',
     way: 'orderNoList',
 })
 
@@ -928,7 +928,7 @@ const pagination = ref({
     total: 99
 })
 
-const loading = ref(true)
+const loading = ref(false)
 
 // 事件回调
 const handleSelectionChange = (selection) => {
@@ -1544,10 +1544,12 @@ const handleExportAttachment = async () => {
 // 确定导出附件
 const handleExportFile = async () => {
     const idList = selectionRows.value.map(item => item.id);
-    const res = await getOutstockOrderExportZIPApi({
-        exportTypeId: exportTypeId.value,
-        idList: idList
-    });
+    const apiPayload = {
+        typeId: 401,                  // 业务类型
+        templateId: exportTypeId.value, // 模板ID
+        exportParam: JSON.stringify({ idList })
+    };
+    const res = await exportJobAddApi(apiPayload);
     smartAlert(res.msg, res.success, 1000);
     if (res.success) {
         fileDialogVisible.value = false;
@@ -1658,10 +1660,10 @@ const handleWave = async () => {
 
     const outOrderIdList = selectionRows.value.map(item => item.id);
     let res
+    const allocateInventoryReqDto = inventoryRangeFormRef.value.getFormData()
     if (waveFormData.value.isJoin && waveFormData.value.waveNo) {
-        res = await getJoinWaveApi({ waveNo: waveFormData.value.waveNo, outOrderIdList });
+        res = await getJoinWaveApi({ waveNo: waveFormData.value.waveNo, outOrderIdList, allocateInventoryReqDto });
     } else {
-        const allocateInventoryReqDto = inventoryRangeFormRef.value.getFormData()
         res = await getJoinWaveApi({ outOrderIdList, allocateInventoryReqDto });
     }
     if (res.data) {
@@ -1775,7 +1777,6 @@ const getList = async (currentPage, pageSize, orderBy) => {
         pageSize: pageSize,
         orderBy,
         ...trimObjectStrings(initValues.value),
-        orgId: initValues.value.orgId.length > 0 ? initValues.value.orgId[initValues.value.orgId.length - 1] : ''
     })
     tableData.value = res.data.rows
     footer.value = res.data.footer[0]
@@ -1790,11 +1791,6 @@ const getList = async (currentPage, pageSize, orderBy) => {
 const getStatus = async () => {
     const data = {
         ...trimObjectStrings(initValues.value),
-    }
-    if (data.orgId.length > 0) {
-        data.orgId = data.orgId[data.orgId.length - 1]
-    } else {
-        delete data.orgId
     }
     delete data.statusIdList
     const res = await getOutstockOrderStatusMenuApi(data)
@@ -1822,7 +1818,8 @@ const companyOptions = ref([]);
 const cascaderRef = ref(null);
 const parentProps = {
     checkStrictly: true,
-    expandTrigger: 'hover'
+    expandTrigger: 'hover',
+    emitPath: false,
 };
 // 公司改变事件
 const handleCascaderChange = async (e) => {
@@ -1831,7 +1828,7 @@ const handleCascaderChange = async (e) => {
             cascaderRef.value.togglePopperVisible()
         });
     }
-    const orgId = e ? e[e.length - 1] : '';
+    const orgId = e ? e : '';
     const result = await getCustomerLikeQueryApi({ keyword: '*', orgId });
     customerOptions.value = result.data.map(item => ({
         value: item.code,
@@ -1861,8 +1858,6 @@ const addressTypeOptions = ref([])
 const typeOptions = ref([])
 // 订单状态下拉框数据（对应statusId字段）
 const statusOptions = ref([])
-// 货币类型下拉框数据（对应insuranceCurrency字段）
-const currencyOptions = ref([])
 // 商品品质下拉框数据（对应skuList.qualityId字段）
 const qualityOptions = ref([])
 // 物流服务商下拉框数据（对应trackingNoList.supplierId字段）
@@ -1910,10 +1905,6 @@ onMounted(async () => {
     // const warehouseRes = await getWhWarehouseApi()
     // warehouseOptions.value = warehouseRes.data.map(item => ({ label: item.code + '-' + item.name, value: item.code }))
 
-
-
-    loading.value = true;
-
     try {
         //定义框接口任务
         const apiTasks = [
@@ -1960,11 +1951,6 @@ onMounted(async () => {
                 key: "物流服务商",
                 api: getProductSupplierListApi(),
                 handleSuccess: (data) => (supplierOptions.value = data || []),
-            },
-            {
-                key: "货币类型",
-                api: getCurrencyEnumApi(),
-                handleSuccess: (data) => (currencyOptions.value = data || []),
             },
             {
                 key: "商品品质",
@@ -2031,8 +2017,11 @@ onMounted(async () => {
             },
             {
                 key: '附件类型',
-                api: getOutstockOrderExportTypeEnumApi(),
-                handleSuccess: (data) => (fileOptions.value = data || [])
+                api: getTemplateApi({ atypeId: 2, btypeId: 401 }),
+                handleSuccess: (data) => {
+                    fileOptions.value = data || []
+                    exportTypeId.value = data[0].id
+                }
             },
             {
                 key: '运单类型',
@@ -2063,9 +2052,8 @@ onMounted(async () => {
                 console.error(`[${task.key}] error:`, result.reason);
             }
         });
-    } finally {
-        // loading.close();
-        loading.value = false;
+    } catch (error) {
+        console.error("数据加载失败:", error);
     }
 })
 // 监听刷新数据

@@ -38,6 +38,10 @@ export const buttonTextMap = {
         zh: '详情',
         en: 'Detail'
     },
+    viewDetail: {
+        zh: '查看详情',
+        en: 'View Detail'
+    },
     more: {
         zh: '更多',
         en: 'More'
@@ -267,6 +271,11 @@ export const buttonTextMap = {
     GotIt: {
         zh: '我知道了',
         en: 'Got It'
+    },
+    // 复制消息并关闭
+    copyAndClose: {
+        zh: '复制消息并关闭',
+        en: 'Copy Message and Close'
     },
     Prompt: {
         zh: '提示',
@@ -596,7 +605,17 @@ export const buttonTextMap = {
     complete: {
         zh: '完成',
         en: 'Complete'
-    }
+    },
+    // 追加
+    append: {
+        zh: '追加',
+        en: 'Append'
+    },
+    // 格式化
+    format: {
+        zh: '格式化',
+        en: 'Format'
+    },
 }
 const labelsMap = {
     // 通用配置
@@ -667,7 +686,7 @@ const labelsMap = {
             "placeholderZh": "请输入客户",
             "placeholderEn": "Enter Cust. Code"
         },
-        "inOrderIds": {
+        "inOrderNoList": {
             "zh": "入库单号:",
             "en": "Inb. Ord. No.:",
             "placeholderZh": "请输入入库单号",
@@ -1821,7 +1840,7 @@ const labelsMap = {
             "placeholderZh": "请输入最大批次数",
             "placeholderEn": "Enter Max Batches"
         },
-        "qualityId":{
+        "qualityId": {
             "zh": "品质:",
             "en": "Quality:",
             "placeholderZh": "请选择品质",
@@ -2295,9 +2314,9 @@ const labelsMap = {
             "placeholderEn": "Select Status"
         },
         "trackingNoList": {
-            "zh": "物流单号:",
+            "zh": "跟踪单号:",
             "en": "Tracking No.:",
-            "placeholderZh": "请输入物流单号",
+            "placeholderZh": "请输入跟踪单号",
             "placeholderEn": "Enter Tracking No."
         },
         "orderNo": {
@@ -4819,6 +4838,12 @@ const labelsMap = {
         },
     },
     "inventory_inventory_inventory_list2": {
+        "businessId": {
+            "zh": "业务类型:",
+            "en": "Business Type:",
+            "placeholderZh": "请选择业务类型",
+            "placeholderEn": "Select Business Type"
+        },
         "sourceNoList": {
             "zh": "来源单号:",
             "en": "Source No.:",
@@ -4875,6 +4900,12 @@ const labelsMap = {
         },
     },
     "inventory_inventory_inventory_list3": {
+        "businessId": {
+            "zh": "业务类型:",
+            "en": "Business Type:",
+            "placeholderZh": "请选择业务类型",
+            "placeholderEn": "Select Business Type"
+        },
         "sourceNoList": {
             "zh": "来源单号:",
             "en": "Source No.:",
@@ -5000,6 +5031,12 @@ const labelsMap = {
             "placeholderZh": "请输入SKU",
             "placeholderEn": "Enter SKU"
         },
+        "barcode": {
+            "zh": "商品条码:",
+            "en": "Product Barcode:",
+            "placeholderZh": "请输入商品条码",
+            "placeholderEn": "Enter Product Barcode"
+        },
         "sn": {
             "zh": "序列号:",
             "en": "Serial No.:",
@@ -5068,6 +5105,12 @@ const labelsMap = {
             "placeholderZh": "请输入入库单号",
             "placeholderEn": "Enter Inb. Ord. No."
         },
+        "sourceNo": {
+            "zh": "来源单号:",
+            "en": "Source No.:",
+            "placeholderZh": "请输入来源单号",
+            "placeholderEn": "Enter Source No."
+        },
         "inShelfDate": {
             "zh": "上架日期:",
             "en": "Shelf Date:",
@@ -5105,6 +5148,12 @@ const labelsMap = {
             "en": "Snapshot Date:",
             "placeholderZh": "请选择快照日期",
             "placeholderEn": "Select Snapshot Date"
+        },
+        "sourceNo": {
+            "zh": "来源单号:",
+            "en": "Source No.:",
+            "placeholderZh": "请输入来源单号",
+            "placeholderEn": "Enter Source No."
         },
         "inOrderNoList": {
             "zh": "入库单号:",
@@ -5240,6 +5289,12 @@ const labelsMap = {
             "placeholderZh": "",
             "placeholderEn": ""
         },
+        "returnData": {
+            "zh": "结果详情:",
+            "en": "Result Details:",
+            "placeholderZh": "",
+            "placeholderEn": ""
+        },
         "async": {
             "zh": "是否异步:",
             "en": "Is Async:",
@@ -5265,8 +5320,134 @@ const labelsMap = {
             "placeholderEn": ""
         }
     },
-
-
+    "myImport": {
+        "statusId": {
+            "zh": "状态:",
+            "en": "Status:",
+            "placeholderZh": "请选择状态",
+            "placeholderEn": "Select Status"
+        },
+        "createdBy": {
+            "zh": "创建人:",
+            "en": "Created By:",
+            "placeholderZh": "请输入创建人",
+            "placeholderEn": "Enter Created By"
+        },
+        "jobNo": {
+            "zh": "导入编号:",
+            "en": "Import No.:",
+            "placeholderZh": "请输入导入编号",
+            "placeholderEn": "Enter Import No."
+        },
+        "typeId": {
+            "zh": "类型:",
+            "en": "Type:",
+            "placeholderZh": "请选择类型",
+            "placeholderEn": "Select Type"
+        },
+        "templateName": {
+            "zh": "模板名称:",
+            "en": "Temp. Name:",
+            "placeholderZh": "",
+            "placeholderEn": ""
+        },
+        "typeName": {
+            "zh": "导入类型:",
+            "en": "Import Type:",
+            "placeholderZh": "",
+            "placeholderEn": ""
+        },
+        "statusName": {
+            "zh": "状态:",
+            "en": "Status:",
+            "placeholderZh": "",
+            "placeholderEn": ""
+        },
+        "importParam": {
+            "zh": "导入参数:",
+            "en": "Import Params:",
+            "placeholderZh": "",
+            "placeholderEn": ""
+        },
+        "importTotal": {
+            "zh": "导入总数:",
+            "en": "Total Import Qty.:",
+            "placeholderZh": "",
+            "placeholderEn": ""
+        },
+        "customerName": {
+            "zh": "客户名称:",
+            "en": "Cust. Name:",
+            "placeholderZh": "",
+            "placeholderEn": ""
+        },
+        "fileSize": {
+            "zh": "文件大小:",
+            "en": "File Size:",
+            "placeholderZh": "",
+            "placeholderEn": ""
+        },
+        "handlerWayName": {
+            "zh": "处理方式:",
+            "en": "Proc. Meth.:",
+            "placeholderZh": "",
+            "placeholderEn": ""
+        },
+        "fileUrl": {
+            "zh": "文件路径:",
+            "en": "File Path:",
+            "placeholderZh": "",
+            "placeholderEn": ""
+        },
+        "returnMessage": {
+            "zh": "返回消息:",
+            "en": "Return Msg.:",
+            "placeholderZh": "",
+            "placeholderEn": ""
+        },
+        "feedbackMsg": {
+            "zh": "进度反馈消息:",
+            "en": "Prog. Fdbk. Msg.:",
+            "placeholderZh": "",
+            "placeholderEn": ""
+        },
+        "feedbackTime": {
+            "zh": "进度反馈时间:",
+            "en": "Prog. Fdbk. Time:",
+            "placeholderZh": "",
+            "placeholderEn": ""
+        },
+        "returnData": {
+            "zh": "结果详情:",
+            "en": "Result Details:",
+            "placeholderZh": "",
+            "placeholderEn": ""
+        },
+        "async": {
+            "zh": "是否异步:",
+            "en": "Is Async:",
+            "placeholderZh": "请选择是否异步",
+            "placeholderEn": "Select Is Async"
+        },
+        "localFileUrl": {
+            "zh": "本地文件路径:",
+            "en": "Local File Path:",
+            "placeholderZh": "",
+            "placeholderEn": ""
+        },
+        "startTime": {
+            "zh": "开始时间:",
+            "en": "Start Time:",
+            "placeholderZh": "",
+            "placeholderEn": ""
+        },
+        "endTime": {
+            "zh": "结束时间:",
+            "en": "End Time:",
+            "placeholderZh": "",
+            "placeholderEn": ""
+        }
+    },
 
     "sys_job_scheduleJob_list": {
         "jobGroupId": {
@@ -6734,6 +6915,58 @@ const labelsMap = {
             "placeholderZh": "请选择盘点状态",
             "placeholderEn": "Please Select Check Status"
         }
+    },
+    "inventory_mv_inventoryMv_list": {
+        "mvNo": {
+            "zh": "移库单号:",
+            "en": "Move No.:",
+            "placeholderZh": "请输入移库单号",
+            "placeholderEn": "Please Enter Move No."
+        },
+        "statusId": {
+            "zh": "移库状态:",
+            "en": "Move Status:",
+            "placeholderZh": "请选择移库状态",
+            "placeholderEn": "Please Select Move Status"
+        },
+        "fromWarehouseId": {
+            "zh": "移出仓库:",
+            "en": "From Warehouse:",
+            "placeholderZh": "请选择移出仓库",
+            "placeholderEn": "Please Select From Warehouse"
+        }
+    },
+    "sys_setting_sysApp_list": {
+        "typeId": {
+            "zh": "APP类型:",
+            "en": "APP Type:",
+            "placeholderZh": "请选择APP类型",
+            "placeholderEn": "Please Select APP Type"
+        },
+        "versionNo": {
+            "zh": "版本号:",
+            "en": "Version No.:",
+            "placeholderZh": "请输入版本号",
+            "placeholderEn": "Please Enter Version No."
+        },
+        "fileUrl": {
+            "zh": "安装包URL:",
+            "en": "Install Package URL:",
+            "placeholderZh": "请输入安装包URL",
+            "placeholderEn": "Please Enter Install Package URL"
+        },
+        "publishPage": {
+            "zh": "发布页URL:",
+            "en": "Publish Page URL:",
+            "placeholderZh": "请输入发布页URL",
+            "placeholderEn": "Please Enter Publish Page URL"
+        },
+        "remark": {
+            "zh": "备注:",
+            "en": "Remark:",
+            "placeholderZh": "请输入备注",
+            "placeholderEn": "Please Enter Remark"
+        }
     }
 }
 import router from '@/router/index.js'
@@ -6749,13 +6982,11 @@ const getRouteKey = () => {
     const currentRoute = getCurrentRoute()
     // 基础转换：去除开头斜杠，替换中间斜杠为下划线
     let routeKey = currentRoute.replace(/^\//, '').replace(/\//g, '_')
-
     // 关键修改：将非贪婪匹配+?改为贪婪匹配+，确保匹配到最后一个符合条件的后缀
-    const suffixMatch = routeKey.match(/^(.+_(list1|list2|list3|list|upd|add|info|copyAdd)).*$/)
+    const suffixMatch = routeKey.match(/^((.*_)?(list1|list2|list3|list|upd|add|info|copyAdd|myImport)).*$/)
     if (suffixMatch) {
         routeKey = suffixMatch[1]
     }
-
     return routeKey
 }
 

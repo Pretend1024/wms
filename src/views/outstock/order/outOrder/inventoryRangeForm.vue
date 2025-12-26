@@ -4,8 +4,8 @@
         <el-row :gutter="20">
             <!-- 入库单 -->
             <el-col :span="24">
-                <el-form-item :label="getLabel('inOrderIds')" prop="inOrderIds">
-                    <canonicalInput v-model:listName="formData.inOrderIds" :placeholder="getPlaceholder('inOrderIds')"
+                <el-form-item :label="getLabel('inOrderNoList')" prop="inOrderNoList">
+                    <canonicalInput v-model:listName="formData.inOrderNoList" :placeholder="getPlaceholder('inOrderNoList')"
                         clearable :returnString="true" :disabled="props.disabled" />
                 </el-form-item>
             </el-col>
@@ -91,7 +91,7 @@ const props = defineProps({
     formData: {
         type: Object,
         default: () => ({
-            inOrderIds: '',
+            inOrderNoList: '',
             onShelfStartTime: '',
             onShelfEndTime: '',
             zoneCodes: '',

@@ -95,7 +95,6 @@ const initValues = ref({
 // 搜索事件
 const handleSearch = (data) => {
     loading.value = true;
-    data.orgId = data.orgId.length > 0 ? data.orgId[data.orgId.length - 1] : ''
     initValues.value = {
         ...data,
     }

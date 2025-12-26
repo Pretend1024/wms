@@ -41,15 +41,15 @@
                         <template #dropdown>
                             <el-dropdown-menu>
                                 <el-dropdown-item @click="handleAudit(30)">{{ getButtonText('auditPass')
-                                    }}</el-dropdown-item>
+                                }}</el-dropdown-item>
                                 <el-dropdown-item @click="handleAudit(40)">{{ getButtonText('auditReject')
-                                    }}</el-dropdown-item>
+                                }}</el-dropdown-item>
                             </el-dropdown-menu>
                         </template>
                     </el-dropdown>
                     <!-- 导出 -->
                     <el-button type="success" @click="handleExport" :icon="Share">{{ getButtonText('export')
-                    }}</el-button>
+                        }}</el-button>
                     <el-button type="danger" @click="handleDel" v-permission="'customerRecharge:delete'"
                         :icon="Delete">{{
                             getButtonText('del')
@@ -124,7 +124,7 @@ import { getPaymentMethodEnumApi } from '@/api/financeApi/basic.js';
 import { addCustomerRechargeApi, updCustomerRechargeByIdApi, getCustomerRechargePageApi, getCustomerRechargePlatformStatusEnumApi, getCustomerRechargeStatusEnumApi, delCustomerRechargeByIdApi, auditCustomerRechargeApi } from "@/api/financeApi/receivables.js";
 import { getOrgListCompanyApi } from '@/api/baseApi/org.js';
 import { getCustomerLikeQueryApi } from '@/api/baseApi/sku.js';
-import { getCurrencyEnumApi } from '@/api/baseApi/index.js';
+import { getCurrencyListApi } from '@/api/baseApi/index.js';
 
 // 工具与组件导入
 import { smartAlert, trimObjectStrings } from '@/utils/genericMethods.js';
@@ -164,9 +164,6 @@ const initValues = ref({
 // 搜索事件
 const handleSearch = (data) => {
     loading.value = true;
-    if (Array.isArray(data.orgId)) {
-        data.orgId = data.orgId.length > 0 ? data.orgId[data.orgId.length - 1] : '';
-    }
     initValues.value = { ...data };
     getList(pagination.value.currentPage, pagination.value.pageSize, orderBy.value);
 };
@@ -466,7 +463,11 @@ const getList = async (currentPage, pageSize, orderByStr) => {
 // 公司级联数据、支付方式、账户状态枚举加载
 const companyOptions = ref([]);
 const cascaderRef = ref(null);
-const parentProps = { checkStrictly: true, expandTrigger: 'hover' };
+const parentProps = {
+    checkStrictly: true,
+    expandTrigger: 'hover',
+    emitPath: false,
+};
 const paymentMethodEnum = ref([]);
 const accountStatusEnum = ref([]);
 // 支付结果
@@ -508,10 +509,10 @@ onMounted(async () => {
     }))
     initialFilteredOptions.value = JSON.parse(JSON.stringify(customerOptions.value));
     // 获取币种数据
-    const CurrencyRes = await getCurrencyEnumApi();
+    const CurrencyRes = await getCurrencyListApi();
     CurrencyOptions.value = CurrencyRes.data.map(item => ({
-        value: item.code,
-        label: item.name
+        value: item.currency,
+        label: item.remark
     }))
     formConfig.value[3].options = CurrencyOptions.value;
     // 4. 初始化加载列表
@@ -525,7 +526,7 @@ const handleCascaderChange = async (e) => {
             cascaderRef.value.togglePopperVisible()
         });
     }
-    const orgId = e ? e[e.length - 1] : '';
+    const orgId = e ? e : '';
     const result = await getCustomerLikeQueryApi({ keyword: '*', orgId });
     customerOptions.value = result.data.map(item => ({
         value: item.code,

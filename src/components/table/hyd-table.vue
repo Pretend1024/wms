@@ -607,6 +607,7 @@ watch(fixedColumns, () => {
     flex-wrap: wrap;
     justify-content: flex-start;
     flex: 1;
+    width: 98%;
 }
 
 .table-setting-icon:hover {

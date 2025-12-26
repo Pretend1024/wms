@@ -63,35 +63,40 @@
                     <el-button type="primary" @click="handleAdd" v-permission="'add'" :icon="Plus">{{
                         getButtonText('add') }}</el-button>
                     <el-button type="success" @click="handleExport" :icon="Share">{{ getButtonText('export')
-                        }}</el-button>
+                    }}</el-button>
                 </template>
                 <!-- 使用插槽来自定义列内容，假如我们需要在操作列中添加按钮 -->
                 <template #customBtn="{ row }">
                     <div style="display: flex;">
-                        <div class="cursor-pointer" @click="handleInfo(row)">
+                        <div class="cursor-pointer" @click="handleEdit(row)">
+                            <el-icon>
+                                <Edit />
+                            </el-icon>
+                            <span>{{ getButtonText('edit') }}</span>
+                        </div>
+                        <div class="cursor-pointer" @click="(row.statusId == 1) && handleDel(row)"
+                            :class="{ 'btnDisable': !(row.statusId == 1 ) }">
+                            <el-icon>
+                                <Delete />
+                            </el-icon>
+                            <span>{{ getButtonText('del') }}</span>
+                        </div>
+                        <div class="cursor-pointer" @click="handleProcessing(row)">
                             <el-icon>
                                 <Document />
                             </el-icon>
-                            <span>{{ getButtonText('detail') }}</span>
+                            <span>{{ getButtonText('processing') }}</span>
                         </div>
-                        <el-dropdown>
-                            <span class="cursor-pointer">
-                                {{ getButtonText('operate') }}
-                                <el-icon>
-                                    <arrow-down />
-                                </el-icon>
-                            </span>
-                            <template #dropdown>
-                                <el-dropdown-menu>
-                                    <el-dropdown-item @click="handleEdit(row)" v-if="row.statusId == 1">{{ getButtonText
-                                        ('edit') }}</el-dropdown-item>
-                                    <el-dropdown-item @click="handleDel(row)" v-if="row.statusId == 1">{{ getButtonText
-                                        ('del') }}</el-dropdown-item>
-                                    <el-dropdown-item @click="handleProcessing(row)">{{ getButtonText('processing') }}
-                                    </el-dropdown-item>
-                                </el-dropdown-menu>
-                            </template>
-                        </el-dropdown>
+                    </div>
+                </template>
+                <template #orderNo="{ row }">
+                    <div class="copyDiv">
+                        <el-tooltip content="copy" placement="left">
+                            <el-icon class="copyIcon" @click.stop="copyToClipboard(row.orderNo)">
+                                <DocumentCopy />
+                            </el-icon>
+                        </el-tooltip>
+                        <span class="copyText" @click="handleInfo(row)">{{ row.orderNo }}</span>
                     </div>
                 </template>
                 <template #statusName="{ row }">
@@ -155,7 +160,6 @@ const handleSearch = (data) => {
     loading.value = true;
     initValues.value = {
         ...data,
-        orgId: data.orgId ? data.orgId[data.orgId.length - 1] : ''
     }
     getList(pagination.value.currentPage, pagination.value.pageSize, orderBy.value)
 }
@@ -176,7 +180,7 @@ const columns = ref([
     { label: '公司', width: '130', prop: 'orgName', sortable: true, flex: 'left' },
     { label: '仓库代码', width: '135', prop: 'warehouseCode', sortable: true, flex: 'left' },
     { label: '客户代码', width: '180', prop: 'customerCode', sortable: true, slot: 'customer', flex: 'left' },
-    { label: '退件单号', width: '190', prop: 'orderNo', sortable: true },
+    { label: '退件单号', width: '190', prop: 'orderNo', sortable: true, slot: 'orderNo' },
     { label: '原出库单号', width: '210', prop: 'sourceOrderNo', sortable: true },
     { label: '退件类型', width: '145', prop: 'typeName', sortable: true },
     { label: '处理状态', width: '145', prop: 'statusName', sortable: true, slot: 'statusName' },
@@ -194,7 +198,7 @@ const columns = ref([
     { label: '创建时间', width: '200', prop: 'createdTime', sortable: true },
     { label: '更新人', width: '100', prop: 'updatedBy' },
     { label: '更新时间', width: '200', prop: 'updatedTime', sortable: true },
-    { label: '操作', width: '155', fixed: 'right', prop: 'action', slot: 'customBtn' }
+    { label: '操作', width: '190', fixed: 'right', prop: 'action', slot: 'customBtn' }
 ])
 
 const pagination = ref({
@@ -319,7 +323,8 @@ const companyOptions = ref([]);
 const cascaderRef = ref(null);
 const parentProps = {
     checkStrictly: true,
-    expandTrigger: 'hover'
+    expandTrigger: 'hover',
+    emitPath: false,
 };
 // 公司改变事件
 const handleCascaderChange = async (e) => {
@@ -328,7 +333,7 @@ const handleCascaderChange = async (e) => {
             cascaderRef.value.togglePopperVisible()
         });
     }
-    const orgId = e ? e[e.length - 1] : '';
+    const orgId = e ? e : '';
     const result = await getCustomerLikeQueryApi({ keyword: '*', orgId });
     customerOptions.value = result.data.map(item => ({
         value: item.code,

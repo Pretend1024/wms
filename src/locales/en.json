@@ -2,6 +2,7 @@
   "UserName": "User Name",
   "LastActivity": "Last Activity",
   "Download": "My Downloads",
+  "MyImport": "My Imports",
   "OrderTrend": "Order Trend",
   "OrderPercentage": "Order Percentage",
   "PerDiem": "Per Day",
@@ -78,6 +79,7 @@
   "ruleGroup": "Rule Group(Matching is possible if any rule group is satisfied)",
   "yes": "Yes",
   "no": "No",
+  "fullScreen": "Full Screen",
   "base_org_organization_list": {
     "addTitle": "Add Department",
     "updTitle": "Upd Department"
@@ -175,7 +177,8 @@
     "checkTitle": "View Details"
   },
   "sys_job_importJob_list": {
-    "checkTitle": "View Details"
+    "checkTitle": "View Details",
+    "resultTitle": "Result Title"
   },
   "sys_job_scheduleJob_list": {
     "addTitle": "Add Scheduled Task",
@@ -194,7 +197,8 @@
     "updTitle": "Edit Role"
   },
   "instock_returned_returnClaim_list": {
-    "title": "Return Claim"
+    "title": "Return Claim",
+    "addTitle": "Add Return Claim"
   },
   "instock_inventory_inventorySn_list": {
     "addTitle": "Add SN",
@@ -259,6 +263,11 @@
   "product_price_priceItem_list": {
     "addTitle": "Add Price Item",
     "updTitle": "Edit Price Item"
+  },
+  "sys_setting_sysApp_list": {
+    "addTitle": "Add Versions",
+    "updTitle": "Edit Versions",
+    "infoTitle": "Versions Details"
   },
   "outstock_op_outbound_add": {
     "outboundOperation": "Outbound Operation",

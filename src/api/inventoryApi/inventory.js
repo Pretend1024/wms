@@ -63,9 +63,7 @@ export const getInventoryInventoryLogQtyTypeApi = () => {
     return http.post('/inventory/inventory/inventoryLog/qtyTypeEnum')
 }
 // 日志操作类型枚举
-export const getInventoryInventoryLogOpTypeApi = () => {
-    return http.post('/inventory/inventory/inventoryLog/opTypeEnum')
-}
+export const getInventoryInventoryLogOpTypeApi = createPostRequestWithQuery('/inventory/inventory/inventoryLog/opTypeEnum')
 // 获取日志
 export const getInventoryInventoryLogListLogApi = (data) => {
     return http.post('/inventory/inventory/inventoryLog/listLog', { ...data })
@@ -112,21 +110,21 @@ export const getAdjustStatusApi = () => {
 
 
 // -------------------------------SN库存
-// 获取SN库存 inventory/inventory/inventorySn/page
+// 获取SN库存
 export const getInventorySnPageApi = (data) => {
     return http.post('/inventory/inventory/inventorySn/page', { ...data })
 }
-// 状态枚举inventory/inventory/inventorySn/statusEnum
+// 状态枚举
 export const getInventorySnStatusApi = () => {
     return http.post('/inventory/inventory/inventorySn/statusEnum', {})
 }
-// 新增SN库存inventory/inventory/inventorySn/add
+// 新增SN库存
 export const addInventorySnAddApi = (data) => {
     return http.post('/inventory/inventory/inventorySn/add', { ...data })
 }
-// 编辑inventory/inventory/inventorySn/updateById
+// 编辑SN库存
 export const updInventorySnUpdateByIdApi = (data) => {
     return http.post('/inventory/inventory/inventorySn/updateById', { ...data })
 }
-// 删除inventory/inventory/inventorySn/deleteById
+// 删除SN库存
 export const delInventorySnDeleteByIdApi = createPostRequestWithQuery('/inventory/inventory/inventorySn/deleteById') 

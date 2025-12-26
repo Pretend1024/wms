@@ -38,6 +38,14 @@
                             </canonicalInput>
                         </el-form-item>
                     </el-col>
+                    <!-- 条码 -->
+                    <el-col>
+                        <el-form-item :label="getLabel('barcode')">
+                            <canonicalInput v-model:listName="formData.barcodeList"
+                                :placeholder="getPlaceholder('barcode')" clearable>
+                            </canonicalInput>
+                        </el-form-item>
+                    </el-col>
                     <!-- SN -->
                     <el-col>
                         <el-form-item :label="getLabel('sn')">
@@ -89,8 +97,10 @@
                 @sort-change="handleTableSort">
                 <!-- 在表格上方通过 slot 插入按钮 -->
                 <template #table-buttons>
-                    <el-button type="primary" @click="handleAdd" v-permission="'add'" :icon="Plus">{{ getButtonText('add') }}</el-button>
-                    <el-button type="danger" @click="handleDel" v-permission="'delete'" :icon="Delete">{{ getButtonText('del') }}</el-button>
+                    <el-button type="primary" @click="handleAdd" v-permission="'add'" :icon="Plus">{{
+                        getButtonText('add') }}</el-button>
+                    <el-button type="danger" @click="handleDel" v-permission="'delete'" :icon="Delete">{{
+                        getButtonText('del') }}</el-button>
                     <el-button type="success" @click="handleImportAdd" :icon="UploadFilled">{{ getButtonText('import')
                     }}</el-button>
                     <el-button type="success" @click="handleExport" :icon="Share">{{ getButtonText('export')
@@ -168,12 +178,6 @@ const initValues = ref({})
 const handleSearch = (data) => {
     loading.value = true;
     initValues.value = data;
-    // 判断是否有orgId，没有则删除
-    if (!data.orgId) {
-        delete initValues.value.orgId;
-    } else {
-        initValues.value.orgId = data.orgId[data.orgId.length - 1]
-    }
 
     getList(pagination.value.currentPage, pagination.value.pageSize, orderBy.value);
 }
@@ -195,10 +199,10 @@ const columns = ref([
     { label: '公司', prop: 'orgName', width: '130', fixed: 'left' },
     { label: '仓库代码', prop: 'warehouseCode', width: '135', sortable: true, fixed: 'left' },
     { label: '客户', prop: 'customerCode', width: '200', slot: 'customer', fixed: 'left' },
+    { label: '序列号', prop: 'sn', width: '180', fixed: 'left' },
     { label: '入库单号', prop: 'inOrderNo', width: '180' },
     { label: 'SKU', prop: 'sku', width: '180' },
     { label: '条码', prop: 'barcode', width: '180' },
-    { label: '序列号', prop: 'sn', width: '180' },
     { label: '状态', prop: 'statusName', width: '100', sortable: true, slot: 'status' },
     { label: '收货时间', prop: 'receiptTime', width: '200', sortable: true },
     { label: '上架时间', prop: 'inshelfTime', width: '200', sortable: true },
@@ -206,6 +210,7 @@ const columns = ref([
     { label: '库位号', prop: 'locationCode', width: '130' },
     { label: '出库单号', prop: 'outOrderNo', width: '180', sortable: true },
     { label: '发货时间', prop: 'shippedTime', width: '200', sortable: true },
+    { label: '销售客户', prop: 'salesUserCode', width: '130' },
     { label: '备注', prop: 'remark', width: '200' },
     { label: '创建时间', prop: 'createdTime', width: '200', sortable: true },
     { label: '创建人', prop: 'createdBy', width: '110' },
@@ -404,7 +409,8 @@ const companyOptions = ref([]);
 const cascaderRef = ref(null);
 const parentProps = {
     checkStrictly: true,
-    expandTrigger: 'hover'
+    expandTrigger: 'hover',
+    emitPath: false,
 };
 // 公司改变事件
 const handleCascaderChange = async (e) => {
@@ -413,7 +419,7 @@ const handleCascaderChange = async (e) => {
             cascaderRef.value.togglePopperVisible()
         });
     }
-    const orgId = e ? e[e.length - 1] : '';
+    const orgId = e ? e : '';
     const result = await getCustomerLikeQueryApi({ keyword: '*', orgId });
     customerOptions.value = result.data.map(item => ({
         value: item.code,

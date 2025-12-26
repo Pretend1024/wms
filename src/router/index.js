@@ -43,6 +43,15 @@ const routes = [
                 }
             },
             {
+                path: '/myImport',
+                name: '我的导入',
+                component: () => import('@/views/welcome/myImport.vue'),
+                meta: {
+                    keepAlive: true, // 该组件需要被缓存
+                    langKey: '我的导入',
+                }
+            },
+            {
                 path: '/print',
                 name: '条码打印',
                 component: () => import('@/views/welcome/tools/print.vue'),
@@ -385,6 +394,33 @@ const routes = [
                 meta: {
                     keepAlive: true, // 该组件需要被缓存
                     langKey: '盘点详情',
+                }
+            },
+            {
+                path: '/inventory/mv/inventoryMv/add',
+                name: '新增移库',
+                component: () => import('@/views/inventory/mv/inventoryMv/add.vue'),
+                meta: {
+                    keepAlive: true, // 该组件需要被缓存
+                    langKey: '新增移库',
+                }
+            },
+            {
+                path: '/inventory/mv/inventoryMv/upd/:name/:id/',
+                name: '追加移库',
+                component: () => import('@/views/inventory/mv/inventoryMv/upd.vue'),
+                props: true,
+                meta: {
+                    langKey: '追加移库',
+                }
+            },
+            {
+                path: '/inventory/mv/inventoryMv/info/:name/:id/',
+                name: '移库详情',
+                component: () => import('@/views/inventory/mv/inventoryMv/info.vue'),
+                props: true,
+                meta: {
+                    langKey: '移库详情',
                 }
             },
         ]

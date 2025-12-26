@@ -110,7 +110,7 @@
                                         <el-select v-model="formData.insuranceCurrency"
                                             :placeholder="getPlaceholder('insuranceCurrency')" clearable>
                                             <el-option v-for="item in currencyOptions" :key="item.id" :label="item.name"
-                                                :value="item.code" />
+                                                :value="item.id" />
                                         </el-select>
                                     </el-form-item>
                                 </el-col>
@@ -608,7 +608,7 @@
 
 <script setup name="出库单复制">
 import { getProductShipwayTypeEnumApi, getProductShipwayListApi, getProductShipwayBrandListApi, getProductSupplierListApi } from '@/api/productApi/shipway.js'
-import { getCurrencyEnumApi } from '@/api/baseApi/index.js';
+import { getCurrencyListApi } from '@/api/baseApi/index.js';
 import { getOrderQualityEnumApi } from '@/api/instockApi/order.js'
 import { getInstockInOrderBusinessEnumApi } from '@/api/instockApi/order.js';
 import { getBasicConsumablesListEnumApi } from '@/api/baseApi/consumables.js'
@@ -616,7 +616,8 @@ import { getVasServiceTypeListApi, getVasServiceTypeUnitEnumApi } from '@/api/va
 
 import generalAddTable from '@/components/table/generalAddTable.vue'
 import { getOrgCountryListApi } from '@/api/baseApi/org.js';
-import { addOutstockOrderApi, outstockOrderCreateTypeApi, outstockOrderAddressTypeApi, outstockOrderStatusApi, outstockOrderTypeApi, getOutstockOrderDetailApi, outstockOrderEcommercePlatformApi, outstockOrderAttachmentTypeApi, getGenerateCustomerOrderNoApi } from '@/api/outstockApi/order.js'
+import { addOutstockOrderApi, outstockOrderCreateTypeApi, outstockOrderAddressTypeApi, outstockOrderStatusApi, outstockOrderTypeApi, getOutstockOrderDetailApi, outstockOrderEcommercePlatformApi, getGenerateCustomerOrderNoApi } from '@/api/outstockApi/order.js'
+import { getTemplateApi } from '@/api/baseApi/index.js';
 import { getLabel } from '@/utils/i18n/i18nLabels.js';
 import { getWhWarehouseApi } from '@/api/baseApi/wh.js'
 import { uploadApi } from '@/api/baseApi/index.js'
@@ -745,7 +746,7 @@ const handleSave = async () => {
             if (vasItemTableDataLocal.length > 0 && vasItemTableDataLocal[0].serviceTypeId) {
                 // 格式化增值服务数据为接口要求的vasOrderItemList格式
                 data.vasOrderItemList = vasItemTableDataLocal.map(item => {
-                    const attachments = item.attachments.length && Array.isArray(item.attachments) ? item.attachments : null;
+                    const attachments = Array.isArray(item.attachments) ? item.attachments : null;
                     return {
                         ...item,
                         serviceAttachment: attachments ? JSON.stringify(attachments) : null, // 附件JSON字符串
@@ -1327,8 +1328,11 @@ onMounted(async () => {
             },
             {
                 key: "货币类型",
-                api: getCurrencyEnumApi(),
-                handleSuccess: (data) => (currencyOptions.value = data || []),
+                api: getCurrencyListApi(),
+                handleSuccess: (data) => (currencyOptions.value = data.map(item => ({
+                    id: item.currency,
+                    name: item.remark
+                })) || []),
             },
             {
                 key: "商品品质",
@@ -1367,7 +1371,7 @@ onMounted(async () => {
             },
             {
                 key: "附件类型",
-                api: outstockOrderAttachmentTypeApi(),
+                api: getTemplateApi({ atypeId: 2, btypeId: 401 }),
                 handleSuccess: (data) => (fileTypeOptions.value = data || []),
             },
             {

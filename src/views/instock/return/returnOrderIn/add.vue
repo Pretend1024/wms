@@ -11,8 +11,8 @@
                     <span style="padding: 12px 12px 12px 3px;">:</span>
                     <el-input v-model.trim="orderData.number" :autofocus='true' style="width: 400px;"
                         @keyup.enter.stop="getOrderInfo" ref="numberInput" />
-                    <el-button type="danger" plain :icon="RefreshLeft" style="margin-left: 10px;"
-                        @click="reset">{{ getButtonText('reset') }}</el-button>
+                    <el-button type="danger" plain :icon="RefreshLeft" style="margin-left: 10px;" @click="reset">{{
+                        getButtonText('reset') }}</el-button>
                     <div class="isContinuousBlock" v-show="orderData.numberType == 1">
                         <span>自动提交</span>
                         <el-popover content="是否自动提交未匹配到的跟踪单号至待认领？" placement="bottom">
@@ -182,7 +182,7 @@
             <template #footer>
                 <div class="dialog-footer">
                     <el-button @click="centerDialogVisible = false, selectOrder = {}">{{ getButtonText('cancel')
-                        }}</el-button>
+                    }}</el-button>
                     <el-button type="primary" @click="handleDialogConfirm">{{ getButtonText('confirm') }}</el-button>
                 </div>
             </template>
@@ -192,7 +192,7 @@
     </div>
 </template>
 
-<script setup name="退件入库">
+<script setup name="退货入库">
 import { getInstockReturnReturnOrderTypeEnumApi, signInstockReturnApi, countInstockReturnApi, addReturnOrderClaimApi, signAndCountInstockReturnApi } from '@/api/instockApi/return.js'
 import { getOrderQualityEnumApi } from '@/api/instockApi/order.js'
 import { getProductShipwayBrandListApi } from '@/api/productApi/shipway.js'
@@ -240,8 +240,8 @@ const handleDialogConfirm = async () => {
     orderInfo.value = selectOrder.value;
     parcelTableData.value = selectOrder.value.returnParcelList || [];
     forecastTableData.value = mergeForecastAndReceipt(
-        selectOrder.value.returnProductForecastList || [],
-        selectOrder.value.returnProductReceiptList || []
+        selectOrder.value.returnProductList || [],
+        selectOrder.value.returnReceiptList || []
     );
     uploadedFiles.value = res.data[0].returnAttachmentList.map(item => ({
         name: item.attachmentName,
@@ -276,8 +276,8 @@ const getOrderInfo = async () => {
         orderInfo.value = res.data[0];
         parcelTableData.value = res.data[0].returnParcelList || [];
         forecastTableData.value = mergeForecastAndReceipt(
-            res.data[0].returnProductForecastList || [],
-            res.data[0].returnProductReceiptList || []
+            res.data[0].returnProductList || [],
+            res.data[0].returnReceiptList || []
         );
         uploadedFiles.value = res.data[0].returnAttachmentList.map(item => ({
             name: item.attachmentName,

@@ -1,4 +1,5 @@
 import http from '@/utils/request/request'
+import { createPostRequestWithQuery } from '@/utils/request/createPostRequestWithQuery';
 
 // 获取权限菜单
 export const getUserRoleMenuApi = (queryParams) => {
@@ -107,4 +108,25 @@ export const setGlobalConfigApi = (data) => {
     return http.post('/sys/setting/globalConfig/set', { ...data }, { headers: { 'loading': true } })
 }
 
+
+// APP版本
+// 新增版本
+export const addSysAppApi = (data) => {
+    return http.post('/sys/setting/sysApp/add', { ...data }, { headers: { 'loading': true } })
+}
+// 编辑版本
+export const updSysAppByIdApi = (data) => {
+    return http.post('/sys/setting/sysApp/updateById', { ...data }, { headers: { 'loading': true } })
+}
+// 获取版本列表
+export const getSysAppListApi = (data) => {
+    return http.post('/sys/setting/sysApp/page', { ...data })
+}
+// 删除版本
+export const delSysAppByIdApi = createPostRequestWithQuery('/sys/setting/sysApp/deleteById')
+
+// 版本类型枚举
+export const getSysAppTypeEnumApi = () => {
+    return http.post('/sys/setting/sysApp/sysAppTypeEnum')
+}
 

@@ -37,9 +37,9 @@
                         </el-form-item>
                     </el-col>
                     <el-col>
-                        <el-form-item :label="getLabel('inOrderNoList')">
-                            <canonicalInput v-model:listName="formData.inOrderNoList"
-                                :placeholder="getPlaceholder('inOrderNoList')" clearable>
+                        <el-form-item :label="getLabel('sourceNo')">
+                            <canonicalInput v-model:listName="formData.sourceNoList"
+                                :placeholder="getPlaceholder('sourceNo')" clearable>
                             </canonicalInput>
                         </el-form-item>
                     </el-col>
@@ -132,7 +132,7 @@
         </el-dialog>
         <!-- 导出弹窗 -->
         <exportDialog ref="exportDialogRef" :selectionRows="selectionRows" :initValues="initValues" :exportType="302"
-            :otherParameters="{ view }">
+            :extraParams="{ view }">
         </exportDialog>
     </div>
 </template>
@@ -170,7 +170,6 @@ const handleSearch = (data) => {
     loading.value = true;
     initValues.value = {
         ...data,
-        orgId: data.orgId ? data.orgId[data.orgId.length - 1] : ''
     }
     getList(pagination.value.currentPage, pagination.value.pageSize, orderBy.value)
 }
@@ -202,7 +201,7 @@ const columns = ref([
     { label: '总数', prop: 'qtyTotal', width: '135', sortable: true },
     { label: '可用数', prop: 'qtyAvail', width: '145', sortable: true },
     { label: '锁定数', prop: 'qtyLock', width: '155', sortable: true },
-    { label: '入库单号', prop: 'inOrderNo', width: '165', sortable: true },
+    { label: '来源单号', prop: 'sourceNo', width: '165', sortable: true },
     { label: '批次号', prop: 'batchNo', width: '110' },
     { label: '上架日期', prop: 'inShelfDate', width: '200' },
     { label: '品名', prop: 'skuName', width: '170', sortable: true, slot: 'skuName' },
@@ -298,7 +297,8 @@ const companyOptions = ref([]);
 const cascaderRef = ref(null);
 const parentProps = {
     checkStrictly: true,
-    expandTrigger: 'hover'
+    expandTrigger: 'hover',
+    emitPath: false,
 };
 // 公司改变事件
 const handleCascaderChange = async (e) => {
@@ -307,7 +307,7 @@ const handleCascaderChange = async (e) => {
             cascaderRef.value.togglePopperVisible()
         });
     }
-    const orgId = e ? e[e.length - 1] : '';
+    const orgId = e ? e : '';
     const result = await getCustomerLikeQueryApi({ keyword: '*', orgId });
     customerOptions.value = result.data.map(item => ({
         value: item.code,

@@ -174,7 +174,7 @@ const commit = async () => {
             fileUrl: fileUrl.value,
             async: true,
         }, {
-            isAppend: isCoverDuplicate.value,
+            isCover: isCoverDuplicate.value,
             waybillTypeId: waybillTypeId.value
         });
 

@@ -138,6 +138,18 @@ const tagMap = {
     盘点详情: {
         zh: '盘点详情',
         en: 'Inventory Details'
+    },
+    追加移库: {
+        zh: '追加移库',
+        en: 'Append Move'
+    },
+    新增移库: {
+        zh: '新增移库',
+        en: 'Add Move'
+    },
+    我的导入: {
+        zh: '我的导入',
+        en: 'My Imports'
     }
 }
 import useUserMenuStore from '@/store/userMenu'

@@ -31,8 +31,10 @@
                 @sort-change="handleTableSort">
                 <!-- 在表格上方通过 slot 插入按钮 -->
                 <template #table-buttons>
-                    <el-button type="primary" @click="handleAdd" v-permission="'add'" :icon="Plus">{{ getButtonText('add') }}</el-button>
-                    <el-button type="danger" @click="handleDel" v-permission="'delete'" :icon="Delete">{{ getButtonText('del') }}</el-button>
+                    <el-button type="primary" @click="handleAdd" v-permission="'add'" :icon="Plus">{{
+                        getButtonText('add') }}</el-button>
+                    <el-button type="danger" @click="handleDel" v-permission="'delete'" :icon="Delete">{{
+                        getButtonText('del') }}</el-button>
                 </template>
                 <!-- 使用插槽来自定义列内容，假如我们需要在操作列中添加按钮 -->
                 <template #customBtn="{ row }">
@@ -111,9 +113,6 @@ const initValues = ref({
 // 搜索事件
 const handleSearch = (data) => {
     loading.value = true;
-    if (Array.isArray(data.orgId)) {
-        data.orgId = data.orgId.length > 0 ? data.orgId[data.orgId.length - 1] : ''
-    }
     initValues.value = {
         ...data,
     }
@@ -341,7 +340,8 @@ const companyOptions = ref([]);
 const cascaderRef = ref(null);
 const parentProps = {
     checkStrictly: true,
-    expandTrigger: 'hover'
+    expandTrigger: 'hover',
+    emitPath: false,
 };
 // 公司改变事件
 const handleCascaderChange = async (e) => {
@@ -350,8 +350,7 @@ const handleCascaderChange = async (e) => {
             cascaderRef.value.togglePopperVisible()
         });
     }
-    const orgId = e ? e[e.length - 1] : '';
-    const result = await getCustomerLikeQueryApi({ keyword: '*', orgId });
+    const result = await getCustomerLikeQueryApi({ keyword: '*', orgId: e });
     customerOptions.value = result.data.map(item => ({
         value: item.code,
         label: item.code + '(' + item.name + ')'

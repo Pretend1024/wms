@@ -46,19 +46,19 @@
             <el-select v-model="selectSite" :placeholder="$t('SelectBranch')" class="moduleWidth">
                 <el-option v-for="item in Site" :key="item.value" :label="item.label" :value="item.value" />
             </el-select> -->
-            <el-tooltip :content="$t('FullScreen')" placement="bottom" effect="light" offset="18">
+            <!-- <el-tooltip :content="$t('FullScreen')" placement="bottom" effect="light" offset="18">
                 <i class="iconfont icon-quanping" @click="fullScreen"></i>
-            </el-tooltip>
+            </el-tooltip> -->
             <!-- 工具 -->
             <el-dropdown>
                 <i class="iconfont icon-gongju"></i>
                 <template #dropdown>
                     <el-dropdown-menu>
+                        <el-dropdown-item style="font-size: 16px;" @click="fullScreen">
+                            {{ $t('fullScreen') }}
+                        </el-dropdown-item>
                         <el-dropdown-item style="font-size: 16px;" @click="$router.push('/print')">
                             {{ $t('print') }}
-                        </el-dropdown-item>
-                        <el-dropdown-item style="font-size: 16px;">
-                            其他工具
                         </el-dropdown-item>
                     </el-dropdown-menu>
                 </template>
@@ -70,9 +70,23 @@
                 </el-badge>
                 <i v-else class="iconfont icon-xiaoxitongzhi" @click="moreMsg"></i>
             </el-tooltip>
-            <el-tooltip :content="$t('Download')" placement="bottom" effect="light" offset="18">
+            <!-- 文件 -->
+            <el-dropdown>
+                <i class="iconfont icon-wenjianjia"></i>
+                <template #dropdown>
+                    <el-dropdown-menu>
+                        <el-dropdown-item style="font-size: 16px;" @click="myImport">
+                            {{ $t('MyImport') }}
+                        </el-dropdown-item>
+                        <el-dropdown-item style="font-size: 16px;" @click="exportJob">
+                            {{ $t('Download') }}
+                        </el-dropdown-item>
+                    </el-dropdown-menu>
+                </template>
+            </el-dropdown>
+            <!-- <el-tooltip :content="$t('Download')" placement="bottom" effect="light" offset="18">
                 <i @click='exportJob' class="iconfont icon-yunxiazai"></i>
-            </el-tooltip>
+            </el-tooltip> -->
             <div class="userDiv">
                 <el-dropdown>
                     <span class="el-dropdown-link">
@@ -152,7 +166,7 @@
                         <!-- 超出显示省略号 -->
                         <a :href="toDownloadTempPath(msgContent.link)" target="_blank" class="ellipsis-link">{{
                             msgContent.link
-                            }}</a>
+                        }}</a>
                     </el-form-item>
                 </el-col>
                 <el-col :span="12" v-if="msgContent.fileUrl">
@@ -268,8 +282,11 @@ const moreMsg = () => {
 }
 // 下载
 const exportJob = () => {
-    console.log('下载')
     router.push('/exportJob')
+}
+// 导入
+const myImport = () => {
+    router.push('/myImport')
 }
 // 修改密码弹窗
 const dialogFormVisible = ref(false)

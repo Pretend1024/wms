@@ -9,7 +9,7 @@
                             <el-select v-model="formData.currency" value-key="id" filterable
                                 :placeholder="getPlaceholder('currency')">
                                 <el-option v-for="item in nationOptions" :key="item.id" :label="item.name"
-                                    :value="item.code" />
+                                    :value="item.id" />
                             </el-select>
                         </el-form-item>
                     </el-col>
@@ -29,8 +29,10 @@
                 @sort-change="handleTableSort">
                 <!-- 在表格上方通过 slot 插入按钮 -->
                 <template #table-buttons>
-                    <el-button type="primary" @click="handleAdd" v-permission="'add'" :icon="Plus">{{ getButtonText('add') }}</el-button>
-                    <el-button type="danger" @click="handleDel" v-permission="'delete'" :icon="Delete">{{ getButtonText('del') }}</el-button>
+                    <el-button type="primary" @click="handleAdd" v-permission="'add'" :icon="Plus">{{
+                        getButtonText('add') }}</el-button>
+                    <el-button type="danger" @click="handleDel" v-permission="'delete'" :icon="Delete">{{
+                        getButtonText('del') }}</el-button>
                 </template>
                 <!-- 使用插槽来自定义列内容，假如我们需要在操作列中添加按钮 -->
                 <template #customBtn="{ row, column, index }">
@@ -73,7 +75,7 @@
 import { Plus, Delete } from '@element-plus/icons-vue'
 import { smartAlert, trimObjectStrings } from '@/utils/genericMethods.js'
 import { getBasicConsumablesListApi, addBasicConsumablesApi, updBasicConsumablesApi, delBasicConsumablesApi } from '@/api/baseApi/consumables.js'
-import { getCurrencyEnumApi } from '@/api/baseApi/index.js';
+import { getCurrencyListApi } from '@/api/baseApi/index.js';
 import hydFilterBox from "@/components/table/hyd-filterBox.vue";
 import hydTable from "@/components/table/hyd-table.vue";
 import batchOperationn from '@/components/messageNotices/batchOperation.vue'
@@ -308,8 +310,12 @@ const nationOptions = ref([])
 
 onMounted(async () => {
     // 获取币种数据
-    const nationRes = await getCurrencyEnumApi();
-    nationOptions.value = nationRes.data
+    const nationRes = await getCurrencyListApi();
+    nationOptions.value = nationRes.data.map(item => ({
+        id: item.currency,
+        name: item.remark
+    }));
+
 })
 
 </script>

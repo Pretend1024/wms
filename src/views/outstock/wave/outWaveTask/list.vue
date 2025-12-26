@@ -123,9 +123,7 @@ const formConfig = ref([
 ])
 
 // 初始化表单数据
-const initValues = ref({
-    orgId: [],
-})
+const initValues = ref({})
 
 // 搜索事件
 const handleSearch = (data) => {
@@ -183,7 +181,7 @@ const columns = ref([
     { label: ' 类型 1 数范围 ', prop: 'qtyNum4', slot: 'qtyNum4', width: '160' },
     { label: ' 结束时间 ', prop: 'finishTime', width: '200', sortable: true },
     { label: ' 备注 ', prop: 'remark', width: '200' },
-    { label: ' 指定入库单 ', prop: 'inOrderIds', width: '220' },
+    { label: ' 指定入库单 ', prop: 'inOrderNoList', width: '220' },
     { label: ' 上架开始时间 ', prop: 'onShelfStartTime', width: '200', sortable: true },
     { label: ' 上架结束时间 ', prop: 'onShelfEndTime', width: '200', sortable: true },
     { label: ' 指定库位 ', prop: 'locationCodes', width: '220' },
@@ -353,7 +351,6 @@ const getList = async (currentPage, pageSize, orderBy) => {
         pageSize: pageSize,
         orderBy,
         ...trimObjectStrings(initValues.value),
-        orgId: initValues.value.orgId[initValues.value.orgId.length - 1]
     })
     tableData.value = res.data.rows
     loading.value = false

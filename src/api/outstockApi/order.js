@@ -46,10 +46,6 @@ export const getOutstockOrderStatusMenuApi = (data) => {
 export const outstockOrderEcommercePlatformApi = () => {
     return http.post('/outstock/order/outOrder/ecPlatformEnum')
 }
-// 附件类型枚举
-export const outstockOrderAttachmentTypeApi = () => {
-    return http.post('/outstock/order/outOrder/attachmentTypeEnum')
-}
 // 出库单批量设置
 // 批量设置仓库  
 export const outstockOrderBatchSetWarehouseApi = createPostRequestWithQuery('/outstock/order/outOrder/setWarehouse')

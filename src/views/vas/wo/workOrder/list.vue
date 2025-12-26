@@ -197,9 +197,7 @@ const formConfig = ref([
 ])
 
 // 初始化表单数据
-const initValues = ref({
-    orgId: [],
-})
+const initValues = ref({})
 
 // 搜索事件
 const handleSearch = (data) => {
@@ -375,7 +373,6 @@ const getList = async (currentPage, pageSize, orderBy) => {
         pageSize: pageSize,
         orderBy,
         ...trimObjectStrings(initValues.value),
-        orgId: initValues.value.orgId[initValues.value.orgId.length - 1]
     })
     tableData.value = res.data.rows
     footer.value = res.data.footer ? res.data.footer[0] : {}
@@ -391,7 +388,6 @@ const getList = async (currentPage, pageSize, orderBy) => {
 const getStatus = async () => {
     const data = {
         ...trimObjectStrings(initValues.value),
-        orgId: initValues.value.orgId ? initValues.value.orgId[initValues.value.orgId.length - 1] : null
     }
     delete data.statusIdList
     const res = await api.getCountGroupByStatusApi(data)
@@ -416,7 +412,8 @@ const companyOptions = ref([]);
 const cascaderRef = ref(null);
 const parentProps = {
     checkStrictly: true,
-    expandTrigger: 'hover'
+    expandTrigger: 'hover',
+    emitPath: false,
 };
 
 const handleCascaderChange = async (e) => {
@@ -425,7 +422,7 @@ const handleCascaderChange = async (e) => {
             if (cascaderRef.value) cascaderRef.value.togglePopperVisible()
         });
     }
-    const orgId = e ? e[e.length - 1] : '';
+    const orgId = e ? e : '';
     const result = await getCustomerLikeQueryApi({ keyword: '*', orgId });
     customerOptions.value = result.data.map(item => ({
         value: item.code,

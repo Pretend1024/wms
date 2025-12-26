@@ -110,7 +110,8 @@ const rules = {
 
 const parentProps = {
     checkStrictly: true,
-    expandTrigger: 'hover'
+    expandTrigger: 'hover',
+    emitPath: false,
 };
 
 const handleCascaderChange = () => {

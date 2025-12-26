@@ -261,7 +261,7 @@ const rules = {
     ]
 };
 // 表格数据
-const tableData = shallowRef([]);
+const tableData = ref([]);
 const columns = [
     { label: getColumnText('contractFile'), prop: 'contractFile', width: '300', fixed: 'left', slot: 'contractFile' },
     { label: getColumnText('contractBegin'), prop: 'contractBegin', width: '220', slot: 'beginPicker' },
@@ -354,14 +354,15 @@ const companyOptions = ref([]);
 const cascaderRef = ref(null);
 const parentProps = {
     checkStrictly: true,
-    expandTrigger: 'hover'
+    expandTrigger: 'hover',
+    emitPath: false,
 };
 const handleCascaderChange = async (e) => {
     //获取财务用户数据
-    const financialRes = await getListFinancialUserEnumApi({ orgId: e[e.length - 1] });
+    const financialRes = await getListFinancialUserEnumApi({ orgId: e });
     financialUserOptions.value = financialRes.data
     // 获取销售用户数据
-    const salesRes = await getListSalesUserEnumApi({ orgId: e[e.length - 1] });
+    const salesRes = await getListSalesUserEnumApi({ orgId: e });
     salesUserOptions.value = salesRes.data
     nextTick(() => {
         cascaderRef.value.togglePopperVisible()
@@ -428,7 +429,7 @@ onMounted(async () => {
     const res = await getCustomerByIdApi({ id });
     formData.value = { ...res.data };
     tableData.value = res.data.contracts || []
-    handleCascaderChange(formData.value.orgId.split(','))
+    handleCascaderChange(formData.value.orgId)
     ElLoading.service().close();
 })
 </script>

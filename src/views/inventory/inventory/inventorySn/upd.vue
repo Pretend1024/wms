@@ -4,8 +4,8 @@
             <!-- 只读字段组1 -->
             <el-col :span="8">
                 <el-form-item :label="getLabel('customerCode')" prop="customerCode">
-                    <el-select v-model="formData.customerCode" filterable :placeholder="getPlaceholder('customerCode')"
-                        clearable popper-class="multi-column-select" disabled>
+                    <el-select v-model="formData.customerCode" filterable clearable popper-class="multi-column-select"
+                        disabled>
                         <el-option v-for="item in customerOptions" :key="item.value" :label="item.label"
                             :value="item.value" />
                     </el-select>
@@ -15,8 +15,7 @@
             <!-- 仓库（必填） -->
             <el-col :span="8">
                 <el-form-item :label="getLabel('warehouseCode')" prop="warehouseCode">
-                    <el-select v-model="formData.warehouseCode" filterable
-                        :placeholder="getPlaceholder('warehouseCode')" clearable disabled>
+                    <el-select v-model="formData.warehouseCode" filterable clearable disabled>
                         <el-option v-for="item in warehouseOptions" :key="item.value" :label="item.label"
                             :value="item.value" />
                     </el-select>
@@ -24,24 +23,24 @@
             </el-col>
             <el-col :span="8">
                 <el-form-item :label="getLabel('inOrderNo')">
-                    <el-input v-model="formData.inOrderNo" :placeholder="getPlaceholder('inOrderNo')" readonly />
+                    <el-input v-model="formData.inOrderNo" readonly />
                 </el-form-item>
             </el-col>
 
             <!-- 只读字段组2 -->
             <el-col :span="8">
                 <el-form-item :label="getLabel('sku')">
-                    <el-input v-model="formData.sku" :placeholder="getPlaceholder('sku')" readonly />
+                    <el-input v-model="formData.sku" readonly />
                 </el-form-item>
             </el-col>
             <el-col :span="8">
                 <el-form-item :label="getLabel('barcode')">
-                    <el-input v-model="formData.barcode" :placeholder="getPlaceholder('barcode')" readonly />
+                    <el-input v-model="formData.barcode" readonly />
                 </el-form-item>
             </el-col>
             <el-col :span="8">
                 <el-form-item :label="getLabel('sn')">
-                    <el-input v-model="formData.sn" :placeholder="getPlaceholder('sn')" readonly />
+                    <el-input v-model="formData.sn" readonly />
                 </el-form-item>
             </el-col>
 
@@ -53,7 +52,7 @@
             </el-col>
             <el-col :span="8">
                 <el-form-item :label="getLabel('inventoryId')">
-                    <el-input v-model="formData.inventoryId" :placeholder="getPlaceholder('inventoryId')" readonly />
+                    <el-input v-model="formData.inventoryId" readonly />
                 </el-form-item>
             </el-col>
             <el-divider />

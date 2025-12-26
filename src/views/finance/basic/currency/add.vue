@@ -29,14 +29,6 @@
                     </el-select>
                 </el-form-item>
             </el-col>
-
-            <!-- 备注-->
-            <el-col :span="24">
-                <el-form-item :label="getLabel('remark')" prop="remark">
-                    <el-input v-model="formData.remark" :placeholder="getPlaceholder('remark')" type="textarea"
-                        rows="2" />
-                </el-form-item>
-            </el-col>
         </el-row>
     </el-form>
 </template>
@@ -58,7 +50,6 @@ const formData = ref({
     currency: '',          // 币种代码
     rate: 0,               // 汇率
     isStandardCurrency: false,// 是否本位币
-    remark: ''             // 备注
 });
 
 const formRef = ref(null);

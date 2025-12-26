@@ -63,7 +63,7 @@ import {
     getFeeStatusEnumApi,
     getFeeCreateWayEnumApi,
 } from '@/api/financeApi/receivables.js';
-import { getCurrencyEnumApi } from '@/api/baseApi/index.js'
+import { getCurrencyListApi } from '@/api/baseApi/index.js'
 
 // 2. 初始化I18n，指定全局作用域（关键解决t is not a function）
 const { t } = useI18n({
@@ -97,7 +97,7 @@ onMounted(async () => {
             getCustomerLikeQueryApi({ keyword: '*', orgId: '' }),
             getFeeStatusEnumApi(),
             getFeeCreateWayEnumApi(),
-            getCurrencyEnumApi()
+            getCurrencyListApi()
         ]);
 
         const convertToTree = (items) => items.map(item => ({
@@ -116,7 +116,7 @@ onMounted(async () => {
 
         statusOptions.value = statusRes.data.map(i => ({ label: i.name, value: i.id }));
         createWayOptions.value = wayRes.data.map(i => ({ label: i.name, value: i.id }));
-        currencyOptions.value = currRes.data.map(i => ({ label: i.name, value: i.code }));
+        currencyOptions.value = currRes.data.map(i => ({ label: i.remark, value: i.currency }));
 
         isDataReady.value = true;
     } catch (error) {

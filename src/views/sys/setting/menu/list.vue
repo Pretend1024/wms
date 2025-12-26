@@ -8,7 +8,7 @@
                         {{ getButtonText('add') }}
                     </el-button>
                     <el-button type="success" plain @click="handleToggleExpand" :icon="Sort">
-                        {{ isExpanded ? '全部折叠' : '智能展开' }}
+                        {{ isExpanded ? '全部折叠' : '全部展开' }}
                     </el-button>
                 </template>
 
@@ -160,10 +160,48 @@ const handleToggleExpand = () => {
     }
 };
 
+// 存储展开节点
+const expandedKeys = ref(new Set());
+
+// 监听表格的展开/收起事件
+const updateExpandedKeys = () => {
+    const elTable = hydTableRef.value?.elTableRef;
+    if (!elTable) return;
+
+    // 清空当前记录
+    expandedKeys.value.clear();
+
+    const checkExpanded = (data) => {
+        data.forEach(row => {
+            // el-table 内部状态判断行是否展开
+            if (elTable.store.states.expandRows.value.includes(row)) {
+                expandedKeys.value.add(row.id);
+            }
+            if (row.children) checkExpanded(row.children);
+        });
+    };
+    checkExpanded(tableData.value);
+};
+// 恢复展开状态
+const restoreExpansion = (data) => {
+    const elTable = hydTableRef.value?.elTableRef;
+    if (!elTable) return;
+
+    data.forEach(row => {
+        if (expandedKeys.value.has(row.id)) {
+            elTable.toggleRowExpansion(row, true);
+        }
+        if (row.children) restoreExpansion(row.children);
+    });
+};
+
 // ================== 数据获取 ==================
 
-const getList = async () => {
+const getList = async (isFirstLoad = false) => {
     loading.value = true;
+    if (!isFirstLoad) {
+        updateExpandedKeys();
+    }
     const res = await getSettingMenuApi({});
     tableData.value = res.data;
 
@@ -181,8 +219,14 @@ const getList = async () => {
 
     // 使用 nextTick 确保表格渲染完毕，再执行智能展开
     nextTick(() => {
-        expandRecursive(tableData.value);
-        isExpanded.value = true;
+        if (isFirstLoad) {
+            // 第一次加载使用你原来的智能展开逻辑
+            expandRecursive(tableData.value);
+            isExpanded.value = true;
+        } else {
+            // 后续加载（新增/编辑后）恢复之前的状态
+            restoreExpansion(tableData.value);
+        }
     });
 };
 
@@ -267,7 +311,7 @@ const handleDialogConfirm = async () => {
 };
 
 onMounted(() => {
-    getList();
+    getList(true);
 });
 </script>
 

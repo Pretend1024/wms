@@ -1,6 +1,6 @@
 <template>
     <div class="viewArea">
-        <div class="contentDiv">
+        <div class="contentDiv  flex-container">
             <p>基础信息</p>
             <el-form :model="formData" :rules='rules' ref="formRef" label-width="115px">
                 <el-row>
@@ -98,9 +98,6 @@
                     <template #barcode="scope">
                         <el-input v-model="scope.row.barcode" placeholder="请输入商品条码" />
                     </template>
-                    <template #productName="scope">
-                        <el-input v-model="scope.row.productName" placeholder="请输入商品名称" />
-                    </template>
                     <template #remark="scope">
                         <el-input v-model="scope.row.remark" placeholder="请输入备注" />
                     </template>
@@ -133,9 +130,9 @@
                     </template>
                 </el-upload>
             </div>
-            <div class="bottomDiv">
-                <el-button type="primary" @click="handleSubmit">{{getButtonText ('save') }}</el-button>
-                <el-button @click="handleClose">{{getButtonText ('close') }}</el-button>
+            <div class="btns">
+                <el-button type="primary" @click="handleSubmit">{{ getButtonText('save') }}</el-button>
+                <el-button @click="handleClose">{{ getButtonText('close') }}</el-button>
             </div>
         </div>
     </div>
@@ -200,19 +197,18 @@ const forecastTableData = ref([]);
 const parcelTableRef = ref(null);
 const forecastTableRef = ref(null);
 const parcelColumns = [
-    { label: '物流跟踪号', prop: 'trackingNo', width: '220', slot: 'trackingNo' },
-    { label: '承运商', prop: 'carrierCode', width: '180', slot: 'carrierCode' },
-    { label: '尺寸(CM) 长-宽-高', prop: 'length', width: '340', slot: 'length' },
-    { label: '重量(KG)', prop: 'weight', width: '150', slot: 'weight' },
-    { label: '备注', prop: 'remark', width: '300', slot: 'remark' },
+    { label: '物流跟踪号', prop: 'trackingNo', width: '220', slot: 'trackingNo', required: true },
+    { label: '承运商', prop: 'carrierCode', width: '150', slot: 'carrierCode' },
+    { label: '尺寸(CM) 长-宽-高', prop: 'length', width: '275', slot: 'length' },
+    { label: '重量(KG)', prop: 'weight', width: '120', slot: 'weight' },
+    { label: '备注', prop: 'remark', width: '250', slot: 'remark' },
 ]
 const forecastColumns = [
-    { label: 'SKU', prop: 'sku', width: '220', slot: 'sku' },
-    { label: '预报数量', prop: 'forecastQty', width: '170', slot: 'forecastQty' },
-    { label: 'FNSKU(选填)', prop: 'fnsku', width: '180', slot: 'fnsku' },
-    { label: '商品条码(选填)', prop: 'barcode', width: '280', slot: 'barcode' },
-    { label: '商品名称(选填)', prop: 'productName', width: '170', slot: 'productName' },
-    { label: '备注(选填)', prop: 'remark', width: '300', slot: 'remark' },
+    { label: 'SKU', prop: 'sku', width: '220', slot: 'sku', required: true },
+    { label: 'FNSKU', prop: 'fnsku', width: '180', slot: 'fnsku' },
+    { label: '预报数量', prop: 'forecastQty', width: '120', slot: 'forecastQty', required: true },
+    { label: '商品条码', prop: 'barcode', width: '210', slot: 'barcode' },
+    { label: '备注', prop: 'remark', width: '285', slot: 'remark' },
 ]
 // 保存
 const handleSubmit = async () => {
@@ -220,7 +216,7 @@ const handleSubmit = async () => {
         if (valid) {
             try {
                 const returnParcelAddDTOList = parcelTableRef.value.getData();
-                const returnProductForecastAddDTOList = forecastTableRef.value.getData();
+                const returnProductAddDTOList = forecastTableRef.value.getData();
                 let returnAttachmentAddDTOList = [];
                 if (uploadedFiles.value.length > 0) {
                     returnAttachmentAddDTOList = uploadedFiles.value.map(file => ({
@@ -233,7 +229,7 @@ const handleSubmit = async () => {
                 const data = {
                     ...formData.value,
                     returnParcelAddDTOList,
-                    returnProductForecastAddDTOList,
+                    returnProductAddDTOList,
                     returnAttachmentAddDTOList
                 };
 
@@ -366,11 +362,24 @@ onMounted(async () => {
     width: 1200px;
 }
 
-.bottomDiv {
-    margin-top: 10px;
-    width: 1200px;
+
+// 添加flex容器样式
+.flex-container {
     display: flex;
-    justify-content: center;
+    flex-direction: column;
+    min-height: calc(100vh - 100px);
+    padding-bottom: 0 !important;
+}
+
+// 修改按钮区域样式
+.btns {
+    width: 100% !important;
+    margin-top: auto;
+    padding: 10px 0;
+    position: sticky;
+    bottom: 0;
+    background-color: #fff;
+    z-index: 99;
 }
 
 // 上传样式

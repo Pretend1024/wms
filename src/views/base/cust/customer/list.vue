@@ -159,8 +159,7 @@ const way = ref([
 const handleSearch = (data) => {
     loading.value = true;
     initValues.value = {
-        ...data,
-        orgId: data.orgId ? data.orgId[data.orgId.length - 1] : ''
+        ...data
     }
     // 定义所有可能的字段
     const fields = way.value.map(item => item.value);
@@ -364,7 +363,8 @@ const companyOptions = ref([]);
 const cascaderRef = ref(null);
 const parentProps = {
     checkStrictly: true,
-    expandTrigger: 'hover'
+    expandTrigger: 'hover',
+    emitPath: false,
 };
 // 财务用户数据
 const financialUserOptions = ref([])
@@ -374,10 +374,10 @@ const salesUserOptions = ref([])
 const handleCascaderChange = async (e) => {
     console.log('选择的公司:', e)
     //获取财务用户数据
-    const financialRes = await getListFinancialUserEnumApi({ orgId: e[e.length - 1] });
+    const financialRes = await getListFinancialUserEnumApi({ orgId: e });
     financialUserOptions.value = financialRes.data
     // 获取销售用户数据
-    const salesRes = await getListSalesUserEnumApi({ orgId: e[e.length - 1] });
+    const salesRes = await getListSalesUserEnumApi({ orgId: e });
     salesUserOptions.value = salesRes.data
     nextTick(() => {
         cascaderRef.value.togglePopperVisible()

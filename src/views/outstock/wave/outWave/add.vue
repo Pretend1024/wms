@@ -115,7 +115,7 @@
             <div class="btns">
                 <el-button type="primary" @click="handleSave">{{ getButtonText('save') }}</el-button>
                 <el-button type="primary" @click="handleSaveAndAdd">{{ getButtonText('saveAndAddTemplate')
-                }}</el-button>
+                    }}</el-button>
                 <el-button @click="handleClose">{{ getButtonText('close') }}</el-button>
             </div>
         </div>
@@ -152,7 +152,7 @@ import WaveTemplateDialog from './waveTemplateDialog.vue';
 const templateDialogVisible = ref(false);
 // 关键：定义库存范围数据，结构与inventoryRangeForm组件的formData完全对齐
 const inventoryData = reactive({
-    inOrderIds: null, // 入库单（字符串，多值用逗号分隔）
+    inOrderNoList: null, // 入库单（字符串，多值用逗号分隔）
     onShelfStartTime: null, // 上架开始时间（YYYY-MM-DD）
     onShelfEndTime: null, // 上架结束时间（YYYY-MM-DD）
     zoneCodes: null, // 库区编码（字符串，多值用逗号分隔）
@@ -185,7 +185,7 @@ const handleTemplateSelect = (selectedData) => {
     formData.shipwayCodes = selectedData.shipwayCodes
         ? JSON.parse(selectedData.shipwayCodes)
         : []; // 发货渠道：数组格式
-    formData.orgId = selectedData.orgId ? [selectedData.orgId] : []; // 公司ID：数组格式
+    formData.orgId = selectedData.orgId ? selectedData.orgId : ''; // 公司ID：数组格式
     // 2. 处理「订单时间字段」：直接复用模板时间（格式与date-picker输出一致：YYYY-MM-DD HH:mm:ss）
     formData.orderStartTime = selectedData.orderStartTime || null;
     formData.orderEndTime = selectedData.orderEndTime || null;
@@ -264,7 +264,7 @@ const handleTemplateSelect = (selectedData) => {
 
     // 3. 核心：库存范围数据处理（按子组件字段格式解析）
     // 3.1 基础库存字段（字符串类型，多值用逗号分隔）
-    inventoryData.inOrderIds = selectedData.inOrderIds || null; // 入库单：直接赋值字符串
+    inventoryData.inOrderNoList = selectedData.inOrderNoList || null; // 入库单：直接赋值字符串
     inventoryData.zoneCodes = selectedData.zoneCodes || null; // 库区：直接赋值字符串（子组件用逗号分隔多值）
     inventoryData.locationCodes = selectedData.locationCodes || null; // 库位：同上
     inventoryData.excludeZoneCodes = selectedData.excludeZoneCodes || null; // 排除库区：同上
@@ -371,9 +371,7 @@ const handleSave = async () => {
                 ...formData,
                 ...inventoryData,
                 ...waveTypeParams,
-                orgId: Array.isArray(formData.orgId) && formData.orgId.length > 0
-                    ? formData.orgId[formData.orgId.length - 1]
-                    : null,
+                orgId: formData.orgId ? formData.orgId : null,
                 waveTypeId: JSON.stringify(waveTypeList.filter(item => item.checked).map(item => item.id)),
                 customerCodes: JSON.stringify(formData.customerCodes),
                 warehouseCodes: JSON.stringify(formData.warehouseCodes),
@@ -447,7 +445,8 @@ const companyOptions = ref([]);
 const cascaderRef = ref(null);
 const parentProps = {
     checkStrictly: true,
-    expandTrigger: 'hover'
+    expandTrigger: 'hover',
+    emitPath: false,
 };
 // 公司改变事件
 const handleCascaderChange = async (e) => {
@@ -455,7 +454,7 @@ const handleCascaderChange = async (e) => {
         cascaderRef.value.togglePopperVisible()
     });
     console.log('选择的公司ID：', e);
-    const customerRes = await getCustomerLikeQueryApi({ keyword: '*', orgId: e[e.length - 1] });
+    const customerRes = await getCustomerLikeQueryApi({ keyword: '*', orgId: e });
     customerOptions.value = customerRes.data;
 };
 

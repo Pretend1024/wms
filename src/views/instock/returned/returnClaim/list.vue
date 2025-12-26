@@ -38,7 +38,9 @@
                 @sort-change="handleTableSort">
                 <!-- 在表格上方通过 slot 插入按钮 -->
                 <template #table-buttons>
-                    <el-button type="success" @click="handelClaimBatch" :icon="Select">{{ getButtonText('claim')
+                    <el-button type="primary" @click="handleAdd" :icon="Plus">{{
+                        getButtonText('add') }}</el-button>
+                    <el-button type="success" @click="handleClaimBatch" :icon="Select">{{ getButtonText('claim')
                     }}</el-button>
                     <el-button type="danger" @click="handleDestroy" :icon="Close">{{ getButtonText('destroy')
                     }}</el-button>
@@ -46,13 +48,13 @@
                 <!-- 使用插槽来自定义列内容，假如我们需要在操作列中添加按钮 -->
                 <template #customBtn="{ row }">
                     <div style="display: flex;" v-if="row.statusId !== 3">
-                        <div class="cursor-pointer" @click="handelClaim" v-if="row.statusId == 1">
+                        <div class="cursor-pointer" @click="handleClaim" v-if="row.statusId == 1">
                             <el-icon>
                                 <Document />
                             </el-icon>
                             <span>{{ getButtonText('claim') }}</span>
                         </div>
-                        <div class="cursor-pointer" @click="handelDel(row)" v-if="row.statusId == 1">
+                        <div class="cursor-pointer" @click="handleDel(row)" v-if="row.statusId == 1">
                             <el-icon>
                                 <Delete />
                             </el-icon>
@@ -86,21 +88,25 @@
         </el-dialog>
         <batchOperationn :dialogTitle="'操作结果'" :isVisible="delDialogVisible" :tableData="delData" :nameField="'id'"
             :nameLabel="'物流单号'" successValue="销毁成功" @close="delColse" :promptMessage="promptMessage" />
+        <!-- 认领 -->
         <claimDialog ref="claimDialogRef" :isVisible="claimDialogVisible" :isMulti="isMulti"
             @close="claimDialogVisible = false" @confirm="handleClaimConfirm">
         </claimDialog>
+        <!-- 新增 -->
+        <addDialog ref="addDialogRef" @confirm="addDialogConfirm" />
     </div>
 </template>
 <script setup name="认领">
 import { Plus, Delete, Close, Select, Van, SoldOut } from '@element-plus/icons-vue'
 import { smartAlert, trimObjectStrings } from '@/utils/genericMethods.js'
 import batchOperationn from '@/components/messageNotices/batchOperation.vue'
-import { getReturnOrderClaimApi, destroyReturnOrderClaimApi, getReturnOrderClaimStatusEnumApi, getReturnOrderClaimDestroyTypeEnumApi, delReturnOrderClaimApi, verifyReturnOrderClaimApi } from '@/api/instockApi/return.js'
+import { getReturnOrderClaimApi, destroyReturnOrderClaimApi, getReturnOrderClaimStatusEnumApi, getReturnOrderClaimDestroyTypeEnumApi, delReturnOrderClaimApi, verifyReturnOrderClaimApi, addReturnOrderClaimApi } from '@/api/instockApi/return.js'
 import { getProductShipwayBrandListApi } from '@/api/productApi/shipway.js'
 import canonicalInput from '@/components/table/canonicalInpt.vue';
 import hydFilterBox from "@/components/table/hyd-filterBox.vue";
 import hydTable from "@/components/table/hyd-table.vue";
 import claimDialog from './claimDialog.vue'
+import addDialog from './add.vue'
 import router from '@/router/index.js'
 
 // 搜索表单配置项------------------------------------------------
@@ -186,6 +192,19 @@ const handleTableSort = (sortString) => {
     getList(pagination.value.currentPage, pagination.value.pageSize, orderBy.value)
 }
 
+// 新增
+const addDialogRef = ref(null)
+const handleAdd = async () => {
+    addDialogRef.value.open();
+}
+const addDialogConfirm = async (data) => {
+    const res = await addReturnOrderClaimApi(data)
+    smartAlert(res.msg, res.success, 1000)
+    if (res.success) {
+        getList(pagination.value.currentPage, pagination.value.pageSize, orderBy.value)
+    }
+};
+
 // 选择的行数据
 const selection = ref({})
 // 多选的行数据
@@ -196,12 +215,12 @@ const claimDialogVisible = ref(false)
 const isMulti = ref(false)
 const claimDialogRef = ref(null)
 // 单个认领
-const handelClaim = async () => {
+const handleClaim = async () => {
     isMulti.value = false;
     claimDialogVisible.value = true;
 }
 // 批量认领
-const handelClaimBatch = async () => {
+const handleClaimBatch = async () => {
     isMulti.value = true;
     claimDialogVisible.value = true;
 }
@@ -222,7 +241,7 @@ const handleClaimConfirm = async (data) => {
     claimDialogVisible.value = false;
 }
 // 删除
-const handelDel = async (row) => {
+const handleDel = async (row) => {
     ElMessageBox.confirm(
         `是否要删除该条数据?`,
         '提醒',

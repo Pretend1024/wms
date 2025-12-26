@@ -369,9 +369,6 @@ const handleSaveAccount = async () => {
     })
     const processedAccounts = supplierAccountAddDTOList.value.map(item => {
         const newItem = { ...item };
-        if (Array.isArray(newItem.orgId)) {
-            newItem.orgId = newItem.orgId[newItem.orgId.length - 1];
-        }
         return newItem;
     });
 

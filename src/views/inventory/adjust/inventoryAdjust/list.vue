@@ -55,7 +55,7 @@
                 <!-- 在表格上方通过 slot 插入按钮 -->
                 <template #table-buttons>
                     <el-button type="success" @click="handleExport" :icon="Share">{{ getButtonText('export')
-                    }}</el-button>
+                        }}</el-button>
                 </template>
                 <!-- 使用插槽来自定义列内容，假如我们需要在操作列中添加按钮 -->
                 <template #customBtn="{ row }">
@@ -142,13 +142,6 @@ const initValues = ref({})
 const handleSearch = (data) => {
     loading.value = true;
     initValues.value = data;
-    // 判断是否有orgId，没有则删除
-    if (!data.orgId) {
-        delete initValues.value.orgId;
-    } else {
-        initValues.value.orgId = data.orgId[data.orgId.length - 1]
-    }
-
     getList(pagination.value.currentPage, pagination.value.pageSize, orderBy.value);
 }
 // 重置事件
@@ -357,7 +350,8 @@ const companyOptions = ref([]);
 const cascaderRef = ref(null);
 const parentProps = {
     checkStrictly: true,
-    expandTrigger: 'hover'
+    expandTrigger: 'hover',
+    emitPath: false,
 };
 // 公司改变事件
 const handleCascaderChange = async (e) => {
@@ -366,7 +360,7 @@ const handleCascaderChange = async (e) => {
             cascaderRef.value.togglePopperVisible()
         });
     }
-    const orgId = e ? e[e.length - 1] : '';
+    const orgId = e ? e : '';
     const result = await getCustomerLikeQueryApi({ keyword: '*', orgId });
     customerOptions.value = result.data.map(item => ({
         value: item.code,

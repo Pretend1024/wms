@@ -107,9 +107,6 @@ const initValues = ref({
 // 搜索事件
 const handleSearch = (data) => {
     loading.value = true;
-    if (Array.isArray(data.orgId)) {
-        data.orgId = data.orgId.length > 0 ? data.orgId[data.orgId.length - 1] : '';
-    }
     initValues.value = { ...data };
     getList(pagination.value.currentPage, pagination.value.pageSize, orderBy.value);
 };
@@ -127,7 +124,6 @@ const columns = ref([
     { label: '币种代码', prop: 'currency', width: '175', fixed: 'left', sortable: true },
     { label: '汇率', prop: 'rate', width: '120', sortable: true },
     { label: '本位币', prop: 'isStandardCurrency', width: '150', sortable: true, slot: 'isStandardCurrency' },
-    { label: '备注', prop: 'remark', width: '200' },
     { label: '创建时间', prop: 'createdTime', width: '200', sortable: true },
     { label: '创建人', prop: 'createdBy', width: '110' },
     { label: '更新时间', prop: 'updatedTime', width: '200', sortable: true },

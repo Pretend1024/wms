@@ -54,9 +54,9 @@
                         </el-form-item>
                     </el-col>
                     <el-col>
-                        <el-form-item :label="getLabel('inOrderNoList')">
-                            <canonicalInput v-model:listName="formData.inOrderNoList"
-                                :placeholder="getPlaceholder('inOrderNoList')" clearable>
+                        <el-form-item :label="getLabel('sourceNo')">
+                            <canonicalInput v-model:listName="formData.sourceNoList"
+                                :placeholder="getPlaceholder('sourceNo')" clearable>
                             </canonicalInput>
                         </el-form-item>
                     </el-col>
@@ -115,7 +115,7 @@
                 <!-- 在表格上方通过 slot 插入按钮 -->
                 <template #table-buttons>
                     <el-button type="success" @click="handleExport" :icon="Share">{{ getButtonText('export')
-                        }}</el-button>
+                    }}</el-button>
                 </template>
                 <template #customer="{ row }">
                     {{ row.customerCode }}({{ row.customerName ? row.customerName : '无' }})
@@ -130,7 +130,7 @@
         </div>
         <!-- 导出弹窗 -->
         <exportDialog ref="exportDialogRef" :selectionRows="selectionRows" :initValues="initValues"
-            :otherParameters="{ view }" :exportType="301">
+            :extraParams="{ view }" :exportType="301">
         </exportDialog>
     </div>
 </template>
@@ -160,7 +160,6 @@ const handleSearch = (data) => {
     loading.value = true;
     initValues.value = {
         ...data,
-        orgId: data.orgId ? data.orgId[data.orgId.length - 1] : ''
     }
     getList(pagination.value.currentPage, pagination.value.pageSize, orderBy.value)
 }
@@ -184,7 +183,7 @@ const columns = ref([
     { label: '客户', prop: 'customerName', width: '200', slot: 'customer', fixed: 'left' },
     { label: 'sku', prop: 'sku', width: '150' },
     { label: '条码', prop: 'barcode', width: '160', sortable: true },
-    { label: '入库订单号', prop: 'inOrderNo', width: '150', sortable: true },
+    { label: '单号来源', prop: 'sourceNo', width: '150', sortable: true },
     { label: '收货批次号', prop: 'batchNo', width: '180' },
     { label: '上架日期', prop: 'inShelfDate', width: '200' },
     { label: '库区', prop: 'zoneCode', width: '115' },
@@ -275,7 +274,8 @@ const companyOptions = ref([]);
 const cascaderRef = ref(null);
 const parentProps = {
     checkStrictly: true,
-    expandTrigger: 'hover'
+    expandTrigger: 'hover',
+    emitPath: false,
 };
 // 公司改变事件
 const handleCascaderChange = async (e) => {
@@ -284,7 +284,7 @@ const handleCascaderChange = async (e) => {
             cascaderRef.value.togglePopperVisible()
         });
     }
-    const orgId = e ? e[e.length - 1] : '';
+    const orgId = e ? e : '';
     const result = await getCustomerLikeQueryApi({ keyword: '*', orgId });
     customerOptions.value = result.data.map(item => ({
         value: item.code,

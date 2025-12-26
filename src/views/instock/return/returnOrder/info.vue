@@ -87,7 +87,7 @@
             <p style="margin-top: 20px;">退件商品</p>
             <div class="tableDiv">
                 <receiptTable :columns="forecastColumns" :data="forecastTableData"
-                    :merge-cols="['sku', 'fnsku', 'barcode', 'productName', 'forecastQty', 'remark']" index-label="序号"
+                    :merge-cols="['sku', 'fnsku', 'barcode', 'forecastQty', 'remark']" index-label="序号"
                     summary-label="合计" :summary-columns="['forecastQty', 'receivedQty']"
                     @update:data="forecastTableData = $event" ref="forecastTableRef">
                     <template #sku="{ row }">
@@ -95,12 +95,6 @@
                     </template>
                     <template #fnsku="{ row }">
                         <el-input v-model="row.fnsku" placeholder="请输入FNSKU" readonly />
-                    </template>
-                    <template #barcode="{ row }">
-                        <el-input v-model="row.barcode" placeholder="请输入商品条码" readonly />
-                    </template>
-                    <template #productName="{ row }">
-                        <el-input v-model="row.productName" placeholder="请输入商品名称" readonly />
                     </template>
                     <template #forecastQty="{ row }">
                         <el-input v-model="row.forecastQty" v-number placeholder="输入预报数量" readonly />
@@ -132,7 +126,7 @@
                 </div>
             </div>
             <div class="bottomDiv">
-                <el-button @click="handleClose">{{getButtonText ('close') }}</el-button>
+                <el-button @click="handleClose">{{ getButtonText('close') }}</el-button>
             </div>
         </div>
     </div>
@@ -202,9 +196,8 @@ const parcelColumns = [
 const forecastColumns = [
     { label: 'SKU', prop: 'sku', width: '180', slot: 'sku' },
     { label: 'FNSKU', prop: 'fnsku', width: '180', slot: 'fnsku' },
-    { label: '商品条码', prop: 'barcode', width: '180', slot: 'barcode' },
-    { label: '商品名称', prop: 'productName', width: '180', slot: 'productName' },
     { label: '预报数量', prop: 'forecastQty', width: '120', slot: 'forecastQty' },
+    { label: '备注', prop: 'remark', width: '240', slot: 'remark' },
     { label: '品质', prop: 'qualityId', width: '150', slot: 'qualityId' },
     { label: '清点数量', prop: 'receivedQty', width: '120', slot: 'receivedQty' },
 ]
@@ -277,8 +270,8 @@ onMounted(async () => {
         formData.value = res.data;
         parcelTableData.value = res.data.returnParcelList || [];
         forecastTableData.value = mergeForecastAndReceipt(
-            res.data.returnProductForecastList || [],
-            res.data.returnProductReceiptList || []
+            res.data.returnProductList || [],
+            res.data.returnReceiptList || []
         );
 
         if (res.data.returnAttachmentList.length > 0) {

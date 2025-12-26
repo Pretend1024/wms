@@ -28,8 +28,8 @@
                 <el-form-item :label="getLabel('currency')" prop="currency">
                     <el-select v-model="formData.currency" :placeholder="getPlaceholder('currency')" clearable
                         :disabled="isDisabled">
-                        <el-option v-for="item in currencyEnum" :key="item.code" :label="item.name"
-                            :value="item.code" />
+                        <el-option v-for="item in currencyEnum" :key="item.id" :label="item.name"
+                            :value="item.id" />
                     </el-select>
                 </el-form-item>
             </el-col>
@@ -160,7 +160,7 @@
 
 <script setup>
 import { ref, defineProps, defineExpose, computed, onMounted, readonly } from 'vue';
-import { getCurrencyEnumApi } from '@/api/baseApi/index.js';
+import { getCurrencyListApi } from '@/api/baseApi/index.js';
 
 // 1. 新增props：接收父组件传的回显数据（initData），修正paymentMethodEnum类型为Array
 const props = defineProps({
@@ -324,8 +324,12 @@ const currencyEnum = ref([]);
 
 onMounted(async () => {
     try {
-        const res = await getCurrencyEnumApi();
-        currencyEnum.value = res.data;
+        const res = await getCurrencyListApi();
+        currencyEnum.value = res.data.map(item => ({
+            id: item.currency,
+            name: item.remark
+        }));
+        ;
     } catch (error) {
         console.error('获取币种选项失败：', error);
     }

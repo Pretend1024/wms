@@ -32,11 +32,12 @@
                 @selection-change="handleSelectionChange" @row-click="handleRowClick" @page-change="handlePageChange"
                 @sort-change="handleTableSort">
                 <template #table-buttons>
-                    <el-button type="primary" @click="handleAdd" v-permission="'add'" :icon="Plus">{{ getButtonText('add') }}</el-button>
+                    <el-button type="primary" @click="handleAdd" v-permission="'add'" :icon="Plus">{{
+                        getButtonText('add') }}</el-button>
                     <!-- <el-button type="danger" @click="handleDel" v-permission="'delete'" :icon="Delete">{{ getButtonText('del') }}</el-button> -->
                     <!-- 导出 -->
                     <el-button type="success" @click="handleExport" :icon="Share">{{ getButtonText('export')
-                    }}</el-button>
+                        }}</el-button>
                 </template>
                 <template #customBtn="{ row }">
                     <div style="display: flex;">
@@ -91,7 +92,7 @@ import { ElLoading, ElMessage, ElMessageBox } from 'element-plus';
 // 接口导入
 import { getCustomerAccountPageApi, addCustomerAccountApi, } from '@/api/financeApi/receivables.js';
 import { updCurrencyByIdApi, delCurrencyByIdApi } from '@/api/financeApi/basic.js'
-import { getCurrencyEnumApi } from '@/api/baseApi/index.js';
+import { getCurrencyListApi } from '@/api/baseApi/index.js';
 import { getOrgListCompanyApi } from '@/api/baseApi/org.js';
 import { getCustomerLikeQueryApi } from '@/api/baseApi/sku.js'
 
@@ -123,9 +124,6 @@ const initValues = ref({});
 // 搜索事件
 const handleSearch = (data) => {
     loading.value = true;
-    if (Array.isArray(data.orgId)) {
-        data.orgId = data.orgId.length > 0 ? data.orgId[data.orgId.length - 1] : '';
-    }
     initValues.value = { ...data };
     getList(pagination.value.currentPage, pagination.value.pageSize, orderBy.value);
 };
@@ -387,7 +385,8 @@ const companyOptions = ref([]);
 const cascaderRef = ref(null);
 const parentProps = {
     checkStrictly: true,
-    expandTrigger: 'hover'
+    expandTrigger: 'hover',
+    emitPath: false,
 };
 // 公司改变事件
 const handleCascaderChange = async (e) => {
@@ -396,8 +395,7 @@ const handleCascaderChange = async (e) => {
             cascaderRef.value.togglePopperVisible()
         });
     }
-    const orgId = e ? e[e.length - 1] : '';
-    const result = await getCustomerLikeQueryApi({ keyword: '*', orgId });
+    const result = await getCustomerLikeQueryApi({ keyword: '*', orgId: e });
     customerOptions.value = result.data.map(item => ({
         value: item.code,
         label: item.code + '(' + item.name + ')'
@@ -428,10 +426,10 @@ onMounted(async () => {
     }))
     initialFilteredOptions.value = JSON.parse(JSON.stringify(customerOptions.value));
     // 获取币种数据
-    const nationRes = await getCurrencyEnumApi();
+    const nationRes = await getCurrencyListApi();
     nationOptions.value = nationRes.data.map(item => ({
-        value: item.code,
-        label: item.name
+        value: item.currency,
+        label: item.remark
     }))
     formConfig.value[0].options = nationOptions.value;
 })

@@ -152,7 +152,6 @@ onMounted(async () => {
 })
 
 function handleSearch(data) {
-    data.orgId = data.orgId.length > 0 ? data.orgId[data.orgId.length - 1] : ''
     initValues.value = { ...data }
     getList()
 }
@@ -249,7 +248,8 @@ const companyOptions = ref([]);
 const cascaderRef = ref(null);
 const parentProps = {
     checkStrictly: true,
-    expandTrigger: 'hover'
+    expandTrigger: 'hover',
+    emitPath: false,
 };
 // 公司改变事件
 const handleCascaderChange = async (e) => {

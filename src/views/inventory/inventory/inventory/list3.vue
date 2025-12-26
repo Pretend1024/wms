@@ -42,6 +42,15 @@
                         </el-form-item>
                     </el-col>
                     <el-col>
+                        <el-form-item :label="getLabel('businessId')">
+                            <el-select v-model="formData.businessId" :placeholder="getPlaceholder('businessId')"
+                                clearable>
+                                <el-option v-for="item in businessOptions" :key="item.value" :label="item.label"
+                                    :value="item.value" />
+                            </el-select>
+                        </el-form-item>
+                    </el-col>
+                    <el-col>
                         <el-form-item :label="getLabel('skuList')">
                             <canonicalInput v-model:listName="formData.skuList" :placeholder="getPlaceholder('skuList')"
                                 clearable>
@@ -175,7 +184,7 @@
         </el-dialog>
         <!-- 导出弹窗 -->
         <exportDialog ref="exportDialogRef" :selectionRows="selectionRows" :initValues="initValues"
-            :otherParameters="{ view }" :exportType="300">
+            :extraParams="{ view }" :exportType="300">
         </exportDialog>
     </div>
 </template>
@@ -193,6 +202,7 @@ import LogForm from './logTable.vue';
 import qtyTable from './qtyTable.vue';
 import listDetail from './listDetail3.vue';
 import canonicalInput from '@/components/table/canonicalInpt.vue';
+import { getInstockInOrderBusinessEnumApi } from '@/api/instockApi/order.js';
 import { getInventoryInventoryPageApi, getInventoryListQtyDetailPageApi, getInventoryInventoryInventoryViewEnumApi, postInventoryInventoryAdjustQtyApi, postInventoryInventoryLockQtyApi, getInventoryInventoryCreateWayEnumApi } from '@/api/inventoryApi/inventory.js'
 import { useI18n } from 'vue-i18n';
 import { reactive } from 'vue';
@@ -268,12 +278,6 @@ const handleSearch = (data) => {
     fieldsToDelete.forEach(field => {
         delete initValues.value[field];
     });
-    // 判断是否有orgId，没有则删除
-    if (!data.orgId) {
-        delete initValues.value.orgId;
-    } else {
-        initValues.value.orgId = data.orgId[data.orgId.length - 1]
-    }
 
     getList(pagination.value.currentPage, pagination.value.pageSize, orderBy.value, true);
 }
@@ -298,6 +302,7 @@ const columns = ref([
     { label: '状态', prop: 'statusName', width: '110', sortable: true, slot: 'status' },
     // { label: '库区', prop: 'zoneCode', width: '115' },
     // { label: '库位', prop: 'locationCode', width: '180', sortable: true },
+    { label: '业务类型', prop: 'businessName', width: '120', sortable: true, sortAlias: 'businessId' },
     { label: 'sku', prop: 'sku', width: '150' },
     { label: '条码', prop: 'barcode', width: '160', sortable: true },
     { label: '品质', prop: 'qualityName', width: '125', sortable: true },
@@ -458,7 +463,8 @@ const companyOptions = ref([]);
 const cascaderRef = ref(null);
 const parentProps = {
     checkStrictly: true,
-    expandTrigger: 'hover'
+    expandTrigger: 'hover',
+    emitPath: false,
 };
 // 公司改变事件
 const handleCascaderChange = async (e) => {
@@ -467,7 +473,7 @@ const handleCascaderChange = async (e) => {
             cascaderRef.value.togglePopperVisible()
         });
     }
-    const orgId = e ? e[e.length - 1] : '';
+    const orgId = e ? e : '';
     const result = await getCustomerLikeQueryApi({ keyword: '*', orgId });
     customerOptions.value = result.data.map(item => ({
         value: item.code,
@@ -478,6 +484,8 @@ const handleCascaderChange = async (e) => {
 const customerOptions = ref([]);
 // 品质
 const qualityOptions = ref([])
+// 业务类型
+const businessOptions = ref([])
 
 onMounted(async () => {
     // 初始化标签数据
@@ -509,6 +517,9 @@ onMounted(async () => {
         label: item.code + '(' + item.name + ')',
         value: item.code
     }))
+    // 业务类型
+    const businessRes = await getInstockInOrderBusinessEnumApi()
+    businessOptions.value = businessRes.data.map(item => ({ label: item.name, value: item.id }))
     // 品质
     const qualityRes = await getOrderQualityEnumApi()
     qualityOptions.value = qualityRes.data.map(item => ({ label: item.name, value: item.id }))

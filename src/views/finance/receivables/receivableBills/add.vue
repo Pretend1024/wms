@@ -104,7 +104,11 @@ const localCustomerOptions = ref([]);
 
 const formRef = ref(null);
 const cascaderRef = ref(null);
-const parentProps = { checkStrictly: true, expandTrigger: 'hover' };
+const parentProps = {
+    checkStrictly: true,
+    expandTrigger: 'hover',
+    emitPath: false,
+};
 
 // 监听 props.customerOptions 变化，初始化本地列表
 watch(() => props.customerOptions, (val) => {
@@ -129,12 +133,11 @@ const handleCascaderChange = async (e) => {
             cascaderRef.value?.togglePopperVisible();
         });
     }
-    const orgId = e ? e[e.length - 1] : '';
     // 清空当前已选客户
     formData.value.customerCode = '';
 
     try {
-        const result = await getCustomerLikeQueryApi({ keyword: '*', orgId });
+        const result = await getCustomerLikeQueryApi({ keyword: '*', orgId: e });
         localCustomerOptions.value = result.data.map(item => ({
             value: item.code,
             label: item.code + '(' + item.name + ')'
@@ -187,11 +190,8 @@ defineExpose({
         }
     },
     getFormData: () => {
-        // 处理orgId数组取最后一位
-        const orgId = Array.isArray(formData.value.orgId) ? formData.value.orgId[formData.value.orgId.length - 1] : formData.value.orgId;
         return {
             ...formData.value,
-            orgId: orgId,
             attachment: fileList.value.length > 0 ? JSON.stringify(fileList.value) : ''
         };
     }

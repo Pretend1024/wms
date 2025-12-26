@@ -139,23 +139,23 @@
                             <div v-loading="docLoading">
                                 <div v-if="docInfo.hasData">
                                     <div class="info-row"><span class="label">{{ getColumnText('bizNo')
-                                            }}：</span><span>{{
+                                    }}：</span><span>{{
                                                 docInfo.bizNo
                                             }}</span></div>
                                     <div class="info-row"><span class="label">{{ getColumnText('bizStatusName')
-                                            }}：</span><span>{{ docInfo.bizStatusName
+                                    }}：</span><span>{{ docInfo.bizStatusName
                                             }}</span></div>
                                     <div class="info-row"><span class="label">{{ getColumnText('createUserName')
-                                            }}：</span><span>{{ docInfo.createUserName
+                                    }}：</span><span>{{ docInfo.createUserName
                                             }}</span></div>
                                     <div class="info-row"><span class="label">{{ getColumnText('createTime')
-                                            }}：</span><span>{{ docInfo.createTime
+                                    }}：</span><span>{{ docInfo.createTime
                                             }}</span></div>
                                     <div class="info-row"><span class="label">{{ getColumnText('customerName')
-                                            }}：</span><span>{{ docInfo.customerName
+                                    }}：</span><span>{{ docInfo.customerName
                                             }}</span></div>
                                     <div class="info-row"><span class="label">{{ getColumnText('orgName')
-                                            }}：</span><span>{{ docInfo.orgName
+                                    }}：</span><span>{{ docInfo.orgName
                                             }}</span></div>
                                 </div>
                                 <div v-else class="no-data">
@@ -208,7 +208,8 @@ const cascaderRef = ref(null);
 
 const parentProps = {
     checkStrictly: true,
-    expandTrigger: 'hover'
+    expandTrigger: 'hover',
+    emitPath: false,
 };
 
 // 表单数据
@@ -320,9 +321,8 @@ const getDetail = async () => {
 
             // 1. 处理公司ID（级联选择器需要数组格式）
             if (detail.orgId) {
-                formData.orgId = Array.isArray(detail.orgId) ? detail.orgId : [detail.orgId];
                 // 触发公司联动，加载对应客户列表
-                await handleCascaderChange(formData.orgId);
+                await handleCascaderChange(detail.orgId);
             }
 
             // 2. 处理客户ID（需在客户列表加载后赋值）
@@ -450,7 +450,7 @@ const handleCascaderChange = async (val) => {
     if (val) {
         nextTick(() => cascaderRef.value && cascaderRef.value.togglePopperVisible());
     }
-    const orgId = val ? val[val.length - 1] : '';
+    const orgId = val ? val : '';
     formData.customerId = ''; // 清空已选客户
     const result = await getCustomerLikeQueryApi({ keyword: '*', orgId });
     if (result && result.data) {
@@ -552,7 +552,7 @@ const submitForm = async (isDraft) => {
         // 构造提交数据（参考submitForm原有结构）
         const submitData = {
             id: props.id || route.query.id, // 编辑场景携带ID
-            orgId: Array.isArray(formData.orgId) ? formData.orgId[formData.orgId.length - 1] : formData.orgId,
+            orgId: formData.orgId,
             secondTypeId: secondTypePath.value[secondTypePath.value.length - 1] || '',
             customerId: formData.customerId || '',
             priorityId: formData.priorityId || 10,
