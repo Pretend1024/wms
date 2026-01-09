@@ -37,7 +37,7 @@
                     <!-- <el-button type="danger" @click="handleDel" v-permission="'delete'" :icon="Delete">{{ getButtonText('del') }}</el-button> -->
                     <!-- 导出 -->
                     <el-button type="success" @click="handleExport" :icon="Share">{{ getButtonText('export')
-                        }}</el-button>
+                    }}</el-button>
                 </template>
                 <template #customBtn="{ row }">
                     <div style="display: flex;">
@@ -77,7 +77,7 @@
             </template>
         </el-dialog>
         <!-- 导出弹窗 -->
-        <exportDialog ref="exportDialogRef" :selectionRows="selectionRows" :initValues="initValues" :exportType="603">
+        <exportDialog ref="exportDialogRef" :selectionRows="selectionRows" :initValues="initValues" :exportType="703">
         </exportDialog>
         <batchOperationn :isVisible="delDialogVisible" :tableData="delData" :nameField="'id'" :nameLabel="'币种代码'"
             @close="delColse" :promptMessage="promptMessage" />
@@ -142,12 +142,10 @@ const columns = ref([
     { label: '公司', prop: 'orgName', width: '130', fixed: 'left', sortable: true },
     { label: '客户', prop: 'customerCode', width: '180', slot: 'customer', fixed: 'left', sortable: true },
     { label: '币种代码', prop: 'currency', width: '130', fixed: 'left', sortable: true },
-    { label: '可用金额', prop: 'availableAmount', width: '120', sortable: true },
     { label: '当前余额', prop: 'balance', width: '120', sortable: true },
-    { label: '预锁定金额', prop: 'preLockAmount', width: '140', sortable: true },
     { label: '信用额度', prop: 'creditAmount', width: '120', sortable: true },
     { label: '已使用授信额度', prop: 'usedCredit', width: '180', sortable: true },
-    { label: '剩余授信额度', prop: 'remainingCredit', width: '180', sortable: true },
+    { label: '超额使用额度', prop: 'overCreditAmount', width: '180', sortable: true },
     { label: '创建时间', prop: 'createdTime', width: '200', sortable: true },
     { label: '创建人', prop: 'createdBy', width: '110' },
     { label: '更新时间', prop: 'updatedTime', width: '200', sortable: true },
@@ -238,7 +236,6 @@ const handleDialogCancel = () => {
 const handleDialogConfirm = async () => {
     if (!childFormRef.value) return;
 
-    let bodyLoading = null;
     try {
         // 1. 子组件表单验证
         await childFormRef.value.validate();
@@ -250,7 +247,6 @@ const handleDialogConfirm = async () => {
         }
 
         // 3. 显示加载状态
-        bodyLoading = ElLoading.service({ lock: true, text: 'Loading' });
         loading.value = true;
 
         // 4. 调用新增/编辑接口（根据formData是否有id判断）
@@ -283,7 +279,6 @@ const handleDialogConfirm = async () => {
 
     } finally {
         // 确保加载状态关闭
-        if (bodyLoading) bodyLoading.close();
         loading.value = false;
     }
 };
@@ -429,7 +424,7 @@ onMounted(async () => {
     const nationRes = await getCurrencyListApi();
     nationOptions.value = nationRes.data.map(item => ({
         value: item.currency,
-        label: item.remark
+        label: item.currencyName
     }))
     formConfig.value[0].options = nationOptions.value;
 })

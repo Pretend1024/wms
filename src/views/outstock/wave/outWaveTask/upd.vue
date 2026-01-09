@@ -344,7 +344,7 @@ const handleTemplateSelect = (selectedData) => {
 
     // 3. 核心：库存范围数据处理（按子组件字段格式解析）
     // 3.1 基础库存字段（字符串类型，多值用逗号分隔）
-    inventoryData.inOrderNoList = selectedData.inOrderNoList || ''; // 入库单：直接赋值字符串
+    inventoryData.inOrderNoList = selectedData.inOrderNos || ''; // 入库单：直接赋值字符串
     inventoryData.zoneCodes = selectedData.zoneCodes || ''; // 库区：直接赋值字符串（子组件用逗号分隔多值）
     inventoryData.locationCodes = selectedData.locationCodes || ''; // 库位：同上
     inventoryData.excludeZoneCodes = selectedData.excludeZoneCodes || ''; // 排除库区：同上
@@ -355,8 +355,8 @@ const handleTemplateSelect = (selectedData) => {
     inventoryData.onShelfEndTime = selectedData.onShelfEndTime || '';
 
     // 3.3 分配优先级（模板中是JSON字符串，需解析为数组）
-    inventoryData.priorityList = selectedData.allocationPriorityList
-        ? JSON.parse(selectedData.allocationPriorityList) // 模板中存储的是数组的JSON字符串
+    inventoryData.priorityList = selectedData.priorityListJson
+        ? JSON.parse(selectedData.priorityListJson) // 模板中存储的是数组的JSON字符串
         : []; // 默认空数组
     console.log('选中模板的库存范围数据：', inventoryData); // 调试日志
 };

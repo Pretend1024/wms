@@ -241,7 +241,6 @@ const handleDialogConfirm = async () => {
         }
 
         // 3. 显示加载状态
-        bodyLoading = ElLoading.service({ lock: true, text: 'Loading' });
         loading.value = true;
 
         // 4. 调用新增/编辑接口（根据formData是否有id判断）
@@ -274,7 +273,6 @@ const handleDialogConfirm = async () => {
 
     } finally {
         // 确保加载状态关闭
-        if (bodyLoading) bodyLoading.close();
         loading.value = false;
     }
 };

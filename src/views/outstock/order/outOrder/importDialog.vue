@@ -140,7 +140,6 @@ const beforeUpload = (file) => {
 
 // 处理文件上传
 const handleUpload = async (options) => {
-    const loading = ElLoading.service({ lock: true, text: '文件上传中...' });
     try {
         fileUrl.value = '';
         fileList.value = [];
@@ -151,9 +150,7 @@ const handleUpload = async (options) => {
     } catch (error) {
         console.error('上传失败:', error);
         ElMessage.error('文件上传失败，请重试');
-    } finally {
-        loading.close();
-    }
+    } 
 };
 
 // 提交导入
@@ -168,7 +165,6 @@ const commit = async () => {
         return;
     }
 
-    const loading = ElLoading.service({ lock: true, text: '正在导入...' });
     try {
         const res = await outstockOrderImportTrackingNoApi({
             fileUrl: fileUrl.value,
@@ -191,9 +187,7 @@ const commit = async () => {
     } catch (error) {
         console.error('导入失败:', error);
         ElMessage.error('导入失败，请重试');
-    } finally {
-        loading.close();
-    }
+    } 
 };
 
 // 打开弹窗

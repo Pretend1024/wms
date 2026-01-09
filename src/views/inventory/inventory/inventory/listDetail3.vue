@@ -1,5 +1,5 @@
 <template>
-    <div class="tableView" style="position: sticky;width:1425px;left:0;">
+    <div class="tableView">
         <el-table v-loading="loading" :data="tableData" border :row-key="(row) => row.id">
             <!-- <el-table-column lable="序号" type="index" width="68" align="center" fixed /> -->
             <el-table-column :show-overflow-tooltip="true" v-for="(item, index) in columns" :key="index"
@@ -88,7 +88,9 @@ onUnmounted(() => {
 
 .tableView {
     padding: 10px 55px;
-    margin: -8px 0;
     background: #f8f9fa;
+    width: calc(100vw - 390px);
+    position: sticky;
+    left: 0;
 }
 </style>

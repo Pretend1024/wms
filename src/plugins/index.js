@@ -7,6 +7,7 @@ import { setupIcons } from './icons'
 import { setupAssets } from './assets'
 import { setupDirectives } from './directives'
 import { setupGlobals } from './globals'
+import { setupVxeTable } from './vxeTable'
 
 export function setupPlugins(app) {
     // 1. 引入静态资源
@@ -23,6 +24,8 @@ export function setupPlugins(app) {
     // 4. 注册 i18n
     app.use(i18n)
 
+    // 5. 注册 VxeTable
+    setupVxeTable(app)
 
     // 6. 注册自定义插件/逻辑
     setupIcons(app)

@@ -233,12 +233,6 @@ const handleSubmit = async () => {
             try {
                 await channelRef.value?.validateForms();
 
-                const loading = ElLoading.service({
-                    lock: true,
-                    target: ".contentDiv",
-                    text: 'Loading'
-                });
-
                 const data = {
                     ...formData.value,
                     supplierChannelUpdDTOList: supplierChannelAddDTOList.value
@@ -251,7 +245,6 @@ const handleSubmit = async () => {
                     router.push('/product/shipway/supplier/list');
                 }
                 smartAlert(res.msg, res.success, 1000);
-                loading.close();
             } catch (error) {
                 console.warn('子表单校验失败:', error);
             }

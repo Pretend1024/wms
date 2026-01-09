@@ -27,9 +27,9 @@
                     <el-button type="danger" @click="handleDel" v-permission="'delete'" :icon="Delete">{{
                         getButtonText('del') }}</el-button>
                     <el-button type="warning" @click="handleRefresh" :icon="Refresh">{{ getButtonText('refreshCache')
-                    }}</el-button>
+                        }}</el-button>
                     <el-button type="success" @click="handleTest" :icon="Connection">{{ getButtonText('test')
-                    }}</el-button>
+                        }}</el-button>
                 </template>
                 <!-- 使用插槽来自定义列内容，假如我们需要在操作列中添加按钮 -->
                 <template #customBtn="{ row }">
@@ -161,11 +161,6 @@ const handleTableSort = (sortString) => {
 }
 // 编辑
 const handleEdit = async (row) => {
-    console.log('编辑：', row);
-    const loading = ElLoading.service({
-        lock: true,
-        text: 'loading...',
-    })
     // 通过接口获取完整数据
     const res = await getBasicTraceStatusByIdApi({ id: row.id })
     if (res.success) {
@@ -174,7 +169,6 @@ const handleEdit = async (row) => {
     } else {
         smartAlert(res.msg, res.success, 1000)
     }
-    loading.close();
     centerDialogVisible.value = true;
 }
 // 选择的行数据
@@ -252,10 +246,6 @@ const handleDialogConfirm = async () => {
     if (!childFormRef.value) return;
     try {
         await childFormRef.value.validate();
-        const bodyLoading = ElLoading.service({
-            lock: true,
-            text: 'Loading',
-        })
         loading.value = true;
         let res;
         if (addData.value.id) {
@@ -269,7 +259,6 @@ const handleDialogConfirm = async () => {
         }
         smartAlert(res.msg, res.success, 1000)
         loading.value = false;
-        bodyLoading.close();
     } catch (error) {
         console.error('表单验证失败:', error);
     }
@@ -314,11 +303,6 @@ const handleTest = () => {
         }
     })
         .then(async ({ value }) => {
-            // 添加 Loading 效果
-            const loadingInstance = ElLoading.service({
-                lock: true,
-                text: 'loading...',
-            })
             try {
                 const res = await getBasicTraceStatusTestApi({ testTraceConfig: value })
                 const msg = `状态名称: ${res.data.name}， 状态ID: ${res.data.id}， 是否客户可见: ${res.data.value ? '是' : '否'}`;
@@ -326,9 +310,6 @@ const handleTest = () => {
                 smartAlert(msg, false, 1000)
             } catch (error) {
                 console.error('测试接口调用失败:', error)
-            } finally {
-                // 关闭 Loading
-                loadingInstance.close()
             }
         })
         .catch(() => {

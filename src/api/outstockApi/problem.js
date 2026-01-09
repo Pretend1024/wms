@@ -11,17 +11,17 @@ export const getOutstockOrderProblemTypeEnumApi = () => {
 }
 // 新增问题
 export const addOutstockOrderProblemApi = (data) => {
-    return http.post('/outstock/order/outOrderProblem/add', data)
+    return http.post('/outstock/order/outOrderProblem/add', data, { headers: { 'loading': true } })
 }
 // 关闭解决问题
 export const closeOutstockOrderProblemApi = (data) => {
-    return http.post('/outstock/order/outOrderProblem/resolveProblem', data)
+    return http.post('/outstock/order/outOrderProblem/resolveProblem', data, { headers: { 'loading': true } })
 }
 // 状态数量
 export const getOutstockOrderProblemStatusCountApi = (data) => {
     return http.post('/outstock/order/outOrderProblem/countGroupByStatus', data)
 }
-// 删选时间枚举
+// 筛选时间枚举
 export const getOutstockOrderProblemTimeFilterEnumApi = () => {
     return http.post('/outstock/order/outOrderProblem/timeFilterEnum')
 }

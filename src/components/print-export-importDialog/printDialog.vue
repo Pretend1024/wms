@@ -53,11 +53,11 @@ import * as api from '@/api/baseApi/printApi.js';
   打印类型 API 映射表
 -----------------------------------------*/
 const apiMap = {
-    111: api.skuPrintApi,
-    512: api.printWhLocationApi,
-    513: api.printConsumablesInventoryApi,
-    221: api.printWhinOrderApi,
-    222: api.printInOrderPrintprintBoxApi,
+    101: api.skuPrintApi,
+    104: api.printWhLocationApi,
+    105: api.printConsumablesInventoryApi,
+    201: api.printWhinOrderApi,
+    202: api.printInOrderPrintprintBoxApi,
     10: api.printOutWavePrintWayBillApi,
 
     402: api.printOutOrderPrintInvoiceApi,
@@ -266,7 +266,7 @@ const handlePrintConfirm = async () => {
     }
 
     // 发起请求（带 loading）
-    const bodyLoading = ElLoading.service({ text: '正在生成打印文件...' });
+    const bodyLoading = ElLoading.service({ text: 'loading...' });
     try {
         const res = await printApi(apiParams.value);
 

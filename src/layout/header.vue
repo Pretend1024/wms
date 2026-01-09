@@ -63,13 +63,6 @@
                     </el-dropdown-menu>
                 </template>
             </el-dropdown>
-            <!-- 消息列表 -->
-            <el-tooltip :content="$t('Message')" placement="bottom" effect="light" offset="18">
-                <el-badge v-if="msgCount > 0" :value="msgCount" :max="99">
-                    <i class="iconfont icon-xiaoxitongzhi" @click="moreMsg"></i>
-                </el-badge>
-                <i v-else class="iconfont icon-xiaoxitongzhi" @click="moreMsg"></i>
-            </el-tooltip>
             <!-- 文件 -->
             <el-dropdown>
                 <i class="iconfont icon-wenjianjia"></i>
@@ -84,6 +77,13 @@
                     </el-dropdown-menu>
                 </template>
             </el-dropdown>
+            <!-- 消息列表 -->
+            <el-tooltip :content="$t('Message')" placement="bottom" effect="light" offset="18">
+                <el-badge v-if="msgCount > 0" :value="msgCount" :max="99">
+                    <i class="iconfont icon-xiaoxitongzhi" @click="moreMsg"></i>
+                </el-badge>
+                <i v-else class="iconfont icon-xiaoxitongzhi" @click="moreMsg"></i>
+            </el-tooltip>
             <!-- <el-tooltip :content="$t('Download')" placement="bottom" effect="light" offset="18">
                 <i @click='exportJob' class="iconfont icon-yunxiazai"></i>
             </el-tooltip> -->
@@ -166,7 +166,7 @@
                         <!-- 超出显示省略号 -->
                         <a :href="toDownloadTempPath(msgContent.link)" target="_blank" class="ellipsis-link">{{
                             msgContent.link
-                        }}</a>
+                            }}</a>
                     </el-form-item>
                 </el-col>
                 <el-col :span="12" v-if="msgContent.fileUrl">
@@ -368,7 +368,6 @@ const handleClose = async () => {
     msgIndex.value = 0
     msgDialogVisible.value = false
     const res = await getNewMessageCountApi()
-    console.log('新消息数量:', res)
     msgCount.value = res.data.total
 }
 // 获取消息数量和内容
@@ -378,16 +377,10 @@ const getMsgList = async () => {
     msgCount.value = res.data.total
     if (res.data.force != 0) {
         forceIdList.value = res.data.forceIdList
-        ElLoading.service({
-            fullscreen: true,
-            lock: true,
-            text: '加载中...',
-        })
         // 获取最新消息内容
         const msgRes = await getBatchReadByIdApi({ id: res.data.forceIdList[msgIndex.value] })
         msgContent.value = msgRes.data
         msgDialogVisible.value = true
-        ElLoading.service().close()
     }
 }
 onMounted(async () => {

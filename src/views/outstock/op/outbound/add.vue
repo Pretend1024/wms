@@ -259,7 +259,6 @@ const handleScan = async () => {
         return;
     }
 
-    const loading = ElLoading.service({ lock: true, text: '查询订单中...' });
     try {
         const res = await getOutOrderByCodeApi({ code: trackingNo, codeType: '1' });
         if (res.success) {
@@ -280,9 +279,7 @@ const handleScan = async () => {
     } catch (e) {
         console.error(e);
         handleFailure(trackingNo, '系统异常');
-    } finally {
-        loading.close();
-    }
+    } 
 };
 
 // 辅助：统一处理失败
@@ -305,7 +302,6 @@ const confirmSelectedOrder = async () => {
 
 // 5. 执行提交
 const executeSubmit = async (outOrderId, trackingNo) => {
-    const loading = ElLoading.service({ lock: true, text: '正在出库...' });
     try {
         const params = {
             outOrderId: outOrderId,
@@ -328,7 +324,6 @@ const executeSubmit = async (outOrderId, trackingNo) => {
     } catch (e) {
         handleFailure(trackingNo, '提交异常');
     } finally {
-        loading.close();
         resetInput();
     }
 };

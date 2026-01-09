@@ -38,14 +38,6 @@
                             </canonicalInput>
                         </el-form-item>
                     </el-col>
-                    <!-- 跟踪号 -->
-                    <el-col>
-                        <el-form-item :label="getLabel('trackingNo')">
-                            <canonicalInput v-model:listName="formData.trackingNoList"
-                                :placeholder="getPlaceholder('trackingNo')" clearable>
-                            </canonicalInput>
-                        </el-form-item>
-                    </el-col>
                     <!-- 状态 -->
                     <!-- <el-col>
                         <el-form-item :label="getLabel('status')">

@@ -234,7 +234,7 @@ const routes = [
                 }
             },
             {
-                path: '/instock/return/returnOrder/add/:trackingNos?/',
+                path: '/instock/return/returnOrder/add/:trackingNos?/:customerCode?/:warehouseCode?/',
                 name: '新增退件单',
                 component: () => import('@/views/instock/return/returnOrder/add.vue'),
                 props: true,
@@ -412,6 +412,7 @@ const routes = [
                 props: true,
                 meta: {
                     langKey: '追加移库',
+                    keepAlive: true,
                 }
             },
             {
@@ -421,6 +422,17 @@ const routes = [
                 props: true,
                 meta: {
                     langKey: '移库详情',
+                    keepAlive: true,
+                }
+            },
+            {
+                path: '/product/price/priceProject/add',
+                name: '新增报价方案',
+                component: () => import('@/views/product/price/priceProject/add.vue'),
+                props: true,
+                meta: {
+                    langKey: '新增报价方案',
+                    keepAlive: true,
                 }
             },
         ]

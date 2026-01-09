@@ -121,7 +121,7 @@
             </template>
         </el-dialog>
         <!-- 导出弹窗 -->
-        <exportDialog ref="exportDialogRef" :selectionRows="selectionRows" :initValues="initValues" :exportType="222">
+        <exportDialog ref="exportDialogRef" :selectionRows="selectionRows" :initValues="initValues" :exportType="202">
         </exportDialog>
         <!-- 取消 -->
         <batchOperationn :dialogTitle="'操作结果'" :isVisible="delDialogVisible" :tableData="delData" :nameField="'id'"
@@ -330,10 +330,6 @@ const handleDialogConfirm = async () => {
     if (!childFormRef.value) return;
     try {
         await childFormRef.value.validate();
-        const bodyLoading = ElLoading.service({
-            lock: true,
-            text: 'Loading',
-        })
         loading.value = true;
         const data = {
             id: addData.value.id,
@@ -346,7 +342,6 @@ const handleDialogConfirm = async () => {
         }
         smartAlert(res.msg, res.success, 1000)
         loading.value = false;
-        bodyLoading.close();
     } catch (error) {
         console.error('表单验证失败:', error);
     }

@@ -465,7 +465,7 @@ const signatureOptions = ref([])
 const uploadWaybillOptions = ref([])
 
 onMounted(async () => {
-    const loading = ElLoading.service({ lock: true, target: ".contentDiv", text: 'Loading' })
+    openMainLoading()
     try {
         // 仓库
         const wh = await getWhWarehouseApi()
@@ -515,9 +515,10 @@ onMounted(async () => {
 
         // 加载渠道列表（根据 carrierCode）并恢复选中（handleChannelSelectChange 会把 initialShipwayList -> ids）
         await handleChannelSelectChange()
-    } finally {
-        loading.close()
+    } catch (err) {
+        smartAlert('加载数据失败，请重试', false)
     }
+    closeMainLoading()
 })
 </script>
 

@@ -206,7 +206,7 @@
             </hydTable>
         </div>
         <!-- 导出弹窗 -->
-        <exportDialog ref="exportDialogRef" :selectionRows="selectionRows" :initValues="initValues" :exportType="221">
+        <exportDialog ref="exportDialogRef" :selectionRows="selectionRows" :initValues="initValues" :exportType="201">
         </exportDialog>
         <!-- 打印弹窗 -->
         <printDialog ref="printDialogRef" :selectionRows="[selectionItem]" :printType="printType" :disabled="true">
@@ -692,13 +692,13 @@ const handleExport = async () => {
 // 打印
 const printDialogRef = ref(null)
 const selectionItem = ref({}) // 用于存储单个选中行数据
-const printType = ref(221) // 默认入库单打印类型
+const printType = ref(201) // 默认入库单打印类型
 const handlePrint = async (index, row) => {
     selectionItem.value = row
     if (index == 1) {
-        printType.value = 221 // 入库单打印
+        printType.value = 201 // 入库单打印
     } else if (index == 2) {
-        printType.value = 222 // 箱唛打印
+        printType.value = 202 // 箱唛打印
     } else {
         ElMessage({
             type: 'warning',

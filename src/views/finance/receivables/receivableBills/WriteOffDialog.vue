@@ -1,12 +1,13 @@
 <template>
-    <el-dialog v-model="visible" title="账单支付" width="900px" align-center destroy-on-close :close-on-click-modal="false">
+    <el-dialog v-model="visible" title="账单核销" width="900px" align-center destroy-on-close :close-on-click-modal="false">
         <div v-loading="loading" class="pay-dialog-content">
             <div class="section-title">
-                待支付账单信息
-                <span v-if="summaryData.totalUnpaidAmountSum"
+                待核销账单信息
+                <span v-if="summaryData.totalUnwrittenOffAmountSum"
                     style="font-size: 12px; color: #666; font-weight: normal; margin-left: 10px;">
-                    (合计待付: <span style="color: red; font-weight: bold">{{ summaryData.totalUnpaidAmountSum }}</span> {{
-                        currentCurrency }})
+                    (合计待核销: <span style="color: red; font-weight: bold">{{ summaryData.totalUnwrittenOffAmountSum
+                        }}</span> {{
+                            currentCurrency }})
                 </span>
             </div>
             <el-table :data="billList" border style="width: 100%; margin-bottom: 20px" max-height="200" show-summary
@@ -15,10 +16,10 @@
                 <el-table-column prop="customerCode" label="客户" width="150" show-overflow-tooltip />
                 <el-table-column prop="currency" label="币种" width="80" />
                 <el-table-column prop="totalFeeAmount" label="总金额" width="120" />
-                <el-table-column prop="alreadyPaidAmount" label="已付金额" width="120" />
-                <el-table-column prop="unpaidAmount" label="待付金额" width="120">
+                <el-table-column prop="writtenOffAmount" label="已核销金额" width="120" />
+                <el-table-column prop="unwrittenOffAmount" label="待核销金额" width="120">
                     <template #default="{ row }">
-                        <span style="color: red; font-weight: bold">{{ row.unpaidAmount }}</span>
+                        <span style="color: red; font-weight: bold">{{ row.unwrittenOffAmount }}</span>
                     </template>
                 </el-table-column>
                 <el-table-column prop="remark" label="备注" show-overflow-tooltip />
@@ -47,14 +48,14 @@
             <el-form ref="formRef" :model="formData" :rules="rules" label-width="100px">
                 <el-row>
                     <el-col :span="24">
-                        <el-form-item label="支付金额" prop="alreadyPaidAmount">
-                            <el-input v-model="formData.alreadyPaidAmount" v-number="3" placeholder="请输入支付金额">
+                        <el-form-item label="核销金额" prop="writtenOffAmount">
+                            <el-input v-model="formData.writtenOffAmount" v-number="3" placeholder="请输入核销金额">
                                 <template #append>{{ currentCurrency }}</template>
                             </el-input>
                         </el-form-item>
                     </el-col>
                     <el-col :span="24">
-                        <el-form-item label="支付备注" prop="remark">
+                        <el-form-item label="核销备注" prop="remark">
                             <el-input v-model="formData.remark" type="textarea" :rows="2" placeholder="请输入备注" />
                         </el-form-item>
                     </el-col>
@@ -75,9 +76,9 @@
 import { ref, reactive } from 'vue';
 import { ElMessage } from 'element-plus';
 import {
-    getPayBillListByIdApi,
+    getWriteOffBillListByIdApi,
     getRechargeByCustomerCodeAndCurrencyApi,
-    payBillByIdApi
+    writeOffBillByIdApi
 } from '@/api/financeApi/receivables.js';
 import { smartAlert } from '@/utils/genericMethods.js';
 
@@ -98,13 +99,13 @@ const targetBillIds = ref([]);
 // 表单与选中项
 const selectedRechargeId = ref(null);
 const formData = reactive({
-    alreadyPaidAmount: '',
+    writtenOffAmount: '',
     remark: ''
 });
 
 const rules = {
-    alreadyPaidAmount: [
-        { required: true, message: '请输入支付金额', trigger: 'blur' }
+    writtenOffAmount: [
+        { required: true, message: '请输入核销金额', trigger: 'blur' }
     ]
 };
 
@@ -121,14 +122,14 @@ const open = async (ids) => {
     summaryData.value = {};
     rechargeList.value = [];
     selectedRechargeId.value = null;
-    formData.alreadyPaidAmount = '';
+    formData.writtenOffAmount = '';
     formData.remark = '';
     currentCurrency.value = '';
     targetBillIds.value = ids;
 
     try {
         // 1. 获取账单列表
-        const res = await getPayBillListByIdApi(ids);
+        const res = await getWriteOffBillListByIdApi(ids);
 
         if (!res.success) {
             smartAlert(res.msg || '账单校验失败', false);
@@ -148,8 +149,8 @@ const open = async (ids) => {
         const sampleBill = billList.value[0];
         currentCurrency.value = sampleBill.currency;
 
-        // 设置默认支付金额为接口返回的合计待付金额
-        formData.alreadyPaidAmount = res.data.totalUnpaidAmountSum || null;
+        // 设置默认核销金额为接口返回的合计待核销金额
+        formData.writtenOffAmount = res.data.totalUnwrittenOffAmountSum || null;
 
         // 2. 获取充值记录
         const rechargeRes = await getRechargeByCustomerCodeAndCurrencyApi({
@@ -162,8 +163,8 @@ const open = async (ids) => {
         }
 
     } catch (error) {
-        console.error('初始化支付信息异常:', error);
-        smartAlert('网络异常，无法获取支付信息', false);
+        console.error('初始化核销信息异常:', error);
+        smartAlert('网络异常，无法获取核销信息', false);
         visible.value = false;
     } finally {
         loading.value = false;
@@ -177,7 +178,7 @@ const handleRechargeRowClick = (row) => {
 
 /**
  * 账单列表底部合计方法
- * 功能：计算账单列表底部的“总金额”、“已付金额”和“待付金额”
+ * 功能：计算账单列表底部的“总金额”、“已核销金额”和“待核销金额”
  */
 const getBillSummary = (param) => {
     const { columns, data } = param;
@@ -189,7 +190,7 @@ const getBillSummary = (param) => {
             return;
         }
         // 仅统计指定的三个金额列
-        const targetProps = ['totalFeeAmount', 'alreadyPaidAmount', 'unpaidAmount'];
+        const targetProps = ['totalFeeAmount', 'writtenOffAmount', 'unwrittenOffAmount'];
         if (targetProps.includes(column.property)) {
             const values = data.map((item) => Number(item[column.property]));
             if (!values.every((value) => Number.isNaN(value))) {
@@ -210,7 +211,7 @@ const getBillSummary = (param) => {
     return sums;
 };
 
-// 确认支付提交
+// 确认核销提交
 const handleConfirm = async () => {
     if (!selectedRechargeId.value) {
         ElMessage.warning('请选择一条充值记录进行扣款');
@@ -224,21 +225,21 @@ const handleConfirm = async () => {
                 const params = {
                     billIds: targetBillIds.value,
                     rechargeId: selectedRechargeId.value,
-                    alreadyPaidAmount: Number(formData.alreadyPaidAmount),
+                    writtenOffAmount: Number(formData.writtenOffAmount),
                     remark: formData.remark
                 };
 
-                const res = await payBillByIdApi(params);
+                const res = await writeOffBillByIdApi(params);
 
-                smartAlert(res.msg, res.success);
+                smartAlert(res.msg, res.success, 1000);
 
                 if (res.success) {
                     visible.value = false;
                     emit('success');
                 }
             } catch (error) {
-                console.error('支付请求失败:', error);
-                smartAlert('支付请求异常', false);
+                console.error('核销请求失败:', error);
+                smartAlert('核销请求异常', false);
             } finally {
                 submitting.value = false;
             }

@@ -540,7 +540,7 @@ const handleClose = () => {
 }
 
 onMounted(async () => {
-    const loading = ElLoading.service({ lock: true, target: ".contentDiv", text: "loading..." });
+    openMainLoading()
     try {
         // 1. 下拉框接口配置
         const apiTasks = [
@@ -621,7 +621,7 @@ onMounted(async () => {
             smartAlert(`获取SKU详情失败：${skuRes.msg}`, false);
         }
     } finally {
-        loading.close();
+        closeMainLoading()
     }
 });
 

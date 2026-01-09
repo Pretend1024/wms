@@ -1,7 +1,6 @@
 <template>
-    <!-- 弹窗的显示状态直接绑定到 props.visible -->
     <el-dialog :model-value="visible" title="选择波次模板" width="90%" destroy-on-close @close="handleClose">
-        <!-- 筛选区、表格区、分页器 保持不变 -->
+        <!-- 筛选区 -->
         <div class="filterDiv" style="margin-bottom: 16px;">
             <el-form :model="filterForm" inline>
                 <el-form-item label="模板名称：">
@@ -19,7 +18,7 @@
 
         <div class="tableDiv">
             <el-table :data="tableData" height="400" border :loading="loading" row-key="id" @row-click="handleRowClick"
-                highlight-current-row>
+                :row-class-name="tableRowClassName">
                 <el-table-column show-overflow-tooltip prop="taskName" label="模板名称" width="150" />
                 <el-table-column show-overflow-tooltip prop="taskNo" label="波次任务号" width="200" />
                 <el-table-column show-overflow-tooltip prop="warehouseCodes" label="仓库" width="155" />
@@ -37,12 +36,14 @@
                 <el-table-column show-overflow-tooltip prop="createdTime" label="创建时间" width="200" sortable />
             </el-table>
 
+            <!-- 分页器 -->
             <el-pagination style="margin-top: 16px; text-align: right;" v-model:current-page="pagination.currentPage"
                 v-model:page-size="pagination.pageSize" :page-sizes="[20, 50, 100]" :total="pagination.total"
                 layout="total, sizes, prev, pager, next, jumper" @size-change="handleSizeChange"
                 @current-change="handleCurrentChange" />
         </div>
 
+        <!-- 底部按钮 -->
         <template #footer>
             <el-button @click="handleClose">取消</el-button>
             <el-button type="primary" @click="handleConfirm" :disabled="!selectedRow">
@@ -53,11 +54,11 @@
 </template>
 
 <script setup name="WaveTemplateDialog">
-import { ref, defineProps, defineEmits, watch } from 'vue';
+import { ref, shallowRef, defineProps, defineEmits, watch } from 'vue';
 import { getOutstockWaveRecordApi } from '@/api/outstockApi/wave.js';
 import { smartAlert } from '@/utils/genericMethods.js';
 
-// 1. 定义接收父组件的 visible prop（只读）
+// 1. 定义props和emit
 const props = defineProps({
     visible: {
         type: Boolean,
@@ -65,13 +66,13 @@ const props = defineProps({
     }
 });
 
-// 2. 定义向父组件传递的事件（关键：通过 update:visible 通知父组件更新）
 const emit = defineEmits(['update:visible', 'confirm']);
 
-// 内部状态
+// 2. 内部状态
 const loading = ref(false);
 const tableData = shallowRef([]);
 const selectedRow = ref(null);
+const selectedRowId = ref(''); 
 const filterForm = ref({ taskNo: '', taskName: '' });
 const pagination = ref({
     currentPage: 1,
@@ -79,20 +80,23 @@ const pagination = ref({
     total: 0
 });
 
-// 3. 监听 visible 变化：当父组件打开弹窗时，加载数据
+// 3. 监听visible变化，重置选中状态
 watch(
     () => props.visible,
     (newVal) => {
         if (newVal) {
             pagination.value.currentPage = 1;
-            fetchTableData(); // 打开弹窗时加载数据
+            selectedRow.value = null; // 重置选中行
+            selectedRowId.value = ''; // 重置选中标识
+            fetchTableData();
         } else {
-            selectedRow.value = null; // 关闭时清空选中状态
+            selectedRow.value = null;
+            selectedRowId.value = '';
         }
     }
 );
 
-// 获取表格数据
+// 4. 获取表格数据
 const fetchTableData = async () => {
     loading.value = true;
     try {
@@ -113,45 +117,63 @@ const fetchTableData = async () => {
     }
 };
 
-// 行点击选中
+// 5. 行点击事件
 const handleRowClick = (row) => {
     selectedRow.value = row;
+    selectedRowId.value = row.id || `${row.taskNo}-${row.taskName}-${row.createdTime}`;
 };
 
-// 重置筛选
+// 6. 自定义行类名方法
+const tableRowClassName = ({ row }) => {
+    // 生成当前行的唯一标识，与选中标识比对
+    const rowUniqueId = row.id || `${row.taskNo}-${row.taskName}-${row.createdTime}`;
+    // 匹配成功则返回自定义高亮类名
+    return rowUniqueId === selectedRowId.value ? 'selected-row' : '';
+};
+
+// 7. 重置筛选
 const resetFilter = () => {
     filterForm.value = { taskNo: '', taskName: '' };
     pagination.value.currentPage = 1;
+    selectedRow.value = null;
+    selectedRowId.value = '';
     fetchTableData();
 };
 
-// 分页变化
+// 8. 分页变化
 const handleSizeChange = (pageSize) => {
     pagination.value.pageSize = pageSize;
+    selectedRow.value = null;
+    selectedRowId.value = '';
     fetchTableData();
 };
 const handleCurrentChange = (currentPage) => {
     pagination.value.currentPage = currentPage;
+    selectedRow.value = null;
+    selectedRowId.value = '';
     fetchTableData();
 };
 
-// 4. 关闭弹窗：通过事件通知父组件将 visible 设为 false（关键）
+// 9. 关闭弹窗
 const handleClose = () => {
-    emit('update:visible', false); // 通知父组件更新 visible
+    emit('update:visible', false);
 };
 
-// 确认选择：传递数据并关闭
+// 10. 确认选择
 const handleConfirm = () => {
     if (selectedRow.value) {
-        emit('confirm', selectedRow.value); // 传递选中数据
-        emit('update:visible', false); // 通知父组件关闭
+        emit('confirm', selectedRow.value);
+        emit('update:visible', false);
     }
 };
 </script>
 
 <style scoped>
-:deep(.el-table__row.current-row) {
-    background-color: #f5f7fa !important;
+:deep(.el-table__body .el-table__row.selected-row > td) {
+    background-color: #f0f7ff !important;
+    /* 参考代码的高亮背景色 */
+    color: #1989fa !important;
+    /* 参考代码的高亮文字色 */
 }
 
 :deep(.el-pagination) {

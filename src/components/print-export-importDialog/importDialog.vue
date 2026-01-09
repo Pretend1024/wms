@@ -193,7 +193,6 @@ const beforeUpload = (file) => {
  * 文件上传
  */
 const handleUpload = async (options) => {
-    const loadingInstance = ElLoading.service({ lock: true, text: 'Loading' });
     try {
         fileUrl.value = '';
         fileList.value = [];
@@ -203,8 +202,6 @@ const handleUpload = async (options) => {
     } catch (error) {
         console.error('上传失败:', error);
         smartAlert('文件上传失败', false);
-    } finally {
-        loadingInstance.close();
     }
 };
 
@@ -216,10 +213,6 @@ const commit = async () => {
         smartAlert('请先上传文件', false);
         return;
     }
-
-    // 仅在提交请求时显示 Loading 遮罩
-    const loadingInstance = ElLoading.service({ lock: true, text: 'loading...' });
-
     try {
         const params = {
             fileUrl: fileUrl.value,
@@ -233,9 +226,6 @@ const commit = async () => {
 
         // 1. 调用任务创建接口
         const res = await importJobAddApi(params);
-
-        loadingInstance.close(); // 接口返回后立即关闭遮罩
-
         if (!res.success) {
             smartAlert(res.msg, false);
             return;
@@ -249,7 +239,6 @@ const commit = async () => {
     } catch (error) {
         console.error('导入请求失败:', error);
         smartAlert('导入请求失败', false);
-        loadingInstance.close();
     }
 };
 

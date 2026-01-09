@@ -101,7 +101,8 @@
     </div>
 </template>
 <script setup name="波次创建记录">
-import { getOutstockWaveRecordApi, getOutstockWaveStatusEnumApi, getOutstockWaveTypeEnumApi, startActionApi } from '@/api/outstockApi/wave.js'
+import { getOutstockWaveRecordApi,getOutstockWaveTaskStatusEnumApi, startActionApi } from
+      '@/api/outstockApi/wave.js'
 import updDialog from '../outWaveTask/upd.vue'
 
 import { Close, SemiSelect, Check, Position, Checked } from '@element-plus/icons-vue'
@@ -370,7 +371,7 @@ onMounted(async () => {
     const warehouseRes = await getWhWarehouseApi()
     warehouseOptions.value = warehouseRes.data.map(item => ({ label: item.code + '-' + item.name, value: item.code }))
     // 获取拦截状态
-    const statusRes = await getOutstockWaveStatusEnumApi()
+    const statusRes = await getOutstockWaveTaskStatusEnumApi()
     statusOptions.value = statusRes.data.map(item => ({
         value: item.id,
         label: item.name

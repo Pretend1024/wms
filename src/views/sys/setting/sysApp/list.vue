@@ -20,7 +20,30 @@
                         {{ getButtonText('export') }}
                     </el-button>
                 </template>
-
+                <template #fileUrl="{ row }">
+                    <div style="display: flex; align-items: center;">
+                        <a :href="row.fileUrl" target="_blank"
+                            style="text-decoration: none; display: flex; align-items: center;">
+                            <el-icon
+                                style="margin-right: 5px; cursor: pointer; color: var(--el-color-primary); font-size: 18px;">
+                                <Download />
+                            </el-icon>
+                        </a>
+                        <span>{{ row.fileUrl }}</span>
+                    </div>
+                </template>
+                <template #publishPage="{ row }">
+                    <div style="display: flex; align-items: center;">
+                        <a :href="row.publishPage" target="_blank"
+                            style="text-decoration: none; display: flex; align-items: center;">
+                            <el-icon
+                                style="margin-right: 5px; cursor: pointer; color: var(--el-color-primary); font-size: 18px;">
+                                <Download />
+                            </el-icon>
+                        </a>
+                        <span>{{ row.publishPage }}</span>
+                    </div>
+                </template>
                 <template #customBtn="{ row }">
                     <div style="display: flex;">
                         <div class="cursor-pointer" @click="handleEdit(row)">
@@ -84,8 +107,8 @@ const initValues = ref({ typeId: '', versionNo: '' });
 const columns = ref([
     { label: 'APP类型', prop: 'typeName', width: '120' },
     { label: '版本号', prop: 'versionNo', width: '120' },
-    { label: '安装包下载地址', prop: 'fileUrl', width: '250', showOverflowTooltip: true },
-    { label: '下载页面', prop: 'publishPage', width: '200' },
+    { label: '安装包下载地址', prop: 'fileUrl', width: '250', showOverflowTooltip: true, slot: 'fileUrl' },
+    { label: '下载页面', prop: 'publishPage', width: '200', slot: 'publishPage' },
     { label: '备注', prop: 'remark', width: '200' },
     { label: '创建人', prop: 'createdBy', width: '110' },
     { label: '创建时间', prop: 'createdTime', width: '180', sortable: true },

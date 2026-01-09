@@ -14,7 +14,11 @@
         <el-table ref="tableRef" :data="tableData" border stripe style="width: 100%" :loading="loading" height="400"
             @selection-change="handleSelectionChange">
             <el-table-column type="selection" width="55" align="center" />
-            <el-table-column type="index" label="序号" width="55" align="center" />
+            <el-table-column label="序号" width="55" align="center">
+                <template #default="scope">
+                    {{ (page - 1) * pageSize + scope.$index + 1 }}
+                </template>
+            </el-table-column>
             <el-table-column :show-overflow-tooltip="true" prop="sku" label="Sku" />
             <el-table-column :show-overflow-tooltip="true" prop="barcode" label="条码" />
             <el-table-column :show-overflow-tooltip="true" prop="nameCn" label="中文品名" />

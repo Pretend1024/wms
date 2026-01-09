@@ -193,10 +193,6 @@ const handleDialogConfirm = async () => {
     if (!childFormRef.value) return;
     try {
         await childFormRef.value.validate();
-        const bodyLoading = ElLoading.service({
-            lock: true,
-            text: 'Loading',
-        })
         loading.value = true;
         let res
         if (dialogMode.value === 'upd') {
@@ -211,7 +207,6 @@ const handleDialogConfirm = async () => {
         } else {
             loading.value = false;
         }
-        bodyLoading.close();
     } catch (error) {
         console.error('表单验证失败:', error);
     }

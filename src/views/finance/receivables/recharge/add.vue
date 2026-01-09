@@ -345,11 +345,6 @@ const handleCertificateUpload = async (options) => {
     const currentFile = options.file;
     if (!currentFile) return;
 
-    const loading = ElLoading.service({
-        lock: true,
-        text: '凭证上传中...'
-    });
-
     try {
         // 调用上传接口，指定路径为temp（可根据实际需求调整）
         const res = await uploadApi(currentFile, { path: 'temp' });
@@ -367,8 +362,6 @@ const handleCertificateUpload = async (options) => {
         ElMessage.error(`凭证上传出错：${error.msg || '网络异常'}`);
         formData.value.certificate = '';
         options.onError(error); // 通知上传组件上传失败
-    } finally {
-        loading.close();
     }
 };
 

@@ -1,22 +1,23 @@
 <template>
     <el-dialog v-model="visible" :title="dialogTitle" width="600" align-center destroy-on-close @close="handleClose">
         <el-form :model="formData" :rules="rules" ref="formRef" label-width="105px">
-            <!-- 仓库 -->
-            <el-form-item v-if="type === 'warehouse'" :label="getLabel('warehouseCode')">
-                <el-select v-model="formData.warehouseCode" clearable>
+            <el-form-item v-if="type === 'warehouse'" :label="getLabel('warehouseCode')" prop="warehouseCode">
+                <el-select v-model="formData.warehouseCode" clearable placeholder="请选择仓库" style="width: 100%">
                     <el-option v-for="item in warehouseOptions" :key="item.code" :label="`${item.code}-${item.name}`"
                         :value="item.code" />
                 </el-select>
             </el-form-item>
-            <!-- 渠道 -->
-            <el-form-item v-if="type === 'channel'" :label="getLabel('carrierCode')">
-                <el-select v-model="formData.carrierCode" clearable @change="selectChannel">
+
+            <el-form-item v-if="type === 'channel'" :label="getLabel('carrierCode')" prop="carrierCode">
+                <el-select v-model="formData.carrierCode" clearable @change="selectChannel" placeholder="请选择渠道"
+                    style="width: 100%">
                     <el-option v-for="item in carrierOptions" :key="item.value" :label="item.label"
                         :value="item.value" />
                 </el-select>
             </el-form-item>
-            <el-form-item v-if="type === 'channel'" :label="getLabel('shipwayId')">
-                <el-select v-model="formData.shipwayCode" clearable>
+
+            <el-form-item v-if="type === 'channel'" :label="getLabel('shipwayId')" prop="shipwayCode">
+                <el-select v-model="formData.shipwayCode" clearable placeholder="请选择产品" style="width: 100%">
                     <el-option v-for="item in productOptions" :key="item.id" :label="item.name" :value="item.code" />
                 </el-select>
             </el-form-item>
@@ -32,7 +33,7 @@
 </template>
 
 <script setup>
-import { ref, reactive, computed, onMounted } from 'vue';
+import { ref, reactive, computed, onMounted, nextTick } from 'vue';
 import { getProductShipwayListApi } from '@/api/productApi/shipway.js'
 import { getProductShipwayBrandListApi } from '@/api/productApi/shipway.js'
 import { useI18n } from 'vue-i18n';
@@ -43,7 +44,7 @@ const props = defineProps({
     type: {
         type: String,
         required: true,
-        validator: (value) => ['ware', 'ware2'].includes(value)
+        validator: (value) => ['warehouse', 'channel'].includes(value)
     },
     warehouseOptions: {
         type: Array,
@@ -64,6 +65,19 @@ const formData = reactive({
 // 表单引用
 const formRef = ref(null);
 
+// --- 校验规则 ---
+const rules = reactive({
+    warehouseCode: [
+        { required: true, message: '请选择仓库', trigger: 'change' }
+    ],
+    carrierCode: [
+        { required: true, message: '请选择渠道', trigger: 'change' }
+    ],
+    shipwayCode: [
+        { required: true, message: '请选择产品', trigger: 'change' }
+    ]
+});
+
 // 弹窗显示状态
 const visible = ref(false);
 
@@ -73,11 +87,21 @@ const dialogTitle = computed(() => t(`outstock_order_outOrder_list.${props.type}
 // 打开弹窗方法
 const open = () => {
     visible.value = true;
-    // 重置表单数据
-    formData.warehouseCode = '';
-    formData.shipwayCode = '';
-    formData.carrierCode = '';
-    selectChannel()
+    // 使用 nextTick 确保 DOM 更新后重置表单，这样可以清除校验红字
+    nextTick(() => {
+        if (formRef.value) {
+            formRef.value.resetFields(); // 重置数据和校验状态
+        } else {
+            //以此作为兜底，防止第一次打开 ref 为空
+            formData.warehouseCode = '';
+            formData.shipwayCode = '';
+            formData.carrierCode = '';
+        }
+        // 如果是渠道类型，重置后可能需要清空下拉选项或重新获取
+        if (props.type === 'channel') {
+            productOptions.value = [];
+        }
+    })
 };
 
 // 关闭弹窗方法
@@ -97,8 +121,11 @@ const handleClose = () => {
 };
 
 // 处理确定按钮
-const handleConfirm = () => {
-    formRef.value.validate((valid) => {
+const handleConfirm = async () => {
+    if (!formRef.value) return;
+
+    // 调用校验
+    await formRef.value.validate((valid) => {
         if (valid) {
             // 验证通过，将表单数据传递给父组件
             emit('confirm', { ...formData });
@@ -112,14 +139,25 @@ defineExpose({
     open,
     close
 });
+
 const productOptions = ref([])
 const carrierOptions = ref([])
+
 const selectChannel = async () => {
+    // 切换渠道时，清空已选的产品
+    formData.shipwayCode = '';
+
+    if (!formData.carrierCode) {
+        productOptions.value = [];
+        return;
+    }
+
     const productRes = await getProductShipwayListApi({
         carrierCode: formData.carrierCode,
     })
     productOptions.value = productRes.data
 }
+
 onMounted(async () => {
     // 承运商数据
     const carrierRes = await getProductShipwayBrandListApi()

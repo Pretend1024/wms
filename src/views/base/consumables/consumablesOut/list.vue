@@ -86,7 +86,7 @@
             </template>
         </el-dialog>
         <!-- 导出弹窗 -->
-        <exportDialog ref="exportDialogRef" :selectionRows="selectionRows" :initValues="initValues" :exportType="515">
+        <exportDialog ref="exportDialogRef" :selectionRows="selectionRows" :initValues="initValues" :exportType="105">
         </exportDialog>
     </div>
 </template>
@@ -247,10 +247,6 @@ const handleDialogConfirm = async () => {
     if (!childFormRef.value) return;
     try {
         await childFormRef.value.validate();
-        const bodyLoading = ElLoading.service({
-            lock: true,
-            text: 'Loading',
-        })
         loading.value = true;
         let res;
         if (addData.value.id) {
@@ -265,7 +261,6 @@ const handleDialogConfirm = async () => {
         }
         smartAlert(res.msg, res.success, 1000)
         loading.value = false;
-        bodyLoading.close();
     } catch (error) {
         console.error('表单验证失败:', error);
     }

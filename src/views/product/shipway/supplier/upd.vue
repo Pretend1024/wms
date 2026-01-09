@@ -241,12 +241,6 @@ const handleSubmit = async () => {
         if (valid) {
             try {
                 await channelRef.value?.validateForms();
-
-                const loading = ElLoading.service({
-                    lock: true,
-                    target: ".contentDiv",
-                    text: 'Loading'
-                })
                 supplierAccountAddDTOList.value.forEach(item => {
                     if (item.carrierServiceCode === undefined) {
                         item.carrierServiceCode = '';
@@ -262,7 +256,6 @@ const handleSubmit = async () => {
                     router.push('/product/shipway/supplier/list')
                 }
                 smartAlert(res.msg, res.success, 1000)
-                loading.close()
             }
             catch (e) {
                 console.error(e)
@@ -297,11 +290,7 @@ const handleCascaderChange = async (index) => {
     })
 };
 onMounted(async () => {
-    const loading = ElLoading.service({
-        lock: true,
-        target: ".contentDiv",
-        text: 'Loading'
-    })
+    openMainLoading()
     // 获取状态
     const res = await getProductSupplierStatusEnumApi()
     statusOptions.value = res.data.map(item => ({ label: item.name, value: item.id }))
@@ -327,7 +316,7 @@ onMounted(async () => {
     formData.value = res5.data
     // supplierAccountAddDTOList.value = res3.data.supplierAccountList
     supplierAccountAddDTOList.value = res5.data.supplierChannelList
-    loading.close()
+    closeMainLoading()
 })
 // 选择api接口
 const selectApi = async () => {

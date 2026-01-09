@@ -210,6 +210,7 @@ const hasUnsubmittedLocationRow = computed(() => {
 // 初始化数据
 onMounted(async () => {
     if (!masterId.value) return;
+    openMainLoading()
     loading.value = true;
     try {
         const [detailRes, qualityRes, opTypeRes] = await Promise.all([
@@ -254,6 +255,7 @@ onMounted(async () => {
         }
     } finally {
         loading.value = false;
+        closeMainLoading()
     }
 });
 

@@ -23,8 +23,10 @@
                 @sort-change="handleTableSort">
                 <!-- 在表格上方通过 slot 插入按钮 -->
                 <template #table-buttons>
-                    <el-button type="primary" @click="handleAdd" v-permission="'add'" :icon="Plus">{{ getButtonText('add') }}</el-button>
-                    <el-button type="danger" @click="handleDel" v-permission="'delete'" :icon="Delete">{{ getButtonText('del') }}</el-button>
+                    <el-button type="primary" @click="handleAdd" v-permission="'add'" :icon="Plus">{{
+                        getButtonText('add') }}</el-button>
+                    <el-button type="danger" @click="handleDel" v-permission="'delete'" :icon="Delete">{{
+                        getButtonText('del') }}</el-button>
                 </template>
                 <!-- 使用插槽来自定义列内容，假如我们需要在操作列中添加按钮 -->
                 <template #customBtn="{ row }">
@@ -178,10 +180,6 @@ const handleDialogConfirm = async () => {
     if (!childFormRef.value) return;
     try {
         await childFormRef.value.validate();
-        const bodyLoading = ElLoading.service({
-            lock: true,
-            text: 'Loading',
-        })
         loading.value = true;
         let res;
         if (addData.value.id) {
@@ -196,7 +194,6 @@ const handleDialogConfirm = async () => {
             getList(pagination.value.currentPage, pagination.value.pageSize, orderBy.value);
         }
         loading.value = false;
-        bodyLoading.close();
     } catch (error) {
         console.error('表单验证失败:', error);
     }

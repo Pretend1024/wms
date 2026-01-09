@@ -82,14 +82,10 @@ export const getOrderInOrderInReceiptApi = createPostRequestWithQuery('/instock/
 // 获取上架记录
 export const getOrderInOrderInShelfApi = createPostRequestWithQuery('/instock/op/inShelf/listByInOrderId')
 
-// 获取日志
-export const getOrderInOrderLogApi = createPostRequestWithQuery('/sys/log/opLog/listByObjId')
-
 // 获取SKU收货上架核对
 export const getOrderInOrderSkuCheckApi = createPostRequestWithQuery('/instock/order/inOrderSku/listReceiptShelfGpSku')
 // 取消收货
 export const updOrderInOrderCancelInReceiptByIdApi = createPostRequestWithQuery('/instock/order/inOrder/cancelInReceiptById')
-
 
 // -------------------------------------------------------收货
 // 获取订单id
@@ -116,7 +112,6 @@ export const addOrderInReceiptApi = (data) => {
 export const updOrderInReceiptUpdateQtyByIdApi = (data) => {
     return http.post('/instock/op/inReceipt/updateQtyById', { ...data }, { headers: { 'loading': true } })
 }
-
 
 // -------------------------------------------------------上架
 // 获取上架方式
@@ -185,6 +180,3 @@ export const getInstockInAppointmentCreateWayEnumApi = () => {
 export const updInstockInAppointmentStatusApi = createPostRequestWithQuery('/instock/appointment/inAppointment/updateStatus')
 // 预约签到
 export const checkInInstockInAppointmentApi = createPostRequestWithQuery('/instock/appointment/inAppointment/checkIn')
-
-
-

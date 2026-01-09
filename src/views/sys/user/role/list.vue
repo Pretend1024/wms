@@ -173,17 +173,12 @@ const handleSetRoleMenu = (row) => {
 }
 // 授权确定
 const handleSetRoleMenuConfirm = async () => {
-    const bodyLoading = ElLoading.service({
-        lock: true,
-        text: 'Loading',
-    })
     const menuIds = await roleDialogRef.value.handleSelection()
     // console.log('授权菜单：', menuIds);
     const res = await api.setUserRoleMenuApi({ roleId: addData.value.id, menuIds: menuIds })
     smartAlert(res.msg, res.success, 1000);
     if (res.success) {
         setRoleDialogVisible.value = false;
-        bodyLoading.close();
     }
 }
 

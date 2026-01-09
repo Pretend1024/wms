@@ -242,10 +242,6 @@ const roleDialogRef = ref(null)
 const isBatch = ref(false)
 // 授权确认
 const handleSetRoleMenuConfirm = async () => {
-    const bodyLoading = ElLoading.service({
-        lock: true,
-        text: 'Loading',
-    })
     let res
     const roleIds = await roleDialogRef.value.handleSelection()
     if (!isBatch.value) {
@@ -267,7 +263,6 @@ const handleSetRoleMenuConfirm = async () => {
     }
     if (res.success) {
         setRoleDialogVisible.value = false;
-        bodyLoading.close();
         selectionRows.value = [];
         getList(pagination.value.currentPage, pagination.value.pageSize, orderBy.value)
     }
@@ -309,10 +304,6 @@ const handleLock = async () => {
         smartAlert('只能选择一条数据！', true, 1000);
         return
     }
-    const bodyLoading = ElLoading.service({
-        lock: true,
-        text: 'Loading',
-    })
     let res
     res = await setUserUserLockApi({
         id: selectionRows.value[0].id,
@@ -323,7 +314,6 @@ const handleLock = async () => {
         selectionRows.value = []
         selection.value = {}
     }
-    bodyLoading.close()
 }
 // 解锁
 const handleUnlock = async () => {
@@ -335,10 +325,6 @@ const handleUnlock = async () => {
         smartAlert('只能选择一条数据！', true, 1000);
         return
     }
-    const bodyLoading = ElLoading.service({
-        lock: true,
-        text: 'Loading',
-    })
     let res
     res = await setUserUserUnLockApi({
         id: selectionRows.value[0].id,
@@ -349,7 +335,6 @@ const handleUnlock = async () => {
         selectionRows.value = []
         selection.value = {}
     }
-    bodyLoading.close()
 }
 
 // 获取列表

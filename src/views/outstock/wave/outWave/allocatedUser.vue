@@ -1,5 +1,5 @@
 <template>
-    <el-dialog title="选择拣货人" v-model="dialogVisible" width="950" @open="handleDialogOpen" destroy-on-close>
+    <el-dialog title="选择拣货人" v-model="dialogVisible" width="950" @open="handleDialogOpen" destroy-on-close top="5vh">
         <!-- 搜索条件：仅搜索用户名 -->
         <hydFilterBox ref="hydFilterBoxRef" :form-items="formConfig" :initial-value="initValues" @search="handleSearch"
             @reset="handleReset">
@@ -14,9 +14,10 @@
             </template>
         </hydFilterBox>
 
-        <!-- 表格：单选限制 -->
+        <!-- 表格：仅新增 高亮相关配置（row-class-name + row-key），其他原有属性完全不变 -->
         <el-table ref="tableRef" :data="tableData" border stripe style="width: 100%" :loading="loading" height="400"
-            @row-click="handleSelectionChange" highlight-current-row>
+            @row-click="handleSelectionChange" highlight-current-row :row-class-name="tableRowClassName"
+            row-key="userCode">
             <el-table-column type="index" label="序号" width="55" align="center" />
             <el-table-column :show-overflow-tooltip="true" prop="userCode" label="用户代码" />
             <el-table-column :show-overflow-tooltip="true" prop="name" label="姓名" width="120" />
@@ -72,6 +73,9 @@ const dialogVisible = ref(false);
 const initBusinessIds = ref([]);
 const selectedRow = ref(null);
 
+//高亮唯一标识
+const selectedRowId = ref('');
+
 // 表格状态
 const tableRef = ref(null);
 const tableData = shallowRef([]);
@@ -88,7 +92,15 @@ const formConfig = ref([
 // 选择行
 const handleSelectionChange = (selection) => {
     selectedRow.value = selection
-}
+    // 新增：存储选中行唯一标识（仅新增这一行，不修改原有逻辑）
+    selectedRowId.value = selection?.userCode || `${selection?.name}-${selection?.num}-${selection?.positionName}`;
+};
+
+// 新增：高亮核心方法（仅新增，无任何原有方法修改）
+const tableRowClassName = ({ row }) => {
+    const rowUniqueId = row.userCode || `${row.name}-${row.num}-${row.positionName}`;
+    return rowUniqueId === selectedRowId.value ? 'selected-row' : '';
+};
 
 // 搜索初始值
 const initValues = ref({
@@ -110,6 +122,14 @@ async function handleDialogOpen() {
         name: "",
         userCode: ""
     };
+    selectedRow.value = null;
+    selectedRowId.value = '';
+
+    nextTick(() => {
+        if (tableRef.value) {
+            tableRef.value.setCurrentRow(null);
+        }
+    });
 }
 
 // 请求用户列表
@@ -120,7 +140,9 @@ async function getUsersList() {
             ...initValues.value,
             page: page.value,
             pageSize: pageSize.value,
-            orgId: initValues.value.orgId ? initValues.value.orgId : null
+            orgId: initValues.value.orgId ? initValues.value.orgId : null,
+            statusId: 10,
+            userStatusId: 10
         });
 
         const res = await getOrgEmployeeListApi(reqParams);
@@ -147,7 +169,6 @@ async function handleSelect() {
     }
     const res = await allocatePickingUserApi(initBusinessIds.value, { pickingUserCode: selectedRow.value.userCode });
     if (res.success) {
-
         delData.value = res.data.map(item => ({
             code: item.code,
             msg: item.data,
@@ -235,5 +256,11 @@ defineExpose({
 
 :deep(.el-form-item) {
     margin-right: 16px;
+}
+
+/* 高亮样式*/
+:deep(.el-table__body .el-table__row.selected-row > td) {
+    background-color: #f0f7ff !important;
+    color: #1989fa !important;
 }
 </style>

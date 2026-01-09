@@ -233,7 +233,7 @@
         </el-dialog>
         <!-- 导出弹窗 -->
         <exportDialog ref="exportDialogRef" :selectionRows="selectionRows" :initValues="initValues"
-            :extraParams="{ view }" :exportType="300">
+            :extraParams="{ view }" :exportType="301">
         </exportDialog>
         <!-- 取消 -->
         <batchOperationn :dialogTitle="'操作结果'" :isVisible="delDialogVisible" :tableData="delData" :nameField="'id'"

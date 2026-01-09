@@ -75,15 +75,31 @@ export const getReturnOrderDestroyTypeEnumApi = () => {
     return http.post('/instock/returned/returnClaim/destroyTypeEnum')
 }
 // 验证认领
-export const verifyReturnOrderClaimApi = createPostRequestWithQuery('/instock/returned/returnClaim/claimByTrackingNos')
+export const verifyReturnOrderClaimApi = createPostRequestWithQuery('/instock/returned/returnClaim/adminClaim')
 
 // 认领销毁
 export const destroyReturnOrderClaimApi = createPostRequestWithQuery('/instock/returned/returnClaim/destroy')
-// 销毁类型枚举
+// 认领状态枚举
 export const getReturnOrderClaimStatusEnumApi = () => {
+    return http.post('/instock/returned/returnClaim/statusEnum')
+}
+// 销毁类型枚举
+export const getReturnOrderClaimDestroyTypeEnumApi = () => {
     return http.post('/instock/returned/returnClaim/destroyTypeEnum')
 }
-// 认领状态枚举
-export const getReturnOrderClaimDestroyTypeEnumApi = () => {
-    return http.post('/instock/returned/returnClaim/statusEnum')
+
+// 退件处理详情
+export const getReturnOrderProcessApi = createPostRequestWithQuery('/instock/return/returnOrder/processPage')
+// 退件处理保存
+export const saveReturnOrderProcessApi = (data) => {
+    return http.post('/instock/returned/returnProcess/add', data, { headers: { 'loading': true } })
+}
+// 退件处理方式枚举
+export const getReturnOrderProcessWayEnumApi = () => {
+    return http.post('/instock/returned/returnProcess/wayEnum')
+}
+
+// 退货签收
+export const returnSignApi = (data) => {
+    return http.post('/instock/return/returnParcel/returnSign', { ...data }, { headers: { 'loading': true } })
 }

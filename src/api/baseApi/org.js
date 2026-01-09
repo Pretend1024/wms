@@ -10,17 +10,7 @@ export const addPositionDataApi = (data) => {
     return http.post('/base/org/position/add', { ...data }, { headers: { 'loading': true } })
 }
 // 删除岗位
-export const delPositionDataApi = (queryParams) => {
-    const queryString = Object.entries(queryParams)
-        .map(([key, value]) => `${encodeURIComponent(key)}=${encodeURIComponent(value)}`)
-        .join('&');
-
-    const url = queryString
-        ? `/base/org/position/deleteById?${queryString}`
-        : '/base/org/position/deleteById';
-
-    return http.post(url);
-};
+export const delPositionDataApi = createPostRequestWithQuery('/base/org/position/deleteById');
 // 修改岗位
 export const updatePositionDataApi = (data) => {
     return http.post('/base/org/position/updateById', { ...data }, { headers: { 'loading': true } })
@@ -44,17 +34,7 @@ export const updateOrganizationDataApi = (data) => {
     return http.post('/base/org/organization/updateById', { ...data }, { headers: { 'loading': true } })
 }
 // 删除公司部门信息
-export const delOrganizationDataApi = (queryParams) => {
-    const queryString = Object.entries(queryParams)
-        .map(([key, value]) => `${encodeURIComponent(key)}=${encodeURIComponent(value)}`)
-        .join('&');
-
-    const url = queryString
-        ? `/base/org/organization/deleteById?${queryString}`
-        : '/base/org/organization/deleteById';
-
-    return http.post(url);
-};
+export const delOrganizationDataApi = createPostRequestWithQuery('/base/org/organization/deleteById');
 // ---------------------------------------------------------员工
 // 获取员工状态
 export const getStatusEnumApi = () => {
@@ -68,17 +48,7 @@ export const updEmployeeDataApi = (data) => {
 export const getOrgEmployeeListApi = (data) => {
     return http.post('/base/org/employee/page', { ...data })
 }
-export const getOrgEmployeeByIdApi = (queryParams) => {
-    const queryString = Object.entries(queryParams)
-        .map(([key, value]) => `${encodeURIComponent(key)}=${encodeURIComponent(value)}`)
-        .join('&');
-
-    const url = queryString
-        ? `/base/org/employee/getById?${queryString}`
-        : '/base/org/employee/getById';
-
-    return http.post(url);
-}
+export const getOrgEmployeeByIdApi = createPostRequestWithQuery('/base/org/employee/getById')
 // 权限范围枚举
 export const getUserDataPermScopeEnumApi = () => {
     return http.post('/sys/user/userDataPerm/scopeEnum')
@@ -100,21 +70,10 @@ export const getOrgListCompanyApi = () => {
     return http.post('/base/org/organization/listCompany')
 }
 // 获取部门
-export const getOrgListDepartmentApi = (queryParams) => {
-    const queryString = Object.entries(queryParams)
-        .map(([key, value]) => `${encodeURIComponent(key)}=${encodeURIComponent(value)}`)
-        .join('&');
-
-    const url = queryString
-        ? `/base/org/organization/listDepartmentByParentId?${queryString}`
-        : '/base/org/organization/listDepartmentByParentId';
-
-    return http.post(url);
-}
+export const getOrgListDepartmentApi = createPostRequestWithQuery('/base/org/organization/listDepartmentByParentId')
 // 添加员工
 export const addOrgEmployeeApi = (data) => {
     return http.post('/base/org/employee/add', { ...data }, { headers: { 'loading': true } })
 }
 // 员工离职
 export const leaveOrgEmployeeApi = createPostRequestWithQuery('/base/org/employee/leaveJob')
-

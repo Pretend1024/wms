@@ -28,7 +28,8 @@
 </template>
 
 <script setup>
-import { ref, defineProps, defineEmits, computed } from "vue";
+// 补充导入shallowRef（原代码遗漏）
+import { ref, defineProps, defineEmits, computed, shallowRef } from "vue";
 import { getBasicAddressPageApi } from '@/api/baseApi/basic.js'
 import { trimObjectStrings } from "@/utils/genericMethods.js";
 
@@ -52,10 +53,12 @@ const total = ref(0); // 总条数
 const page = ref(1); // 当前页码
 const pageSize = ref(50); // 每页条数
 const selectedRow = ref(null); // 当前选中的行
+const selectedRowId = ref(''); // 用唯一标识存储选中状态，避免引用丢失
 
 // 弹窗打开时初始化
 function handleDialogOpen() {
-    selectedRow.value = null; // 清空选中行
+    selectedRow.value = null;
+    selectedRowId.value = ''; // 重置选中标识
     page.value = 1; // 重置到第一页
     getList(); // 加载数据
 }
@@ -83,9 +86,12 @@ async function getList() {
     }
 }
 
-// 处理行点击事件
+// 处理行点击事件 - 存储行数据和唯一标识（优先用id，无id则拼接唯一字段）
 function handleRowClick(row) {
     selectedRow.value = row;
+    // 优先使用行唯一ID（根据你的接口字段调整，如id/addressId等），无唯一ID则拼接多字段确保唯一
+    selectedRowId.value = row.id || `${row.name}-${row.phoneNumber1}-${row.addressLine1}`;
+    console.log("选中行：", selectedRow.value, "选中标识：", selectedRowId.value); // 方便调试查看是否触发
 }
 
 // 处理行双击事件
@@ -94,9 +100,11 @@ function handleRowDblClick(row) {
     dialogVisible.value = false;
 }
 
-// 表格行样式，用于高亮选中行
+// 表格行样式 - 用唯一标识匹配，替代引用比较，解决引用失效问题
 function tableRowClassName({ row }) {
-    return row === selectedRow.value ? 'selected-row' : '';
+    // 同样用唯一标识判断，和行点击时保持一致
+    const rowId = row.id || `${row.name}-${row.phoneNumber1}-${row.addressLine1}`;
+    return rowId === selectedRowId.value ? 'selected-row' : '';
 }
 
 // 确认选择
@@ -127,8 +135,8 @@ function getButtonText(type) {
     width: 175px !important;
 }
 
-/* 选中行的样式 */
-:deep(.selected-row) {
+:deep(.el-table__body .el-table__row.selected-row > td) {
     background-color: #f0f7ff !important;
+    color: #1989fa !important;
 }
 </style>

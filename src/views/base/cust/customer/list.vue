@@ -50,6 +50,15 @@
                     <el-col>
                         <selectInput :options="way" :formData="formData" selectKey="way"></selectInput>
                     </el-col>
+                    <el-col>
+                        <el-form-item :label="getLabel('authStatusId')">
+                            <el-select v-model="formData.authStatus" :placeholder="getPlaceholder('authStatusId')"
+                                clearable>
+                                <el-option v-for="item in authStatusOptions" :key="item.id" :label="item.name"
+                                    :value="item.id" />
+                            </el-select>
+                        </el-form-item>
+                    </el-col>
                 </template>
             </hydFilterBox>
         </div>
@@ -84,9 +93,9 @@
                                     <el-dropdown-item @click="handleLink(row)">{{ getButtonText('connect') }}
                                     </el-dropdown-item>
                                     <el-dropdown-item @click="resetPassword(row)">{{ getButtonText('resetPassword')
-                                        }}</el-dropdown-item>
+                                    }}</el-dropdown-item>
                                     <el-dropdown-item @click="lookPassword(row)">{{ getButtonText('viewPassword')
-                                        }}</el-dropdown-item>
+                                    }}</el-dropdown-item>
                                 </el-dropdown-menu>
                             </template>
                         </el-dropdown>
@@ -104,12 +113,15 @@
                 <template #statusName="{ row }">
                     <span :style="{ color: row.statusId == 10 ? 'green' : 'red' }">{{ row.statusName }}</span>
                 </template>
+                <template #authStatus="{ row }">
+                    <span :style="{ color: row.authStatus == 20 ? 'green' : 'red' }">{{ row.authStatusName }}</span>
+                </template>
                 <template #userStatusName="{ row }">
                     <span :style="{ color: row.userStatusId == 10 ? 'green' : 'red' }">{{ row.userStatusName }}</span>
                 </template>
                 <template #isCompany="{ row }">
                     <span :style="{ color: row.isCompany ? 'green' : 'red' }">{{ row.isCompany ? '是' : '否'
-                    }}</span>
+                        }}</span>
                 </template>
             </hydTable>
         </div>
@@ -133,7 +145,7 @@ import { useI18n } from 'vue-i18n';
 const { t } = useI18n();
 import { useRefreshStore } from '@/store/refresh.js'
 const refreshStore = useRefreshStore()
-import { getCustomerListApi, getCustomerStatusEnumApi, getListSalesUserEnumApi, getListFinancialUserEnumApi, getCustomerApiList } from '@/api/baseApi/cust.js'
+import { getCustomerListApi, getCustomerStatusEnumApi, getListSalesUserEnumApi, getListFinancialUserEnumApi, getCustomerApiList, getCustomerAuthStatusEnumApi } from '@/api/baseApi/cust.js'
 // 搜索表单配置项------------------------------------------------
 // 配置表单项，使用所有支持的类型
 const formConfig = ref([
@@ -193,6 +205,7 @@ const columns = ref([
     { label: '主用户状态', prop: 'userStatusName', width: '125', sortable: true, sortAlias: 'userStatusId', slot: 'userStatusName' },
     { label: '等级', prop: 'levelName', width: '115', sortable: true },
     { label: '状态', prop: 'statusName', width: '100', slot: 'statusName', sortable: true },
+    { label: '实名状态', prop: 'authStatusName', width: '100', slot: 'authStatus', sortable: true },
     { label: '财务', prop: 'financialUserCode', width: '155' },
     { label: '销售', prop: 'salesUserCode', width: '125' },
     { label: '联系人', prop: 'contact', width: '140' },
@@ -385,11 +398,16 @@ const handleCascaderChange = async (e) => {
 };
 // 状态数据
 const statusOptions = ref([])
+// 认证类型
+const authStatusOptions = ref([])
 
 onMounted(async () => {
     // 获取状态菜单
     const res = await getCustomerStatusEnumApi()
     statusOptions.value = res.data.map(item => ({ label: item.name, value: item.id }))
+    // 实名状态
+    const authStatusRes = await getCustomerAuthStatusEnumApi()
+    authStatusOptions.value = authStatusRes.data
     // 获取公司数据
     const companyRes = await getOrgListCompanyApi();
     // 处理公司数据

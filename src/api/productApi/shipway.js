@@ -1,5 +1,6 @@
 import http from '@/utils/request/request'
 import { createPostRequestWithQuery } from '@/utils/request/createPostRequestWithQuery'
+
 // ------------------------------------------------------------服务商
 // 获取服务商
 export const getProductSupplierApi = (data) => {
@@ -54,7 +55,6 @@ export const updProductSupplierChannelApi = (data) => {
 // api获取json
 export const getProductSupplierApiJsonApi = createPostRequestWithQuery('/product/shipway/supplier/apiConfigTemplate')
 
-
 // -------------------------------------------------------------------物流产品
 // 获取物流产品
 export const getProductShipwayPageApi = (data) => {
@@ -103,7 +103,6 @@ export const updProductShipwayApi = (data) => {
 // 删除物流产品
 export const setProductShipwayShipwayUpdateStatusApi = createPostRequestWithQuery('/product/shipway/shipway/updateStatus')
 
-
 // -------------------------------------------------------------承运商
 // 获取承运商
 export const getProductShipwayBrandPageApi = (data) => {
@@ -119,7 +118,7 @@ export const getProductShipwayBrandStatusEnumApi = () => {
 }
 // 新增承运商
 export const addProductShipwayBrandApi = (data) => {
-    return http.post('/product/shipway/carrier/add', data)
+    return http.post('/product/shipway/carrier/add', data, { headers: { 'loading': true } })
 }
 // 获取承运商详情
 export const getProductShipwayBrandInfoApi = createPostRequestWithQuery('/product/shipway/carrier/getVoById')
@@ -184,7 +183,6 @@ export const updProductShipwayRegionDetailApi = (data) => {
 // 删除明细
 export const delProductShipwayRegionDetailApi = createPostRequestWithQuery('/product/price/regionDetail/deleteById')
 
-
 // -------------------------------------------------------------偏远库
 // 获取偏远库
 export const getProductShipwayRemoteApi = (data) => {
@@ -203,8 +201,6 @@ export const updProductShipwayRemoteApi = (data) => {
 export const getProductShipwayRemoteDetailApi = (data) => {
     return http.post('/product/price/remoteDetail/page', data)
 }
-// export const getProductShipwayRemoteDetailApi = createPostRequestWithQuery('/product/price/remoteDetail/getById')
-
 
 // 添加偏远库明细
 export const addProductShipwayRemoteDetailApi = (data) => {
@@ -233,7 +229,6 @@ export const getProductShipwayRegionProjectSearchApi = (data) => {
     return http.post('/product/price/regionProject/search', data)
 }
 
-
 // -------------------------------------------------------------燃油模板
 // 获取燃油模板
 export const getProductShipwayFuelApi = (data) => {
@@ -252,7 +247,6 @@ export const getProductShipwayFuelDetailApi = createPostRequestWithQuery('/produ
 
 // 删除燃油模板
 export const delProductShipwayFuelApi = createPostRequestWithQuery('/product/price/fuel/deleteById')
-
 
 // -------------------------------------------------------------回邮地址
 // 获取回邮地址
@@ -275,9 +269,7 @@ export const getProductShipwayConfigTypeEnumApi = () => {
     return http.post('/product/shipway/shipwaySender/configTypeEnum')
 }
 
-
 // -------------------------------------------------------------轨迹状态配置
-
 // 获取轨迹配置
 export const getBasicTraceStatusPageApi = (data) => {
     return http.post('/product/shipway/traceStatus/page', { ...data })
@@ -298,7 +290,7 @@ export const getBasicTraceStatusByIdApi = createPostRequestWithQuery('/product/s
 export const getBasicTraceStatusConditionTypeEnumApi = () => {
     return http.post('/product/shipway/traceStatus/conditionTypeEnum')
 }
-// 轨迹配置条件枚举
+// 轨迹配置逻辑枚举
 export const getBasicTraceStatusLogicTypeEnumApi = () => {
     return http.post('/product/shipway/traceStatus/logicTypeEnum')
 }
@@ -308,7 +300,6 @@ export const getBasicTraceStatusRefreshCacheApi = () => {
 }
 // 轨迹测试
 export const getBasicTraceStatusTestApi = createPostRequestWithQuery('/outstock/trace/outTrace/testTraceConfig')
-
 
 // ---------------------------------------------------------计费项目
 // 获取计费项目
@@ -326,30 +317,112 @@ export const updProductShipwayPriceItemApi = (data) => {
 // 删除计费项目
 export const delProductShipwayPriceItemApi = createPostRequestWithQuery('/product/price/priceItem/deleteById')
 
-// 费用单位
-export const getFeeUnitTypeEnumApi = createPostRequestWithQuery('product/price/priceItem/feeUnitTypeEnum')
-// 价格维度
+// 费用单位枚举
+export const getFeeUnitTypeEnumApi = createPostRequestWithQuery('/product/price/priceItem/feeUnitTypeEnum')
+// 价格维度枚举
 export const getFeePriceDimensionEnumApi = () => {
-    return http.post('product/price/priceItem/priceDimensionEnum')
+    return http.post('/product/price/priceItem/priceDimensionEnum')
 }
 
+// ---------------------------------------------------------报价方案
+// 报价方案状态枚举
+export const getPriceProjectStatusEnumApi = () => {
+    return http.post('/product/price/priceProject/statusEnum')
+}
+// 获取报价方案列表
+export const getPriceProjectPageApi = (data) => {
+    return http.post('/product/price/priceProject/page', data)
+}
+// 启用报价方案
+export const activatePriceProjectByIdApi = createPostRequestWithQuery('/product/price/priceProject/activateById')
+// 停用报价方案
+export const stopPriceProjectByIdApi = createPostRequestWithQuery('/product/price/priceProject/stopById')
+// 删除报价方案
+export const deletePriceProjectByIdApi = createPostRequestWithQuery('/product/price/priceProject/deleteById')
+
+// 提交报价方案基础信息
+export const addPriceProjectApi = (data) => {
+    return http.post('/product/price/priceProject/add', data, { headers: { 'loading': true } })
+}
+// 修改报价方案基础信息
+export const updatePriceProjectApi = (data) => {
+    return http.post('/product/price/priceProject/updateById', data, { headers: { 'loading': true } })
+}
+
+// 查询物流渠道报价
+export const getPriceShipwayListByProjectIdApi = createPostRequestWithQuery('/product/price/priceShipway/listByProjectId')
+// 新增/编辑渠道报价
+export const addOrUpdPriceShipwayApi = (data) => {
+    return http.post('/product/price/priceShipway/addOrUpd', data, { headers: { 'loading': true } })
+}
+// 删除渠道报价
+export const delPriceShipwayByIdApi = createPostRequestWithQuery('/product/price/priceShipway/deleteById')
+
+// 获取报价方案关联分区
+export const getPriceRegionDetailListByProjectIdApi = createPostRequestWithQuery('/product/price/regionDetail/listByProjectId')
+
+// 分区模板枚举
+export const getPriceRegionProjectListApi = () => {
+    return http.post('/product/price/regionProject/list', {})
+}
+// 偏远库枚举
+export const getPriceRemoteListApi = () => {
+    return http.post('/product/price/remote/list', {})
+}
+// 燃油模板枚举
+export const getPriceFuelListApi = () => {
+    return http.post('/product/price/fuel/list', {})
+}
+// 体积重系数枚举
+export const getPriceProjectVolumeModeEnumApi = () => {
+    return http.post('/product/price/priceProject/volumeModeEnum')
+}
+// 分泡法则枚举
+export const getPriceProjectBulkWeightRuleEnumApi = () => {
+    return http.post('/product/price/priceProject/bulkWeightRuleEnum')
+}
+// 免抛规则枚举
+export const getPriceProjectBulkWeightFreeTypeEnumApi = () => {
+    return http.post('/product/price/priceProject/bulkWeightFreeTypeEnum')
+}
+// 计重规则枚举
+export const getPriceProjectBillingWeightRuleEnumApi = () => {
+    return http.post('/product/price/priceProject/billingWeightRuleEnum')
+}
+// 计费重维度枚举
+export const getPriceProjectBillingWeightCountTypeEnumApi = () => {
+    return http.post('/product/price/priceProject/billingWeightCountTypeEnum')
+}
+// 计费重取整枚举
+export const getPriceProjectWeightRoundRuleEnumApi = () => {
+    return http.post('/product/price/priceProject/weightRoundRuleEnum')
+}
+
+// 查询操作费报价
+export const getPriceWhOpListByProjectIdApi = createPostRequestWithQuery('/product/price/priceWhOp/listByProjectId')
+// 操作费报价新增/编辑
+export const addOrUpdPriceWhOpApi = (data) => {
+    return http.post('/product/price/priceWhOp/addOrUpd', data, { headers: { 'loading': true } })
+}
+// 删除操作费报价
+export const delPriceWhOpByIdApi = createPostRequestWithQuery('/product/price/priceWhOp/deleteById')
 
 // ---------------------------------------------------------地址校验
-// 获取地址校验
+// 获取地址校验配置
 export const getAddressValidPageApi = (data) => {
     return http.post('/product/shipway/addressValid/page', data)
 }
-// 添加地址校验
+// 添加地址校验配置
 export const addAddressValidApi = (data) => {
     return http.post('/product/shipway/addressValid/add', data, { headers: { 'loading': true } })
 }
-// 编辑地址校验
+// 编辑地址校验配置
 export const updAddressValidApi = (data) => {
     return http.post('/product/shipway/addressValid/updateById', data, { headers: { 'loading': true } })
 }
-// 地址校验详情
+// 地址校验配置详情
 export const getAddressValidByIdApi = createPostRequestWithQuery('/product/shipway/addressValid/getById')
-// 删除地址校验
+// 删除地址校验配置
 export const delAddressValidApi = createPostRequestWithQuery('/product/shipway/addressValid/deleteById')
 // 校验配置状态枚举
 export const getAddressValidStatusEnumApi = () => {
@@ -359,14 +432,14 @@ export const getAddressValidStatusEnumApi = () => {
 export const getAddressValidateTypeEnumApi = () => {
     return http.post('/product/shipway/addressValid/typeEnum')
 }
-// 校验地址字段
+// 校验地址字段枚举
 export const getAddressValidateFieldNameEnumApi = () => {
     return http.post('/product/shipway/addressValid/fieldNameEnum')
 }
 // 禁用/启用地址校验配置
 export const updAddressValidStatusApi = createPostRequestWithQuery('/product/shipway/addressValid/updateStatus')
 
-// 地址测试
+// 地址校验测试
 export const getAddressValidTestApi = (data) => {
     return http.post('/product/shipway/addressValid/test', data)
 }

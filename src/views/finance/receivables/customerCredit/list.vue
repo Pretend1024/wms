@@ -103,7 +103,7 @@
             </template>
         </el-dialog>
         <!-- 导出弹窗 -->
-        <exportDialog ref="exportDialogRef" :selectionRows="selectionRows" :initValues="initValues" :exportType="604">
+        <exportDialog ref="exportDialogRef" :selectionRows="selectionRows" :initValues="initValues" :exportType="704">
         </exportDialog>
         <batchOperationn :dialogTitle="'操作结果'" :isVisible="delDialogVisible" :tableData="delData" :nameField="'id'"
             :nameLabel="'客户代码(币种)'" @close="delColse" :promptMessage="promptMessage" />
@@ -283,7 +283,6 @@ const handleDialogCancel = () => {
 const handleDialogConfirm = async () => {
     if (!childFormRef.value) return;
 
-    let bodyLoading = null;
     try {
         // 1. 子组件表单验证
         await childFormRef.value.validate();
@@ -295,7 +294,6 @@ const handleDialogConfirm = async () => {
         }
 
         // 3. 显示加载状态
-        bodyLoading = ElLoading.service({ lock: true, text: 'Loading' });
         loading.value = true;
 
         // 4. 调用新增/编辑接口（根据formData是否有id判断）
@@ -328,7 +326,6 @@ const handleDialogConfirm = async () => {
 
     } finally {
         // 确保加载状态关闭
-        if (bodyLoading) bodyLoading.close();
         loading.value = false;
     }
 };
@@ -597,7 +594,7 @@ onMounted(async () => {
     const nationRes = await getCurrencyListApi();
     nationOptions.value = nationRes.data.map(item => ({
         value: item.currency,
-        label: item.remark
+        label: item.currencyName
     }))
     formConfig.value[0].options = nationOptions.value;
     // 获取授信类型

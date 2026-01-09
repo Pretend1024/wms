@@ -4,24 +4,16 @@ import { createPostRequestWithQuery } from '@/utils/request/createPostRequestWit
 // 文件上传
 export const uploadApi = (file, queryParams = {}) => {
     const formData = new FormData();
-    formData.append('file', file); // 添加文件到formData
+    formData.append('file', file);
 
-    // 处理query参数
-    const queryString = Object.keys(queryParams)
-        .map(key => `${encodeURIComponent(key)}=${encodeURIComponent(queryParams[key])}`)
-        .join('&');
-
-    const url = queryString
-        ? `/base/common/upload/upload?${queryString}`
-        : '/base/common/upload/upload';
-
-    return http.post(url, formData, {
+    return http.post('/base/common/upload/upload', formData, {
+        params: queryParams,
         headers: {
-            'Content-Type': 'multipart/form-data' // 覆盖默认JSON格式
+            'Content-Type': 'multipart/form-data',
+            'loading': true
         }
     });
 };
-
 // 获取处理类型
 export const getImportHandlerWayEnumApi = () => {
     return http.post('/base/common/enums/importHandlerWayEnum')
@@ -37,17 +29,7 @@ export const getCurrencyListApi = () => {
 }
 
 // 格式
-export const getTemplateApi = (queryParams) => {
-    const queryString = Object.entries(queryParams)
-        .map(([key, value]) => `${encodeURIComponent(key)}=${encodeURIComponent(value)}`)
-        .join('&');
-
-    const url = queryString
-        ? `/base/basic/template/listTemplate?${queryString}`
-        : '/base/basic/template/listTemplate';
-
-    return http.post(url);
-}
+export const getTemplateApi = createPostRequestWithQuery('/base/basic/template/listTemplate')
 
 // 获取操作日志
 export const getOpLogApi = createPostRequestWithQuery('/sys/log/opLog/listByObjId')

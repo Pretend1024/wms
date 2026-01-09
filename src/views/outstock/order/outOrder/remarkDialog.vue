@@ -2,8 +2,8 @@
     <el-dialog v-model="visible" :title="dialogTitle" width="800px" align-center destroy-on-close @close="handleClose">
         <!-- 输入区域和保存按钮 -->
         <div class="input-container mb-4">
-            <el-form :model="formData" ref="formRef" label-width="85px" inline>
-                <el-form-item :label="getLabel('remark')" class="input-item">
+            <el-form :model="formData" ref="formRef" label-width="85px" inline :rules="rules">
+                <el-form-item :label="getLabel('remark')" class="input-item" prop="remark">
                     <el-input type='textarea' v-model="formData.remark" :placeholder="getPlaceholder('remark')"
                         :rows="3" style="width: 400px;" />
                 </el-form-item>
@@ -18,7 +18,11 @@
         <!-- 表格区域 -->
         <el-table v-loading="loading" :data="tableData" stripe border style="width: 100%;" height="300"
             :row-key="(row) => row.id">
-            <el-table-column type="index" label="序号" width="60" align="center" />
+            <el-table-column label="序号" width="55" align="center">
+                <template #default="scope">
+                    {{ (pagination.currentPage - 1) * pagination.pageSize + scope.$index + 1 }}
+                </template>
+            </el-table-column>
             <el-table-column prop="remark" label="备注内容" min-width="200" />
             <el-table-column prop="createdTime" label="备注时间" width="180" />
             <el-table-column prop="createdBy" label="备注人" width="120" />
@@ -45,6 +49,7 @@ import { getOutstockOrderRemarkApi, addOutstockOrderRemarkApi, deleteOutstockOrd
 import { useI18n } from 'vue-i18n';
 import { ElMessageBox, ElMessage } from 'element-plus';
 import { smartAlert } from '@/utils/genericMethods.js'
+import { getPlaceholder } from '@/utils/i18n/i18nLabels.js'
 
 const { t } = useI18n();
 
@@ -58,6 +63,13 @@ const formData = reactive({
 
 // 表单引用
 const formRef = ref(null);
+
+// 表单验证规则
+const rules = reactive({
+    remark: [
+        { required: true, message: getPlaceholder('remark'), trigger: 'blur' },
+    ]
+});
 
 // 弹窗显示状态
 const visible = ref(false);
@@ -139,40 +151,44 @@ const getRemarkList = async (id) => {
     }
 };
 
-// 处理确定按钮 - 保存备注（修改：添加成功后标记数据变更）
+// 处理确定按钮 - 保存备注
 const handleConfirm = async () => {
-    try {
-        isSubmitting.value = true;
+    await formRef.value.validate(async (valid) => {
+        if (valid) {
+            try {
+                isSubmitting.value = true;
 
-        // 调用添加备注接口
-        const res = await addOutstockOrderRemarkApi({
-            outOrderId: outOrderId.value,
-            remark: formData.remark
-        });
+                // 调用添加备注接口
+                const res = await addOutstockOrderRemarkApi({
+                    outOrderId: outOrderId.value,
+                    remark: formData.remark
+                });
 
-        smartAlert(res.msg, res.success, 1000);
+                smartAlert(res.msg, res.success, 1000);
 
-        // 新增：添加成功则标记为数据已变更
-        if (res.success) {
-            hasDataChanged.value = true;
+                // 新增：添加成功则标记为数据已变更
+                if (res.success) {
+                    hasDataChanged.value = true;
+                }
+
+                // 清空输入框
+                formData.remark = '';
+
+                // 重新获取列表数据
+                getRemarkList();
+
+                // 通知父组件刷新
+                emit('refresh');
+            } catch (error) {
+                if (error.name !== 'ValidationError') {
+                    ElMessage.error(t('common.saveFailed') + (error.message || ''));
+                    console.error('保存备注失败:', error);
+                }
+            } finally {
+                isSubmitting.value = false;
+            }
         }
-
-        // 清空输入框
-        formData.remark = '';
-
-        // 重新获取列表数据
-        getRemarkList();
-
-        // 通知父组件刷新
-        emit('refresh');
-    } catch (error) {
-        if (error.name !== 'ValidationError') {
-            ElMessage.error(t('common.saveFailed') + (error.message || ''));
-            console.error('保存备注失败:', error);
-        }
-    } finally {
-        isSubmitting.value = false;
-    }
+    });
 };
 
 // 分页大小改变

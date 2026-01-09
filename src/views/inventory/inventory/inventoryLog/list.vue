@@ -130,7 +130,7 @@
         </div>
         <!-- 导出弹窗 -->
         <exportDialog ref="exportDialogRef" :selectionRows="selectionRows" :initValues="initValues"
-            :extraParams="{ view }" :exportType="301">
+            :extraParams="{ view }" :exportType="302">
         </exportDialog>
     </div>
 </template>

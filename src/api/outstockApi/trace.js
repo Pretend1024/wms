@@ -14,11 +14,11 @@ export const getOutstockOrderTraceStatusApi = (data) => {
 
 // 轨迹明细添加
 export const addOutstockOrderTraceApi = (data) => {
-    return http.post('/outstock/trace/outTrace/add', data)
+    return http.post('/outstock/trace/outTrace/add', data, { headers: { 'loading': true } })
 }
 // 轨迹明细删除
 export const deleteOutstockOrderTraceApi = (data) => {
-    return http.post('/outstock/trace/outTrace/delete', data)
+    return http.post('/outstock/trace/outTrace/delete', data, { headers: { 'loading': true } })
 }
 // 根据id删除明细
 export const deleteOutstockOrderTraceByIdApi = createPostRequestWithQuery('/outstock/trace/outTrace/deleteById')

@@ -400,7 +400,6 @@ const loadWaveInfo = async () => {
     }; // 避免重复提示
     if (!waveInfo.waveNo.trim()) return;
 
-    const loading = ElLoading.service({ lock: true, text: 'loading...' });
     try {
         // 传递波次号和分拣类型
         const res = await getWaveOrderProductDetailsApi({
@@ -483,8 +482,6 @@ const loadWaveInfo = async () => {
         console.error('加载波次信息异常:', error);
         smartAlert('接口调用失败，请检查网络', false);
         isAlertShowing.value = true;
-    } finally {
-        loading.close();
     }
 };
 
@@ -500,7 +497,6 @@ const submitBarcodeMatch = async () => {
         return;
     }
 
-    const loading = ElLoading.service({ lock: true, text: 'loading...' });
     try {
         // 1. 清空所有行状态（播种墙+商品明细），确保仅当前匹配行有颜色
         seedingWallData.value.forEach(item => {
@@ -619,8 +615,6 @@ const submitBarcodeMatch = async () => {
         smartAlert('匹配处理失败，请重试', false);
         resetBarcodeInput();
         focusBarcodeInput();
-    } finally {
-        loading.close();
     }
 };
 
@@ -994,7 +988,6 @@ const submitFinalRePick = async () => {
 // 获取订单附件
 const getOrderAttachment = async (orderId) => {
     if (!orderId) return;
-    const loading = ElLoading.service({ lock: true, text: 'loading...' });
     try {
         const res = await getAllUploadFilesApi({ outOrderId: orderId });
         attachmentList.value = res.success ? res.data.uploadFile.map(file => ({
@@ -1009,8 +1002,6 @@ const getOrderAttachment = async (orderId) => {
     } catch (error) {
         console.error('获取附件失败:', error);
         smartAlert('加载附件失败', false);
-    } finally {
-        loading.close();
     }
 };
 

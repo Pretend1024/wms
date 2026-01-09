@@ -83,10 +83,6 @@ const handleLogout = () => {
     )
         .then(async () => {
             loading.value = true;
-            const bodyLoading = ElLoading.service({
-                lock: true,
-                text: 'Loading',
-            })
             let res
             logoutDialogVisible.value = true;
             delData.value = [];
@@ -100,7 +96,6 @@ const handleLogout = () => {
                 });
             }
             promptMessage.value = '操作完成！'
-            bodyLoading.close();
         })
         .catch(() => {
             ElMessage({

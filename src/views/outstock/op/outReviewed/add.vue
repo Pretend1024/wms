@@ -147,7 +147,7 @@
                             </div>
                             <div class="info-item">
                                 <span class="info-label">{{ $t('outstock_op_outReviewed_add.logisticsProduct')
-                                }}:</span> <!-- 物流产品 -->
+                                    }}:</span> <!-- 物流产品 -->
                                 <span class="info-value">{{ orderBasicInfo.shipwayCode || '-' }}</span>
                             </div>
                             <div class="info-item">
@@ -176,10 +176,10 @@
                                 <div class="package-header">
                                     <span class="package-number">{{ $t('outstock_op_outReviewed_add.package') }} {{
                                         packageIndex + 1
-                                    }}</span> <!-- 包裹 -->
+                                        }}</span> <!-- 包裹 -->
                                     <span class="waybill-number">{{ $t('outstock_op_outReviewed_add.waybillNo') }}: {{
                                         formatWaybillNo(packageItem.trackingNo)
-                                    }}</span> <!-- 运单号 -->
+                                        }}</span> <!-- 运单号 -->
                                     <el-tag v-if="packageItem.isSubmitted" type="success" size="small"
                                         style="margin-left: auto;">{{
                                             $t('outstock_op_outReviewed_add.submitted') }}</el-tag> <!-- 已提交 -->
@@ -268,7 +268,7 @@
             <template #footer>
                 <div class="dialog-footer">
                     <el-button @click="orderSelectDialogVisible = false">{{ $t('outstock_op_outReviewed_add.cancel')
-                    }}</el-button> <!-- 取消 -->
+                        }}</el-button> <!-- 取消 -->
                     <el-button type="primary" @click="confirmSelectedOrder" :disabled="!selectedOrderId">{{
                         $t('outstock_op_outReviewed_add.confirm') }}</el-button> <!-- 确定 -->
                 </div>
@@ -417,7 +417,6 @@ const getOrderInfo = async (forceOrderId = '') => {
     const codeToUse = orderData.code.trim();
     if (!codeToUse) return;
 
-    const loading = ElLoading.service({ lock: true, text: 'loading...' });
     try {
         const searchRes = await getOutOrderByCodeApi({
             code: codeToUse,
@@ -452,14 +451,11 @@ const getOrderInfo = async (forceOrderId = '') => {
         playAudio('error');
         console.error('获取订单信息异常:', error);
         smartAlert('获取订单信息异常，请重试', false);
-    } finally {
-        loading.close();
     }
 };
 
 // 根据订单ID获取订单详情
 const fetchOrderDetails = async (orderId) => {
-    const loading = ElLoading.service({ lock: true, text: 'loading...' });
     try {
         const res = await getReCheckOutOrderApi({
             outOrderId: orderId,
@@ -489,6 +485,7 @@ const fetchOrderDetails = async (orderId) => {
                 })),
                 // --- 修改重点：字段名改为 consumablesVOList ---
                 consumableList: (pkg.consumablesVOList || []).map(c => ({
+                    id: c.id || null,
                     consumablesCode: c.consumablesCode,
                     consumablesName: c.consumablesName,
                     consumablesBarcode: c.consumablesBarcode,
@@ -517,8 +514,6 @@ const fetchOrderDetails = async (orderId) => {
         playAudio('error');
         console.error('获取订单详情异常:', error);
         smartAlert('获取订单详情异常，请重试', false);
-    } finally {
-        loading.close();
     }
 };
 
@@ -693,7 +688,6 @@ const submitReview = async () => {
         return;
     }
 
-    const loading = ElLoading.service({ lock: true, text: '提交中...' });
     try {
         // 准备当前包裹的耗材数据
         const consumablesToSubmit = currentPackage.consumableList.length > 0
@@ -701,6 +695,7 @@ const submitReview = async () => {
             : currentPackage.originalConsumableList;
 
         const consumableListPayload = consumablesToSubmit.map(mat => ({
+            id: mat.id || null,
             consumablesCode: mat.consumablesCode,
             consumablesName: mat.consumablesName,
             consumablesBarcode: mat.consumablesBarcode,
@@ -737,8 +732,6 @@ const submitReview = async () => {
         playAudio('error');
         console.error('提交复核异常:', error);
         smartAlert(`提交复核异常: ${error.message || '未知错误'}，请重试`, false);
-    } finally {
-        loading.close();
     }
 };
 

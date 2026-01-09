@@ -319,7 +319,6 @@ const handleFileUpload = async (options) => {
     const file = options.file;
     if (!file) return;
 
-    const loadingInstance = ElLoading.service({ lock: true, text: 'loading...' });
     try {
         const res = await uploadApi(file, { path: 'temp' });
         if (res.success && res.data) {
@@ -336,8 +335,6 @@ const handleFileUpload = async (options) => {
         }
     } catch (error) {
         smartAlert(`文件上传出错：${error.message || '网络异常'}`, false)
-    } finally {
-        loadingInstance.close();
     }
 };
 

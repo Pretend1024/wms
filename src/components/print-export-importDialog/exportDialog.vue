@@ -233,7 +233,6 @@ const handleExportConfirm = async () => {
     };
 
     // 5. 发起 API 请求
-    const bodyLoading = ElLoading.service({ text: '正在生成导出任务...' });
     try {
         const res = await exportJobAddApi(apiPayload);
 
@@ -276,8 +275,6 @@ const handleExportConfirm = async () => {
     } catch (error) {
         console.error('导出请求失败', error);
         smartAlert('导出失败，请检查参数或联系管理员', false);
-    } finally {
-        bodyLoading.close();
     }
 };
 

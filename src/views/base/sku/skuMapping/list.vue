@@ -273,7 +273,7 @@ const delColse = () => {
 const handleImportAdd = async () => {
     router.push({
         name: '导入文件',
-        params: { typeId: 113, typeName: '导入创建sku映射' },
+        params: { typeId: 103, typeName: '导入创建sku映射' },
     })
 }
 // 弹窗确定按钮，调用子组件的表单校验及提交

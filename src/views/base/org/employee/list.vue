@@ -292,10 +292,6 @@ const batchSetRoleMenu = async () => {
 }
 // 授权确认
 const handleSetRoleMenuConfirm = async () => {
-    const bodyLoading = ElLoading.service({
-        lock: true,
-        text: 'Loading',
-    })
     let res
     const roleIds = await roleDialogRef.value.handleSelection()
     // 循环遍历selectionRows
@@ -314,7 +310,6 @@ const handleSetRoleMenuConfirm = async () => {
     promptMessage.value = '操作完成！'
     if (res.success) {
         setRoleDialogVisible.value = false;
-        bodyLoading.close();
         selectionRows.value = [];
     }
 }
@@ -333,11 +328,6 @@ const handleLock = async () => {
         })
         return
     }
-    const bodyLoading = ElLoading.service({
-        lock: true,
-        text: 'Loading',
-    })
-
     let res
     // 循环遍历selectionRows
     setRoleData.value = [];
@@ -355,10 +345,8 @@ const handleLock = async () => {
     promptMessage.value = '操作完成！'
     if (res.success) {
         setRoleDialogVisible.value = false;
-        bodyLoading.close();
         selectionRows.value = [];
     }
-    bodyLoading.close()
 }
 // 解锁
 const handleUnlock = async () => {
@@ -369,11 +357,6 @@ const handleUnlock = async () => {
         })
         return
     }
-    const bodyLoading = ElLoading.service({
-        lock: true,
-        text: 'Loading',
-    })
-
     let res
     setRoleData.value = [];
     promptMessage.value = '操作中...'
@@ -390,10 +373,8 @@ const handleUnlock = async () => {
     promptMessage.value = '操作完成！'
     if (res.success) {
         setRoleDialogVisible.value = false;
-        bodyLoading.close();
         selectionRows.value = [];
     }
-    bodyLoading.close()
 }
 
 // 离职
@@ -411,11 +392,6 @@ const handleLeave = async () => {
         '提醒',
         { confirmButtonText: '确定', cancelButtonText: '取消', type: 'warning' }
     ).then(async () => {
-        const bodyLoading = ElLoading.service({
-            lock: true,
-            text: 'Loading',
-        })
-
         let res
         // 循环遍历selectionRows
         setRoleData.value = [];
@@ -432,10 +408,8 @@ const handleLeave = async () => {
         promptMessage.value = '操作完成！'
         if (res.success) {
             setRoleDialogVisible.value = false;
-            bodyLoading.close();
             selectionRows.value = [];
         }
-        bodyLoading.close()
     }).catch(() => {
         ElMessage.info('已取消');
     });

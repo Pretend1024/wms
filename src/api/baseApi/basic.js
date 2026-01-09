@@ -14,17 +14,8 @@ export const updBasicCountryApi = (data) => {
     return http.post('/base/basic/country/updateById', { ...data }, { headers: { 'loading': true } })
 }
 // 删除国家地区
-export const delBasicCountryApi = (queryParams) => {
-    const queryString = Object.entries(queryParams)
-        .map(([key, value]) => `${encodeURIComponent(key)}=${encodeURIComponent(value)}`)
-        .join('&');
+export const delBasicCountryApi = createPostRequestWithQuery('/base/basic/country/deleteById')
 
-    const url = queryString
-        ? `/base/basic/country/deleteById?${queryString}`
-        : '/base/basic/country/deleteById';
-
-    return http.post(url);
-}
 // 获取洲枚举
 export const getBasicContinentEnumApi = (data) => {
     return http.post('/base/basic/country/continentEnum', { ...data })
@@ -47,17 +38,8 @@ export const getBasicTemplateATypeEnumApi = () => {
     return http.post('/base/basic/template/atypeEnum')
 }
 // 数据类型枚举
-export const getBasicTemplateBTypeEnumApi = (queryParams) => {
-    const queryString = Object.entries(queryParams)
-        .map(([key, value]) => `${encodeURIComponent(key)}=${encodeURIComponent(value)}`)
-        .join('&');
+export const getBasicTemplateBTypeEnumApi = createPostRequestWithQuery('/base/basic/template/btypeEnum')
 
-    const url = queryString
-        ? `/base/basic/template/btypeEnum?${queryString}`
-        : '/base/basic/template/btypeEnum';
-
-    return http.post(url);
-}
 // 状态枚举
 export const getBasicTemplateStatusEnumApi = () => {
     return http.post('/base/basic/template/statusEnum')

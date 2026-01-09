@@ -8,7 +8,7 @@ export const getInventoryMvPageApi = (data) => {
 
 // 生成移库主单 (返回主单ID)
 export const addInventoryMvMasterApi = (data) => {
-    return http.post('/inventory/mv/inventoryMv/add', { ...data })
+    return http.post('/inventory/mv/inventoryMv/add', { ...data }, { headers: { 'loading': true } })
 }
 
 // 获取移库单详情 (用于编辑回显)
@@ -26,7 +26,7 @@ export const getInventoryMvOutDetailApi = (data) => {
 
 // 提交移库明细 (执行单条明细的移库操作)
 export const addInventoryMvDetailApi = (data) => {
-    return http.post('/inventory/mv/inventoryMv/submitMv', { ...data })
+    return http.post('/inventory/mv/inventoryMv/submitMv', { ...data }, { headers: { 'loading': true } })
 }
 
 // 移库类型
@@ -38,5 +38,6 @@ export const getInventoryMvOpTypeEnumApi = () => {
 export const getInventoryMvStatusEnumApi = () => {
     return http.post('/inventory/mv/inventoryMv/inventoryMvStatusEnum')
 }
+
 // 移库完成
 export const completeInventoryMvApi = createPostRequestWithQuery('/inventory/mv/inventoryMv/completeMv')

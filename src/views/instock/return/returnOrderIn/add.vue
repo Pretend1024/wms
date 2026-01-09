@@ -13,22 +13,11 @@
                         @keyup.enter.stop="getOrderInfo" ref="numberInput" />
                     <el-button type="danger" plain :icon="RefreshLeft" style="margin-left: 10px;" @click="reset">{{
                         getButtonText('reset') }}</el-button>
-                    <div class="isContinuousBlock" v-show="orderData.numberType == 1">
-                        <span>自动提交</span>
-                        <el-popover content="是否自动提交未匹配到的跟踪单号至待认领？" placement="bottom">
-                            <template #reference>
-                                <el-icon size="16" style="flex: 1;">
-                                    <QuestionFilled />
-                                </el-icon>
-                            </template>
-                        </el-popover>
-                        <span style="padding: 0 12px 0 3px;">:</span>
-                        <el-switch v-model="isContinuousSubmit" inline-prompt active-text="是" inactive-text="否" />
-                    </div>
                     <span :style="{ color: message.type ? 'green' : 'red', fontSize: '16px', marginLeft: '10px' }">{{
                         message.content }}</span>
                 </el-col>
             </el-row>
+
             <el-form :model="orderInfo" ref="formRef" label-width="115px">
                 <el-row>
                     <el-col :span="6">
@@ -73,6 +62,7 @@
                     </el-col>
                 </el-row>
             </el-form>
+
             <div v-show="orderInfo.id">
                 <p>包裹签收</p>
                 <div class="tableDiv">
@@ -106,6 +96,7 @@
                         </template>
                     </returnParcelTable>
                 </div>
+
                 <p>商品清点</p>
                 <div class="tableDiv">
                     <receiptTable :columns="forecastColumns" :data="forecastTableData"
@@ -117,12 +108,6 @@
                         </template>
                         <template #fnsku="{ row }">
                             <el-input v-model="row.fnsku" placeholder="请输入FNSKU" :readonly="row.id" />
-                        </template>
-                        <template #barcode="{ row }">
-                            <el-input v-model="row.barcode" placeholder="请输入商品条码" :readonly="row.id" />
-                        </template>
-                        <template #productName="{ row }">
-                            <el-input v-model="row.productName" placeholder="请输入商品名称" :readonly="row.id" />
                         </template>
                         <template #forecastQty="{ row }">
                             <el-input v-model="row.forecastQty" v-number placeholder="输入预报数量" :readonly="row.id" />
@@ -138,6 +123,7 @@
                         </template>
                     </receiptTable>
                 </div>
+
                 <p style="margin-top: 20px;">附件信息</p>
                 <div class="uploadDiv">
                     <el-upload ref="uploadRef" class="uploadView" v-model:file-list="fileList" :show-file-list="false"
@@ -164,12 +150,13 @@
                         </template>
                     </el-upload>
                 </div>
+
                 <div class="bottomDiv">
                     <el-button type="primary" @click="handleSubmit">提交入库</el-button>
                 </div>
             </div>
         </div>
-        <!-- 订单选择弹窗 -->
+
         <el-dialog v-model="centerDialogVisible" title="选择订单" width="700" align-center destroy-on-close>
             <el-table :data="orderList" highlight-current-row :current-row-key="selectOrder.id" :stripe="true"
                 style="width: 100%;" :height="400" border @row-click="handleRowClick" @row-dblclick="handleRowDblClick">
@@ -182,213 +169,193 @@
             <template #footer>
                 <div class="dialog-footer">
                     <el-button @click="centerDialogVisible = false, selectOrder = {}">{{ getButtonText('cancel')
-                    }}</el-button>
+                        }}</el-button>
                     <el-button type="primary" @click="handleDialogConfirm">{{ getButtonText('confirm') }}</el-button>
                 </div>
             </template>
         </el-dialog>
+
         <el-alert v-if="showAlert" :title="alertMessage" :type="alertType" center show-icon @close="showAlert = false"
             style="position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 9999;height: 120px; width: 700px; font-size: 18px;" />
     </div>
 </template>
 
 <script setup name="退货入库">
-import { getInstockReturnReturnOrderTypeEnumApi, signInstockReturnApi, countInstockReturnApi, addReturnOrderClaimApi, signAndCountInstockReturnApi } from '@/api/instockApi/return.js'
+import { getInstockReturnReturnOrderTypeEnumApi, signAndCountInstockReturnApi, addReturnOrderClaimApi } from '@/api/instockApi/return.js'
 import { getOrderQualityEnumApi } from '@/api/instockApi/order.js'
 import { getProductShipwayBrandListApi } from '@/api/productApi/shipway.js'
 import { getWhWarehouseApi } from '@/api/baseApi/wh.js'
 import { getCustomerLikeQueryApi } from '@/api/baseApi/sku.js'
 import receiptTable from './receiptTable.vue'
 import returnParcelTable from './returnParcelTable.vue'
-import { RefreshLeft, QuestionFilled } from '@element-plus/icons-vue'
+import { RefreshLeft } from '@element-plus/icons-vue'
 import { getReturnOrderListByNumberTypeApi } from '@/api/instockApi/return.js'
 import { smartAlert } from '@/utils/genericMethods.js'
 import { uploadApi } from '@/api/baseApi/index.js'
+import { ref, nextTick, onMounted, onActivated } from 'vue'
+import { ElLoading, ElMessageBox } from 'element-plus'
+
 // 查询条件
 const orderData = ref({
     number: '', // 订单号
-    numberType: 2, // 订单号类型
+    numberType: 2, // 订单号类型：2-退件单号，1-跟踪单号
 })
 const numberTypeOptions = [
     { value: 2, label: '退件单号' },
     { value: 1, label: '跟踪单号' }
 ]
-// 订单弹窗
+
+// 订单选择列表数据（用于多条匹配时）
 const centerDialogVisible = ref(false)
 const orderList = ref([])
-// 提示信息
+
+// 顶部操作反馈信息
 const message = ref({
     type: true,
     content: ''
 })
 
-// 订单信息
+// 订单详细信息
 const orderInfo = ref({})
-const selectOrder = ref({})
-// 点击表格行的方法
+const selectOrder = ref({}) // 弹窗中选中的订单
+
+// 表格行点击事件
 const handleRowClick = (row) => {
     selectOrder.value = row;
-    console.log('点击行', selectOrder.value)
 };
-// 双击表格行的方法
+
+// 表格行双击事件
 const handleRowDblClick = (row) => {
     selectOrder.value = row;
     handleDialogConfirm();
 };
-// 弹窗确定
+
+// 弹窗确认选择订单
 const handleDialogConfirm = async () => {
+    // 填充表单数据
     orderInfo.value = selectOrder.value;
+    // 填充包裹表格
     parcelTableData.value = selectOrder.value.returnParcelList || [];
+    // 填充并合并商品表格数据
     forecastTableData.value = mergeForecastAndReceipt(
         selectOrder.value.returnProductList || [],
         selectOrder.value.returnReceiptList || []
     );
-    uploadedFiles.value = res.data[0].returnAttachmentList.map(item => ({
-        name: item.attachmentName,
-        url: item.attachmentUrl,
-        id: item.id,
-        isCustomerAdd: item.isCustomerAdd
-    }));
-    centerDialogVisible.value = false;
-}
-// 是否连续提交
-const isContinuousSubmit = ref(false)
-// 获取订单详情
-const getOrderInfo = async () => {
-    orderInfo.value = {};
-    if (!orderData.value.numberType) {
-        return
-    }
-    if (!orderData.value.number) {
-        return
-    }
-    const loading = ElLoading.service({
-        lock: true,
-        target: ".contentDiv",
-        text: 'Loading'
-    })
-    const res = await getReturnOrderListByNumberTypeApi(orderData.value)
-    // 打开弹窗
-    if (res.success && res.data.length > 1) {
-        orderList.value = res.data;
-        centerDialogVisible.value = true;
-    } else if (res.success && res.data.length == 1) {
-        orderInfo.value = res.data[0];
-        parcelTableData.value = res.data[0].returnParcelList || [];
-        forecastTableData.value = mergeForecastAndReceipt(
-            res.data[0].returnProductList || [],
-            res.data[0].returnReceiptList || []
-        );
-        uploadedFiles.value = res.data[0].returnAttachmentList.map(item => ({
+    // 填充附件列表
+    if (selectOrder.value.returnAttachmentList) {
+        uploadedFiles.value = selectOrder.value.returnAttachmentList.map(item => ({
             name: item.attachmentName,
             url: item.attachmentUrl,
             id: item.id,
             isCustomerAdd: item.isCustomerAdd
         }));
-    } else if (!res.success && orderData.value.numberType == 1) {
-        const submit = async () => {
-            const res = await addReturnOrderClaimApi({
-                trackingNo: orderData.value.number
-            })
-            smartAlert(res.msg, res.success, 1000);
-            // 清空
-            orderData.value.number = '';
-            orderData.value.numberType = 1;
-            message.value.content = '';
-        }
-        console.log(!isContinuousSubmit.value)
-        if (isContinuousSubmit.value) {
-            submit()
-            // 清空
-            orderData.value.number = '';
-            orderData.value.numberType = 1;
-            message.value.content = '';
-        } else {
-            ElMessageBox.confirm(
-                '未找到对应退件单，是否要将此跟踪单号添加到待认领？',
-                '提示',
-                {
-                    confirmButtonText: '确定',
-                    cancelButtonText: '取消',
-                    type: 'warning',
-                }
-            ).then(async () => {
-                submit()
-            }).catch(() => {
-                // 清空
-                orderData.value.number = '';
-                orderData.value.numberType = 1;
-                message.value.content = '';
-            });
-        }
     }
-    message.value = {
-        type: res.success,
-        content: res.msg
-    }
-    loading.close()
+    centerDialogVisible.value = false;
 }
-// 重置
+
+// 核心方法：获取订单详情（扫码或回车触发）
+const getOrderInfo = async () => {
+    orderInfo.value = {};
+    if (!orderData.value.numberType) return
+    if (!orderData.value.number) return
+
+    try {
+        const res = await getReturnOrderListByNumberTypeApi(orderData.value)
+
+        // 场景1：匹配到多条订单，弹出选择框
+        if (res.success && res.data.length > 1) {
+            orderList.value = res.data;
+            centerDialogVisible.value = true;
+        }
+        // 场景2：匹配到唯一一条订单，直接渲染
+        else if (res.success && res.data.length == 1) {
+            orderInfo.value = res.data[0];
+            parcelTableData.value = res.data[0].returnParcelList || [];
+            forecastTableData.value = mergeForecastAndReceipt(
+                res.data[0].returnProductList || [],
+                res.data[0].returnReceiptList || []
+            );
+            uploadedFiles.value = res.data[0].returnAttachmentList.map(item => ({
+                name: item.attachmentName,
+                url: item.attachmentUrl,
+                id: item.id,
+                isCustomerAdd: item.isCustomerAdd
+            }));
+        }
+        if (res.success === false) {
+            smartAlert(res.msg, false)
+        }
+
+        // 设置顶部反馈信息
+        message.value = {
+            type: res.success,
+            content: res.msg
+        }
+    } catch (error) {
+        console.error('获取订单详情失败:', error)
+    }
+}
+
+// 重置页面状态
 const reset = () => {
     // 重置查询条件
-    orderData.value.number = ''; // 订单号
-    orderData.value.numberType = 2; // 订单号类型
-    isContinuousSubmit.value = false; // 是否连续提交
+    orderData.value.number = '';
+    orderData.value.numberType = 2;
 
-    // 重置订单信息相关数据
-    orderInfo.value = {}; // 订单信息
-    selectOrder.value = {}; // 选择的订单
-    message.value = { type: true, content: '' }; // 提示信息
+    // 重置数据对象
+    orderInfo.value = {};
+    selectOrder.value = {};
+    message.value = { type: true, content: '' };
 
-    // 重置表格数据
-    parcelTableData.value = []; // 包裹详情表格数据
-    forecastTableData.value = []; // 商品详情表格数据
-
-    // 清空弹窗数据
+    // 重置表格与列表
+    parcelTableData.value = [];
+    forecastTableData.value = [];
     orderList.value = [];
+    uploadedFiles.value = [];
+    fileList.value = [];
 
-    // 重置提示弹窗
+    // 重置提示框
     showAlert.value = false;
     alertMessage.value = '';
     alertType.value = 'success';
 
-    // 输入框聚焦
+    // 重新聚焦输入框
     focusInput();
 }
-// 表格数据
+
+// 表格响应式数据
 const parcelTableData = ref([]);
 const forecastTableData = ref([]);
 const parcelTableRef = ref(null);
 const mergeTableRef = ref();
+
+// 表格列定义
 const parcelColumns = [
     { label: '物流跟踪号', prop: 'trackingNo', width: '220', slot: 'trackingNo' },
-    { label: '承运商', prop: 'carrierCode', width: '150', slot: 'carrierCode' },
+    { label: '承运商', prop: 'carrierCode', width: '160', slot: 'carrierCode' },
     { label: '尺寸(CM) 长-宽-高', prop: 'length', width: '250', slot: 'length' },
     { label: '重量(KG)', prop: 'weight', width: '120', slot: 'weight' },
-    { label: '备注', prop: 'remark', width: '240', slot: 'remark' },
+    { label: '备注', prop: 'remark', width: '300', slot: 'remark' },
     { label: '是否签收', prop: 'sign', width: '85', slot: 'sign' },
 ]
 const forecastColumns = [
-    { label: 'SKU', prop: 'sku', width: '180', slot: 'sku' },
-    { label: 'FNSKU', prop: 'fnsku', width: '180', slot: 'fnsku' },
-    { label: '商品条码', prop: 'barcode', width: '180', slot: 'barcode' },
-    { label: '商品名称', prop: 'productName', width: '180', slot: 'productName' },
-    { label: '预报数量', prop: 'forecastQty', width: '120', slot: 'forecastQty' },
-    { label: '品质', prop: 'qualityId', width: '150', slot: 'qualityId' },
-    { label: '清点数量', prop: 'receivedQty', width: '120', slot: 'receivedQty' },
+    { label: 'SKU', prop: 'sku', width: '265', slot: 'sku' },
+    { label: 'FNSKU', prop: 'fnsku', width: '245', slot: 'fnsku' },
+    { label: '预报数量', prop: 'forecastQty', width: '170', slot: 'forecastQty' },
+    { label: '品质', prop: 'qualityId', width: '180', slot: 'qualityId' },
+    { label: '清点数量', prop: 'receivedQty', width: '160', slot: 'receivedQty' },
 ]
 
-// 上传文件相关
+// 文件列表及上传状态
 const fileList = ref([])
-const uploadedFiles = ref([]) // 存储已上传的文件信息（包含名称和地址）
+const uploadedFiles = ref([])
 
-// 文件类型校验保持不变
+// 文件上传前校验
 const beforeUpload = (file) => {
     if (uploadedFiles.value.length >= 9) {
         smartAlert('最多上传9个文件', false)
         return false
     }
-    // 可以新增文件类型和大小校验
     const isLt2M = file.size / 1024 / 1024 < 2;
     if (!isLt2M) {
         smartAlert('上传文件大小不能超过 2MB!', false)
@@ -397,17 +364,15 @@ const beforeUpload = (file) => {
     return true
 }
 
-// 上传文件处理
+// 自定义上传逻辑
 const handleUpload = async (options) => {
-    const loadingInstance = ElLoading.service({ lock: true, text: '文件上传中...' })
     try {
         const res = await uploadApi(options.file, { path: 'temp' })
         if (res.success) {
-            // 将上传成功的文件信息添加到列表
             uploadedFiles.value.push({
-                name: options.file.name, // 文件名
-                url: res.data, // 后端返回的文件地址
-                isCustomerAdd: false // 标记为用户上传的文件
+                name: options.file.name,
+                url: res.data,
+                isCustomerAdd: false
             })
             smartAlert(`文件 "${options.file.name}" 上传成功`, true, 1000)
         } else {
@@ -416,17 +381,15 @@ const handleUpload = async (options) => {
     } catch (error) {
         console.error('上传失败:', error)
         smartAlert(`文件 "${options.file.name}" 上传失败`, false)
-    } finally {
-        loadingInstance.close()
     }
 }
 
-// 删除已上传文件
+// 删除附件
 const handleDeleteFile = (index) => {
     uploadedFiles.value.splice(index, 1)
 }
 
-// 保存
+// 提交入库数据
 const handleSubmit = async () => {
     const receiptAddDTOList = mergeTableRef.value.getFormattedData()
     const data = {
@@ -437,101 +400,93 @@ const handleSubmit = async () => {
         receiptAddDTOList,
         returnParcelAddDTOList: parcelTableData.value,
         returnAttachmentAddDTOList: uploadedFiles.value.map(item => ({
-            attachmentName: item.name, // 文件名
-            attachmentUrl: item.url, // 文件地址 
-            returnOrderId: orderInfo.value.id, // 关联的退件单ID
-            isCustomerAdd: item.isCustomerAdd // 是否是客户上传的文件
+            attachmentName: item.name,
+            attachmentUrl: item.url,
+            returnOrderId: orderInfo.value.id,
+            isCustomerAdd: item.isCustomerAdd
         }))
     }
     const res = await signAndCountInstockReturnApi(data)
     smartAlert(res.msg, res.success, 1000)
     if (res.success) {
+        // 提交成功后重新获取最新信息
         getOrderInfo()
     }
 };
 
-// 筛选客户代码
+// 下拉选项数据源
 const customerOptions = ref([]);
-// 仓库下拉框数据
 const warehouseOptions = ref([])
-// 类型下拉框数据
 const typeOptions = ref([])
-// 承运商下拉框数据
 const carrierOptions = ref([])
-// 商品品质
 const qualityOptions = ref([])
+
+// 初始化加载基础数据
 onMounted(async () => {
-    // 仓库数据
-    const warehouseRes = await getWhWarehouseApi()
+    // 并行获取基础枚举和配置数据
+    const [warehouseRes, typeRes, carrierRes, qualityRes, customerRes] = await Promise.all([
+        getWhWarehouseApi(),
+        getInstockReturnReturnOrderTypeEnumApi(),
+        getProductShipwayBrandListApi(),
+        getOrderQualityEnumApi(),
+        getCustomerLikeQueryApi({ keyword: '*' })
+    ])
+
     warehouseOptions.value = warehouseRes.data.map(item => ({
         label: item.code + '(' + item.name + ')',
         value: item.code
     }))
-    // 退件类型
-    const typeRes = await getInstockReturnReturnOrderTypeEnumApi()
     typeOptions.value = typeRes.data.map(item => ({
         label: item.name,
         value: item.id
     }))
-    // 承运商数据
-    const carrierRes = await getProductShipwayBrandListApi()
     carrierOptions.value = carrierRes.data.map(item => ({
         label: item.name,
         value: item.code
     }))
-    // 退件包裹品质
-    const OptionsRes = await getOrderQualityEnumApi()
-    qualityOptions.value = OptionsRes.data.map(item => ({
+    qualityOptions.value = qualityRes.data.map(item => ({
         label: item.name,
         value: item.id
     }))
-    // 客户数据
-    const result = await getCustomerLikeQueryApi({ keyword: '*' });
-    customerOptions.value = result.data.map(item => ({
+    customerOptions.value = customerRes.data.map(item => ({
         value: item.code,
         label: item.code + '(' + item.name + ')'
     }))
+
     focusInput()
 })
+
+// 页面激活时聚焦输入框
 onActivated(() => {
     focusInput()
 })
+
 const numberInput = ref(null)
-// 重置输入框并聚焦
+// 聚焦单号输入框
 function focusInput() {
     nextTick(() => {
         numberInput.value?.focus?.()
     })
 }
 
-// 控制 el-alert 显示隐藏
+// 全局 Alert 控制
 const showAlert = ref(false);
-// 控制 el-alert 类型
-const alertType = ref('success'); // 'success' 或 'error'
-// 存储提示信息
+const alertType = ref('success');
 const alertMessage = ref('');
-const showSuccessAlert = (message, state) => {
-    alertType.value = state ? 'success' : 'error'
-    alertMessage.value = message
-    showAlert.value = true
 
-    setTimeout(() => {
-        showAlert.value = false
-    }, state ? 1000 : 5000)
-}
-
+// 数据合并逻辑：合并预报数据和实收数据
 function mergeForecastAndReceipt(forecastList, receiptList) {
     const result = [];
     const skuGroupMap = new Map();
 
-    // 先生成 forecast 的 groupId
+    // 1. 标记预报数据组
     forecastList.forEach(item => {
         const gid = 'group_' + item.sku;
         item._groupId = gid;
         skuGroupMap.set(item.sku, gid);
     });
 
-    // 遍历 receiptList
+    // 2. 匹配实收数据
     receiptList.forEach(receipt => {
         const matchedForecast = forecastList.find(f => f.sku === receipt.sku);
         if (matchedForecast) {
@@ -550,7 +505,7 @@ function mergeForecastAndReceipt(forecastList, receiptList) {
         }
     });
 
-    // 添加 forecast 中没有被 receipt 覆盖的 SKU
+    // 3. 补充未操作的预报数据
     forecastList.forEach(forecast => {
         const exists = receiptList.some(r => r.sku === forecast.sku);
         if (!exists) {
@@ -558,7 +513,7 @@ function mergeForecastAndReceipt(forecastList, receiptList) {
         }
     });
 
-    //确保同一个 SKU 下只有一个对象 forecastQty 有值
+    // 4. 清理显示的预报数量（仅保留该SKU组的第一条显示预报数）
     const seenSku = new Set();
     result.forEach(item => {
         if (seenSku.has(item.sku)) {
@@ -570,8 +525,6 @@ function mergeForecastAndReceipt(forecastList, receiptList) {
 
     return result;
 }
-
-
 </script>
 
 <style scoped lang="scss">
@@ -579,22 +532,6 @@ function mergeForecastAndReceipt(forecastList, receiptList) {
 
 .viewArea .contentDiv .el-form {
     width: 1200px;
-}
-
-.isContinuousBlock {
-    margin-left: 10px;
-    display: flex;
-    align-items: center;
-    font-size: 16px;
-    color: #606266;
-    width: 142px;
-    justify-content: space-around;
-
-    span {
-        line-height: 28px;
-        display: inline-block;
-        height: 28px;
-    }
 }
 
 .tableDiv {
@@ -610,14 +547,12 @@ function mergeForecastAndReceipt(forecastList, receiptList) {
 
 :deep(.highlight) {
     background: #ffe58f;
-    /* 柔和的黄底 */
     color: #333;
     font-weight: 600;
     padding: 0 2px;
     border-radius: 2px;
 }
 
-// 提示信息样式
 :deep(.el-alert__title) {
     font-size: 20px;
 }
@@ -629,7 +564,6 @@ function mergeForecastAndReceipt(forecastList, receiptList) {
     justify-content: center;
 }
 
-// 上传样式
 .uploaded-files {
     background-color: #f5f7fa;
     border-radius: 4px;

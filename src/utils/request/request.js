@@ -70,9 +70,11 @@ http.interceptors.response.use(res => {
 // 显示加载动画
 const showLoading = () => {
     if (activeRequests === 0 && !loadingInstance) {
+        const targetDom = document.querySelector('.el-main') || document.body;
         loadingInstance = ElLoading.service({
+            target: targetDom,
             lock: true,
-            text: '加载中...'
+            text: 'loading...'
         });
     }
     activeRequests++;

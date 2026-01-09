@@ -78,8 +78,13 @@ const localData = reactive([]);
 watch(
     () => props.data,
     newVal => {
-        if (!newVal || newVal.length === 0) localData.splice(0, localData.length, { ...emptyRow() });
-        else localData.splice(0, localData.length, ...newVal);
+        if (!newVal || newVal.length === 0) {
+            localData.splice(0, localData.length, { ...emptyRow() });
+            emit('update:data', [...localData]);
+        }
+        else {
+            localData.splice(0, localData.length, ...newVal);
+        }
     },
     { immediate: true }
 );

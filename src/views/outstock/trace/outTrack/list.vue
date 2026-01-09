@@ -138,7 +138,7 @@
         <batchOperationn :dialogTitle="'操作结果'" :isVisible="delDialogVisible" :tableData="delData" :nameField="'id'"
             :nameLabel="'订单号'" @close="delColse" :promptMessage="promptMessage" />
         <!-- 导出弹窗 -->
-        <exportDialog ref="exportDialogRef" :selectionRows="selectionRows" :initValues="initValues" :exportType="402">
+        <exportDialog ref="exportDialogRef" :selectionRows="selectionRows" :initValues="initValues" :exportType="403">
         </exportDialog>
     </div>
 </template>

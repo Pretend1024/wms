@@ -6,7 +6,7 @@ export const getOutstockWaveByWaveNoApi = createPostRequestWithQuery('/outstock/
 
 // 提交拣货
 export const submitPickApi = (data) => {
-    return http.post('/outstock/wave/outWave/submitPick', data)
+    return http.post('/outstock/wave/outWave/submitPick', data, { headers: { 'loading': true } })
 }
 
 // 二次拣货
@@ -15,9 +15,8 @@ export const getWaveOrderProductDetailsApi = createPostRequestWithQuery('/outsto
 export const getAllUploadFilesApi = createPostRequestWithQuery('/outstock/order/outOrder/getAllUploadFiles')
 // 二次拣货提交
 export const submitRePickApi = (data) => {
-    return http.post('/outstock/wave/outWave/submitRePick', data)
+    return http.post('/outstock/wave/outWave/submitRePick', data, { headers: { 'loading': true } })
 }
-
 
 // 通过订单号/运单号查询出库单
 export const getOutOrderByCodeApi = createPostRequestWithQuery('/outstock/order/outOrder/getOutOrderByCode')
@@ -27,7 +26,7 @@ export const getReCheckOutOrderApi = createPostRequestWithQuery('/outstock/order
 
 // 复核提交
 export const submitReCheckApi = (data) => {
-    return http.post('/outstock/order/outOrder/submitReCheck', data)
+    return http.post('/outstock/order/outOrder/submitReCheck', data, { headers: { 'loading': true } })
 }
 // 获取耗材信息
 export const isAvailableAndInStockApi = (data) => {
@@ -36,11 +35,11 @@ export const isAvailableAndInStockApi = (data) => {
 
 // 称重提交
 export const submitWeightCheckApi = (data) => {
-    return http.post('/outstock/order/outOrder/submitWeightCheck', data)
+    return http.post('/outstock/order/outOrder/submitWeightCheck', data, { headers: { 'loading': true } })
 }
 // 出库提交
 export const submitOutboundStockApi = (data) => {
-    return http.post('/outstock/order/outOrder/submitOutboundStock', data)
+    return http.post('/outstock/order/outOrder/submitOutboundStock', data, { headers: { 'loading': true } })
 }
 // 出库统计
 export const getOutboundOrderDataApi = () => {
@@ -52,5 +51,5 @@ export const getOutOrderWithInventoryApi = createPostRequestWithQuery('/outstock
 
 // 提交归位上架
 export const submitReturnOnShelfApi = (data) => {
-    return http.post('/outstock/order/outOrder/submitReturnOnShelf', data)
+    return http.post('/outstock/order/outOrder/submitReturnOnShelf', data, { headers: { 'loading': true } })
 }

@@ -81,7 +81,7 @@
                                 <!-- 未选择服务类型 -->
                                 <span v-if="item.sku"> - {{ item.sku }}</span>
                                 <span v-if="item.planQty"> ({{ $t('vas_vas_vasOrder_info.planQty') }}: {{ item.planQty
-                                }}{{ item.unit }})</span> <!-- 计划数量 -->
+                                    }}{{ item.unit }})</span> <!-- 计划数量 -->
                             </span>
                         </div>
                     </template>
@@ -387,7 +387,6 @@ const handleClose = () => {
  * 获取编辑详情数据
  */
 const getDetail = async () => {
-    const loading = ElLoading.service({ lock: true, target: ".contentDiv", text: "loading..." });
     try {
         if (!props.id) {
             ElMessage.warning('缺少编辑ID');
@@ -482,8 +481,6 @@ const getDetail = async () => {
     } catch (error) {
         console.error('获取详情失败：', error);
         smartAlert('获取详情异常，请重试', false);
-    } finally {
-        loading.close();
     }
 };
 
@@ -491,12 +488,13 @@ const getDetail = async () => {
  * 页面挂载时加载数据
  */
 onMounted(async () => {
+    openMainLoading()
     // 加载下拉框数据（和新增页面一致）
     const apiTasks = [
         { key: "关联业务类型", api: getVasOrderRelatedBizTypeEnumApi(), handleSuccess: (data) => (relatedBizTypeOptions.value = data || []) },
         { key: "仓库", api: getWhWarehouseApi(), handleSuccess: (data) => (warehouseOptions.value = data || []) },
         { key: "客户", api: getCustomerLikeQueryApi({ keyword: "*" }), handleSuccess: (data) => (customerOptions.value = data.map((item) => ({ id: item.code, label: `${item.code}(${item.name})`, value: item.id }))) },
-        { key: "服务类型", api: getVasServiceTypeListApi(), handleSuccess: (data) => (serviceTypeOptions.value = data || []) },
+        { key: "服务类型", api: getVasServiceTypeListApi({ isActive: true }), handleSuccess: (data) => (serviceTypeOptions.value = data || []) },
         { key: "费用类型", api: getVasOrderFeeTypeEnumApi(), handleSuccess: (data) => (feeTypeOptions.value = data || []) },
         {
             key: "货币类型", api: getCurrencyListApi(), handleSuccess: (data) => (currencyOptions.value = data.map(item => ({
@@ -530,6 +528,7 @@ onMounted(async () => {
         // 无ID时默认添加一个服务项目
         addServiceItem();
     }
+    closeMainLoading();
 });
 </script>
 

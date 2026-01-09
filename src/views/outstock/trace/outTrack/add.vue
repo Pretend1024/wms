@@ -124,12 +124,6 @@ const handleFileUpload = async (options) => {
     const file = options.file;
     if (!file) return;
 
-    // 显示上传加载状态
-    const loading = ElLoading.service({
-        lock: true,
-        text: 'loading...',
-    });
-
     try {
         // 调用上传接口
         const res = await uploadApi(file, { path: 'temp' });
@@ -151,10 +145,7 @@ const handleFileUpload = async (options) => {
         }
     } catch (error) {
         smartAlert(`文件上传失败：${error.message || '未知错误'}`, false)
-    } finally {
-        // 关闭加载状态
-        loading.close();
-    }
+    } 
 };
 
 /**

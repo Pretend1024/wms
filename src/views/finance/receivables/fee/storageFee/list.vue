@@ -22,9 +22,9 @@
                     </el-col>
                     <el-col>
                         <el-form-item :label="getLabel('customerCode')">
-                            <el-select v-model="formData.customerCodeList" filterable
-                                :placeholder="getPlaceholder('customerCode')" clearable multiple collapse-tags
-                                collapse-tags-tooltip :max-collapse-tags="1" popper-class="multi-column-select">
+                            <el-select v-model="formData.customerCode" filterable
+                                :placeholder="getPlaceholder('customerCode')" clearable
+                                popper-class="multi-column-select">
                                 <el-option v-for="item in customerOptions" :key="item.value" :label="item.label"
                                     :value="item.value" />
                             </el-select>
@@ -35,6 +35,14 @@
                             <el-select v-model="formData.feeSubTypeId" :placeholder="getPlaceholder('feeSubTypeId')"
                                 clearable>
                                 <el-option v-for="item in feeTypeOptions" :key="item.value" :label="item.label"
+                                    :value="item.value" />
+                            </el-select>
+                        </el-form-item>
+                    </el-col>
+                    <el-col>
+                        <el-form-item :label="getLabel('currency')">
+                            <el-select v-model="formData.currency" :placeholder="getPlaceholder('currency')" clearable>
+                                <el-option v-for="item in currencyOptions" :key="item.value" :label="item.label"
                                     :value="item.value" />
                             </el-select>
                         </el-form-item>
@@ -142,9 +150,9 @@
         <FeeDialog v-model="centerDialogVisible" :dialogMode="dialogMode" :feeMainTypeId="3" :initData="editInitData"
             :feeTypeOptions="feeTypeOptions" :currencyOptions="currencyOptions" :loading="dialogLoading"
             @confirm="handleDialogConfirm" />
-        <JoinBillDialog v-model="joinBillVisible" :selectionCount="selectionRows.length"
-            @confirm="handleJoinBillConfirm" />
-        <exportDialog ref="exportDialogRef" :selectionRows="selectionRows" :initValues="initValues" :exportType="610">
+        <JoinBillDialog v-model="joinBillVisible" :selectionRows="selectionRows" :searchParams="initValues"
+            @success="handleJoinSuccess" />
+        <exportDialog ref="exportDialogRef" :selectionRows="selectionRows" :initValues="initValues" :exportType="706">
         </exportDialog>
         <batchOperationn :dialogTitle="'操作结果'" :isVisible="resultDialogVisible" :tableData="resultData"
             :nameField="'id'" :nameLabel="'单号'" @close="resultClose" :promptMessage="promptMessage" />
@@ -199,7 +207,7 @@ const parentProps = {
 const formConfig = ref([]);
 // 初始化查询参数：feeMainTypeId 固定为 3 (仓租)
 const initValues = ref({
-    orgId: '', warehouseCode: '', customerCodeList: [], feeSubTypeId: '', statusId: '', createWay: '', orderNoList: [], billNoList: [], feeMainTypeId: 3, statusIdList: []
+    orgId: '', warehouseCode: '', feeSubTypeId: '', statusId: '', createWay: '', orderNoList: [], billNoList: [], feeMainTypeId: 3, statusIdList: []
 });
 
 const dateSelectRef = ref(null);
@@ -363,12 +371,11 @@ const resultClose = () => { resultDialogVisible.value = false; getList(paginatio
 
 // 加入账单逻辑
 const joinBillVisible = ref(false);
-const handleJoinBillConfirm = async (formData) => {
-    const params = { option: formData.method, billIdNo: formData.targetBillNo, queryCondition: {} };
-    if (formData.scope === 'selection') params.queryCondition.idList = selectionRows.value.map(item => item.id); else params.queryCondition = { ...trimObjectStrings(initValues.value) };
-    try { const res = await joinBillApi(params); smartAlert(res.msg, res.success, 1000, true); if (res.success) { joinBillVisible.value = false; getList(pagination.value.currentPage, pagination.value.pageSize); getStatus(); } } catch (e) { console.error(e); smartAlert('操作异常', false); }
+const handleJoinSuccess = async () => {
+    getList(pagination.value.currentPage, pagination.value.pageSize);
+    getStatus();
 };
-const handleImport = () => router.push({ name: '导入文件', params: { typeId: 610, typeName: '仓租应收费用' } });
+const handleImport = () => router.push({ name: '导入文件', params: { typeId: 701, typeName: '仓租应收费用' } });
 const exportDialogRef = ref(null); const handleExport = () => exportDialogRef.value.openExportDialog();
 const handleCascaderChange = async (e) => { if (e) nextTick(() => cascaderRef.value.togglePopperVisible()); const result = await getCustomerLikeQueryApi({ keyword: '*', orgId: e }); customerOptions.value = result.data.map(item => ({ value: item.code, label: `${item.code}(${item.name})` })); };
 

@@ -157,10 +157,10 @@
         <batchOperationn :isVisible="delDialogVisible" :tableData="delData" :nameField="'id'" :nameLabel="'库位代码'"
             :successValue="'删除成功'" @close="delColse" :promptMessage="promptMessage" />
         <!-- 导出弹窗 -->
-        <exportDialog ref="exportDialogRef" :selectionRows="selectionRows" :initValues="initValues" :exportType="512">
+        <exportDialog ref="exportDialogRef" :selectionRows="selectionRows" :initValues="initValues" :exportType="102">
         </exportDialog>
         <!-- 打印弹窗 -->
-        <printDialog ref="printDialogRef" :selectionRows="selectionRows" :initValues="initValues" :printType="512">
+        <printDialog ref="printDialogRef" :selectionRows="selectionRows" :initValues="initValues" :printType="104">
         </printDialog>
 
     </div>
@@ -358,13 +358,13 @@ const handlePrint = async () => {
 const handleImportAdd = async () => {
     router.push({
         name: '导入文件',
-        params: { typeId: 521, typeName: '库位创建' },
+        params: { typeId: 104, typeName: '库位创建' },
     })
 }
 const handleImportUpd = async () => {
     router.push({
         name: '导入文件',
-        params: { typeId: 522, typeName: '库位更新' },
+        params: { typeId: 105, typeName: '库位更新' },
     })
 }
 // 导出

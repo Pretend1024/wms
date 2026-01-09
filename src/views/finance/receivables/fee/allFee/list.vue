@@ -22,9 +22,9 @@
                     </el-col>
                     <el-col>
                         <el-form-item :label="getLabel('customerCode')">
-                            <el-select v-model="formData.customerCodeList" filterable
-                                :placeholder="getPlaceholder('customerCode')" clearable multiple collapse-tags
-                                collapse-tags-tooltip :max-collapse-tags="1" popper-class="multi-column-select">
+                            <el-select v-model="formData.customerCode" filterable
+                                :placeholder="getPlaceholder('customerCode')" clearable
+                                popper-class="multi-column-select">
                                 <el-option v-for="item in customerOptions" :key="item.value" :label="item.label"
                                     :value="item.value" />
                             </el-select>
@@ -48,14 +48,14 @@
                             </el-select>
                         </el-form-item>
                     </el-col>
-                    <!-- <el-col>
-                        <el-form-item :label="getLabel('statusId')">
-                            <el-select v-model="formData.statusId" :placeholder="getPlaceholder('statusId')" clearable>
-                                <el-option v-for="item in statusOptions" :key="item.value" :label="item.label"
+                    <el-col>
+                        <el-form-item :label="getLabel('currency')">
+                            <el-select v-model="formData.currency" :placeholder="getPlaceholder('currency')" clearable>
+                                <el-option v-for="item in currencyOptions" :key="item.value" :label="item.label"
                                     :value="item.value" />
                             </el-select>
                         </el-form-item>
-                    </el-col> -->
+                    </el-col>
                     <el-col>
                         <el-form-item :label="getLabel('createWayId')">
                             <el-select v-model="formData.createWay" :placeholder="getPlaceholder('createWayId')"
@@ -112,7 +112,7 @@
                                                     currencyItem.currency ? currencyItem.currency + '：' : '' }}</span>
                                                 <span class="currency-amount">{{ currencyItem.totalFeeAmount ?
                                                     currencyItem.totalFeeAmount.toFixed(3) : '暂无'
-                                                    }}</span>
+                                                }}</span>
                                             </div>
                                         </div>
                                     </div>
@@ -127,12 +127,12 @@
                                     getButtonText('del') }}</el-button>
                             <el-button type="success" @click="handleImport" :icon="Upload">{{
                                 getButtonText('importCreate')
-                            }}</el-button>
+                                }}</el-button>
                             <el-button type="success" @click="handleExport" :icon="Share">{{ getButtonText('export')
-                            }}</el-button>
+                                }}</el-button>
                             <el-button type="primary" @click="joinBillVisible = true" :icon="Money">{{
                                 getButtonText('joinBill')
-                            }}</el-button>
+                                }}</el-button>
 
                         </div>
                     </div>
@@ -166,10 +166,10 @@
             :feeTypeOptions="feeTypeOptions" :currencyOptions="currencyOptions" :loading="dialogLoading"
             @confirm="handleDialogConfirm" />
 
-        <JoinBillDialog v-model="joinBillVisible" :selectionCount="selectionRows.length"
-            @confirm="handleJoinBillConfirm" />
+        <JoinBillDialog v-model="joinBillVisible" :selectionRows="selectionRows" :searchParams="initValues"
+            @success="handleJoinSuccess" />
 
-        <exportDialog ref="exportDialogRef" :selectionRows="selectionRows" :initValues="initValues" :exportType="610">
+        <exportDialog ref="exportDialogRef" :selectionRows="selectionRows" :initValues="initValues" :exportType="706">
         </exportDialog>
 
         <batchOperationn :dialogTitle="'操作结果'" :isVisible="resultDialogVisible" :tableData="resultData"
@@ -239,7 +239,6 @@ const formConfig = ref([]);
 const initValues = ref({
     orgId: '',
     warehouseCode: '',
-    customerCodeList: [],
     feeMainTypeId: '',
     feeSubTypeId: '',
     statusId: '',
@@ -446,23 +445,13 @@ const resultClose = () => {
 
 // 加入账单逻辑
 const joinBillVisible = ref(false);
-const handleJoinBillConfirm = async (formData) => {
-    const params = { option: formData.method, billIdNo: formData.targetBillNo, queryCondition: {} };
-    // 如果是按勾选，则传ID列表；如果是按查询条件，则传查询参数
-    if (formData.scope === 'selection') params.queryCondition.idList = selectionRows.value.map(item => item.id);
-    else params.queryCondition = { ...trimObjectStrings(initValues.value) };
-    try {
-        const res = await joinBillApi(params);
-        smartAlert(res.msg || '加入账单处理完成', res.success, 1000, true);
-        if (res.success) {
-            joinBillVisible.value = false;
-            getList(pagination.value.currentPage, pagination.value.pageSize);
-        }
-    } catch (e) { console.error(e); smartAlert('操作异常', false); }
+const handleJoinSuccess = async () => {
+    getList(pagination.value.currentPage, pagination.value.pageSize);
+    getStatus()
 };
 
 // 页面跳转和导出逻辑
-const handleImport = () => router.push({ name: '导入文件', params: { typeId: 610, typeName: '费用导入' } });
+const handleImport = () => router.push({ name: '导入文件', params: { typeId: 701, typeName: '费用导入' } });
 const exportDialogRef = ref(null);
 const handleExport = () => exportDialogRef.value.openExportDialog();
 

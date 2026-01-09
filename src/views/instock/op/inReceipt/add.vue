@@ -223,7 +223,6 @@ const getOrderInfo = async () => {
     orderId.value = ''
     if (!orderData.value.numberType || !orderData.value.number) return
 
-    const loading = ElLoading.service({ lock: true, text: 'Loading' })
     try {
         const res = await getOrderListByNumberTypeApi(orderData.value)
         if (res.success && res.data.length > 1) {
@@ -246,7 +245,6 @@ const getOrderInfo = async () => {
             })
         }
     } finally {
-        loading.close()
     }
 }
 
@@ -257,7 +255,6 @@ const getOrderSkuInfo = async () => {
         orderData.value.receiptMethod = ''
         return
     }
-    const loading = ElLoading.service({ lock: true, text: 'Loading' })
     try {
         if (orderData.value.receiptMethod == 11) { // 按SKU
             const res = await getOrderInOrderSkuCheckApi({ inOrderId: orderId.value })
@@ -273,7 +270,6 @@ const getOrderSkuInfo = async () => {
             }))
         }
     } finally {
-        loading.close()
     }
 }
 
@@ -378,7 +374,6 @@ const handleRowDblClick = (row) => { orderId.value = row.id; handleDialogConfirm
 
 const handleDialogConfirm = async () => {
     if (!orderId.value) return
-    const loading = ElLoading.service({ lock: true, text: 'Loading' })
     try {
         const res = await getOrderInOrderInfoApi({ id: orderId.value })
         orderInfo.value = res.data
@@ -389,7 +384,6 @@ const handleDialogConfirm = async () => {
         centerDialogVisible.value = false
         refreshSearchFocus()
     } finally {
-        loading.close()
     }
 }
 

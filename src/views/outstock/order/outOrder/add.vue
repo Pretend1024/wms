@@ -2,6 +2,7 @@
     <div class="viewArea">
         <div class="contentDiv flex-container">
             <el-collapse expand-icon-position="left" v-model="activeNames">
+
                 <el-collapse-item name="1">
                     <template #title>
                         <span class="title">1. {{ $t('basicInfo') }}</span>
@@ -90,7 +91,7 @@
                                     <el-form-item :label="getLabel('carrierCode')">
                                         <el-select v-model="formData.carrierCode"
                                             :placeholder="getPlaceholder('carrierCode')" clearable
-                                            @change="selectChannel">
+                                            @change="selectChannel" filterable>
                                             <el-option v-for="item in carrierOptions" :key="item.id" :label="item.name"
                                                 :value="item.code" />
                                         </el-select>
@@ -99,7 +100,7 @@
                                 <el-col :span="6">
                                     <el-form-item :label="getLabel('shipwayCode')">
                                         <el-select v-model="formData.shipwayCode"
-                                            :placeholder="getPlaceholder('shipwayCode')" clearable>
+                                            :placeholder="getPlaceholder('shipwayCode')" clearable filterable>
                                             <el-option v-for="item in shipwayOptions" :key="item.id" :label="item.name"
                                                 :value="item.code" />
                                         </el-select>
@@ -237,9 +238,9 @@
                                     </div>
                                 </el-col>
                                 <el-col :span="6">
-                                    <el-button @click="openAddressDialog(true)" type="primary" plain>{{
-                                        getButtonText('addressBook')
-                                        }}</el-button>
+                                    <el-button @click="openAddressDialog(true)" type="primary" plain>
+                                        {{ getButtonText('addressBook') }}
+                                    </el-button>
                                 </el-col>
                             </el-row>
                         </el-form>
@@ -253,42 +254,36 @@
                     <div class="collapse-item-content">
                         <el-form :model="formData.sender" :rules="rules" label-width="115px">
                             <el-row>
-                                <!-- 发件人 -->
                                 <el-col :span="6">
                                     <el-form-item :label="getLabel('senderName')">
                                         <el-input v-model.trim="formData.sender.name"
                                             :placeholder="getPlaceholder('senderName')" />
                                     </el-form-item>
                                 </el-col>
-                                <!-- 公司名 -->
                                 <el-col :span="6">
                                     <el-form-item :label="getLabel('senderCompany')">
                                         <el-input v-model.trim="formData.sender.company"
                                             :placeholder="getPlaceholder('senderCompany')" />
                                     </el-form-item>
                                 </el-col>
-                                <!--证件号码 -->
                                 <el-col :span="6">
                                     <el-form-item :label="getLabel('senderIdentityNumber')">
                                         <el-input v-model.trim="formData.sender.identityNumber"
                                             :placeholder="getPlaceholder('senderIdentityNumber')" />
                                     </el-form-item>
                                 </el-col>
-                                <!-- 电话1 -->
                                 <el-col :span="6">
                                     <el-form-item :label="getLabel('senderPhone1')">
                                         <el-input v-model.trim="formData.sender.phoneNumber1"
                                             :placeholder="getPlaceholder('senderPhone1')" />
                                     </el-form-item>
                                 </el-col>
-                                <!-- 电话2 -->
                                 <el-col :span="6">
                                     <el-form-item :label="getLabel('senderPhone2')">
                                         <el-input v-model.trim="formData.sender.phoneNumber2"
                                             :placeholder="getPlaceholder('senderPhone2')" />
                                     </el-form-item>
                                 </el-col>
-                                <!-- 邮箱 -->
                                 <el-col :span="6">
                                     <el-form-item :label="getLabel('senderEmail')">
                                         <el-input v-model.trim="formData.sender.email"
@@ -336,9 +331,9 @@
                                     </el-form-item>
                                 </el-col>
                                 <el-col :span="6">
-                                    <el-button @click="openAddressDialog(false)" type="primary" plain>{{
-                                        getButtonText('addressBook')
-                                    }}</el-button>
+                                    <el-button @click="openAddressDialog(false)" type="primary" plain>
+                                        {{ getButtonText('addressBook') }}
+                                    </el-button>
                                 </el-col>
                             </el-row>
                         </el-form>
@@ -360,7 +355,7 @@
                                 </el-input>
                             </template>
                             <template #qty="{ row }">
-                                <el-input v-model="row.qty" placeholder="请输入数量" v-number />
+                                <el-input v-model="row.qty" placeholder="请输入数量" v-intNumber />
                             </template>
                             <template #qualityId="{ row }">
                                 <el-select v-model="row.qualityId" placeholder="请选择品质">
@@ -387,7 +382,7 @@
                                 </el-select>
                             </template>
                             <template #planQty="{ row }">
-                                <el-input v-model.number="row.planQty" placeholder="请输入计划数量" v-number />
+                                <el-input v-model="row.planQty" placeholder="请输入计划数量" v-intNumber />
                             </template>
                             <template #unit="{ row }">
                                 <el-select v-model="row.unit" placeholder="请选择单位" clearable filterable disabled>
@@ -395,33 +390,26 @@
                                         :value="item.name" />
                                 </el-select>
                             </template>
-                            <template #sku="{ row, $index }"> <!-- 接收行索引 -->
+                            <template #sku="{ row }">
                                 <el-select style="width: 150px;" v-model="row.sku" placeholder="请选择SKU"
                                     @visible-change="handleSkuVisibleChange" filterable>
-                                    <!-- 加载状态显示 -->
                                     <template v-if="isSkuLoading">
                                         <el-option disabled label="loading..." />
                                     </template>
-                                    <!-- 正常选项列表 -->
                                     <template v-else>
                                         <el-option v-for="item in selectSkuList" :key="item.sku" :label="item.sku"
                                             :value="item.sku" />
                                     </template>
                                 </el-select>
                             </template>
-                            <!-- 合并后的附件列 -->
                             <template #attachment="{ row }">
                                 <div class="attachment-container">
-                                    <!-- 已上传附件列表 -->
                                     <div class="attachment-list" v-if="row.attachments && row.attachments.length > 0">
                                         <div v-for="(file, index) in row.attachments" :key="index"
                                             class="attachment-item">
-                                            <a :href="file.url" target="_blank" class="file-link">
-                                                {{ file.name.length > 20 ? file.name.slice(0, 20) + '...' : file.name }}
-                                            </a>
+                                            <a :href="file.url" target="_blank" class="file-link">{{ file.name }}</a>
                                         </div>
                                     </div>
-                                    <!-- 上传按钮 -->
                                     <el-upload :auto-upload="true"
                                         :http-request="(params) => handleServiceUpload(params, row)" multiple
                                         :show-file-list="false" v-if="!row.attachments || row.attachments.length === 0">
@@ -490,39 +478,13 @@
                                     </el-input>
                                 </div>
                             </template>
-
-                            <!-- <template #labelUrl="{ row }">
-                                <el-input v-model="row.labelUrl" placeholder="请输入运单URL">
-                                    <template #append>
-                                        <el-upload :auto-upload="true"
-                                            :http-request="(options) => handleLabelUrlUpload(options, row)"
-                                            :before-upload="beforeUpload" multiple :show-file-list="false">
-                                            <el-button icon="Upload" />
-                                        </el-upload>
-                                    </template>
-                                </el-input>
-                            </template>
-
-                            <template #customLabelUrl="{ row }">
-                                <el-input v-model="row.customLabelUrl" placeholder="请输入报关单URL">
-                                    <template #append>
-                                        <el-upload :auto-upload="true"
-                                            :http-request="(options) => handleCustomLabelUrlUpload(options, row)"
-                                            :before-upload="beforeUpload" multiple :show-file-list="false">
-                                            <el-button icon="Upload" />
-                                        </el-upload>
-                                    </template>
-                                </el-input>
-                            </template> -->
                             <template #skus="{ row }">
                                 <div class="tableFormSlot" v-for="(sku, index) in row.skuList" :key="index">
                                     <el-select style="width: 110px;" v-model="sku.sku" placeholder="请选择SKU"
                                         @visible-change="handleSkuVisibleChange" filterable>
-                                        <!-- 加载状态显示 -->
                                         <template v-if="isSkuLoading">
                                             <el-option disabled label="loading..." />
                                         </template>
-                                        <!-- 正常选项列表 -->
                                         <template v-else>
                                             <el-option v-for="item in selectSkuList" :key="item.sku" :label="item.sku"
                                                 :value="item.sku" />
@@ -563,7 +525,6 @@
                                 </el-select>
                             </template>
                             <template #fileName="{ row }">
-                                <!-- a标签在新页面打开 -->
                                 <el-input v-model="row.fileName" v-if="row.url" />
                                 <el-upload v-else :auto-upload="true" :http-request="handleUpload" multiple
                                     :show-file-list="false">
@@ -592,51 +553,55 @@
             </el-collapse>
 
             <div class="btns">
-                <!-- 保存和关闭 -->
                 <el-button type="primary" @click="handleSave">{{ getButtonText('save') }}</el-button>
                 <el-button @click="handleClose">{{ getButtonText('close') }}</el-button>
             </div>
+
             <skuSelectDialog v-model:visible="skuDialogVisible" :customerCode="formData.customerCode"
                 @confirm="handleSkuConfirm" />
             <addressSelectDialog v-model:visible="addressDialogVisible" @confirm="handleAddressConfirm"
                 :customerCode="formData.customerCode" />
         </div>
     </div>
-
 </template>
 
 <script setup name="新增出库单">
+// ================== 1. 导入依赖 ==================
+// API 导入
 import { getProductShipwayTypeEnumApi, getProductShipwayListApi, getProductShipwayBrandListApi, getProductSupplierListApi } from '@/api/productApi/shipway.js'
-import { getCurrencyListApi } from '@/api/baseApi/index.js';
-import { getOrderQualityEnumApi } from '@/api/instockApi/order.js'
-import { getInstockInOrderBusinessEnumApi } from '@/api/instockApi/order.js';
+import { getCurrencyListApi, uploadApi } from '@/api/baseApi/index.js';
+import { getOrderQualityEnumApi, getInstockInOrderBusinessEnumApi } from '@/api/instockApi/order.js'
 import { getBasicConsumablesListEnumApi } from '@/api/baseApi/consumables.js'
 import { getVasServiceTypeListApi, getVasServiceTypeUnitEnumApi } from '@/api/vasApi/vas.js'
-
-import generalAddTable from '@/components/table/generalAddTable.vue'
 import { getOrgCountryListApi } from '@/api/baseApi/org.js';
-import { addOutstockOrderApi, outstockOrderCreateTypeApi, outstockOrderAddressTypeApi, outstockOrderStatusApi, outstockOrderTypeApi, getOutstockOrderDetailApi, outstockOrderEcommercePlatformApi, getGenerateCustomerOrderNoApi } from '@/api/outstockApi/order.js'
-import { getTemplateApi } from '@/api/baseApi/index.js';
-import { getLabel } from '@/utils/i18n/i18nLabels.js';
+import { addOutstockOrderApi, outstockOrderCreateTypeApi, outstockOrderAddressTypeApi, outstockOrderStatusApi, outstockOrderTypeApi, outstockOrderEcommercePlatformApi, getGenerateCustomerOrderNoApi, outstockOrderAttachmentTypeApi } from '@/api/outstockApi/order.js'
 import { getWhWarehouseApi } from '@/api/baseApi/wh.js'
-import { uploadApi } from '@/api/baseApi/index.js'
 import { getCustomerLikeQueryApi, getSkuSkuDataBySkuApi } from '@/api/baseApi/sku.js'
+
+// 组件与工具导入
+import generalAddTable from '@/components/table/generalAddTable.vue'
+import { getLabel } from '@/utils/i18n/i18nLabels.js';
 import { smartAlert } from '@/utils/genericMethods.js'
 import skuSelectDialog from './skuSelectDialog.vue';
 import addressSelectDialog from './addressSelectDialog.vue';
+import { validateTableHelper, fieldCustomCheck } from './utils'
 import { useRoute } from 'vue-router';
 import router from '@/router/index.js'
-const route = useRoute()
+import { ElMessage, ElLoading } from 'element-plus';
+
+// Store 导入
 import tagsStore from '@/store/tags.js'
-let useTagsStore = tagsStore()
 import { useRefreshStore } from '@/store/refresh.js'
-import { ElMessage } from 'element-plus';
+
+// ================== 2. 状态定义 ==================
+const route = useRoute()
+let useTagsStore = tagsStore()
 const refreshStore = useRefreshStore()
 
-//默认展开 '1', '2', '4', '5', '6'
+// 折叠面板默认展开项
 const activeNames = ref(['1', '2', '4', '5', '6'])
 
-// 表单数据
+// 表单引用与数据
 const formRef = ref(null);
 const formData = ref({
     customerCode: "",
@@ -668,26 +633,131 @@ const formData = ref({
     serviceTableData: [],
 });
 
-// 保存
+// 下拉框选项数据
+const warehouseOptions = ref([])
+const customerOptions = ref([])
+const countryOptions = ref([])
+const businessOptions = ref([])
+const shipwayTypeOptions = ref([])
+const shipwayOptions = ref([])
+const carrierOptions = ref([])
+const createWayOptions = ref([])
+const addressTypeOptions = ref([])
+const typeOptions = ref([])
+const statusOptions = ref([])
+const currencyOptions = ref([])
+const qualityOptions = ref([])
+const supplierOptions = ref([])
+const serviceTypeOptions = ref([])
+const unitOptions = ref([]);
+const ecPlatformOptions = ref([])
+const fileTypeOptions = ref([])
+const consumablesOptions = ref([])
+
+// 表格 Ref
+const skuListTableRef = ref(null);
+const fileListTableRef = ref(null);
+const trackingNoListTableRef = ref(null);
+const remarkListTableRef = ref(null);
+const serviceTableRef = ref(null);
+
+// ================== 3. 表格列定义与验证规则 ==================
+
+// SKU表格列
+const skuColumns = [
+    { label: 'SKU', prop: 'sku', width: 285, slot: 'sku', required: true },
+    { label: '品名', prop: 'name', width: 255 },
+    { label: '品质', prop: 'qualityId', width: 250, slot: 'qualityId', required: true },
+    { label: '数量', prop: 'qty', width: 250, slot: 'qty', required: true },
+]
+// 附件表格列
+const filesColumns = [
+    { label: '附件类型', prop: 'typeId', width: 240, slot: 'typeId', required: true },
+    { label: '附件名称', prop: 'fileName', width: 350, slot: 'fileName', required: true },
+    { label: '附件地址', prop: 'fileUrl', width: 450, slot: 'fileUrl' },
+]
+// 备注表格列
+const remakeColumns = [
+    { label: '备注', prop: 'remark', width: 1040, slot: 'remark' },
+]
+// 物流包裹表格列
+const logisticsColumns = [
+    { label: '长/宽/高(CM)', prop: 'size', width: 180, slot: 'size', required: true },
+    { label: '包裹重量(KG)', prop: 'weight', width: 130, slot: 'weight', required: true },
+    { label: '跟踪单号、运单/报关单URL', prop: 'trackingNo', width: 220, slot: 'trackingNo' },
+    { label: 'SKU/数量', prop: 'skus', width: 260, slot: 'skus', required: true },
+    { label: '耗材/数量', prop: 'consumablesList', width: 255, slot: 'consumables' },
+]
+// 任务与增值服务表格列
+const serviceTableColumns = ref([
+    { label: '服务类型', prop: 'serviceTypeId', required: true, slot: 'serviceTypeId', width: 150 },
+    { label: '计划数量', prop: 'planQty', required: true, slot: 'planQty', width: 120 },
+    { label: '单位', prop: 'unit', required: true, slot: 'unit', width: 100 },
+    { label: 'SKU', prop: 'sku', slot: 'sku', width: 180 },
+    { label: '附件', prop: 'attachments', slot: 'attachment', width: 150, },
+    { label: '备注', prop: 'remark', slot: 'remark', width: 340 }
+]);
+
+// 表单验证规则
+const rules = {
+    name: [{ required: true, message: '请输入' + getLabel('receiverName'), trigger: 'change' }],
+    phoneNumber1: [{ required: true, message: '请输入' + getLabel('receiverPhoneNumber1'), trigger: 'change' }],
+    countryCode: [{ required: true, message: '请选择' + getLabel('countryCode'), trigger: 'change' }],
+    city: [{ required: true, message: '请输入' + getLabel('city'), trigger: 'change' }],
+    addressLine1: [{ required: true, message: '请输入' + getLabel('addressLine1'), trigger: 'change' }],
+    customerOrderNo: [{ required: true, message: '请输入' + getLabel('customerOrderNo'), trigger: 'change' }],
+    businessId: [{ required: true, message: '请选择' + getLabel('businessId'), trigger: 'change' }],
+    customerCode: [{ required: true, message: '请选择' + getLabel('customerCode'), trigger: 'change' }],
+    warehouseCode: [{ required: true, message: '请选择' + getLabel('warehouseCode'), trigger: 'change' }],
+    typeId: [{ required: true, message: '请选择' + getLabel('typeId'), trigger: 'change' }],
+    statusId: [{ required: true, message: '请选择' + getLabel('statusId'), trigger: 'change' }]
+};
+
+// ================== 4. 核心逻辑 (保存/关闭) ==================
+
+// 保存处理
 const handleSave = async () => {
     await formRef.value.validate(async (valid) => {
         if (valid) {
-            // -------------------SKU数量验证 -------------------
-            // 1. 获取skuListTable中的SKU及总数量
-            const skuTableData = skuListTableRef.value.getTableData() || [];
-            const skuQtyMap1 = {}; // 格式: { sku: 总数量 }
-            skuTableData.forEach(item => {
-                if (!item.sku) return; // 跳过空SKU
-                const sku = item.sku.toLowerCase(); // 统一转为小写避免大小写问题
+
+            // ---------------------------------------------------------
+            // 1. 表格数据校验与获取
+            // ---------------------------------------------------------
+
+            // 1.1 商品信息 (SKU列表)
+            const skuCheck = validateTableHelper(skuListTableRef, skuColumns, '商品信息');
+            if (!skuCheck.success) return;
+
+            // 1.2 任务与增值服务
+            const serviceCheck = validateTableHelper(serviceTableRef, serviceTableColumns.value, '任务与增值服务');
+            if (!serviceCheck.success) return;
+
+            // 1.3 物流包裹 (需要传入特殊字段校验逻辑 fieldCustomCheck)
+            const logisticsCheck = validateTableHelper(trackingNoListTableRef, logisticsColumns, '物流包裹', fieldCustomCheck);
+            if (!logisticsCheck.success) return;
+
+            // 1.4 附件列表
+            const fileCheck = validateTableHelper(fileListTableRef, filesColumns, '附件');
+            if (!fileCheck.success) return;
+
+            // 1.5 备注列表
+            const remarkCheck = validateTableHelper(remarkListTableRef, remakeColumns, '备注');
+            if (!remarkCheck.success) return;
+
+            // ---------------------------------------------------------
+            // 2. SKU总数一致性校验 (产品列表 vs 物流包裹列表)
+            // ---------------------------------------------------------
+
+            const skuQtyMap1 = {};
+            skuCheck.data.forEach(item => {
+                if (!item.sku) return;
+                const sku = item.sku.toLowerCase();
                 const qty = Number(item.qty) || 0;
                 skuQtyMap1[sku] = (skuQtyMap1[sku] || 0) + qty;
             });
 
-            // 2. 获取trackingNoListTable中的SKU及总数量
-            const trackingTableData = trackingNoListTableRef.value.getTableData() || [];
             const skuQtyMap2 = {};
-            trackingTableData.forEach(trackingItem => {
-                // 遍历每个物流单中的skuList
+            logisticsCheck.data.forEach(trackingItem => {
                 const trackingSkus = trackingItem.skuList || [];
                 trackingSkus.forEach(skuItem => {
                     if (!skuItem.sku) return;
@@ -697,95 +767,105 @@ const handleSave = async () => {
                 });
             });
 
-            // 3. 比较两个Map中的SKU数量
-            let isQtyMatch = true;
-            const allSkus = new Set([...Object.keys(skuQtyMap1), ...Object.keys(skuQtyMap2)]);
+            // 假设如果填了包裹信息，包裹内的SKU总数必须等于商品信息的SKU总数
+            if (skuCheck.data.length > 0 && logisticsCheck.data.length > 0) {
+                let isQtyMatch = true;
+                const allSkus = new Set([...Object.keys(skuQtyMap1), ...Object.keys(skuQtyMap2)]);
+                allSkus.forEach(sku => {
+                    const qty1 = skuQtyMap1[sku] || 0;
+                    const qty2 = skuQtyMap2[sku] || 0;
+                    if (qty1 !== qty2) isQtyMatch = false;
+                });
 
-            allSkus.forEach(sku => {
-                const qty1 = skuQtyMap1[sku] || 0;
-                const qty2 = skuQtyMap2[sku] || 0;
-                if (qty1 !== qty2) {
-                    isQtyMatch = false;
+                if (!isQtyMatch) {
+                    smartAlert('商品信息中的SKU总数量与物流包裹中的SKU总数量不匹配，请检查', false);
+                    return;
                 }
-            });
-
-            // 4. 数量不匹配时提示并终止提交
-            if (!isQtyMatch) {
-                smartAlert('SKU数量不匹配，请检查SKU数量是否正确', false);
-                return;
             }
-            // 定义表格检查配置
-            const tableConfigs = [
-                { tableRef: skuListTableRef, fieldName: 'skuList', checkProp: 'sku' },
-                { tableRef: fileListTableRef, fieldName: 'fileList', checkProp: 'fileName' },
-                { tableRef: trackingNoListTableRef, fieldName: 'waybillList', checkProp: 'weight' },
-                { tableRef: remarkListTableRef, fieldName: 'remarkList', checkProp: 'remark' },
-            ];
-            // 处理表单数据
+
+            // ---------------------------------------------------------
+            // 3. 数据组装
+            // ---------------------------------------------------------
+
             const data = { ...formData.value };
-            tableConfigs.forEach(({ tableRef, fieldName, checkProp }) => {
-                const tableData = tableRef.value.getTableData();
-                // 获取checkProp对应的字段值（这里默认取表格数据的第一条记录，可根据实际场景调整）
-                const checkValue = tableData.length > 0 ? tableData[0][checkProp] : null;
-                if (checkValue) {
-                    data[fieldName] = tableData;
-                } else {
-                    delete data[fieldName];
-                }
-            });
-            // ---------------------- 新增：处理增值服务表格数据 ----------------------
-            const vasItemTableDataLocal = serviceTableRef.value.getTableData() || [];
-            if (vasItemTableDataLocal.length > 0 && vasItemTableDataLocal[0].serviceTypeId) {
-                // 格式化增值服务数据为接口要求的vasOrderItemList格式
-                data.vasOrderItemList = vasItemTableDataLocal.map(item => {
+
+            // 赋值经过校验的干净数据
+            data.skuList = skuCheck.data;
+            data.fileList = fileCheck.data;
+            data.waybillList = logisticsCheck.data;
+            data.remarkList = remarkCheck.data;
+
+            // 特殊处理：任务与增值服务 (转换附件格式)
+            if (serviceCheck.data.length > 0) {
+                data.vasOrderItemList = serviceCheck.data.map(item => {
                     const attachments = Array.isArray(item.attachments) ? item.attachments : null;
                     return {
                         ...item,
-                        serviceAttachment: attachments ? JSON.stringify(attachments) : null, // 附件JSON字符串
+                        serviceAttachment: attachments ? JSON.stringify(attachments) : null,
+                        resultAttachment: item.resultAttachment || null
                     };
                 });
+            } else {
+                data.vasOrderItemList = [];
             }
-            // ----------------------------------------------------------------------
-            if (data.waybillList) {
-                if (data.waybillList.length == 1) {
-                    // 遍历data.skuList，将sku和qty赋值给data.waybillList[0].skuList
+
+            // 特殊处理：物流包裹 (转换SKU列表格式)
+            if (data.waybillList && data.waybillList.length > 0) {
+                // 如果只有一个包裹且没有手动分配SKU，自动将总SKU列表填入 (智能辅助)
+                if (data.waybillList.length === 1 && (!data.waybillList[0].skuList || data.waybillList[0].skuList.length === 0)) {
                     data.waybillList[0].skuList = data.skuList.map(item => ({ sku: item.sku, qty: item.qty }));
                 }
+
+                // 序列化 skus 字段供后端使用
                 data.waybillList.forEach(item => {
                     if (item.skuList && item.skuList.length > 0) {
                         item.skus = JSON.stringify(item.skuList);
                     }
-                })
+                });
             }
+
+            // 清理空对象
             if (data.sender && typeof data.sender === 'object' && Object.keys(data.sender).length === 0) {
                 data.sender = null;
             }
-            //提交数据
-            const res = await addOutstockOrderApi(data);
-            smartAlert(res.msg, res.success, 1000);
 
-            if (res.success) {
-                refreshStore.shouldRefreshOutOrderList = true;
-                useTagsStore.tagsStore = useTagsStore.tagsStore.filter(
-                    item => item.path !== route.fullPath
-                );
-                router.push('/outstock/order/outOrder/list');
+            // ---------------------------------------------------------
+            // 4. 提交接口
+            // ---------------------------------------------------------
+
+            try {
+                const res = await addOutstockOrderApi(data);
+                smartAlert(res.msg, res.success, 1000);
+
+                if (res.success) {
+                    refreshStore.shouldRefreshOutOrderList = true;
+                    useTagsStore.tagsStore = useTagsStore.tagsStore.filter(
+                        item => item.path !== route.fullPath
+                    );
+                    router.push('/outstock/order/outOrder/list');
+                }
+            } catch (error) {
+                console.error(error);
+                smartAlert('保存失败，请重试', false);
             }
+
         } else {
+            // 表单基础校验失败
             console.log('Form validation failed.');
+            ElMessage.error('请检查基本信息必填项');
         }
     });
 };
-// 关闭
+
+// 关闭页面
 const handleClose = () => {
     // 在标签页中删除当前页
     useTagsStore.tagsStore = useTagsStore.tagsStore.filter(item => item.path !== route.fullPath)
     router.push({ path: '/outstock/order/outOrder/list' })
 }
 
+// ================== 5. SKU 相关逻辑 ==================
 
-
-// ----------------------------------------------------sku相关----------------------------------------------------
 // 失焦获取sku信息
 async function onSkuBlur(row) {
     if (!formData.value.customerCode) {
@@ -809,14 +889,12 @@ async function onSkuBlur(row) {
     }
 }
 
-
-// 已选择SKU列表
+// 已选择SKU列表 (用于下拉去重显示)
 const selectSkuList = ref([]);
-// 加载状态
 const isSkuLoading = ref(false);
-// 处理下拉框显示/隐藏事件
+
+// 处理SKU下拉框显示/隐藏事件 (去重逻辑)
 const handleSkuVisibleChange = (visible) => {
-    // 当下拉框显示时执行逻辑
     if (visible) {
         isSkuLoading.value = true;
         setTimeout(() => {
@@ -825,9 +903,7 @@ const handleSkuVisibleChange = (visible) => {
             const skuMap = {};
             rawSkuList.forEach(item => {
                 if (!item?.sku) return;
-                // 将sku转换为小写作为去重判断
                 const lowerSku = item.sku.toLowerCase();
-
                 if (!skuMap[lowerSku]) {
                     skuMap[lowerSku] = item;
                 }
@@ -841,7 +917,6 @@ const handleSkuVisibleChange = (visible) => {
 
 // 批量选择 SKU 弹窗相关
 const skuDialogVisible = ref(false);
-// 打开sku弹窗
 function openSkuDialog() {
     if (!formData.value.customerCode) {
         ElMessage.warning('请先选择客户代码');
@@ -849,15 +924,10 @@ function openSkuDialog() {
     }
     skuDialogVisible.value = true;
 }
+
 // 确定选择 SKU
 async function handleSkuConfirm(selectedList) {
-    // 若数组为空或无效，直接返回
     if (!selectedList || !Array.isArray(selectedList) || selectedList.length === 0) return;
-    const loading = ElLoading.service({
-        lock: true,
-        target: ".contentDiv",
-        text: 'Loading'
-    })
 
     try {
         for (const sku of selectedList) {
@@ -868,28 +938,26 @@ async function handleSkuConfirm(selectedList) {
                     sku: sku
                 });
                 const rowData = {
-                    sku: sku, // SKU 字段值为当前遍历的字符串
-                    name: res.success && res.data
-                        ? res.data.nameCn
-                        : (res.msg || 'SKU 无效，请重新输入')
+                    sku: sku,
+                    name: res.success && res.data ? res.data.nameCn : (res.msg || 'SKU 无效，请重新输入')
                 };
-
                 // 调用表格组件方法新增行
                 skuListTableRef.value.addOrReplaceRow(rowData, ['sku']);
             } catch (e) {
-                // 单个 SKU 接口调用失败时的处理（不影响其他 SKU）
                 console.error(`获取 SKU [${sku}] 信息失败`, e);
                 smartAlert(`获取 SKU [${sku}] 信息失败: ${e.msg}`, false);
             }
         }
     } finally {
-        loading.close();
         skuDialogVisible.value = false;
     }
 }
-// ----------------------------------------------------地址相关----------------------------------------------------
+
+// ================== 6. 地址簿相关逻辑 ==================
+
 const addressDialogVisible = ref(false);
-// 打开地址弹窗
+const isReceiver = ref(true); // 标记是发件人还是收件人
+
 function openAddressDialog(type) {
     if (!formData.value.customerCode) {
         ElMessage.warning('请先选择客户代码');
@@ -898,41 +966,33 @@ function openAddressDialog(type) {
     isReceiver.value = type;
     addressDialogVisible.value = true;
 }
-// 发件/收件
-const isReceiver = ref(true);
 
-// 确定选择地址
 function handleAddressConfirm(selectedAddress) {
     if (isReceiver.value) {
         formData.value.receiver = { ...selectedAddress, addressType: selectedAddress.typeId };
     } else {
         formData.value.sender = { ...selectedAddress, addressType: selectedAddress.typeId };
     }
-
 }
 
+// ================== 7. 文件上传逻辑 ==================
 
-// ----------------------------------------------------------文件上传---------------------------------------------------
-// 文件上传前校验
+// 文件上传前校验 (仅限PDF)
 const beforeUpload = (file) => {
-    // 校验是否为PDF文件（结合MIME类型和文件名后缀，更严谨）
-    const isPdf =
-        file.type === 'application/pdf' ||  // 校验MIME类型
-        file.name.toLowerCase().endsWith('.pdf');  // 校验文件名后缀（忽略大小写）
-
+    const isPdf = file.type === 'application/pdf' || file.name.toLowerCase().endsWith('.pdf');
     if (!isPdf) {
         smartAlert('请上传PDF格式的文件!', false);
         return false;
     }
-
     return true;
 };
 
-// 自定义上传处理
+// 附件表格上传处理
 const handleUpload = async (options) => {
     const currentFile = options.file;
     if (!currentFile) return;
 
+    // 前端查重
     const isDuplicate = formData.value.fileList.some(
         item => item.fileName === currentFile.name && item.size === currentFile.size
     );
@@ -943,27 +1003,18 @@ const handleUpload = async (options) => {
 
     try {
         const res = await uploadApi(currentFile, { path: 'temp' });
+        const rowData = res.success
+            ? { fileName: currentFile.name, url: res.data }
+            : { fileName: res.msg || '上传失败，请重试', url: '' };
 
-        if (res.success) {
-            fileListTableRef.value.addOrReplaceRow({
-                fileName: currentFile.name,
-                url: res.data,
-            }, ['fileName']);
-        } else {
-            fileListTableRef.value.addOrReplaceRow({
-                fileName: res.msg || '上传失败，请重试',
-                url: '',
-            }, ['fileName']);
-        }
+        fileListTableRef.value.addOrReplaceRow(rowData, ['fileName']);
     } catch (error) {
-        fileListTableRef.value.addOrReplaceRow({
-            fileName: '上传失败，请重试',
-            url: '',
-        }, ['fileName']);
+        fileListTableRef.value.addOrReplaceRow({ fileName: '上传失败，请重试', url: '' }, ['fileName']);
         smartAlert(error.msg, false);
     }
 };
-// 增值服务上传
+
+// 任务与增值服务附件上传
 const handleServiceUpload = async (params, row) => {
     const file = params.file;
     try {
@@ -986,105 +1037,44 @@ const handleServiceUpload = async (params, row) => {
                 url: res.data,
                 size: file.size
             });
-            ElMessage({
-                message: 'Success',
-                type: 'success',
-            })
+            ElMessage.success('Success');
             params.onSuccess && params.onSuccess();
         } else {
-            ElNotification.error({ title: '失败', message: res.msg || '文件上传失败' });
+            ElMessage.error(res.msg || '文件上传失败');
             params.onError && params.onError();
         }
     } catch (error) {
         console.error('文件上传失败：', error);
-        ElNotification.error({ title: '失败', message: '文件上传失败，请重试' });
+        ElMessage.error('文件上传失败，请重试');
         params.onError && params.onError();
     }
 };
-// 运单URL行内上传处理
-const handleLabelUrlUpload = async (options, row) => {
-    const currentFile = options.file;
-    if (!currentFile) return;
 
-    const loading = ElLoading.service({
-        lock: true,
-        target: ".contentDiv",
-        text: 'loading...'
-    });
-
+// 运单/报关单/退货单 上传 (复用逻辑)
+const uploadHelper = async (file, row, fieldName, errorMsg) => {
+    if (!file) return;
     try {
-        const res = await uploadApi(currentFile, { path: 'temp' });
-
+        const res = await uploadApi(file, { path: 'temp' });
         if (res.success) {
-            row.labelUrl = res.data;
+            row[fieldName] = res.data;
         } else {
-            ElMessage.error(`运单上传失败：${res.msg || '服务器异常'}`);
-            row.labelUrl = '';
+            ElMessage.error(`${errorMsg}失败：${res.msg || '服务器异常'}`);
+            row[fieldName] = '';
         }
     } catch (error) {
-        ElMessage.error(`运单上传出错：${error.msg || '网络异常'}`);
-        row.labelUrl = '';
-    } finally {
-        loading.close();
-    }
-};
-
-//报关单URL行内上传处理
-const handleCustomLabelUrlUpload = async (options, row) => {
-    const currentFile = options.file;
-    if (!currentFile) return;
-
-    const loading = ElLoading.service({
-        lock: true,
-        target: ".contentDiv",
-        text: 'loading...'
-    });
-
-    try {
-        const res = await uploadApi(currentFile, { path: 'temp' });
-
-        if (res.success) {
-            row.customLabelUrl = res.data;
-        } else {
-            ElMessage.error(`报关单上传失败：${res.msg || '服务器异常'}`);
-            row.customLabelUrl = '';
-        }
-    } catch (error) {
-        ElMessage.error(`报关单上传出错：${error.msg || '网络异常'}`);
-        row.customLabelUrl = '';
-    } finally {
-        loading.close();
-    }
-};
-// 退货单URL行内上传处理
-const handleReturnLabelUrlUpload = async (options, row) => {
-    const currentFile = options.file;
-    if (!currentFile) return;
-
-    const loading = ElLoading.service({
-        lock: true,
-        target: ".contentDiv",
-        text: 'loading...'
-    });
-
-    try {
-        const res = await uploadApi(currentFile, { path: 'temp' });
-
-        if (res.success) {
-            row.returnLabelUrl = res.data;
-        } else {
-            ElMessage.error(`退货运单上传失败：${res.msg || '服务器异常'}`);
-            row.returnLabelUrl = '';
-        }
-    } catch (error) {
-        ElMessage.error(`退货运单上传出错：${error.msg || '网络异常'}`);
-        row.returnLabelUrl = '';
-    } finally {
-        loading.close();
+        ElMessage.error(`${errorMsg}出错：${error.msg || '网络异常'}`);
+        row[fieldName] = '';
     }
 }
 
-// ----------------------------------------------------------增值服务
+const handleLabelUrlUpload = (options, row) => uploadHelper(options.file, row, 'labelUrl', '运单上传');
+const handleCustomLabelUrlUpload = (options, row) => uploadHelper(options.file, row, 'customLabelUrl', '报关单上传');
+const handleReturnLabelUrlUpload = (options, row) => uploadHelper(options.file, row, 'returnLabelUrl', '退货运单上传');
+
+
+// ================== 8. 辅助业务逻辑 ==================
+
+// 任务与增值服务类型改变时，联动单位
 const onServiceTypeChange = (row, val) => {
     if (!val) {
         row.unit = '';
@@ -1097,292 +1087,86 @@ const onServiceTypeChange = (row, val) => {
     }
 };
 
-// 表格REF
-const skuListTableRef = ref(null);
-const fileListTableRef = ref(null);
-const trackingNoListTableRef = ref(null);
-const remarkListTableRef = ref(null);
-const serviceTableRef = ref(null);
-// 表格列
-const skuColumns = [
-    { label: 'SKU', prop: 'sku', width: 285, slot: 'sku', required: true },
-    { label: '品名', prop: 'name', width: 255 },
-    { label: '品质', prop: 'qualityId', width: 250, slot: 'qualityId', required: true },
-    { label: '数量', prop: 'qty', width: 250, slot: 'qty', required: true },
-]
-const filesColumns = [
-    { label: '附件类型', prop: 'typeId', width: 240, slot: 'typeId' },
-    { label: '附件名称', prop: 'fileName', width: 350, slot: 'fileName', required: true },
-    { label: '附件地址', prop: 'fileUrl', width: 450, slot: 'fileUrl', required: true },
-]
-const remakeColumns = [
-    { label: '备注', prop: 'remark', width: 1040, slot: 'remark' },
-]
-const logisticsColumns = [
-    { label: '长/宽/高(CM)', prop: 'size', width: 180, slot: 'size', required: true },
-    { label: '包裹重量(KG)', prop: 'weight', width: 130, slot: 'weight', required: true },
-    { label: '跟踪单号、运单/报关单URL', prop: 'trackingNo', width: 220, slot: 'trackingNo' },
-    // { label: '运单URL', prop: 'labelUrl', width: 180, slot: 'labelUrl' },
-    // { label: '报关单URL', prop: 'customLabelUrl', width: 180, slot: 'customLabelUrl' },
-    { label: 'SKU/数量', prop: 'skus', width: 260, slot: 'skus', required: true },
-    { label: '耗材/数量', prop: 'consumablesList', width: 255, slot: 'consumables' },
-]
-const serviceTableColumns = ref([
-    { label: '服务类型', prop: 'serviceTypeId', required: true, slot: 'serviceTypeId', width: 150 },
-    { label: '计划数量', prop: 'planQty', required: true, slot: 'planQty', width: 120 },
-    { label: '单位', prop: 'unit', required: true, slot: 'unit', width: 100 },
-    { label: 'SKU', prop: 'sku', slot: 'sku', width: 180 },
-    { label: '附件', prop: 'attachments', slot: 'attachment', width: 150 },
-    { label: '备注', prop: 'remark', slot: 'remark', width: 340 }
-]);
-
-
-// 验证规则
-const rules = {
-    name: [
-        { required: true, message: '请输入' + getLabel('receiverName'), trigger: 'change' }
-    ],
-    phoneNumber1: [
-        { required: true, message: '请输入' + getLabel('receiverPhoneNumber1'), trigger: 'change' }
-    ],
-    countryCode: [
-        { required: true, message: '请选择' + getLabel('countryCode'), trigger: 'change' }
-    ],
-    city: [
-        { required: true, message: '请输入' + getLabel('city'), trigger: 'change' }
-    ],
-    addressLine1: [
-        { required: true, message: '请输入' + getLabel('addressLine1'), trigger: 'change' }
-    ],
-    customerOrderNo: [
-        { required: true, message: '请输入' + getLabel('customerOrderNo'), trigger: 'change' }
-    ],
-    businessId: [
-        { required: true, message: '请选择' + getLabel('businessId'), trigger: 'change' }
-    ],
-    customerCode: [
-        { required: true, message: '请选择' + getLabel('customerCode'), trigger: 'change' }
-    ],
-    warehouseCode: [
-        { required: true, message: '请选择' + getLabel('warehouseCode'), trigger: 'change' }
-    ],
-    typeId: [
-        { required: true, message: '请选择' + getLabel('typeId'), trigger: 'change' }
-    ],
-    statusId: [
-        { required: true, message: '请选择' + getLabel('statusId'), trigger: 'change' }
-    ]
-};
-
-// -------------------------------------------------包裹SKU和耗材相关-------------------------------------------------
-// 添加当前物流单的SKU项
-const addSku = (trackingNoRow) => {
-    if (!trackingNoRow.skuList) {
-        trackingNoRow.skuList = [];
-    }
-
-    trackingNoRow.skuList.push({
-        sku: '',
-        qty: null,
-    });
-};
-
-// 删除当前物流单的指定SKU项
-const delSku = (trackingNoRow, skuIndex) => {
-    if (!trackingNoRow.skuList || trackingNoRow.skuList.length <= 1) {
-        return;
-    }
-    trackingNoRow.skuList.splice(skuIndex, 1);
-};
-
-// 添加当前物流单的耗材项
-const addConsumables = (trackingNoRow) => {
-    if (!trackingNoRow.consumablesList) {
-        trackingNoRow.consumablesList = [];
-    }
-
-    trackingNoRow.consumablesList.push({
-        consumablesCode: '',
-        quantity: null,
-    });
-};
-// 删除当前物流单的指定耗材项
-const delConsumables = (trackingNoRow, index) => {
-    if (!trackingNoRow.consumablesList || trackingNoRow.consumablesList.length <= 1) {
-        return;
-    }
-    trackingNoRow.consumablesList.splice(index, 1);
-};
-
-// 仓库下拉框数据（对应warehouseCode字段）
-const warehouseOptions = ref([])
-// 客户下拉框过滤后数据（对应customerCode字段）
-const customerOptions = ref([])
-// 国家编码下拉框数据（对应receiver.countryCode/sender.countryCode字段）
-const countryOptions = ref([])
-// 业务类型下拉框数据（对应businessId字段）
-const businessOptions = ref([])
-// 运输方式类型下拉框数据（对应shipwayTypeId字段）
-const shipwayTypeOptions = ref([])
-// 物流方式下拉框数据（对应shipwayCode/shipwayId字段）
-const shipwayOptions = ref([])
-// 承运商下拉框数据（对应carrierCode字段）
-const carrierOptions = ref([])
-// 创建方式下拉框数据（对应createWay字段）
-const createWayOptions = ref([])
-// 收件人地址类型下拉框数据（对应receiver.addressType字段）
-const addressTypeOptions = ref([])
-// 出库类型下拉框数据（对应typeId字段）
-const typeOptions = ref([])
-// 订单状态下拉框数据（对应statusId字段）
-const statusOptions = ref([])
-// 货币类型下拉框数据（对应insuranceCurrency字段）
-const currencyOptions = ref([])
-// 商品品质下拉框数据（对应skuList.qualityId字段）
-const qualityOptions = ref([])
-// 物流服务商下拉框数据（对应trackingNoList.supplierId字段）
-const supplierOptions = ref([])
-// 服务类型下拉框数据（对应serviceTypeId字段）
-const serviceTypeOptions = ref([])
-// 单位下拉框数据（对应unit字段）
-const unitOptions = ref([]);
-
-
-
-// 电商平台下拉框数据（对应ecPlatform字段）
-const ecPlatformOptions = ref([])
-// 附件类型下拉框数据（对应fileList.typeId字段）
-const fileTypeOptions = ref([])
-// 耗材下拉框数据（对应consumablesList.consumablesCode字段）
-const consumablesOptions = ref([])
 // 筛选物流产品
 const selectChannel = async () => {
     const productRes = await getProductShipwayListApi({
         carrierCode: formData.value.carrierCode,
+        statusId: 10
     })
     shipwayOptions.value = productRes.data
 }
 
-onMounted(async () => {
-    const loading = ElLoading.service({
-        lock: true,
-        text: "Loading",
-        target: ".contentDiv",
-    });
+// 自动生成订单号
+const getOrderNo = async () => {
+    const res = await getGenerateCustomerOrderNoApi()
+    if (res.success) {
+        formData.value.customerOrderNo = res.data
+    } else {
+        smartAlert(res.msg, false);
+    }
+}
 
+// 包裹内SKU操作
+const addSku = (trackingNoRow) => {
+    if (!trackingNoRow.skuList) trackingNoRow.skuList = [];
+    trackingNoRow.skuList.push({ sku: '', qty: null });
+};
+const delSku = (trackingNoRow, skuIndex) => {
+    if (!trackingNoRow.skuList || trackingNoRow.skuList.length <= 1) return;
+    trackingNoRow.skuList.splice(skuIndex, 1);
+};
+
+// 包裹内耗材操作
+const addConsumables = (trackingNoRow) => {
+    if (!trackingNoRow.consumablesList) trackingNoRow.consumablesList = [];
+    trackingNoRow.consumablesList.push({ consumablesCode: '', quantity: null });
+};
+const delConsumables = (trackingNoRow, index) => {
+    if (!trackingNoRow.consumablesList || trackingNoRow.consumablesList.length <= 1) return;
+    trackingNoRow.consumablesList.splice(index, 1);
+};
+
+
+// ================== 9. 生命周期 ==================
+
+onMounted(async () => {
     try {
-        //定义框接口任务
+        // 定义所有需要并发请求的字典接口
         const apiTasks = [
+            { key: "国家", api: getOrgCountryListApi(), handleSuccess: (data) => (countryOptions.value = data || []) },
+            { key: "仓库", api: getWhWarehouseApi(), handleSuccess: (data) => (warehouseOptions.value = data || []) },
+            { key: "业务类型", api: getInstockInOrderBusinessEnumApi(), handleSuccess: (data) => (businessOptions.value = data || []) },
             {
-                key: "国家",
-                api: getOrgCountryListApi(),
-                handleSuccess: (data) => (countryOptions.value = data || []),
+                key: "客户", api: getCustomerLikeQueryApi({ keyword: "*" }), handleSuccess: (data) =>
+                    (customerOptions.value = data.map((item) => ({ value: item.code, label: `${item.code}(${item.name})` })))
             },
+            { key: "运输方式类型", api: getProductShipwayTypeEnumApi(), handleSuccess: (data) => (shipwayTypeOptions.value = data || []) },
+            { key: "物流方式", api: getProductShipwayListApi({ statusId: 10 }), handleSuccess: (data) => (shipwayOptions.value = data || []) },
+            { key: "承运商", api: getProductShipwayBrandListApi({ statusId: 10 }), handleSuccess: (data) => (carrierOptions.value = data || []) },
+            { key: "物流服务商", api: getProductSupplierListApi({ statusId: 10 }), handleSuccess: (data) => (supplierOptions.value = data || []) },
             {
-                key: "仓库",
-                api: getWhWarehouseApi(),
-                handleSuccess: (data) => (warehouseOptions.value = data || []),
+                key: "货币类型", api: getCurrencyListApi(), handleSuccess: (data) => (currencyOptions.value = data.map(item => ({
+                    id: item.currency, name: item.remark
+                })) || [])
             },
-            {
-                key: "业务类型",
-                api: getInstockInOrderBusinessEnumApi(),
-                handleSuccess: (data) => (businessOptions.value = data || []),
-            },
-            {
-                key: "客户",
-                api: getCustomerLikeQueryApi({ keyword: "*" }),
-                handleSuccess: (data) =>
-                (customerOptions.value = data.map((item) => ({
-                    value: item.code,
-                    label: `${item.code}(${item.name})`,
-                }))),
-            },
-            {
-                key: "运输方式类型",
-                api: getProductShipwayTypeEnumApi(),
-                handleSuccess: (data) => (shipwayTypeOptions.value = data || []),
-            },
-            {
-                key: "物流方式",
-                api: getProductShipwayListApi(),
-                handleSuccess: (data) => (shipwayOptions.value = data || []),
-            },
-            {
-                key: "承运商",
-                api: getProductShipwayBrandListApi(),
-                handleSuccess: (data) => (carrierOptions.value = data || []),
-            },
-            {
-                key: "物流服务商",
-                api: getProductSupplierListApi(),
-                handleSuccess: (data) => (supplierOptions.value = data || []),
-            },
-            {
-                key: "货币类型",
-                api: getCurrencyListApi(),
-                handleSuccess: (data) => (currencyOptions.value = data.map(item => ({
-                    id: item.currency,
-                    name: item.remark
-                })) || []),
-            },
-            {
-                key: "商品品质",
-                api: getOrderQualityEnumApi(),
-                handleSuccess: (data) => (qualityOptions.value = data || []),
-            },
-            {
-                key: "出库类型",
-                api: outstockOrderTypeApi(),
-                handleSuccess: (data) => (typeOptions.value = data || []),
-            },
-            {
-                key: "订单状态",
-                api: outstockOrderStatusApi(),
-                handleSuccess: (data) => (statusOptions.value = data || []),
-            },
-            {
-                key: "创建方式",
-                api: outstockOrderCreateTypeApi(),
-                handleSuccess: (data) => (createWayOptions.value = data || []),
-            },
-            {
-                key: "收件人地址类型",
-                api: outstockOrderAddressTypeApi(),
-                handleSuccess: (data) => (addressTypeOptions.value = data || []),
-            },
-            {
-                key: "耗材类型",
-                api: getBasicConsumablesListEnumApi(),
-                handleSuccess: (data) => (consumablesOptions.value = data || []),
-            },
-            {
-                key: "电商平台",
-                api: outstockOrderEcommercePlatformApi(),
-                handleSuccess: (data) => (ecPlatformOptions.value = data || []),
-            },
-            {
-                key: "附件类型",
-                api: getTemplateApi({ atypeId: 2, btypeId: 401 }),
-                handleSuccess: (data) => (fileTypeOptions.value = data || []),
-            },
-            {
-                key: "服务类型",
-                api: getVasServiceTypeListApi(),
-                handleSuccess: (data) => (serviceTypeOptions.value = data || []),
-            },
-            {
-                key: "单位",
-                api: getVasServiceTypeUnitEnumApi(),
-                handleSuccess: (data) => (unitOptions.value = data || []),
-            }
+            { key: "商品品质", api: getOrderQualityEnumApi(), handleSuccess: (data) => (qualityOptions.value = data || []) },
+            { key: "出库类型", api: outstockOrderTypeApi(), handleSuccess: (data) => (typeOptions.value = data || []) },
+            { key: "订单状态", api: outstockOrderStatusApi(), handleSuccess: (data) => (statusOptions.value = data || []) },
+            { key: "创建方式", api: outstockOrderCreateTypeApi(), handleSuccess: (data) => (createWayOptions.value = data || []) },
+            { key: "收件人地址类型", api: outstockOrderAddressTypeApi(), handleSuccess: (data) => (addressTypeOptions.value = data || []) },
+            { key: "耗材类型", api: getBasicConsumablesListEnumApi(), handleSuccess: (data) => (consumablesOptions.value = data || []) },
+            { key: "电商平台", api: outstockOrderEcommercePlatformApi(), handleSuccess: (data) => (ecPlatformOptions.value = data || []) },
+            { key: "附件类型", api: outstockOrderAttachmentTypeApi({ atypeId: 2, btypeId: 402 }), handleSuccess: (data) => (fileTypeOptions.value = data || []) },
+            { key: "服务类型", api: getVasServiceTypeListApi({ isActive: true }), handleSuccess: (data) => (serviceTypeOptions.value = data || []) },
+            { key: "单位", api: getVasServiceTypeUnitEnumApi(), handleSuccess: (data) => (unitOptions.value = data || []) }
         ];
 
-        //执行所有请求
+        // 并发执行所有请求
         const dropdownResults = await Promise.allSettled(
             apiTasks.map((task) => task.api)
         );
 
-        //统一处理结果
+        // 统一处理结果
         dropdownResults.forEach((result, index) => {
             const task = apiTasks[index];
             if (result.status === "fulfilled") {
@@ -1397,26 +1181,12 @@ onMounted(async () => {
                 console.error(`[${task.key}] error:`, result.reason);
             }
         });
-    } finally {
-        loading.close();
+    } catch (error) {
+        smartAlert('数据加载失败，请重试', false);
+        console.error('数据加载失败:', error);
     }
 });
 
-// 表格数据
-const tableData = ref([
-    { skus: '', boxQty: '', boxInnerQty: '', remark: '' }
-]);
-
-// 获取单号
-const getOrderNo = async () => {
-    const res = await getGenerateCustomerOrderNoApi()
-    if (res.success) {
-        formData.value.customerOrderNo = res.data
-    } else {
-        smartAlert(res.msg, false);
-    }
-
-}
 </script>
 
 <style scoped lang="scss">
@@ -1432,7 +1202,7 @@ const getOrderNo = async () => {
     padding: 10px 18px 0;
 }
 
-// 添加flex容器样式
+// 添加flex容器样式，使页面布局更合理
 .flex-container {
     display: flex;
     flex-direction: column;
@@ -1440,7 +1210,7 @@ const getOrderNo = async () => {
     padding-bottom: 0 !important;
 }
 
-// 修改按钮区域样式
+// 底部按钮悬浮样式
 .btns {
     width: 100% !important;
     margin-top: auto;
@@ -1462,6 +1232,7 @@ h3 {
     margin: 4px 0;
 }
 
+// 错误状态样式覆盖
 :deep(.input-error-text .el-input__wrapper) {
     box-shadow: 0 0 0 1px #ff3a3a !important;
 }
@@ -1482,6 +1253,7 @@ h3 {
     width: 100% !important;
 }
 
+// 表格内加减号按钮样式
 :deep(.is-circle) {
     padding: 5px !important;
     width: 30px !important;

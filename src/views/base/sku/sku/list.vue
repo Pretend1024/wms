@@ -206,10 +206,10 @@
         <!-- SKU图片弹窗 -->
         <SkuImageDialog v-model="imgDialogVisible" :skuData="currentSku" @closed="handleImgDialogClosed" />
         <!-- 导出弹窗 -->
-        <exportDialog ref="exportDialogRef" :selectionRows="selectionRows" :initValues="initValues" :exportType="111">
+        <exportDialog ref="exportDialogRef" :selectionRows="selectionRows" :initValues="initValues" :exportType="101">
         </exportDialog>
         <!-- 打印弹窗 -->
-        <printDialog ref="printDialogRef" :selectionRows="selectionRows" :initValues="initValues" :printType="111">
+        <printDialog ref="printDialogRef" :selectionRows="selectionRows" :initValues="initValues" :printType="101">
         </printDialog>
 
         <batchOperationn :dialogTitle="'操作结果'" :isVisible="delDialogVisible" :tableData="delData" :nameField="'id'"
@@ -432,13 +432,13 @@ const handlePrint = async () => {
 const handleImportAdd = async () => {
     router.push({
         name: '导入文件',
-        params: { typeId: 111, typeName: 'SKU创建' },
+        params: { typeId: 101, typeName: 'SKU创建' },
     })
 }
 const handleImportUpd = async () => {
     router.push({
         name: '导入文件',
-        params: { typeId: 112, typeName: 'SKU更新' },
+        params: { typeId: 102, typeName: 'SKU更新' },
     })
 }
 // 导出

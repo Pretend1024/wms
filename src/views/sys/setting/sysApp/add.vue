@@ -83,11 +83,6 @@ const handleFileUrlUpload = async (options) => {
     const currentFile = options.file;
     if (!currentFile) return;
 
-    const loadingInstance = ElLoading.service({
-        lock: true,
-        text: 'loading...',
-    });
-
     try {
         const res = await uploadApi(currentFile, { path: 'temp' });
         if (res.success) {
@@ -98,8 +93,6 @@ const handleFileUrlUpload = async (options) => {
         }
     } catch (error) {
         ElMessage.error(`上传出错：${error.msg || '网络异常'}`);
-    } finally {
-        loadingInstance.close();
     }
 };
 
@@ -107,12 +100,6 @@ const handleFileUrlUpload = async (options) => {
 const handlePublishPageUpload = async (options) => {
     const currentFile = options.file;
     if (!currentFile) return;
-
-    const loadingInstance = ElLoading.service({
-        lock: true,
-        text: 'loading...',
-    });
-
     try {
         const res = await uploadApi(currentFile, { path: 'temp' });
         if (res.success) {
@@ -123,8 +110,6 @@ const handlePublishPageUpload = async (options) => {
         }
     } catch (error) {
         ElMessage.error(`上传出错：${error.msg || '网络异常'}`);
-    } finally {
-        loadingInstance.close();
     }
 };
 

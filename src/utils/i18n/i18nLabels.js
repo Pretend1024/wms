@@ -596,6 +596,11 @@ export const buttonTextMap = {
         zh: '支付',
         en: 'Pay'
     },
+    // 核销
+    writeOff: {
+        zh: '核销',
+        en: 'Write Off'
+    },
     // 作废
     invalid: {
         zh: '作废',
@@ -1044,6 +1049,12 @@ const labelsMap = {
             "en": "Finance User:",
             "placeholderZh": "请先选择公司",
             "placeholderEn": "Select Company First"
+        },
+        "authStatusId": {
+            "zh": "实名状态:",
+            "en": "Real Name Status:",
+            "placeholderZh": "请选择实名状态",
+            "placeholderEn": "Select Real Name Status"
         },
         "salesUserCode": {
             "zh": "销售用户:",
@@ -5995,23 +6006,29 @@ const labelsMap = {
         }
     },
     "finance_basic_currency_list": {
-        currency: {
-            zh: '币种代码:',
-            en: 'Currency Code:',
-            placeholderZh: '请输入币种代码',
-            placeholderEn: 'Enter currency code'
+        'currency': {
+            'zh': '币种代码:',
+            'en': 'Currency Code:',
+            'placeholderZh': '请输入币种代码',
+            'placeholderEn': 'Enter currency code'
         },
-        rate: {
-            zh: '汇率:',
-            en: 'Exchange Rate:',
-            placeholderZh: '请输入汇率',
-            placeholderEn: 'Enter exchange rate'
+        "currencyName": {
+            "zh": "货币名称:",
+            "en": "Currency Name:",
+            "placeholderZh": "请输入货币名称",
+            "placeholderEn": "Enter currency name"
         },
-        isStandardCurrency: {
-            zh: '本位币:',
-            en: 'Standard Currency:',
-            placeholderZh: '请选择本位币',
-            placeholderEn: 'Select standard currency'
+        'rate': {
+            'zh': '汇率:',
+            'en': 'Exchange Rate:',
+            'placeholderZh': '请输入汇率',
+            'placeholderEn': 'Enter exchange rate'
+        },
+        'isStandardCurrency': {
+            'zh': '本位币:',
+            'en': 'Standard Currency:',
+            'placeholderZh': '请选择本位币',
+            'placeholderEn': 'Select standard currency'
         }
     },
     "finance_receivables_customerAccount_list": {
@@ -6045,11 +6062,11 @@ const labelsMap = {
             placeholderZh: '请输入已使用信用额度',
             placeholderEn: 'Enter used credit'
         },
-        remainingCredit: {
-            zh: '剩余信用额度:',
-            en: 'Remaining Credit:',
-            placeholderZh: '请输入剩余信用额度',
-            placeholderEn: 'Enter remaining credit'
+        overCreditAmount: {
+            zh: '超额使用额度:',
+            en: 'Over Credit Amount:',
+            placeholderZh: '请输入超额使用额度',
+            placeholderEn: 'Enter over credit amount'
         },
         availableAmount: {
             zh: '可用金额:',
@@ -6740,7 +6757,13 @@ const labelsMap = {
             "en": "Bill No.:",
             "placeholderZh": "请输入账单编号",
             "placeholderEn": "Please Enter Bill No."
-        }
+        },
+        "currency": {
+            "zh": "币种:",
+            "en": "Currency:",
+            "placeholderZh": "请选择币种",
+            "placeholderEn": "Please Select Currency"
+        },
     },
     "vas_wo_workOrderType_list": {
         "name": {
@@ -6863,12 +6886,48 @@ const labelsMap = {
             "placeholderZh": "请选择账单状态",
             "placeholderEn": "Please Select Bill Status"
         },
-        "isOverdue": {
-            "zh": "是否逾期:",
-            "en": "Is Overdue:",
-            "placeholderZh": "请选择是否逾期",
-            "placeholderEn": "Please Select Is Overdue"
-        }
+        "writeOffCompleteTime": {
+            "zh": "核销完成时间:",
+            "en": "Write-Off Complete Time:",
+            "placeholderZh": "请选择核销完成时间",
+            "placeholderEn": "Please Select Write-Off Complete Time"
+        },
+        "unwrittenOffAmount": {
+            "zh": "未核销金额:",
+            "en": "Unwritten Off Amount:",
+            "placeholderZh": "请输入未核销金额",
+            "placeholderEn": "Please Enter Unwritten Off Amount"
+        },
+        "writtenOffAmount": {
+            "zh": "已核销金额:",
+            "en": "Written Off Amount:",
+            "placeholderZh": "请输入已核销金额",
+            "placeholderEn": "Please Enter Written Off Amount"
+        },
+        "totalFeeAmount": {
+            "zh": "总金额:",
+            "en": "Total Amount:",
+            "placeholderZh": "",
+            "placeholderEn": ""
+        },
+        "billStartDate": {
+            "zh": "起始日期:",
+            "en": "Start Date:",
+            "placeholderZh": "选择起始日期",
+            "placeholderEn": "Please Select Start Date"
+        },
+        "billEndDate": {
+            "zh": "结束日期:",
+            "en": "End Date:",
+            "placeholderZh": "选择结束日期",
+            "placeholderEn": "Please Select End Date"
+        },
+        "attachment": {
+            "zh": "附件:",
+            "en": "Attachment:",
+            "placeholderZh": "",
+            "placeholderEn": ""
+        },
     },
     "product_shipway_addressValid_list": {
         "configName": {
@@ -6966,6 +7025,46 @@ const labelsMap = {
             "en": "Remark:",
             "placeholderZh": "请输入备注",
             "placeholderEn": "Please Enter Remark"
+        }
+    },
+    "base_cust_customerAuth_list": {
+        "authType": {
+            "zh": "认证类型:",
+            "en": "Auth Type:",
+            "placeholderZh": "请选择认证类型",
+            "placeholderEn": "Please Select Auth Type"
+        },
+        "idCardNum": {
+            "zh": "证件号码:",
+            "en": "ID Card Number:",
+            "placeholderZh": "请输入证件号码",
+            "placeholderEn": "Please Enter ID Card Number"
+        }
+    },
+    "product_price_priceProject_list": {
+        "statusId": {
+            "zh": "状态:",
+            "en": "Status:",
+            "placeholderZh": "请选择状态",
+            "placeholderEn": "Please Select Status"
+        },
+        "isValid": {
+            "zh": "是否生效:",
+            "en": "Is Valid:",
+            "placeholderZh": "请选择是否生效",
+            "placeholderEn": "Please Select Is Valid"
+        },
+        "dateValid": {
+            "zh": "生效日期:",
+            "en": "Valid Date:",
+            "placeholderZh": "请选择生效日期",
+            "placeholderEn": "Please Select Valid Date"
+        },
+        "name": {
+            "zh": "方案名称:",
+            "en": "Project Name:",
+            "placeholderZh": "请输入方案名称",
+            "placeholderEn": "Please Enter Project Name"
         }
     }
 }

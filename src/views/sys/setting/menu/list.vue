@@ -11,7 +11,6 @@
                         {{ isExpanded ? '全部折叠' : '全部展开' }}
                     </el-button>
                 </template>
-
                 <template #customBtn="{ row }">
                     <div style="display: flex;">
                         <div class="cursor-pointer" @click="handleEdit(row)">
@@ -63,6 +62,7 @@
 <script setup name="菜单">
 import { ref, computed, onMounted, shallowRef, nextTick } from 'vue';
 import { Plus, Sort, EditPen } from '@element-plus/icons-vue';
+import { ElLoading, ElMessage } from 'element-plus';
 import hydTable from '@/components/table/hyd-table.vue';
 import AddForm from './add.vue';
 import UpdForm from './upd.vue';
@@ -99,50 +99,46 @@ const handleRowClick = (row) => {
     selection.value = row;
 };
 
-// ================== 核心折叠/展开逻辑 ==================
+// ================== 核心折叠/展开逻辑 (Tree API) ==================
 
 /**
  * 智能递归展开函数
- * 逻辑：如果子节点中存在 typeId 为 20 的项（按钮），则视为叶子层级，不展开当前行。
- * 否则展开当前行并继续递归检查子级。
- * @param {Array} data 数据源
  */
 const expandRecursive = (data) => {
-    const elTable = hydTableRef.value?.elTableRef;
-    if (!elTable) return;
+    const $table = hydTableRef.value?.elTableRef;
+    if (!$table) return;
 
-    data.forEach(row => {
-        if (row.children && row.children.length > 0) {
-            // 检查子节点是否包含 typeId 为 20 的数据
-            // 注意：这里假设只要有一个子节点是按钮，就不展开该行（通常按钮和子菜单不会混排，或者混排时也不建议展开）
-            const hasButtonChild = row.children.some(child => child.typeId == 20);
+    const rowsToExpand = [];
 
-            if (!hasButtonChild) {
-                // 如果子级不是按钮，展开当前行
-                elTable.toggleRowExpansion(row, true);
-                // 继续递归检查子级
-                expandRecursive(row.children);
-            } else {
-                // 如果子级包含按钮，折叠当前行（不展开）
-                elTable.toggleRowExpansion(row, false);
+    const traverse = (items) => {
+        items.forEach(row => {
+            if (row.children && row.children.length > 0) {
+                // 检查子节点是否包含 typeId 为 20 的数据 (按钮)
+                const hasButtonChild = row.children.some(child => child.typeId == 20);
+
+                if (!hasButtonChild) {
+                    rowsToExpand.push(row);
+                    traverse(row.children);
+                }
             }
-        }
-    });
+        });
+    };
+    traverse(data);
+
+    // [关键修改] 使用 setTreeExpand 而不是 setRowExpand
+    if (rowsToExpand.length > 0) {
+        $table.setTreeExpand(rowsToExpand, true);
+    }
 };
 
 /**
- * 递归折叠函数
+ * 全部折叠函数
  */
-const collapseRecursive = (data) => {
-    const elTable = hydTableRef.value?.elTableRef;
-    if (!elTable) return;
-
-    data.forEach(row => {
-        elTable.toggleRowExpansion(row, false);
-        if (row.children && row.children.length > 0) {
-            collapseRecursive(row.children);
-        }
-    });
+const collapseRecursive = () => {
+    const $table = hydTableRef.value?.elTableRef;
+    if (!$table) return;
+    // [关键修改] 使用 clearTreeExpand 而不是 clearRowExpand
+    $table.clearTreeExpand();
 };
 
 /**
@@ -150,87 +146,91 @@ const collapseRecursive = (data) => {
  */
 const handleToggleExpand = () => {
     isExpanded.value = !isExpanded.value;
-
     if (isExpanded.value) {
-        // 智能展开：避开 typeId=20 的层级
         expandRecursive(tableData.value);
     } else {
-        // 全部折叠
-        collapseRecursive(tableData.value);
+        collapseRecursive();
     }
 };
 
-// 存储展开节点
+// 存储展开节点 ID
 const expandedKeys = ref(new Set());
 
-// 监听表格的展开/收起事件
+// 1. 保存状态：监听表格的展开/收起事件
 const updateExpandedKeys = () => {
-    const elTable = hydTableRef.value?.elTableRef;
-    if (!elTable) return;
+    const $table = hydTableRef.value?.elTableRef;
+    if (!$table) return;
 
-    // 清空当前记录
     expandedKeys.value.clear();
+    // [关键修改] 使用 getTreeExpandRecords
+    const expandRecords = $table.getTreeExpandRecords();
+    expandRecords.forEach(row => {
+        if (row.id) expandedKeys.value.add(row.id);
+    });
+};
 
-    const checkExpanded = (data) => {
-        data.forEach(row => {
-            // el-table 内部状态判断行是否展开
-            if (elTable.store.states.expandRows.value.includes(row)) {
-                expandedKeys.value.add(row.id);
+// 2. 恢复状态：根据 ID 重新展开
+const restoreExpansion = (data) => {
+    const $table = hydTableRef.value?.elTableRef;
+    if (!$table) return;
+
+    const rowsToRestore = [];
+    const traverse = (items) => {
+        items.forEach(row => {
+            if (expandedKeys.value.has(row.id)) {
+                rowsToRestore.push(row);
             }
-            if (row.children) checkExpanded(row.children);
+            if (row.children && row.children.length > 0) {
+                traverse(row.children);
+            }
         });
     };
-    checkExpanded(tableData.value);
-};
-// 恢复展开状态
-const restoreExpansion = (data) => {
-    const elTable = hydTableRef.value?.elTableRef;
-    if (!elTable) return;
+    traverse(data);
 
-    data.forEach(row => {
-        if (expandedKeys.value.has(row.id)) {
-            elTable.toggleRowExpansion(row, true);
-        }
-        if (row.children) restoreExpansion(row.children);
-    });
+    // [关键修改] 使用 setTreeExpand
+    if (rowsToRestore.length > 0) {
+        $table.setTreeExpand(rowsToRestore, true);
+    }
 };
 
 // ================== 数据获取 ==================
 
 const getList = async (isFirstLoad = false) => {
     loading.value = true;
+
+    // 刷新前保存状态
     if (!isFirstLoad) {
         updateExpandedKeys();
     }
-    const res = await getSettingMenuApi({});
-    tableData.value = res.data;
 
-    // 构建上级部门下拉树
-    const convertToTree = (items) => {
-        return items.map(item => ({
-            value: item.id,
-            label: item.nameCn,
-            children: item.children ? convertToTree(item.children) : []
-        }));
-    };
-    parentIdList.value = convertToTree(res.data);
+    try {
+        const res = await getSettingMenuApi({});
+        tableData.value = res.data;
 
-    loading.value = false;
+        const convertToTree = (items) => {
+            return items.map(item => ({
+                value: item.id,
+                label: item.nameCn,
+                children: item.children ? convertToTree(item.children) : []
+            }));
+        };
+        parentIdList.value = convertToTree(res.data);
+    } finally {
+        loading.value = false;
+    }
 
-    // 使用 nextTick 确保表格渲染完毕，再执行智能展开
+    // 数据加载后恢复状态或初始化
     nextTick(() => {
         if (isFirstLoad) {
-            // 第一次加载使用你原来的智能展开逻辑
             expandRecursive(tableData.value);
             isExpanded.value = true;
         } else {
-            // 后续加载（新增/编辑后）恢复之前的状态
             restoreExpansion(tableData.value);
         }
     });
 };
 
-// ================== 其他业务逻辑 (新增/编辑/枚举) ==================
+// ================== 其他业务逻辑 ==================
 
 const centerDialogVisible = ref(false);
 const addData = ref({});
@@ -291,18 +291,15 @@ const handleDialogConfirm = async () => {
     }
     try {
         await childFormRef.value.validate();
-        const loadingInstance = ElLoading.service({ lock: true, text: 'Loading' });
         try {
             const api = addData.value.id ? updSettingMenuByIdApi : addSettingMenuApi;
             const res = await api(addData.value);
-            loadingInstance.close();
             smartAlert(res.msg, res.success, 1000);
             if (res.success) {
                 centerDialogVisible.value = false;
                 getList();
             }
         } catch (e) {
-            loadingInstance.close();
             smartAlert(e.msg || '操作失败', false, 1000);
         }
     } catch (e) {

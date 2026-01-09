@@ -14,7 +14,8 @@
                         {{ infoData.statusName }}
                     </span>
                 </el-descriptions-item>
-                <el-descriptions-item label="库位准确率">{{ infoData.accuracyRate !== null ? infoData.accuracyRate * 100 + '%'
+                <el-descriptions-item label="库位准确率">{{ infoData.accuracyRate !== null ? infoData.accuracyRate * 100 +
+                    '%'
                     : ''
                     }}</el-descriptions-item>
                 <el-descriptions-item label="涉及SKU数">{{ infoData.skuQty }}</el-descriptions-item>
@@ -170,7 +171,9 @@ const getDetail = async () => {
 };
 
 onMounted(() => {
+    openMainLoading()
     getDetail();
+    closeMainLoading()
 });
 </script>
 

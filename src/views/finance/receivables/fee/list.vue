@@ -116,7 +116,7 @@ onMounted(async () => {
 
         statusOptions.value = statusRes.data.map(i => ({ label: i.name, value: i.id }));
         createWayOptions.value = wayRes.data.map(i => ({ label: i.name, value: i.id }));
-        currencyOptions.value = currRes.data.map(i => ({ label: i.remark, value: i.currency }));
+        currencyOptions.value = currRes.data.map(i => ({ label: i.currencyName, value: i.currency }));
 
         isDataReady.value = true;
     } catch (error) {

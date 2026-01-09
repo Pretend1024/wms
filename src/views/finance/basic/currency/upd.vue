@@ -11,6 +11,13 @@
                 </el-form-item>
             </el-col>
 
+            <!-- 货币名称 -->
+            <el-col :span="24" v-if="isDisabled">
+                <el-form-item :label="getLabel('currencyName')">
+                    <el-input v-model="formData.currencyName" :placeholder="getPlaceholder('currencyName')" readonly />
+                </el-form-item>
+            </el-col>
+
             <!-- 汇率-->
             <el-col :span="24">
                 <el-form-item :label="getLabel('rate')" prop="rate">

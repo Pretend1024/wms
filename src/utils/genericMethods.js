@@ -127,3 +127,52 @@ export const trimObjectStrings = (obj) => {
     }
     return newObj;
 }
+
+
+let mainLoadingInstance = null;
+let mainLoadingCount = 0;
+
+/**
+ * 开启 el-main 区域加载动画
+ */
+export const openMainLoading = () => {
+    // 如果计数为0且没有实例，才创建新实例
+    if (mainLoadingCount === 0 && !mainLoadingInstance) {
+        const targetDom = document.querySelector('.el-main') || document.body;
+        mainLoadingInstance = ElLoading.service({
+            target: targetDom,
+            lock: true,
+            text: 'loading...',
+        });
+    }
+    mainLoadingCount++;
+};
+
+/**
+ * 关闭 el-main 区域加载动画
+ */
+export const closeMainLoading = () => {
+    if (mainLoadingCount > 0) {
+        mainLoadingCount--;
+    }
+
+    // 只有当计数归零时，才真正关闭
+    if (mainLoadingCount <= 0) {
+        mainLoadingCount = 0;
+        if (mainLoadingInstance) {
+            mainLoadingInstance.close();
+            mainLoadingInstance = null;
+        }
+    }
+};
+
+/**
+ * 强制关闭（用于异常处理等情况，直接清空）
+ */
+export const forceCloseMainLoading = () => {
+    mainLoadingCount = 0;
+    if (mainLoadingInstance) {
+        mainLoadingInstance.close();
+        mainLoadingInstance = null;
+    }
+};

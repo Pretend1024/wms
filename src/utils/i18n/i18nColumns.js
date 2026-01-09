@@ -151,6 +151,7 @@ export const columnTextMap = {
         "userStatusName": { "zh": "主用户状态", "en": "Main User Status" },
         "levelName": { "zh": "等级", "en": "Level" },
         "statusName": { "zh": "状态", "en": "Status" },
+        "authStatusName": { "zh": "实名状态", "en": "Real Name Status" },
         "financialUserCode": { "zh": "财务", "en": "Financial Staff" },
         "salesUserCode": { "zh": "销售", "en": "Sales Staff" },
         "contact": { "zh": "联系人", "en": "Contact Person" },
@@ -639,6 +640,7 @@ export const columnTextMap = {
         "createWayName": { "zh": "创建方式", "en": "Creation Method" }
     },
     "instock_returned_returnClaim_list": {
+        "warehouseName": { "zh": "仓库", "en": "Warehouse" },
         "carrierName": { "zh": "承运商名称", "en": "Carrier Name" },
         "trackingNo": { "zh": "跟踪单号", "en": "Tracking No." },
         "statusName": { "zh": "状态", "en": "Status" },
@@ -1042,6 +1044,7 @@ export const columnTextMap = {
     },
     "finance_basic_currency_list": {
         "currency": { "zh": "币种代码", "en": "Currency Code" },
+        "currencyName": { "zh": "货币名称", "en": "Currency Name" },
         "rate": { "zh": "汇率", "en": "Exchange Rate" },
         "isStandardCurrency": { "zh": "是否本位币", "en": "Is Standard Currency" },
     },
@@ -1051,7 +1054,7 @@ export const columnTextMap = {
         "preLockAmount": { "zh": "预锁定金额", "en": "Pre Lock Amount" },
         "creditAmount": { "zh": "信用额度", "en": "Credit Amount" },
         "usedCredit": { "zh": "已使用授信额度", "en": "Used Credit" },
-        "remainingCredit": { "zh": "剩余授信额度", "en": "Remaining Credit" },
+        "overCreditAmount": { "zh": "超额使用额度", "en": "Over Credit Amount" },
         "availableAmount": { "zh": "可用金额", "en": "Available Amount" }
     },
     "finance_receivables_customerCredit_list": {
@@ -1257,11 +1260,10 @@ export const columnTextMap = {
         "billStartDate": { "zh": "账单起始日期", "en": "Start Date" },
         "billEndDate": { "zh": "账单结束日期", "en": "End Date" },
         "totalFeeAmount": { "zh": "总金额", "en": "Total Fee Amount" },
-        "unpaidAmount": { "zh": "待支付金额", "en": "Unpaid Amount" },
-        "alreadyPaidAmount": { "zh": "已支付金额", "en": "Already Paid Amount" },
         "billStatusName": { "zh": "账单状态", "en": "Bill Status" },
-        "paymentDeadline": { "zh": "付款截止日期", "en": "Payment Deadline" },
-        "isOverdue": { "zh": "是否逾期", "en": "Is Overdue" },
+        "writtenOffAmount": { "zh": "已核销金额", "en": "Written-off Amount" },
+        "unwrittenOffAmount": { "zh": "未核销金额", "en": "Unwritten-off Amount" },
+        "writeOffCompleteTime": { "zh": "核销完成时间", "en": "Write-off Completion Time" },
         "confirmTime": { "zh": "确认时间", "en": "Confirmation Time" },
         "confirmBy": { "zh": "确认人", "en": "Confirmer" },
         "closeTime": { "zh": "结清时间", "en": "Close Time" },
@@ -1339,7 +1341,20 @@ export const columnTextMap = {
         "versionNo": { "zh": "版本号", "en": "Version No." },
         "fileUrl": { "zh": "安装包URL", "en": "Install Package URL" },
         "publishPage": { "zh": "发布页URL", "en": "Publish Page URL" },
-
+    },
+    "base_cust_customerAuth_list": {
+        "authTypeName": { "zh": "主体类型", "en": "Subject Type" },
+        "idCardNum": { "zh": "证件号码", "en": "ID Number" },
+        "authStatusName": { "zh": "认证状态", "en": "Authentication Status" },
+    },
+    "product_price_priceProject_list": {
+        "name": { "zh": "方案名", "en": "Price Project Name" },
+        "warehouseCode": { "zh": "仓库", "en": "Warehouse" },
+        "version": { "zh": "版本", "en": "Version" },
+        "statusName": { "zh": "状态", "en": "Status" },
+        "startDate": { "zh": "起始日期", "en": "Start Date" },
+        "endDate": { "zh": "截止日期", "en": "End Date" },
+        "customers": { "zh": "适用客户", "en": "Applicable Customers" }
     }
 }
 import router from '@/router/index.js'

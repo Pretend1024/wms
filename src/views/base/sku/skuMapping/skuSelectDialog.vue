@@ -1,5 +1,5 @@
 <template>
-    <el-dialog title="选择SKU" v-model="dialogVisible" width="900" @open="handleDialogOpen" destroy-on-close>
+    <el-dialog title="选择SKU" v-model="dialogVisible" width="900" top="5vh" @open="handleDialogOpen" destroy-on-close>
         <hydFilterBox :form-items="formConfig" :initial-value="initValues" @search="handleSearch" @reset="handleReset">
             <template #custom-form="{ formData }">
                 <el-col>

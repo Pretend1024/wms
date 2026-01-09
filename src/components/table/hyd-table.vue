@@ -57,14 +57,15 @@
                 height="100%" :loading="loading" :data="tableData"
                 :row-config="{ keyField: rowKey, isCurrent: true, isHover: true, height: 40 }"
                 :column-config="{ resizable: true }" :header-row-config="{ height: 40 }"
-                :checkbox-config="{ range: true }" :mouse-config="{ selected: true }" :filter-config="{ remote: false }"
-                :menu-config="menuConfig" :scroll-x="{ enabled: true, gt: 10 }"
+                :checkbox-config="{ range: !isTree }" :mouse-config="{ selected: true }"
+                :filter-config="{ remote: false }" :menu-config="menuConfig" :scroll-x="{ enabled: true, gt: 10 }"
                 :tree-config="isTree ? { transform: false, rowField: rowKey, children: treeProps.children } : undefined"
-                :scroll-y="{ enabled: true, gt: 20 }" :show-footer="footer !== null" :footer-method="footerMethod"
-                :cell-class-name="getCellClassNameAdaptor" @checkbox-change="handleSelectionChange"
-                @checkbox-all="handleSelectionChange" @cell-click="handleCellClick" @sort-change="handleSortChange"
-                @filter-change="handleFilterChange" @menu-click="handleMenuClick"
-                @toggle-row-expand="handleToggleExpand">
+                :scroll-y="{ enabled: !preserveExpanded, gt: 20 }" :show-footer="footer !== null"
+                :footer-method="footerMethod" :cell-class-name="getCellClassNameAdaptor"
+                @checkbox-change="handleSelectionChange" @checkbox-all="handleSelectionChange"
+                @checkbox-range-change="handleSelectionChange" @cell-click="handleCellClick"
+                @sort-change="handleSortChange" @filter-change="handleFilterChange" @menu-click="handleMenuClick"
+                @toggle-row-expand="handleToggleExpand" size="mini">
 
                 <vxe-column v-if="enableSelection" type="checkbox" width="50" align="center" fixed="left"></vxe-column>
 
@@ -200,7 +201,7 @@ const vxeTableRef = ref(null)  // 表格实例引用
 const menuConfig = reactive({
     header: {
         options: [
-            [{ code: 'copy', name: '复制内容', prefixIcon: 'vxe-icon-copy' }],
+            [{ code: 'copy', name: '复制', prefixIcon: 'vxe-icon-copy' }],
             [{
                 code: 'export', name: '导出数据', prefixIcon: 'vxe-icon-download',
                 children: [
@@ -214,7 +215,7 @@ const menuConfig = reactive({
         ]
     },
     body: {
-        options: [[{ code: 'copy', name: '复制内容', prefixIcon: 'vxe-icon-copy' }]]
+        options: [[{ code: 'copy', name: '复制', prefixIcon: 'vxe-icon-copy' }]]
     }
 })
 
@@ -224,13 +225,46 @@ const menuConfig = reactive({
 const handleMenuClick = ({ menu, type, row, column, content }) => {
     // 1. 复制功能
     if (menu.code === 'copy') {
-        if (content) {
-            if (navigator.clipboard && navigator.clipboard.writeText) {
-                navigator.clipboard.writeText(content).then(() => {
-                    ElMessage.success('复制成功')
-                }).catch(() => fallbackCopyTextToClipboard(content))
+        let textToCopy = '';
+
+        // [情况1：表头] 复制列标题
+        if (type === 'header' && column) {
+            textToCopy = column.title;
+        } else {
+            // [情况2：内容]
+            // 优先检查是否有原生的文本选择 (鼠标拖拽选中的内容)
+            const activeSelection = window.getSelection ? window.getSelection().toString() : '';
+
+            // 如果有选中文本，且不是纯空格，则复制选中文本
+            if (activeSelection && activeSelection.trim().length > 0) {
+                textToCopy = activeSelection;
             } else {
-                fallbackCopyTextToClipboard(content)
+                // [情况3：单元格自动获取]
+                // 如果没有选中文本，则尝试获取当前单元格的数据
+
+                // 3.1 尝试直接从行数据 row 中获取
+                if (row && column && column.field) {
+                    const cellValue = row[column.field];
+                    // 确保 0 或 false 也能被复制，排除 null/undefined
+                    if (cellValue !== null && cellValue !== undefined) {
+                        textToCopy = String(cellValue);
+                    }
+                }
+
+                // 3.2 兜底：如果行数据没取到，使用 content (vxe-table 传入的显示内容，可能因 slot 为空)
+                if (!textToCopy && content) {
+                    textToCopy = String(content);
+                }
+            }
+        }
+
+        if (textToCopy) {
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(textToCopy).then(() => {
+                    ElMessage.success('复制成功')
+                }).catch(() => fallbackCopyTextToClipboard(textToCopy))
+            } else {
+                fallbackCopyTextToClipboard(textToCopy)
             }
         }
         return
@@ -507,7 +541,6 @@ const getFixedStatus = (col) => {
 
 // 保存设置 (点击应用按钮)
 const onSaveSettings = async () => {
-    const loading = ElLoading.service({ lock: true, text: '正在保存设置...' })
     try {
         localColumns.value = JSON.parse(JSON.stringify(tempLocalColumns.value))
         visibleColumns.value = [...tempVisibleColumns.value]
@@ -528,7 +561,6 @@ const onSaveSettings = async () => {
         await setUserUserConfigApi(data)
     } finally {
         showColSettings.value = false
-        loading.close()
     }
 }
 
@@ -675,7 +707,7 @@ watch(fixedColumns, () => {
     color: #303133;
     font-weight: 700;
     font-size: 15px !important;
-    padding: 2px 0 !important;
+    line-height: 30px;
 }
 
 :deep(.vxe-body--column) {
@@ -711,21 +743,20 @@ watch(fixedColumns, () => {
 }
 
 /* =========================================================
-   [新增] 行选中颜色配置
    设置选中行和鼠标悬停行的背景色为 #ffdab9
    ========================================================= */
 :deep(.vxe-table--render-default .vxe-body--row.row--current) {
     background-color: #ffdab9 !important;
 }
 
-:deep(.vxe-table--render-default .vxe-body--row.row--hover) {
+:deep(.vxe-table--render-default .vxe-body--row.row--current>.vxe-body--column) {
     background-color: #ffdab9 !important;
 }
 
-/* 去掉 Hover 时的单元格阴影，防止遮挡背景色 */
-:deep(.vxe-body--row.row--hover > .vxe-body--column:not(.col--checked)) {
-    background-color: #ffdab9 !important;
+:deep(.vxe-table--render-default .vxe-body--column.col--selected) {
+    box-shadow: inset 0 0 0 2px #ffb575;
 }
+
 
 /* 辅助样式 */
 .table-setting-icon:hover {
@@ -833,5 +864,15 @@ watch(fixedColumns, () => {
 
 :deep(.redTextCell) {
     color: red !important;
+}
+
+:deep(.vxe-table--render-default .vxe-cell--checkbox .vxe-checkbox--icon) {
+    font-weight: 100 !important;
+}
+
+:deep(.vxe-body--expanded-cell) {
+    padding: 0 !important;
+    /* 提升层级，防止被某些固定列遮挡 */
+    z-index: 99 !important;
 }
 </style>

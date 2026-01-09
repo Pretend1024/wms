@@ -151,6 +151,7 @@ const locationDetailList = ref([]);
 onMounted(async () => {
     if (!masterId.value) return;
     loading.value = true;
+    openMainLoading()
     try {
         const [detailRes, qualityRes, opTypeRes] = await Promise.all([
             getInventoryMvDetailApi({ id: masterId.value }),
@@ -196,6 +197,7 @@ onMounted(async () => {
         }
     } finally {
         loading.value = false;
+        closeMainLoading()
     }
 });
 

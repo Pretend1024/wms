@@ -46,10 +46,10 @@
     <batchOperationn :isVisible="delDialogVisible" :tableData="delData" :nameField="'id'" :nameLabel="'国家'"
         :successValue="'删除成功'" @close="delColse" :promptMessage="promptMessage" />
     <!-- 导出弹窗 -->
-    <exportDialog ref="exportDialogRef" :selectionRows="selectionRows" :initValues="initValues" :exportType="519">
+    <exportDialog ref="exportDialogRef" :selectionRows="selectionRows" :initValues="initValues" :exportType="601">
     </exportDialog>
     <!-- 导入弹窗 -->
-    <importDialog ref="importDialogRef" :typeId="561" :id="importId" :importTitle="'导入偏远库明细'" @close='handleSearch'>
+    <importDialog ref="importDialogRef" :typeId="602" :id="importId" :importTitle="'导入偏远库明细'" @close='handleSearch'>
     </importDialog>
     <!-- 测试弹窗 -->
     <testDialog ref="zipcodeDialog" :remoteId="remoteId"></testDialog>

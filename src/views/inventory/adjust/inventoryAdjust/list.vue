@@ -108,7 +108,7 @@
             </hydTable>
         </div>
         <!-- 导出弹窗 -->
-        <exportDialog ref="exportDialogRef" :selectionRows="selectionRows" :initValues="initValues" :exportType="306">
+        <exportDialog ref="exportDialogRef" :selectionRows="selectionRows" :initValues="initValues" :exportType="305">
         </exportDialog>
     </div>
 </template>

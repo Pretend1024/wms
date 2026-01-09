@@ -36,7 +36,7 @@
                 <el-table-column prop="isSuccess" label="成功/失败" width="100">
                     <template #default="{ row }">
                         <span :style="row.isSuccess ? 'color: green' : 'color: red'">{{ row.isSuccess ? '成功' : '失败'
-                        }}</span>
+                            }}</span>
                     </template>
                 </el-table-column>
                 <el-table-column align="right" label="消息">
@@ -157,9 +157,6 @@ const commit = async () => {
         return
     }
 
-    // 这里仅使用 Loading 遮罩等待任务创建接口返回
-    const loadingInstance = ElLoading.service({ lock: true, text: '正在提交请求...' })
-
     try {
         // 构建参数
         const params = {
@@ -190,7 +187,6 @@ const commit = async () => {
     } catch (error) {
         console.error('导入请求失败:', error)
         smartAlert('导入请求失败', false)
-        loadingInstance.close()
     }
 }
 
@@ -277,7 +273,6 @@ const beforeUpload = (file) => {
  * 获取 OSS URL
  */
 const handleUpload = async (options) => {
-    const loadingInstance = ElLoading.service({ lock: true, text: 'Loading' })
     try {
         fileUrl.value = ''
         fileList.value = []
@@ -288,8 +283,6 @@ const handleUpload = async (options) => {
     } catch (error) {
         console.error('上传失败:', error)
         smartAlert('文件上传失败', false)
-    } finally {
-        loadingInstance.close()
     }
 }
 

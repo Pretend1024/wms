@@ -201,7 +201,7 @@
                                             <span v-if="packageItem.outWeightKg || packageItem.outWeightLb"
                                                 style="font-size: 13px; color: #666; margin-left: 8px; font-weight: normal;">
                                                 ({{ $t('outstock_op_weightCheck_add.outbound') }}: {{
-                                                packageItem.outWeightKg || 0 }}kg
+                                                    packageItem.outWeightKg || 0 }}kg
                                                 / {{ packageItem.outWeightLb
                                                     || 0 }}lb) <!-- 出库 -->
                                             </span>
@@ -403,7 +403,6 @@ const getOrderInfo = async (forceOrderId = '') => {
     const code = orderData.code.trim();
     if (!code) return;
 
-    const loading = ElLoading.service({ lock: true, text: '搜索订单...' });
     try {
         const res = await getOutOrderByCodeApi({ code, codeType: orderData.codeType });
         if (!res.success) {
@@ -421,13 +420,10 @@ const getOrderInfo = async (forceOrderId = '') => {
         }
     } catch (e) {
         playAudio('error'); smartAlert('异常: ' + e.message, false);
-    } finally {
-        loading.close();
     }
 };
 
 const fetchOrderDetails = async (orderId) => {
-    const loading = ElLoading.service({ lock: true, text: '加载详情...' });
     try {
         const res = await getReCheckOutOrderApi({ outOrderId: orderId, opType: 2 });
         if (res.success && res.data) {
@@ -471,8 +467,8 @@ const fetchOrderDetails = async (orderId) => {
         } else {
             playAudio('error'); smartAlert(res.msg || '获取失败', false);
         }
-    } finally {
-        loading.close();
+    } catch (e) {
+        playAudio('error'); smartAlert('异常:' + e.message, false);
     }
 };
 
@@ -575,7 +571,6 @@ const submitWeighing = async () => {
     const pkg = packageList.value.find(p => p.isMatched);
     if (!pkg) return;
 
-    const loading = ElLoading.service({ lock: true, text: '提交中...' });
     try {
         const params = {
             outOrderId: orderBasicInfo.orderId,
@@ -619,8 +614,6 @@ const submitWeighing = async () => {
         }
     } catch (e) {
         playAudio('error'); smartAlert('提交异常', false);
-    } finally {
-        loading.close();
     }
 };
 
@@ -648,7 +641,10 @@ onMounted(async () => {
     try {
         const res = await getUnitTypeEnumApi();
         if (res.success) {
-            unitOptions.value = res.data.map(i => ({ label: i.name, value: i.id }));
+            // 过滤掉 id 等于 3 的选项
+            unitOptions.value = res.data
+                .filter(i => i.id !== 3)
+                .map(i => ({ label: i.name, value: i.id }));
             if (unitOptions.value.length) settings.unitType = unitOptions.value[0].value;
         }
     } catch (e) { console.error(e); }

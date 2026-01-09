@@ -139,23 +139,23 @@
                             <div v-loading="docLoading">
                                 <div v-if="docInfo.hasData">
                                     <div class="info-row"><span class="label">{{ getColumnText('bizNo')
-                                    }}：</span><span>{{
+                                            }}：</span><span>{{
                                                 docInfo.bizNo
                                             }}</span></div>
                                     <div class="info-row"><span class="label">{{ getColumnText('bizStatusName')
-                                    }}：</span><span>{{ docInfo.bizStatusName
+                                            }}：</span><span>{{ docInfo.bizStatusName
                                             }}</span></div>
                                     <div class="info-row"><span class="label">{{ getColumnText('createUserName')
-                                    }}：</span><span>{{ docInfo.createUserName
+                                            }}：</span><span>{{ docInfo.createUserName
                                             }}</span></div>
                                     <div class="info-row"><span class="label">{{ getColumnText('createTime')
-                                    }}：</span><span>{{ docInfo.createTime
+                                            }}：</span><span>{{ docInfo.createTime
                                             }}</span></div>
                                     <div class="info-row"><span class="label">{{ getColumnText('customerName')
-                                    }}：</span><span>{{ docInfo.customerName
+                                            }}：</span><span>{{ docInfo.customerName
                                             }}</span></div>
                                     <div class="info-row"><span class="label">{{ getColumnText('orgName')
-                                    }}：</span><span>{{ docInfo.orgName
+                                            }}：</span><span>{{ docInfo.orgName
                                             }}</span></div>
                                 </div>
                                 <div v-else class="no-data">
@@ -313,7 +313,6 @@ const getDetail = async () => {
     const id = props.id || route.query.id;
     if (!id) return; // 无ID则不加载详情（新增场景）
 
-    const loading = ElLoading.service({ target: '.viewArea', target: ".contentDiv", text: 'loading...' });
     try {
         const res = await getFullByIdApi({ id });
         if (res.success && res.data) {
@@ -377,14 +376,12 @@ const getDetail = async () => {
     } catch (error) {
         console.error('加载工单详情异常', error);
         ElMessage.error('网络异常，加载工单详情失败');
-    } finally {
-        loading.close();
     }
 };
 
 // 初始化加载（合并原有初始化和详情加载逻辑）
 onMounted(async () => {
-    const loading = ElLoading.service({ lock: true, target: ".contentDiv", text: 'loading...' });
+    openMainLoading()
     try {
         // 并行加载基础选项数据
         const tasks = [
@@ -438,9 +435,8 @@ onMounted(async () => {
     } catch (e) {
         console.error('初始化异常：', e);
         smartAlert('初始化数据加载异常', false);
-    } finally {
-        loading.close();
     }
+    closeMainLoading()
 });
 
 // ------------------- 业务逻辑 -------------------

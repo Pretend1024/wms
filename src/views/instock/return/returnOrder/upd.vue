@@ -35,7 +35,7 @@
                         </el-form-item>
                     </el-col>
                     <el-col :span="6">
-                        <el-form-item label="原出库单号:" >
+                        <el-form-item label="原出库单号:">
                             <el-input v-model.trim="formData.sourceOrderNo" />
                         </el-form-item>
                     </el-col>
@@ -72,6 +72,10 @@
                     </template>
                     <template #remark="{ row }">
                         <el-input v-model="row.remark" placeholder="备注" />
+                    </template>
+                    <template #sign="{ row }">
+                        <el-switch v-model="row.statusId" inline-prompt active-text="是" inactive-text="否"
+                            :active-value=2 :inactive-value=1 disabled />
                     </template>
                 </returnOrderTable>
             </div>
@@ -184,21 +188,21 @@ const uploadedFiles = ref([])
 const fileList = ref([])
 
 const parcelColumns = [
-    { label: '物流跟踪号', prop: 'trackingNo', width: '220', slot: 'trackingNo', required: true },
+    { label: '物流跟踪号', prop: 'trackingNo', width: '210', slot: 'trackingNo' },
     { label: '承运商', prop: 'carrierCode', width: '150', slot: 'carrierCode' },
-    { label: '尺寸(CM) 长-宽-高', prop: 'length', width: '260', slot: 'length' },
-    { label: '重量(KG)', prop: 'weight', width: '100', slot: 'weight' },
-    { label: '备注', prop: 'remark', width: '200', slot: 'remark' },
+    { label: '尺寸(CM) 长-宽-高', prop: 'length', width: '235', slot: 'length' },
+    { label: '重量(KG)', prop: 'weight', width: '110', slot: 'weight' },
+    { label: '备注', prop: 'remark', width: '225', slot: 'remark' },
+    { label: '是否签收', prop: 'sign', width: '85', slot: 'sign' },
 ]
 
 const forecastColumns = [
-    { label: 'SKU', prop: 'sku', width: '180', slot: 'sku', required: true },
+    { label: 'SKU', prop: 'sku', width: '210', slot: 'sku' },
     { label: 'FNSKU', prop: 'fnsku', width: '180', slot: 'fnsku' },
-    { label: '品名', prop: 'productName', width: '180', slot: 'productName' },
-    { label: '预报数量', prop: 'forecastQty', width: '120', slot: 'forecastQty', required: true },
-    { label: '品质', prop: 'qualityId', width: '150', slot: 'qualityId' },
-    { label: '清点数量', prop: 'receivedQty', width: '120', slot: 'receivedQty' },
-    { label: '备注', prop: 'remark', width: '200', slot: 'remark' },
+    { label: '预报数量', prop: 'forecastQty', width: '120', slot: 'forecastQty' },
+    { label: '备注', prop: 'remark', width: '220' },
+    { label: '品质', prop: 'qualityId', width: '135', slot: 'qualityId' },
+    { label: '清点数量', prop: 'receivedQty', width: '150', slot: 'receivedQty' },
 ]
 
 // 下拉数据
@@ -206,7 +210,7 @@ const warehouseOptions = ref([]); const customerOptions = ref([]); const typeOpt
 const carrierOptions = ref([]); const qualityOptions = ref([]);
 
 onMounted(async () => {
-    const loading = ElLoading.service({ lock: true, text: 'Loading' })
+    openMainLoading()
     try {
         const [wh, type, carrier, quality, cust, info] = await Promise.all([
             getWhWarehouseApi(),
@@ -232,14 +236,16 @@ onMounted(async () => {
                 name: f.attachmentName, url: f.attachmentUrl
             }))
         }
-    } finally { loading.close() }
+    } catch (error) {
+        console.error('初始化数据失败', error)
+    }
+    closeMainLoading()
 })
 
 // 提交
 const handleSubmit = async () => {
     await formRef.value.validate(async (valid) => {
         if (!valid) return
-        const loading = ElLoading.service({ lock: true, text: 'Saving...' })
         try {
             const formattedGoods = forecastTableRef.value.getFormattedData()
 
@@ -272,7 +278,9 @@ const handleSubmit = async () => {
                 refreshStore.shouldRefreshReturnOrderList = true
                 handleClose()
             }
-        } finally { loading.close() }
+        } catch (error) {
+            console.error('提交数据失败', error)
+        }
     })
 }
 
@@ -293,7 +301,7 @@ const handleDeleteFile = (index) => uploadedFiles.value.splice(index, 1)
 function mergeData(forecast, receipt) {
     const result = []
     const skuMap = new Map()
-    forecast.forEach(f => skuMap.set(f.sku, { ...f, receivedQty: 0, qualityId: 10 }))
+    forecast.forEach(f => skuMap.set(f.sku, { ...f, receivedQty: 0, qualityId: null }))
     receipt.forEach(r => {
         if (skuMap.has(r.sku)) {
             const existing = skuMap.get(r.sku)
@@ -328,6 +336,10 @@ function mergeData(forecast, receipt) {
 
 .uploadDiv {
     width: 1200px;
+
+    :deep(.el-upload-dragger) {
+        padding: 13px 0;
+    }
 }
 
 .bottomDiv {

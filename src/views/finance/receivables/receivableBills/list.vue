@@ -51,23 +51,30 @@
                                                     currencyItem.currency ? currencyItem.currency + '：' : '' }}</span>
                                                 <span class="currency-amount">{{ currencyItem.totalFeeAmount ?
                                                     currencyItem.totalFeeAmount.toFixed(3) : '暂无'
-                                                    }}</span>
+                                                }}</span>
                                             </div>
                                         </div>
                                     </div>
                                     <div class="stat-empty" v-if="statData.length === 0">暂无统计数据</div>
                                 </div>
                             </div>
-                            <el-button type="primary" @click="handleAdd" v-permission="'add'" :icon="Plus">{{
-                                getButtonText('add') }}</el-button>
-                            <el-button type="success" @click="handleConfirm" v-permission="'confirm'" :icon="Check">{{
-                                getButtonText('confirm') }}</el-button>
-                            <el-button type="warning" @click="handlePay" v-permission="'pay'" :icon="Wallet">{{
-                                getButtonText('pay') }}</el-button>
-                            <el-button type="danger" @click="handleDel" v-permission="'delete'" :icon="Delete">{{
-                                getButtonText('del') }}</el-button>
-                            <el-button type="success" @click="handleExport" v-permission="'export'" :icon="Share">{{
-                                getButtonText('export')
+                            <el-button type="primary" @click="handleAdd" v-permission="'customerBill:add'"
+                                :icon="Plus">{{
+                                    getButtonText('add') }}</el-button>
+                            <el-button type="success" @click="handleConfirm" v-permission="'customerBill:confirm'"
+                                :icon="Check">{{
+                                    getButtonText('confirm') }}</el-button>
+                            <el-button type="warning" @click="handleWriteOff" v-permission="'customerBill:writeOffBill'"
+                                :icon="Wallet">{{
+                                    getButtonText('writeOff') }}</el-button>
+                            <el-button type="danger" @click="handleDel" v-permission="'customerBill:delete'"
+                                :icon="Delete">{{
+                                    getButtonText('del') }}</el-button>
+                            <el-button type="danger" @click="handleCancelConfirm" :icon="Close">取消确认</el-button>
+                            <el-button type="danger" @click="handleCancelWrite" :icon="Close">取消核销</el-button>
+                            <el-button type="success" @click="handleExport" v-permission="'customerBill:export'"
+                                :icon="Share">{{
+                                    getButtonText('export')
                                 }}</el-button>
                         </div>
                     </div>
@@ -94,9 +101,6 @@
                 </template>
                 <template #customer="{ row }">
                     {{ row.customerCode }}({{ row.customerName }})
-                </template>
-                <template #isOverdue="{ row }">
-                    <span :style="{ color: row.isOverdue ? 'red' : 'green' }">{{ row.isOverdue ? '是' : '否' }}</span>
                 </template>
                 <template #billStatusName="{ row }">
                     <span
@@ -133,9 +137,9 @@
             </template>
         </el-dialog>
 
-        <PayDialog ref="payDialogRef" @success="handlePaySuccess" />
+        <WriteOffDialog ref="writeOffDialogRef" @success="handleWriteOffSuccess" />
 
-        <exportDialog ref="exportDialogRef" :selectionRows="selectionRows" :initValues="initValues" :exportType="611"
+        <exportDialog ref="exportDialogRef" :selectionRows="selectionRows" :initValues="initValues" :exportType="707"
             :exportRangeValue="1" :useSingleId="true">
         </exportDialog>
         <batchOperationn :dialogTitle="'操作结果'" :isVisible="delDialogVisible" :tableData="delData" :nameField="'id'"
@@ -145,7 +149,7 @@
 
 <script setup name="应收账单">
 import { ref, computed, onMounted, nextTick, shallowRef } from 'vue';
-import { Plus, Delete, EditPen, Check, Share, DocumentCopy, Wallet } from '@element-plus/icons-vue';
+import { Plus, Delete, EditPen, Check, Share, DocumentCopy, Wallet, Close } from '@element-plus/icons-vue';
 import { ElLoading, ElMessage, ElMessageBox } from 'element-plus';
 
 // 接口导入
@@ -156,8 +160,10 @@ import {
     delBillByIdApi,
     getBillStatusEnumApi,
     confirmBillByIdApi,
-    getBillStatusCountApi, // 需确保后端账单也有类似统计接口
-    getBillStatAmountApi
+    getBillStatusCountApi,
+    getBillStatAmountApi,
+    cancelConfirmBillByIdApi,
+    cancelWriteOffBillByIdApi
 } from '@/api/financeApi/receivables.js';
 import { getCurrencyListApi } from '@/api/baseApi/index.js';
 import { getOrgListCompanyApi } from '@/api/baseApi/org.js';
@@ -172,7 +178,7 @@ import hydTable from "@/components/table/hyd-table.vue";
 import batchOperationn from '@/components/messageNotices/batchOperation.vue';
 import AddForm from './add.vue';
 import UpdForm from './upd.vue';
-import PayDialog from './PayDialog.vue'; // 引入支付弹窗
+import WriteOffDialog from './WriteOffDialog.vue'; // 引入支付弹窗
 import exportDialog from '@/components/print-export-importDialog/exportDialog.vue';
 import router from '@/router/index.js'
 import { useI18n } from 'vue-i18n';
@@ -180,7 +186,7 @@ const { t } = useI18n();
 
 // 编辑时的回显数据
 const editInitData = ref({});
-const payDialogRef = ref(null); // 支付弹窗引用
+const writeOffDialogRef = ref(null); // 支付弹窗引用
 
 // 新增统计相关变量
 const statData = ref([]);
@@ -193,7 +199,7 @@ const formConfig = ref([
     { type: 'input', label: '账单编号', prop: 'billNo' },
     { type: 'select', label: '币种', prop: 'currency', options: [] },
     { type: 'select', label: '账单状态', prop: 'billStatusId', options: [] },
-    { type: 'select', label: '是否逾期', prop: 'isOverdue', options: [{ label: '是', value: true }, { label: '否', value: false }] },
+    // 移除了是否逾期筛选
     { type: 'date', label: '创建时间', prop: 'createdTimeBegin', offsetDays: 30, useEndOfDay: false },
     { type: 'date', label: '截至时间', prop: 'createdTimeEnd', useEndOfDay: true },
 ]);
@@ -220,7 +226,6 @@ const getFeeStatAmount = async () => {
 const getStatus = async () => {
     const data = { ...trimObjectStrings(initValues.value) };
     delete data.billStatusIdLst;
-    // 假设账单共用费用状态统计接口，若有独立接口请替换
     const res = await getBillStatusCountApi(data);
     statusIdsList.value = res.data;
     statusIdsArr.value = [...initValues.value.billStatusIdLst];
@@ -246,6 +251,7 @@ const handleReset = (data) => {
 
 // 表格配置
 const tableData = shallowRef([]);
+// 修改后的列配置
 const columns = ref([
     { label: '公司', prop: 'orgName', width: '150', fixed: 'left', sortable: true },
     { label: '客户', prop: 'customerCode', width: '180', slot: 'customer', fixed: 'left', sortable: true },
@@ -255,14 +261,16 @@ const columns = ref([
     { label: '起始日期', prop: 'billStartDate', width: '200', sortable: true },
     { label: '结束日期', prop: 'billEndDate', width: '200', sortable: true },
     { label: '总金额', prop: 'totalFeeAmount', width: '120' },
-    { label: '待支付金额', prop: 'unpaidAmount', width: '120' },
-    { label: '已支付金额', prop: 'alreadyPaidAmount', width: '120' },
+
+    { label: '已核销金额', prop: 'writtenOffAmount', width: '120' },
+    { label: '未核销金额', prop: 'unwrittenOffAmount', width: '120' },
+
     { label: '账单状态', prop: 'billStatusName', width: '120', sortable: true, slot: 'billStatusName' },
-    { label: '付款截止日期', prop: 'paymentDeadline', width: '200', sortable: true },
-    { label: '是否逾期', prop: 'isOverdue', width: '125', slot: 'isOverdue', sortable: true },
+
+    { label: '全额核销完成时间', prop: 'writeOffCompleteTime', width: '200', sortable: true },
+
     { label: '确认时间', prop: 'confirmTime', width: '200', sortable: true },
     { label: '确认人', prop: 'confirmBy', width: '110' },
-    { label: '结清时间', prop: 'closeTime', width: '200', sortable: true },
     { label: '备注', prop: 'remark', width: '200' },
     { label: '附件', prop: 'attachment', width: '100', slot: 'attachment' },
     { label: '销售', prop: 'salesUserCode', width: '120' },
@@ -343,17 +351,17 @@ const handleAdd = () => {
 };
 
 // 支付功能
-const handlePay = () => {
+const handleWriteOff = () => {
     if (selectionRows.value.length === 0) {
         ElMessage.warning('请选择要支付的账单！');
         return;
     }
     const ids = selectionRows.value.map(item => item.id);
-    payDialogRef.value.open(ids);
+    writeOffDialogRef.value.open(ids);
 };
 
 // 支付成功回调
-const handlePaySuccess = () => {
+const handleWriteOffSuccess = () => {
     getList(pagination.value.currentPage, pagination.value.pageSize, orderBy.value);
     getStatus();
 };
@@ -419,8 +427,6 @@ const handleDialogConfirm = async () => {
         await childFormRef.value.validate();
         const formData = childFormRef.value.getFormData();
 
-        bodyLoading = ElLoading.service({ lock: true, text: 'Loading' });
-
         let res;
         if (formData.id) {
             res = await updBillByIdApi(formData);
@@ -439,8 +445,6 @@ const handleDialogConfirm = async () => {
         if (error?.name !== 'ValidationError') {
             smartAlert('网络异常或操作失败', false, 1000);
         }
-    } finally {
-        if (bodyLoading) bodyLoading.close();
     }
 };
 
@@ -463,6 +467,55 @@ const handleDel = () => {
         promptMessage.value = '操作中...'
         for (let i = 0; i < selectionRows.value.length; i++) {
             const res = await delBillByIdApi({ id: selectionRows.value[i].id });
+            delData.value.push({
+                id: selectionRows.value[i].billNo,
+                msg: res.msg,
+                success: res.success
+            });
+        }
+        promptMessage.value = '操作完成！'
+        getStatus();
+    }).catch(() => { });
+};
+
+const handleCancelConfirm = () => {
+    if (selectionRows.value.length === 0) {
+        ElMessage.warning('请选择要取消的数据！');
+        return;
+    }
+    ElMessageBox.confirm(
+        `是否要取消${selectionRows.value.length}条数据?`, '提醒', { confirmButtonText: '确定', cancelButtonText: '取消', type: 'warning' }
+    ).then(async () => {
+        loading.value = true;
+        delDialogVisible.value = true;
+        delData.value = [];
+        promptMessage.value = '操作中...'
+        for (let i = 0; i < selectionRows.value.length; i++) {
+            const res = await cancelConfirmBillByIdApi({ id: selectionRows.value[i].id });
+            delData.value.push({
+                id: selectionRows.value[i].billNo,
+                msg: res.msg,
+                success: res.success
+            });
+        }
+        promptMessage.value = '操作完成！'
+        getStatus();
+    }).catch(() => { });
+};
+const handleCancelWrite = () => {
+    if (selectionRows.value.length === 0) {
+        ElMessage.warning('请选择要取消的数据！');
+        return;
+    }
+    ElMessageBox.confirm(
+        `是否要取消${selectionRows.value.length}条数据?`, '提醒', { confirmButtonText: '确定', cancelButtonText: '取消', type: 'warning' }
+    ).then(async () => {
+        loading.value = true;
+        delDialogVisible.value = true;
+        delData.value = [];
+        promptMessage.value = '操作中...'
+        for (let i = 0; i < selectionRows.value.length; i++) {
+            const res = await cancelWriteOffBillByIdApi({ id: selectionRows.value[i].id });
             delData.value.push({
                 id: selectionRows.value[i].billNo,
                 msg: res.msg,
@@ -547,7 +600,7 @@ onMounted(async () => {
 
     // 币种
     const nationRes = await getCurrencyListApi();
-    nationOptions.value = nationRes.data.map(item => ({ value: item.currency, label: item.remark }))
+    nationOptions.value = nationRes.data.map(item => ({ value: item.currency, label: item.currencyName }))
     formConfig.value[1].options = nationOptions.value;
 
     getStatus();

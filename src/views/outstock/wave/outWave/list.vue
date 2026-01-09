@@ -212,7 +212,7 @@ const handleSearch = (data) => {
     loading.value = true;
     initValues.value = {
         ...data,
-        statusIdList: statusIdsArr.value,
+        statusIdList: statusIdsArr.value.filter(id => id !== null),
     }
     getList(pagination.value.currentPage, pagination.value.pageSize, orderBy.value)
     getStatus()

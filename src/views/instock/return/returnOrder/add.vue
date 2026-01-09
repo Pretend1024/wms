@@ -155,8 +155,16 @@ let useTagsStore = tagsStore()
 import { useRefreshStore } from '@/store/refresh.js'
 const refreshStore = useRefreshStore()
 
-const poros = defineProps({
+const props = defineProps({
     trackingNos: {
+        type: String,
+        default: ''
+    },
+    customerCode: {
+        type: String,
+        default: ''
+    },
+    warehouseCode: {
         type: String,
         default: ''
     }
@@ -204,11 +212,11 @@ const parcelColumns = [
     { label: '备注', prop: 'remark', width: '250', slot: 'remark' },
 ]
 const forecastColumns = [
-    { label: 'SKU', prop: 'sku', width: '220', slot: 'sku', required: true },
-    { label: 'FNSKU', prop: 'fnsku', width: '180', slot: 'fnsku' },
-    { label: '预报数量', prop: 'forecastQty', width: '120', slot: 'forecastQty', required: true },
-    { label: '商品条码', prop: 'barcode', width: '210', slot: 'barcode' },
-    { label: '备注', prop: 'remark', width: '285', slot: 'remark' },
+    { label: 'SKU', prop: 'sku', width: '280', slot: 'sku', required: true },
+    { label: 'FNSKU', prop: 'fnsku', width: '210', slot: 'fnsku' },
+    { label: '预报数量', prop: 'forecastQty', width: '200', slot: 'forecastQty', required: true },
+    // { label: '商品条码', prop: 'barcode', width: '210', slot: 'barcode' },
+    { label: '备注', prop: 'remark', width: '325', slot: 'remark' },
 ]
 // 保存
 const handleSubmit = async () => {
@@ -275,7 +283,6 @@ const beforeUpload = (file) => {
 
 // 上传文件处理
 const handleUpload = async (options) => {
-    const loadingInstance = ElLoading.service({ lock: true, text: '文件上传中...' })
     try {
         const res = await uploadApi(options.file, { path: 'temp' })
         if (res.success) {
@@ -291,9 +298,7 @@ const handleUpload = async (options) => {
     } catch (error) {
         console.error('上传失败:', error)
         smartAlert(`文件 "${options.file.name}" 上传失败`, false)
-    } finally {
-        loadingInstance.close()
-    }
+    } 
 }
 
 // 删除已上传文件
@@ -343,9 +348,18 @@ onMounted(async () => {
         label: item.code + '(' + item.name + ')'
     }))
     // 如果有传入trackingNos，则自动填充包裹表格数据
-    if (poros.trackingNos) {
-        const trackingNosArray = poros.trackingNos.split(',');
+    if (props.trackingNos) {
+        const trackingNosArray = props.trackingNos.split(',');
         parcelTableData.value = trackingNosArray.map(trackingNo => ({ trackingNo }));
+    }
+    //赋值客户代码
+    if (props.customerCode) {
+        formData.value.customerCode = props.customerCode;
+    }
+
+    //赋值仓库代码
+    if (props.warehouseCode) {
+        formData.value.warehouseCode = props.warehouseCode;
     }
 })
 

@@ -11,8 +11,10 @@
                 @selection-change="handleSelectionChange" @row-click="handleRowClick" @page-change="handlePageChange"
                 @sort-change="handleTableSort">
                 <template #table-buttons>
-                    <el-button type="primary" @click="handleAdd" v-permission="'add'" :icon="Plus">{{ getButtonText('add') }}</el-button>
-                    <el-button type="danger" @click="handleDel" v-permission="'delete'" :icon="Delete">{{ getButtonText('del') }}</el-button>
+                    <el-button type="primary" @click="handleAdd" v-permission="'add'" :icon="Plus">{{
+                        getButtonText('add') }}</el-button>
+                    <el-button type="danger" @click="handleDel" v-permission="'delete'" :icon="Delete">{{
+                        getButtonText('del') }}</el-button>
                 </template>
                 <template #customBtn="{ row }">
                     <div style="display: flex;">
@@ -35,7 +37,7 @@
                 <template #isStandardCurrency="{ row }">
                     <span :style="{ color: row.isStandardCurrency ? 'green' : 'red' }">{{ row.isStandardCurrency
                         ? '是' : '否'
-                    }}</span>
+                        }}</span>
                 </template>
             </hydTable>
         </div>
@@ -122,6 +124,7 @@ const handleReset = (data) => {
 const tableData = shallowRef([]);
 const columns = ref([
     { label: '币种代码', prop: 'currency', width: '175', fixed: 'left', sortable: true },
+    { label: '货币名称', prop: 'currencyName', width: '175', fixed: 'left', sortable: true },
     { label: '汇率', prop: 'rate', width: '120', sortable: true },
     { label: '本位币', prop: 'isStandardCurrency', width: '150', sortable: true, slot: 'isStandardCurrency' },
     { label: '创建时间', prop: 'createdTime', width: '200', sortable: true },
@@ -213,7 +216,6 @@ const handleDialogCancel = () => {
 const handleDialogConfirm = async () => {
     if (!childFormRef.value) return;
 
-    let bodyLoading = null;
     try {
         // 1. 子组件表单验证
         await childFormRef.value.validate();
@@ -225,7 +227,6 @@ const handleDialogConfirm = async () => {
         }
 
         // 3. 显示加载状态
-        bodyLoading = ElLoading.service({ lock: true, text: 'Loading' });
         loading.value = true;
 
         // 4. 调用新增/编辑接口（根据formData是否有id判断）
@@ -258,7 +259,6 @@ const handleDialogConfirm = async () => {
 
     } finally {
         // 确保加载状态关闭
-        if (bodyLoading) bodyLoading.close();
         loading.value = false;
     }
 };

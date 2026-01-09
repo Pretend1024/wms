@@ -137,7 +137,7 @@
                     </template>
                     <template #isSuccess="{ row }">
                         <span :style="{ color: row.isSuccess ? 'green' : 'red' }">{{ row.isSuccess ? '成功' : '失败'
-                            }}</span>
+                        }}</span>
                     </template>
                 </general-table>
                 <el-table :loading="loading" v-show="activeName == 'sixth'" :data="filteredTableData"
@@ -188,7 +188,8 @@
 <script setup name="入库单详情">
 import { getWhWarehouseApi } from '@/api/baseApi/wh.js'
 import { getInstockInOrderCabinetTypeEnumApi } from '@/api/instockApi/order.js';
-import { getOrderInOrderLogApi, getOrderInOrderInfoVOByIdApi, getOrderInOrderSkuCheckApi } from '@/api/instockApi/order.js'
+import { getOrderInOrderInfoVOByIdApi, getOrderInOrderSkuCheckApi } from '@/api/instockApi/order.js'
+import { getOpLogApi } from '@/api/baseApi/index.js'
 const props = defineProps({
     id: {
         type: Number,
@@ -210,7 +211,7 @@ const handleTabChange = async (tab) => {
         case 'fifth':
             if (userData5.value.length == 0) {
                 loading.value = true
-                const res = await getOrderInOrderLogApi({ objId: props.id })
+                const res = await getOpLogApi({ objId: props.id })
                 if (res.data) {
                     userData5.value = res.data;
                     loading.value = false
@@ -367,12 +368,7 @@ const warehouseOptions = ref([])
 // 货柜型号
 const cabinetOptions = ref([])
 onMounted(async () => {
-    console.log('传递的参数:', props.id, props.name);
-    const loading = ElLoading.service({
-        lock: true,
-        target: ".contentDiv",
-        text: 'Loading'
-    })
+    openMainLoading()
     // 仓库数据
     const warehouseRes = await getWhWarehouseApi()
     warehouseOptions.value = warehouseRes.data
@@ -441,7 +437,7 @@ onMounted(async () => {
     userData2.value = rows2
     userData3.value = res.data.receiptList || []
     userData4.value = res.data.inShelfList || []
-    loading.close()
+    closeMainLoading()
 })
 
 // 上架核对底部统计

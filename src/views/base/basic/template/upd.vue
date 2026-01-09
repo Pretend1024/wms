@@ -118,10 +118,6 @@ const beforeUpload = (file) => {
 
 // 自定义上传处理
 const handleUpload = async (options) => {
-    ElLoading.service({
-        lock: true,
-        text: '上传中...'
-    })
     try {
         const res = await uploadApi(options.file, { path: 'temp' });
         console.log(res, '上传头像返回值')
@@ -131,7 +127,6 @@ const handleUpload = async (options) => {
         smartAlert('上传失败，请检查网络', false, 1000)
         console.log('上传失败，请重试', error);
     } finally {
-        ElLoading.service().close();
         fileList.value = [];
     }
 };

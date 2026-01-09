@@ -25,8 +25,7 @@
             <el-col :span="12">
                 <el-form-item :label="getLabel('currency')" prop="currency">
                     <el-select v-model="formData.currency" :placeholder="getPlaceholder('currency')" clearable>
-                        <el-option v-for="item in currencyEnum" :key="item.code" :label="item.name"
-                            :value="item.id" />
+                        <el-option v-for="item in currencyEnum" :key="item.code" :label="item.name" :value="item.id" />
                     </el-select>
                 </el-form-item>
             </el-col>
@@ -307,7 +306,7 @@ onMounted(async () => {
         const res = await getCurrencyListApi();
         currencyEnum.value = res.data.map(item => ({
             id: item.currency,
-            name: item.remark
+            name: item.currencyName
         }));
         ;
     } catch (error) {

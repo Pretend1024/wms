@@ -1,5 +1,6 @@
 import http from '@/utils/request/request'
 import { createPostRequestWithQuery } from '@/utils/request/createPostRequestWithQuery'
+
 // -------------------------------库存列表
 // 分类标签页枚举
 export const getInventoryInventoryInventoryViewEnumApi = () => {
@@ -15,13 +16,13 @@ export const getOrderInOrderInfoApi = createPostRequestWithQuery('/instock/order
 export const getInventoryInventoryInfoApi = createPostRequestWithQuery('/inventory/inventory/inventory/getById')
 // 锁定数量
 export const postInventoryInventoryLockQtyApi = (data) => {
-    return http.post('/inventory/inventory/inventory/lockQty', { ...data })
+    return http.post('/inventory/inventory/inventory/lockQty', { ...data }, { headers: { 'loading': true } })
 }
 // 获取锁定数量
 export const getInventoryInventoryLockQtyApi = createPostRequestWithQuery('/inventory/inventory/inventory/getLockQty')
 // 调整数量
 export const postInventoryInventoryAdjustQtyApi = (data) => {
-    return http.post('/inventory/adjust/inventoryAdjust/add', { ...data })
+    return http.post('/inventory/adjust/inventoryAdjust/add', { ...data }, { headers: { 'loading': true } })
 }
 
 // 创建方式
@@ -51,11 +52,11 @@ export const getInventoryInventoryStatusApi = () => {
 }
 // 冻结库存
 export const postInventoryInventoryLockApi = (data) => {
-    return http.post('/inventory/inventory/inventory/lock', { ...data })
+    return http.post('/inventory/inventory/inventory/lock', { ...data }, { headers: { 'loading': true } })
 }
 // 解冻库存
 export const postInventoryInventoryUnlockApi = (data) => {
-    return http.post('/inventory/inventory/inventory/unLock', { ...data })
+    return http.post('/inventory/inventory/inventory/unLock', { ...data }, { headers: { 'loading': true } })
 }
 
 // 日志数量类型枚举
@@ -68,7 +69,7 @@ export const getInventoryInventoryLogOpTypeApi = createPostRequestWithQuery('/in
 export const getInventoryInventoryLogListLogApi = (data) => {
     return http.post('/inventory/inventory/inventoryLog/listLog', { ...data })
 }
-// 详情列表inventory/inventory/inventory/listDetail
+// 详情列表
 export const getInventoryInventoryListDetailApi = (data) => {
     return http.post('/inventory/inventory/inventory/listDetail', { ...data })
 }
@@ -83,7 +84,6 @@ export const getInventoryInventoryQualityEnumApi = () => {
 export const getInventoryInventorySnapshotPageApi = (data) => {
     return http.post('inventory/inventory/inventorySnapshot/page', { ...data })
 }
-
 
 // -------------------------------库存调整
 // 获取调整单
@@ -108,7 +108,6 @@ export const getAdjustStatusApi = () => {
     return http.post('/inventory/adjust/inventoryAdjust/statusEnum')
 }
 
-
 // -------------------------------SN库存
 // 获取SN库存
 export const getInventorySnPageApi = (data) => {
@@ -120,11 +119,11 @@ export const getInventorySnStatusApi = () => {
 }
 // 新增SN库存
 export const addInventorySnAddApi = (data) => {
-    return http.post('/inventory/inventory/inventorySn/add', { ...data })
+    return http.post('/inventory/inventory/inventorySn/add', { ...data }, { headers: { 'loading': true } })
 }
 // 编辑SN库存
 export const updInventorySnUpdateByIdApi = (data) => {
-    return http.post('/inventory/inventory/inventorySn/updateById', { ...data })
+    return http.post('/inventory/inventory/inventorySn/updateById', { ...data }, { headers: { 'loading': true } })
 }
 // 删除SN库存
-export const delInventorySnDeleteByIdApi = createPostRequestWithQuery('/inventory/inventory/inventorySn/deleteById') 
+export const delInventorySnDeleteByIdApi = createPostRequestWithQuery('/inventory/inventory/inventorySn/deleteById')

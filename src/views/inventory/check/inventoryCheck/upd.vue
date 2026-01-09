@@ -63,7 +63,7 @@
                 <el-form-item label="盘点方式" prop="checkTypeId">
                     <el-radio-group v-model="formData.checkTypeId">
                         <el-radio v-for="item in checkTypeOptions" :key="item.value" :label="item.value">{{ item.label
-                            }}</el-radio>
+                        }}</el-radio>
                     </el-radio-group>
                 </el-form-item>
             </el-col>
@@ -172,6 +172,7 @@ const resetFields = () => {
 };
 const customerOptions = ref([]);
 onMounted(async () => {
+    openMainLoading()
     try {
         const res = await getOrgListCompanyApi();
         if (res.success) {
@@ -193,6 +194,9 @@ onMounted(async () => {
         }
     } catch (e) {
         console.error(e);
+    }
+    finally {
+        closeMainLoading()
     }
 });
 

@@ -186,7 +186,7 @@
             <template #footer>
                 <div class="dialog-footer">
                     <el-button @click="centerDialogVisible = false, orderId = ''">{{ getButtonText('cancel')
-                        }}</el-button>
+                    }}</el-button>
                     <el-button type="primary" @click="handleDialogConfirm">{{ getButtonText('confirm') }}</el-button>
                 </div>
             </template>
@@ -267,7 +267,6 @@ const getOrderInfo = async () => {
     orderInfo.value = {}; orderData.value.receiptMethod = ''; orderId.value = ''
     if (!orderData.value.numberType || !orderData.value.number) return
 
-    const loading = ElLoading.service({ lock: true, text: 'Loading' })
     try {
         const res = await getOrderListByNumberTypeApi(orderData.value)
         if (res.success && res.data.length > 1) {
@@ -292,8 +291,6 @@ const getOrderInfo = async () => {
         }
     } catch (e) {
         message.value = { type: false, content: '系统异常，请检查网络或配置' }
-    } finally {
-        loading.close()
     }
 }
 
@@ -303,7 +300,6 @@ const getOrderSkuInfo = async () => {
         smartAlert('请先获取订单信息', false); orderData.value.receiptMethod = ''; return
     }
     orderData.value.boxNo = ''
-    const loading = ElLoading.service({ lock: true, text: 'Loading' })
     try {
         if (orderData.value.receiptMethod == 11) { // 按SKU
             const res = await getOrderInOrderSkuCheckApi({ inOrderId: orderId.value })
@@ -312,7 +308,7 @@ const getOrderSkuInfo = async () => {
             const res = await getOrderInReceiptBoxApi({ inOrderId: orderId.value })
             userData1.value = (res.data || []).map(item => ({ ...item, qty: Math.max(item.receiptGoodsQty - item.shelfGoodsQty, 0) }))
         }
-    } finally { loading.close() }
+    } catch (error) { console.error(error) }
 }
 
 /** 提交上架数据 */
@@ -352,7 +348,6 @@ const reset = () => {
 const handleRowClick = (row) => { orderId.value = row.id }
 const handleRowDblClick = (row) => { orderId.value = row.id; handleDialogConfirm() }
 const handleDialogConfirm = async () => {
-    const loading = ElLoading.service({ lock: true, text: 'Loading' })
     try {
         const res = await getOrderInOrderInfoApi({ id: orderId.value })
         orderInfo.value = res.data
@@ -360,7 +355,9 @@ const handleDialogConfirm = async () => {
             orderData.value.receiptMethod = orderInfo.value.receiptMethodId; getOrderSkuInfo()
         }
         centerDialogVisible.value = false
-    } finally { loading.close() }
+    } catch (error) {
+        console.error(error)
+    }
 }
 
 onMounted(async () => {

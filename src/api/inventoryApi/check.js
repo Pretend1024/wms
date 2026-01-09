@@ -7,11 +7,11 @@ export const getInventoryCheckPageApi = (data) => {
 }
 // 添加盘点
 export const addInventoryCheckAddApi = (data) => {
-    return http.post('/inventory/check/inventoryCheck/add', { ...data })
+    return http.post('/inventory/check/inventoryCheck/add', { ...data }, { headers: { 'loading': true } })
 }
 // 编辑盘点
 export const updInventoryCheckUpdateByIdApi = (data) => {
-    return http.post('/inventory/check/inventoryCheck/updateById', { ...data })
+    return http.post('/inventory/check/inventoryCheck/updateById', { ...data }, { headers: { 'loading': true } })
 }
 // 作废盘点
 export const cancelInventoryCheckApi = createPostRequestWithQuery('/inventory/check/inventoryCheck/cancelInventoryCheck')

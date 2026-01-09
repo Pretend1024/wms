@@ -261,7 +261,6 @@ const handleDialogCancel = () => {
 const handleDialogConfirm = async () => {
     if (!childFormRef.value) return;
 
-    let bodyLoading = null;
     try {
         // 1. 子组件表单验证
         await childFormRef.value.validate();
@@ -273,7 +272,6 @@ const handleDialogConfirm = async () => {
         }
 
         // 3. 显示加载状态
-        bodyLoading = ElLoading.service({ lock: true, text: 'Loading' });
         loading.value = true;
 
         // 4. 调用新增/编辑接口（根据formData是否有id判断）
@@ -306,7 +304,6 @@ const handleDialogConfirm = async () => {
 
     } finally {
         // 确保加载状态关闭
-        if (bodyLoading) bodyLoading.close();
         loading.value = false;
     }
 };
@@ -485,7 +482,7 @@ onMounted(async () => {
     const nationRes = await getCurrencyListApi();
     nationOptions.value = nationRes.data.map(item => ({
         value: item.currency,
-        label: item.remark
+        label: item.currencyName
     }))
     // 获取适用场景枚举
     const sceneRes = await getTypeSceneEnumApi();

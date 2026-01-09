@@ -13,10 +13,18 @@
                 <el-input v-model.trim="formData.versionNo" :placeholder="getPlaceholder('versionNo')" disabled />
             </el-form-item>
             <el-form-item :label="getLabel('fileUrl')" prop="fileUrl">
-                <el-input v-model.trim="formData.fileUrl" :placeholder="getPlaceholder('fileUrl')" disabled />
+                <el-input v-model.trim="formData.fileUrl" :placeholder="getPlaceholder('fileUrl')" disabled>
+                    <template #append v-if="formData.fileUrl">
+                        <el-button :icon="Download" @click="handleDownload(formData.fileUrl)" />
+                    </template>
+                </el-input>
             </el-form-item>
             <el-form-item :label="getLabel('publishPage')" prop="publishPage">
-                <el-input v-model.trim="formData.publishPage" :placeholder="getPlaceholder('publishPage')" disabled />
+                <el-input v-model.trim="formData.publishPage" :placeholder="getPlaceholder('publishPage')" disabled>
+                    <template #append v-if="formData.publishPage">
+                        <el-button :icon="Download" @click="handleDownload(formData.publishPage)" />
+                    </template>
+                </el-input>
             </el-form-item>
             <el-form-item :label="getLabel('remark')" prop="remark">
                 <el-input v-model="formData.remark" type="textarea" rows="2" :placeholder="getPlaceholder('remark')"
@@ -34,6 +42,7 @@
 
 <script setup>
 import { ref, reactive } from 'vue';
+import { Download } from '@element-plus/icons-vue';
 import { updSysAppByIdApi } from '@/api/sysApi/setting.js';
 import { getButtonText } from '@/utils/i18n/i18nLabels';
 import { smartAlert } from '@/utils/genericMethods.js';
@@ -85,6 +94,13 @@ const handleConfirm = async () => {
             }
         }
     });
+};
+const handleDownload = (url) => {
+    if (!url) {
+        ElMessage.warning('地址为空');
+        return;
+    }
+    window.open(url, '_blank');
 };
 
 defineExpose({ open });

@@ -57,17 +57,7 @@ export const updWhZoneApi = (data) => {
     return http.post('/base/wh/zone/updateById', { ...data }, { headers: { 'loading': true } })
 }
 // 删除库区
-export const delWhZoneApi = (queryParams) => {
-    const queryString = Object.entries(queryParams)
-        .map(([key, value]) => `${encodeURIComponent(key)}=${encodeURIComponent(value)}`)
-        .join('&');
-
-    const url = queryString
-        ? `/base/wh/zone/deleteById?${queryString}`
-        : '/base/wh/zone/deleteById';
-
-    return http.post(url);
-}
+export const delWhZoneApi = createPostRequestWithQuery('/base/wh/zone/deleteById')
 
 // -----------------------------------------------------------库位类型---------------------------------------------------
 // 获取库位类型列表
@@ -83,17 +73,8 @@ export const updWhLocationSizeTypeApi = (data) => {
     return http.post('/base/wh/locationSizeType/updateById', { ...data }, { headers: { 'loading': true } })
 }
 // 删除库位类型
-export const delWhLocationSizeTypeApi = (queryParams) => {
-    const queryString = Object.entries(queryParams)
-        .map(([key, value]) => `${encodeURIComponent(key)}=${encodeURIComponent(value)}`)
-        .join('&');
+export const delWhLocationSizeTypeApi = createPostRequestWithQuery('/base/wh/locationSizeType/deleteById')
 
-    const url = queryString
-        ? `/base/wh/locationSizeType/deleteById?${queryString}`
-        : '/base/wh/locationSizeType/deleteById';
-
-    return http.post(url);
-}
 // -----------------------------------------------------------库位---------------------------------------------------
 // 获取库位
 export const getWhLocationListApi = (data) => {
@@ -108,17 +89,8 @@ export const updWhLocationApi = (data) => {
     return http.post('/base/wh/location/updateById', { ...data }, { headers: { 'loading': true } })
 }
 // 删除库位
-export const delWhLocationApi = (queryParams) => {
-    const queryString = Object.entries(queryParams)
-        .map(([key, value]) => `${encodeURIComponent(key)}=${encodeURIComponent(value)}`)
-        .join('&');
+export const delWhLocationApi = createPostRequestWithQuery('/base/wh/location/deleteById')
 
-    const url = queryString
-        ? `/base/wh/location/deleteById?${queryString}`
-        : '/base/wh/location/deleteById';
-
-    return http.post(url);
-}
 // 获取库区枚举
 export const getWhZoneEnumApi = (data) => {
     return http.post('/base/wh/zone/list', { ...data })

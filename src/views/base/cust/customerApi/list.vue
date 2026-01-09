@@ -209,10 +209,6 @@ const handleDialogConfirm = async () => {
     if (!childFormRef.value) return;
     try {
         await childFormRef.value.validate();
-        const bodyLoading = ElLoading.service({
-            lock: true,
-            text: 'Loading',
-        })
         loading.value = true;
         let res;
         if (addData.value.id) {
@@ -226,7 +222,6 @@ const handleDialogConfirm = async () => {
             centerDialogVisible.value = false;
             getList(pagination.value.currentPage, pagination.value.pageSize, orderBy.value);
         }
-        bodyLoading.close();
         loading.value = false;
     } catch (error) {
         console.error('表单验证失败:', error);

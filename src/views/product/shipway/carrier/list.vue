@@ -211,10 +211,6 @@ const handleDialogConfirm = async () => {
     try {
         await childFormRef.value.validateMain();
         await childFormRef.value.validateServices();
-        const bodyLoading = ElLoading.service({
-            lock: true,
-            text: 'Loading',
-        })
         loading.value = true;
         let res;
         if (addData.value.id) {
@@ -240,7 +236,6 @@ const handleDialogConfirm = async () => {
             });
         }
         loading.value = false;
-        bodyLoading.close();
     } catch (error) {
         console.error('表单验证失败:', error);
     }
@@ -347,14 +342,8 @@ const handleSubmitAccount = () => {
 }
 const openAccount = async (row) => {
     dataId.value = row.id
-    // 加载动画
-    const loading = ElLoading.service({
-        lock: true,
-        text: '加载中...',
-    })
     const res = await getProductSupplierAccountListApi({ supplierId: row.id })
     supplierAccountAddDTOList.value = res.data
-    loading.close()
     AccountDialogVisible.value = true;
 }
 // 保存账号
@@ -362,11 +351,6 @@ const handleSaveAccount = async () => {
     if (supplierAccountAddDTOList.value.length) {
         await accountListRef.value.validateForms()
     }
-    // 加载动画
-    const loading = ElLoading.service({
-        lock: true,
-        text: '加载中...',
-    })
     const processedAccounts = supplierAccountAddDTOList.value.map(item => {
         const newItem = { ...item };
         return newItem;
@@ -379,7 +363,6 @@ const handleSaveAccount = async () => {
     console.log('保存账号:', data)
     const res = await updProductSupplierAccountApi(data)
     smartAlert(res.msg, res.success, 1000)
-    loading.close()
     if (res.success) {
         AccountDialogVisible.value = false;
     }
@@ -403,15 +386,10 @@ const handleSubmitChannel = () => {
 const openChannel = async (row) => {
     dataId.value = row.id
     // 加载动画
-    const loading = ElLoading.service({
-        lock: true,
-        text: '加载中...',
-    })
     const res = await getProductSupplierChannelListApi({ supplierId: row.id })
     console.log(res)
     supplierChannelAddDTOList.value = res.data
     console.log('渠道数据:', supplierChannelAddDTOList.value)
-    loading.close()
     ChannelDialogVisible.value = true;
 }
 
@@ -420,10 +398,6 @@ const handleSaveChannel = async () => {
     if (supplierChannelAddDTOList.value.length) {
         await channelListRef.value.validateForms()
     }
-    const loading = ElLoading.service({
-        lock: true,
-        text: '加载中...',
-    })
     const data = {
         supplierId: dataId.value,
         supplierChannelUpdDTOList: supplierChannelAddDTOList.value
@@ -432,7 +406,6 @@ const handleSaveChannel = async () => {
 
     const res = await updProductSupplierChannelApi(data)
     smartAlert(res.msg, res.success, 1000)
-    loading.close()
     if (res.success) {
         ChannelDialogVisible.value = false;
     }

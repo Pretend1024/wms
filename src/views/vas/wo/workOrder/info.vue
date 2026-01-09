@@ -311,7 +311,6 @@ const getDetail = async () => {
     const id = props.id || route.query.id;
     if (!id) return;
 
-    const loading = ElLoading.service({ target: '.viewArea', target: ".contentDiv", text: 'loading...' });
     try {
         const res = await getFullByIdApi({ id });
         if (res.success && res.data) {
@@ -326,8 +325,6 @@ const getDetail = async () => {
     } catch (error) {
         console.error(error);
         ElMessage.error('网络异常');
-    } finally {
-        loading.close();
     }
 };
 
@@ -452,7 +449,7 @@ const handleDepartmentChange = async (deptId) => {
     employeeOptions.value = [];
     if (deptId) {
         const orgId = assignForm.orgId;
-        const res = await getOrgEmployeeListApi({ orgId: orgId, departmentId: deptId });
+        const res = await getOrgEmployeeListApi({ orgId: orgId, departmentId: deptId, statusId: 10, userStatusId: 10 });
         employeeOptions.value = res.data.rows || [];
     }
 };
@@ -591,8 +588,10 @@ const getStatusType = (statusId) => {
 };
 
 onMounted(() => {
+    openMainLoading()
     getDetail();
     initCompanyData(); // 预加载公司数据
+    closeMainLoading()
 });
 </script>
 

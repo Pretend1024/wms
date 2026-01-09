@@ -141,7 +141,7 @@
         </el-dialog>
 
         <!-- 导出弹窗 -->
-        <exportDialog ref="exportDialogRef" :selectionRows="selectionRows" :initValues="initValues" :exportType="305">
+        <exportDialog ref="exportDialogRef" :selectionRows="selectionRows" :initValues="initValues" :exportType="304">
         </exportDialog>
 
         <batchOperationn :isVisible="delDialogVisible" :tableData="delData" :nameField="'id'" :nameLabel="'SN'"
@@ -268,10 +268,6 @@ const handleDialogConfirm = async () => {
     if (!childFormRef.value) return;
     try {
         await childFormRef.value.validate();
-        const bodyLoading = ElLoading.service({
-            lock: true,
-            text: 'Loading',
-        })
         loading.value = true;
         let res;
         const data = { ...addData.value };
@@ -287,7 +283,6 @@ const handleDialogConfirm = async () => {
             getList(pagination.value.currentPage, pagination.value.pageSize, orderBy.value);
         }
         loading.value = false;
-        bodyLoading.close();
     } catch (error) {
         console.error('表单验证失败:', error);
     }
@@ -379,7 +374,7 @@ const handleImportAdd = async () => {
     router.push({
         name: '导入文件',
         params: {
-            typeId: 305, typeName: '导入创建SN库存'
+            typeId: 301, typeName: '导入创建SN库存'
         },
     })
 }

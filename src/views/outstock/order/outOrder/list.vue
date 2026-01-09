@@ -312,8 +312,8 @@
                                     <el-dropdown-menu>
                                         <el-dropdown-item @click="handleImportAdd">{{ getButtonText('importCreate')
                                         }}</el-dropdown-item>
-                                        <el-dropdown-item @click="handleImportUpd">{{ getButtonText('importUpdate')
-                                        }}</el-dropdown-item>
+                                        <!-- <el-dropdown-item @click="handleImportUpd">{{ getButtonText('importUpdate')
+                                        }}</el-dropdown-item> -->
                                     </el-dropdown-menu>
                                 </template>
                             </el-dropdown>
@@ -567,7 +567,7 @@
             </hydTable>
         </div>
         <!-- 导出弹窗 -->
-        <exportDialog ref="exportDialogRef" :selectionRows="selectionRows" :initValues="initValues" :exportType="400">
+        <exportDialog ref="exportDialogRef" :selectionRows="selectionRows" :initValues="initValues" :exportType="401">
         </exportDialog>
         <!-- 打印弹窗 -->
         <printDialog ref="printDialogRef" :selectionRows="selectionRows" :initValues="initValues" :printType="printType"
@@ -968,13 +968,7 @@ const handleEdit = (row) => {
 const handleImportAdd = async () => {
     router.push({
         name: '导入文件',
-        params: { typeId: 400, typeName: '出库单创建' },
-    })
-}
-const handleImportUpd = async () => {
-    router.push({
-        name: '导入文件',
-        params: { typeId: 400, typeName: 'SKU更新' },
+        params: { typeId: 401, typeName: '出库单创建' },
     })
 }
 
@@ -1545,7 +1539,7 @@ const handleExportAttachment = async () => {
 const handleExportFile = async () => {
     const idList = selectionRows.value.map(item => item.id);
     const apiPayload = {
-        typeId: 401,                  // 业务类型
+        typeId: 402,                  // 业务类型
         templateId: exportTypeId.value, // 模板ID
         exportParam: JSON.stringify({ idList })
     };
@@ -2017,7 +2011,7 @@ onMounted(async () => {
             },
             {
                 key: '附件类型',
-                api: getTemplateApi({ atypeId: 2, btypeId: 401 }),
+                api: getTemplateApi({ atypeId: 2, btypeId: 402 }),
                 handleSuccess: (data) => {
                     fileOptions.value = data || []
                     exportTypeId.value = data[0].id

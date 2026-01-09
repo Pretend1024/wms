@@ -208,11 +208,9 @@ const handleDialogCancel = () => {
 
 const handleDialogConfirm = async () => {
     if (!childFormRef.value) return;
-    let bodyLoading = null;
     try {
         await childFormRef.value.validate();
         const formData = childFormRef.value.getFormData();
-        bodyLoading = ElLoading.service({ lock: true, text: 'Saving...' });
         let res;
         if (formData.id) {
             res = await updProductShipwayPriceItemApi(formData);
@@ -226,9 +224,7 @@ const handleDialogConfirm = async () => {
         }
     } catch (error) {
         console.error('Dialog confirm error:', error);
-    } finally {
-        if (bodyLoading) bodyLoading.close();
-    }
+    } 
 };
 
 // -------------------------- 删除功能 (参考批量操作组件) --------------------------

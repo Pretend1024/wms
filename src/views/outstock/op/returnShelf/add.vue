@@ -245,7 +245,6 @@ const handleScanOrder = async () => {
     if (!codeToUse) return;
 
     resetCurrentInfo();
-    const loadingInstance = ElLoading.service({ lock: true, text: '正在查询订单...' });
     loading.value = true;
 
     try {
@@ -284,7 +283,6 @@ const handleScanOrder = async () => {
         queryConfig.code = '';
         focusInput('order');
     } finally {
-        loadingInstance.close();
         loading.value = false;
     }
 };

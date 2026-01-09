@@ -306,10 +306,6 @@ const handleBatchRead = async () => {
         return
     }
     let res
-    const bodyLoading = ElLoading.service({
-        lock: true,
-        text: 'Loading',
-    })
     if (selectionRows.value.length > 0) {
         res = await getBatchReadApi({
             idList: selectionRows.value.map(item => item.id)
@@ -326,9 +322,7 @@ const handleBatchRead = async () => {
             message: res.msg,
         })
         getList(pagination.value.currentPage, pagination.value.pageSize, orderBy.value)
-        bodyLoading.close()
     }
-    console.log('已读:', res)
 }
 
 // 获取列表

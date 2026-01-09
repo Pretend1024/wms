@@ -448,10 +448,6 @@ const handleClose = () => {
     router.push({ path: '/base/org/employee/list' })
 }
 onMounted(async () => {
-    ElLoading.service({
-        lock: true,
-        text: '加载中...',
-    })
     // 获取岗位数据
     const positionRes = await getPositionListApi();
     positionOptions.value = positionRes.data.rows.map(item => ({
@@ -495,7 +491,6 @@ onMounted(async () => {
     // 角色数据
     const roleRes = await getUserRoleApi()
     roleOptions.value = roleRes.data
-    ElLoading.service().close()
 })
 </script>
 

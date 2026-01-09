@@ -13,10 +13,10 @@
 
             <!-- 动态数据列 -->
             <el-table-column v-for="(col, idx) in columns" :key="`col-${idx}`" v-bind="getColumnProps(col)"
-                showOverflowTooltip="true">
+                show-overflow-tooltip>
                 <!-- 单元格插槽 -->
                 <template v-if="col.slot" #default="scope">
-                    <div :key="`${scope.$index}-${col.prop}`">
+                    <div :key="`${scope.$index}-${col.prop}`" class="slot-content-wrapper">
                         <slot :name="col.slot" v-bind="scope" />
                     </div>
                 </template>
@@ -198,13 +198,6 @@ function setRowFieldValue(rowIndex, field, value) {
     emit('update:data', [...localData]);
 }
 
-// 暴露方法（新增setRowFieldValue）
-defineExpose({
-    getTableData: () => [...localData],
-    addOrReplaceRow,
-    setRowFieldValue // 暴露设值方法供外部调用
-});
-
 // 替换或添加行
 async function addOrReplaceRow(newData, checkFields) {
     if (!Array.isArray(checkFields) || checkFields.length === 0) {
@@ -232,6 +225,15 @@ async function addOrReplaceRow(newData, checkFields) {
     emit('update:data', [...localData]);
     await nextTick();
 }
+
+// 暴露方法
+defineExpose({
+    getTableData: () => [...localData],
+    addOrReplaceRow,
+    setRowFieldValue,
+    addRow,
+    removeRow
+});
 </script>
 
 <style scoped lang="scss">
@@ -268,11 +270,49 @@ async function addOrReplaceRow(newData, checkFields) {
 
 :deep(.el-table__cell) {
     padding: 5px 0;
+    overflow: hidden;
 }
 
 :deep(.el-form-item) {
     margin: 1px;
     width: 100%;
     padding: 0 10px;
+}
+
+/* 插槽内容包裹层：约束宽度，为内部元素溢出省略提供基础 */
+.slot-content-wrapper {
+    width: 100%;
+    box-sizing: border-box;
+}
+
+/* 附件相关样式：核心是添加溢出省略样式 */
+:deep(.attachment-container) {
+    width: 100%;
+    box-sizing: border-box;
+}
+
+:deep(.attachment-list) {
+    width: 100%;
+}
+
+:deep(.attachment-item) {
+    width: 100%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+:deep(.file-link) {
+    white-space: inherit;
+    overflow: inherit;
+    text-overflow: inherit;
+    display: inline-block;
+    width: 100%;
+    color: #409eff;
+    text-decoration: none;
+}
+
+:deep(.file-link:hover) {
+    text-decoration: underline;
 }
 </style>

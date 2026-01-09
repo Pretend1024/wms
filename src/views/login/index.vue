@@ -11,7 +11,7 @@
                 <h2 class="title">{{ $t('Login') }}</h2>
                 <div class="loginForm">
                     <div class="inputDiv">
-                        <el-input ref="userCodeInputRef" v-model="userData.userCode"
+                        <el-input ref="userCodeInputRef" v-model.trim="userData.userCode"
                             :placeholder="$t('UserNamePlaceholder')" @keyup.enter.stop="tryLogin">
                             <template #prefix>
                                 <el-icon size="25">
@@ -21,7 +21,7 @@
                         </el-input>
                     </div>
                     <div class="inputDiv">
-                        <el-input :placeholder="$t('PasswordPlaceholder')" v-model="userData.password"
+                        <el-input :placeholder="$t('PasswordPlaceholder')" v-model.trim="userData.password"
                             @keyup.enter.stop="tryLogin" type="password" show-password id="loginPassword">
                             <template #prefix>
                                 <el-icon size="25">
@@ -132,11 +132,7 @@ const localeChange = () => {
 }
 // 登录按钮点击事件
 const loginBtn = async () => {
-    const loading = ElLoading.service({
-        lock: true,
-        text: 'Loading',
-        background: 'rgba(0, 0, 0, 0.7)',
-    })
+    openMainLoading()
     try {
         userData.value.language = userMenuStore.lang
         const res = await loginApi(userData.value)
@@ -165,11 +161,9 @@ const loginBtn = async () => {
                 type: 'error',
             })
         }
+        closeMainLoading()
     } catch (error) {
         console.log(error)
-    }
-    finally {
-        loading.close()
     }
 };
 // 回车键登录

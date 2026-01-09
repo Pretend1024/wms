@@ -280,12 +280,6 @@ const beforeUpload = (file) => {
 };
 // 上传合同附件
 const uploadContracts = async ({ file }) => {
-    // 加载动画
-    const loading = ElLoading.service({
-        lock: true,
-        target: ".contentDiv",
-        text: 'loading...',
-    })
     try {
         const res = await uploadApi(file, { path: 'temp' })
         // 返回的地址
@@ -301,8 +295,6 @@ const uploadContracts = async ({ file }) => {
         contractUploadRef.value.clearFiles()
     } catch (err) {
         smartAlert('合同上传失败', false)
-    } finally {
-        loading.close()
     }
 }
 
@@ -399,11 +391,7 @@ const handleClose = () => {
     router.push({ path: '/base/cust/customer/list' })
 }
 onMounted(async () => {
-    ElLoading.service({
-        fullscreen: true,
-        lock: true,
-        text: '加载中...',
-    });
+    openMainLoading()
     // 获取等级数据
     const levelRes = await getCustomerLevelEnumApi();
     customerLevelOptions.value = levelRes.data.rows
@@ -430,7 +418,7 @@ onMounted(async () => {
     formData.value = { ...res.data };
     tableData.value = res.data.contracts || []
     handleCascaderChange(formData.value.orgId)
-    ElLoading.service().close();
+    closeMainLoading()
 })
 </script>
 

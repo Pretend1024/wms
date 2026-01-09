@@ -297,11 +297,6 @@ const objectSpanMethod = ({ row, column, rowIndex, columnIndex }) => {
 // 加载波次信息（预留接口位置）
 const loadWaveInfo = async () => {
     if (!waveInfo.waveNo) return;
-    // 加载动画
-    const loading = ElLoading.service({
-        lock: true,
-        text: 'loading...',
-    })
     try {
         const res = await getOutstockWaveByWaveNoApi({ waveNo: waveInfo.waveNo });
         console.log('loadWaveInfo res', res);
@@ -326,8 +321,6 @@ const loadWaveInfo = async () => {
     } catch (error) {
         console.error('loadWaveInfo error', error);
         smartAlert(error, false)
-    } finally {
-        loading.close();
     }
 };
 
@@ -427,11 +420,6 @@ const submitPick = async () => {
         resetBarcodeInfo();
         return;
     }
-    // 加载动画
-    const loading = ElLoading.service({
-        lock: true,
-        text: 'loading...',
-    })
     const target = wavePickDetails.value[targetIndex];
 
     try {
@@ -514,8 +502,6 @@ const submitPick = async () => {
     } catch (error) {
         console.error('submitPick api error:', error);
         smartAlert('接口调用异常，请检查网络或联系管理员', false);
-    } finally {
-        loading.close();
     }
 };
 

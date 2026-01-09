@@ -14,23 +14,24 @@
 
                 <el-descriptions-item label="币种">{{ billInfo.currency }}</el-descriptions-item>
                 <el-descriptions-item label="总金额">{{ billInfo.totalFeeAmount }}</el-descriptions-item>
-                <el-descriptions-item label="已支付金额">
+
+                <el-descriptions-item label="已核销金额">
                     <div style="display: flex;justify-content: space-between;">
-                        <span>{{ billInfo.alreadyPaidAmount }}</span>
-                        <el-button type="primary" link size="small" icon="List" @click="openPaymentDialog"
-                            style="margin-left: 10px;">付款记录</el-button>
+                        <span>{{ billInfo.writtenOffAmount }}</span>
+                        <el-button type="primary" link size="small" icon="List" @click="openWriteOffDialog"
+                            style="margin-left: 10px;">核销记录</el-button>
                     </div>
                 </el-descriptions-item>
-                <el-descriptions-item label="待支付金额">
-                    <span style="color: red; font-weight: bold;">{{ billInfo.unpaidAmount }}</span>
+
+                <el-descriptions-item label="未核销金额">
+                    <span style="color: red; font-weight: bold;">{{ billInfo.unwrittenOffAmount }}</span>
                 </el-descriptions-item>
 
-                <el-descriptions-item label="起始日期">{{ billInfo.billStartDate }}</el-descriptions-item>
-                <el-descriptions-item label="结束日期">{{ billInfo.billEndDate }}</el-descriptions-item>
-                <el-descriptions-item label="是否逾期">
-                    <span :style="{ color: billInfo.isOverdue ? 'red' : 'green' }">{{ billInfo.isOverdue ? '是' : '否'
-                    }}</span>
-                </el-descriptions-item>
+                <el-descriptions-item label="起始日期" :span="1">{{ billInfo.billStartDate }}</el-descriptions-item>
+                <el-descriptions-item label="结束日期" :span="1">{{ billInfo.billEndDate }}</el-descriptions-item>
+
+                <el-descriptions-item label="核销完成时间" :span="2">{{ billInfo.writeOffCompleteTime
+                    }}</el-descriptions-item>
 
                 <el-descriptions-item label="附件" :span="2">
                     <div v-if="billInfo.attachment && parseAttachment(billInfo.attachment).length > 0">
@@ -60,9 +61,13 @@
         </div>
 
         <div class="tableDiv">
-            <hydTable :tableData="tableData" :columns="columns" :pagination="pagination" :loading="tableLoading"
-                :pageSizes="[20, 50, 100, 200]" @page-change="handlePageChange" @sort-change="handleTableSort"
+            <hydTable :tableData="tableData" :columns="columns" :pagination="pagination" :enableSelection="true"
+                :loading="tableLoading" :pageSizes="[20, 50, 100, 200]" @page-change="handlePageChange"
+                @sort-change="handleTableSort" @selection-change="handleSelectionChange"
                 :tableId="'finance/receivables/customerBill/info'">
+                <template #table-buttons>
+                    <el-button type="danger" @click="handleExit" :icon="Delete">退出账单</el-button>
+                </template>
                 <template #statusName="{ row }">
                     <span
                         :style="{ color: row.statusId == 10 ? '#E6A23C' : (row.statusId == 20 ? '#67C23A' : '#F56C6C') }">
@@ -72,25 +77,28 @@
             </hydTable>
         </div>
 
-        <el-dialog v-model="paymentDialogVisible" title="付款记录" width="1000px" align-center append-to-body>
-            <el-table :data="paymentTableData" border stripe v-loading="paymentLoading" height="400"
+        <el-dialog v-model="writeOffDialogVisible" title="核销记录" width="1000px" align-center append-to-body>
+            <el-table :data="writeOffTableData" border stripe v-loading="writeOffLoading" height="400"
                 style="width: 100%">
-                <el-table-column prop="paymentNo" label="支付单号" width="180" show-overflow-tooltip />
-                <el-table-column prop="currentPayAmount" label="本次支付金额" width="110" />
-                <el-table-column prop="billPaidAmountBefore" label="支付前已付" width="100" />
-                <el-table-column prop="billPaidAmountAfter" label="支付后已付" width="100" />
-                <el-table-column prop="billUnpaidAmountAfter" label="剩余待付" width="90" />
-                <el-table-column prop="billStatusNameAfter" label="支付后状态" width="100" />
-                <el-table-column prop="createdBy" label="操作人" width="100" />
-                <el-table-column prop="createdTime" label="操作时间" />
+                <el-table-column prop="writeOffNo" label="核销单号" width="180" show-overflow-tooltip />
+                <el-table-column prop="rechargeNo" label="充值单号" width="180" show-overflow-tooltip />
+                <el-table-column prop="currentWriteOffAmount" label="本次核销金额" width="110" />
+                <el-table-column prop="billWrittenOffAmountBefore" label="核销前已核销" width="110" />
+                <el-table-column prop="billWrittenOffAmountAfter" label="核销后已核销" width="110" />
+                <el-table-column prop="billUnwrittenOffAmountAfter" label="剩余待核销" width="100" />
+                <el-table-column prop="billStatusNameAfter" label="核销后状态" width="100" />
+                <el-table-column prop="writeOffBy" label="操作人" width="100" />
+                <el-table-column prop="writeOffTime" label="操作时间" width="200" />
             </el-table>
             <div style="margin-top: 15px; display: flex; justify-content: center;">
-                <el-pagination v-model:current-page="paymentPagination.page"
-                    v-model:page-size="paymentPagination.pageSize" :page-sizes="[10, 20, 50, 100]" :background="true"
-                    layout="total, sizes, prev, pager, next, jumper" :total="paymentPagination.total"
-                    @size-change="handlePaymentSizeChange" @current-change="handlePaymentCurrentChange" />
+                <el-pagination v-model:current-page="writeOffPagination.page"
+                    v-model:page-size="writeOffPagination.pageSize" :page-sizes="[10, 20, 50, 100]" :background="true"
+                    layout="total, sizes, prev, pager, next, jumper" :total="writeOffPagination.total"
+                    @size-change="handleWriteOffSizeChange" @current-change="handleWriteOffCurrentChange" />
             </div>
         </el-dialog>
+        <batchOperationn :dialogTitle="'操作结果'" :isVisible="delDialogVisible" :tableData="delData" :nameField="'id'"
+            :nameLabel="'关联单号'" @close="delColse" :promptMessage="promptMessage" />
     </div>
 </template>
 
@@ -98,13 +106,15 @@
 import { ref, onMounted, reactive } from 'vue';
 import { useRoute } from 'vue-router';
 import { ElMessage } from 'element-plus';
+import batchOperationn from '@/components/messageNotices/batchOperation.vue';
 import hydTable from "@/components/table/hyd-table.vue";
 
 import {
     getBillByIdApi,
     getFeeCategoryApi,
     getFeePageApi,
-    getBillPaymentPageApi
+    getBillWriteOffPageApi,
+    exitBillByIdApi,
 } from '@/api/financeApi/receivables.js';
 
 const route = useRoute();
@@ -246,75 +256,114 @@ const handleTableSort = (sortString) => {
     orderBy.value = sortString;
     getFeeList();
 };
+const selectionRows = ref([]);
+const handleSelectionChange = (selection) => {
+    selectionRows.value = selection;
+    console.log('当前选中行数据:', selectionRows.value);
+};
+// 退出账单
+const delData = ref([]);
+const delDialogVisible = ref(false);
+const promptMessage = ref('');
+const handleExit = () => {
+    if (selectionRows.value.length === 0) {
+        ElMessage.warning('请选择要退出的数据！');
+        return;
+    }
+    ElMessageBox.confirm(
+        `是否要退出${selectionRows.value.length}条数据?`, '提醒', { confirmButtonText: '确定', cancelButtonText: '取消', type: 'warning' }
+    ).then(async () => {
+        writeOffLoading.value = true;
+        delDialogVisible.value = true;
+        delData.value = [];
+        promptMessage.value = '操作中...'
+        for (let i = 0; i < selectionRows.value.length; i++) {
+            const res = await exitBillByIdApi({ feeId: selectionRows.value[i].id });
+            delData.value.push({
+                id: selectionRows.value[i].orderNo,
+                msg: res.msg,
+                success: res.success
+            });
+        }
+        promptMessage.value = '操作完成！'
+    }).catch(() => { });
+};
+const delColse = () => {
+    delDialogVisible.value = false;
+    getBillInfo()
+    getCategories()
+    getFeeList()
+};
 
-// ------------------- 付款记录弹窗逻辑 -------------------
-const paymentDialogVisible = ref(false);
-const paymentLoading = ref(false);
-const paymentTableData = ref([]);
-const paymentPagination = reactive({
+// ------------------- 核销记录弹窗逻辑 -------------------
+const writeOffDialogVisible = ref(false);
+const writeOffLoading = ref(false);
+const writeOffTableData = ref([]);
+const writeOffPagination = reactive({
     page: 1,
     pageSize: 10,
     total: 0
 });
 
 /**
- * 打开付款记录弹窗
+ * 打开核销记录弹窗
  */
-const openPaymentDialog = () => {
+const openWriteOffDialog = () => {
     if (!billInfo.value.billNo) {
         return ElMessage.warning('未能获取账单编号');
     }
-    paymentDialogVisible.value = true;
-    paymentPagination.page = 1; // 重置页码
-    getPaymentList();
+    writeOffDialogVisible.value = true;
+    writeOffPagination.page = 1; // 重置页码
+    getWriteOffList();
 };
 
 /**
- * 获取付款记录列表
+ * 获取核销记录列表
  */
-const getPaymentList = async () => {
-    paymentLoading.value = true;
+const getWriteOffList = async () => {
+    writeOffLoading.value = true;
     try {
         const params = {
             billNo: billInfo.value.billNo,
-            page: paymentPagination.page,
-            pageSize: paymentPagination.pageSize
+            page: writeOffPagination.page,
+            pageSize: writeOffPagination.pageSize
         };
-        const res = await getBillPaymentPageApi(params);
+        const res = await getBillWriteOffPageApi(params);
         if (res.success) {
-            paymenttableData.value = Object.freeze(res.data.rows) || [];
-            paymentPagination.total = res.data.total || 0;
+            writeOffTableData.value = Object.freeze(res.data.rows) || [];
+            writeOffPagination.total = res.data.total || 0;
         } else {
-            paymentTableData.value = [];
-            paymentPagination.total = 0;
+            writeOffTableData.value = [];
+            writeOffPagination.total = 0;
         }
     } catch (error) {
-        console.error('获取付款记录失败:', error);
-        paymentTableData.value = [];
+        console.error('获取核销记录失败:', error);
+        writeOffTableData.value = [];
     } finally {
-        paymentLoading.value = false;
+        writeOffLoading.value = false;
     }
 };
 
 /**
- * 付款记录分页 - 每页条数变化
+ * 核销记录分页 - 每页条数变化
  */
-const handlePaymentSizeChange = (val) => {
-    paymentPagination.pageSize = val;
-    paymentPagination.page = 1; // 切换页大小重置为第一页
-    getPaymentList();
+const handleWriteOffSizeChange = (val) => {
+    writeOffPagination.pageSize = val;
+    writeOffPagination.page = 1; // 切换页大小重置为第一页
+    getWriteOffList();
 };
 
 /**
- * 付款记录分页 - 页码变化
+ * 核销记录分页 - 页码变化
  */
-const handlePaymentCurrentChange = (val) => {
-    paymentPagination.page = val;
-    getPaymentList();
+const handleWriteOffCurrentChange = (val) => {
+    writeOffPagination.page = val;
+    getWriteOffList();
 };
 
 // ------------------- 生命周期 -------------------
 onMounted(async () => {
+    openMainLoading()
     if (billId.value) {
         await Promise.all([
             getBillInfo(),
@@ -324,13 +373,14 @@ onMounted(async () => {
     } else {
         ElMessage.error('参数异常：未获取到账单ID');
     }
+    closeMainLoading()
 });
 </script>
 
 <style scoped lang="scss">
 @use '@/assets/css/viewArea.scss';
 
-/* 修改点1 CSS：强制描述列表列宽均匀 */
+/* CSS：强制描述列表列宽均匀 */
 .fixed-descriptions {
     :deep(table) {
         table-layout: fixed;

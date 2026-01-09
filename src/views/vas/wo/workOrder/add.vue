@@ -289,7 +289,6 @@ function detectCascaderProps(sampleNodes) {
 
 // 初始化加载
 onMounted(async () => {
-    const loading = ElLoading.service({ lock: true, target: ".contentDiv", text: 'loading' });
     try {
         const tasks = [
             getOrgListCompanyApi().catch(() => ({ success: false, data: [] })),
@@ -334,9 +333,7 @@ onMounted(async () => {
     } catch (e) {
         console.error('初始化异常：', e);
         smartAlert('初始化数据加载异常', false);
-    } finally {
-        loading.close();
-    }
+    } 
 });
 
 // ------------------- 业务逻辑 -------------------

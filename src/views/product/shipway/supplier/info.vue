@@ -195,11 +195,7 @@ const handleCascaderChange = async (index) => {
     })
 };
 onMounted(async () => {
-    const loading = ElLoading.service({
-        lock: true,
-        target: ".contentDiv",
-        text: 'Loading',
-    })
+    openMainLoading()
     // 获取状态
     const res = await getProductSupplierStatusEnumApi()
     statusOptions.value = res.data.map(item => ({ label: item.name, value: item.id }))
@@ -225,7 +221,7 @@ onMounted(async () => {
     formData.value = res5.data
     // supplierAccountAddDTOList.value = res3.data.supplierAccountList
     supplierAccountAddDTOList.value = res5.data.supplierChannelList
-    loading.close()
+    closeMainLoading()
 })
 
 </script>

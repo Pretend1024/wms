@@ -257,11 +257,7 @@ const cabinetOptions = ref([])
 // 到仓类型
 const arrivalTypeOptions = ref([])
 onMounted(async () => {
-    const loading = ElLoading.service({
-        lock: true,
-        target: ".contentDiv",
-        text: 'Loading'
-    })
+    openMainLoading()
     // 仓库数据
     const warehouseRes = await getWhWarehouseApi()
     warehouseOptions.value = warehouseRes.data
@@ -319,7 +315,7 @@ onMounted(async () => {
             }
         }
     }
-    loading.close()
+    closeMainLoading()
 })
 // 获取树形结构
 function exportData() {

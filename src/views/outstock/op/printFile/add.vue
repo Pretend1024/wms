@@ -306,7 +306,6 @@ const handleScan = async () => {
 
     resetCurrentInfo();
 
-    const loadingInstance = ElLoading.service({ lock: true, text: 'loading...' });
     loading.value = true;
 
     try {
@@ -340,7 +339,6 @@ const handleScan = async () => {
         playAudio('error');
         smartAlert('系统异常', false);
     } finally {
-        loadingInstance.close();
         loading.value = false;
         if (!orderSelectDialogVisible.value) {
             focusInput();

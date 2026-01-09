@@ -1,30 +1,11 @@
 import http from '@/utils/request/request'
+import { createPostRequestWithQuery } from '@/utils/request/createPostRequestWithQuery'
 
 // 工具---------------------------条码打印
 // 条码打印
-export const printToolsBarcodeApi = (queryParams) => {
-    const queryString = Object.entries(queryParams)
-        .map(([key, value]) => `${encodeURIComponent(key)}=${encodeURIComponent(value)}`)
-        .join('&');
-
-    const url = queryString
-        ? `/base/tools/print/barcode?${queryString}`
-        : '/base/tools/print/barcode';
-
-    return http.post(url);
-}
+export const printToolsBarcodeApi = createPostRequestWithQuery('/base/tools/print/barcode')
 // 二维码打印
-export const printToolsPrintQrcodeApi = (queryParams) => {
-    const queryString = Object.entries(queryParams)
-        .map(([key, value]) => `${encodeURIComponent(key)}=${encodeURIComponent(value)}`)
-        .join('&');
-
-    const url = queryString
-        ? `/base/tools/print/qrcode?${queryString}`
-        : '/base/tools/print/qrcode';
-
-    return http.post(url);
-}
+export const printToolsPrintQrcodeApi = createPostRequestWithQuery('/base/tools/print/qrcode')
 
 // 打印sku
 export const skuPrintApi = (data) => {

@@ -6,8 +6,8 @@
                     <el-col :span="24">
                         <el-form-item :label="getLabel('btypeId')">
                             <el-select v-model="printData.btypeId" @change="changeType">
-                                <el-option label="一维码" :value=116 />
-                                <el-option label="二维码" :value=117 />
+                                <el-option label="一维码" :value=102 />
+                                <el-option label="二维码" :value=103 />
                             </el-select>
                         </el-form-item>
                     </el-col>
@@ -56,7 +56,7 @@ import Barcode from '@/components/Barcode.vue'
 import { ref, onMounted } from 'vue'
 
 const printData = ref({
-    btypeId: 116,
+    btypeId: 102,
     barcodes: '',
     templateId: '',
     printQty: 1,
@@ -106,10 +106,10 @@ const print = async () => {
             text: 'loading...',
         })
         let res
-        if (printData.value.btypeId === 117) {
+        if (printData.value.btypeId === 103) {
             printData.value.qrcodes = printData.value.barcodes
             res = await printToolsPrintQrcodeApi(printData.value)
-        } if (printData.value.btypeId === 116) {
+        } if (printData.value.btypeId === 102) {
             res = await printToolsBarcodeApi(printData.value)
         }
         loading.close()
@@ -145,7 +145,7 @@ const reset = () => {
         barcodes: '',
         templateId: '',
         printQty: 1,
-        btypeId: 116,
+        btypeId: 102,
     }
     formRef.value?.resetFields()
 }

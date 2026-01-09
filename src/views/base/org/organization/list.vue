@@ -2,18 +2,16 @@
     <div class="viewArea">
         <div class="tableDiv">
             <hydTable ref="hydTableRef" :tableData="tableData" :columns="columns" :loading="loading" :is-tree="true"
-                :row-key="id" :tree-props="{ children: 'children' }" :defaultExpandAll="defaultExpandAll"
+                row-key="id" :tree-props="{ children: 'children' }" :defaultExpandAll="defaultExpandAll"
                 @row-click="handleRowClick">
-                <!-- 表格上方操作按钮 -->
                 <template #table-buttons>
                     <el-button type="primary" @click="handleAdd" v-permission="'add'" :icon="Plus">
                         {{ getButtonText('add') }}
                     </el-button>
                     <el-button type="success" plain @click="handleExpandAll" :icon="Sort">
-                        {{ getButtonText('expand') }}
+                        {{ defaultExpandAll ? '全部折叠' : '全部展开' }}
                     </el-button>
                 </template>
-                <!-- 自定义操作列按钮 -->
                 <template #customBtn="{ row }">
                     <div style="display: flex;">
                         <div class="cursor-pointer" @click="handleEdit(row)">
@@ -38,9 +36,7 @@
                 </template>
             </hydTable>
         </div>
-        <!-- 弹窗 -->
         <el-dialog v-model="centerDialogVisible" :title="dialogTitle" width="700" align-center destroy-on-close>
-            <!-- 根据 dialogMode 动态加载 add.vue 或 upd.vue -->
             <component :is="currentForm" ref="childFormRef" :form-data="addData" :parent-id-list="parentIdList"
                 :type-enum="TypeEnum" />
             <template #footer>
@@ -54,12 +50,12 @@
 </template>
 
 <script setup name="公司部门">
-import { ref, computed, onMounted } from 'vue';
+import { ref, computed, onMounted, shallowRef, nextTick } from 'vue'; // 引入 nextTick
 import { Plus, Sort, Delete, EditPen } from '@element-plus/icons-vue';
 import hydTable from '@/components/table/hyd-table.vue';
 import AddForm from './add.vue';
 import UpdForm from './upd.vue';
-import { ElMessage, ElMessageBox } from 'element-plus';
+import { ElMessage, ElMessageBox, ElLoading } from 'element-plus';
 import {
     getOrganizationListApi, getOrganizationTypeEnumApi, addOrganizationDataApi, updateOrganizationDataApi,
     delOrganizationDataApi
@@ -220,14 +216,9 @@ const handleDel = (row) => {
     })
         .then(async () => {
             loading.value = true;
-            const bodyLoading = ElLoading.service({
-                lock: true,
-                text: 'Loading',
-            })
             const res = await delOrganizationDataApi({ id: row.id });
             smartAlert(res.msg, res.success, 1000);
             getList();
-            bodyLoading.close();
             const resType = await getOrganizationTypeEnumApi();
             TypeEnum.value = resType.data;
         })
@@ -239,28 +230,27 @@ const handleDel = (row) => {
         });
 };
 
-// 表格展开/折叠
+// 表格展开/折叠 (适配 vxe-table API)
 const hydTableRef = ref(null);
 const handleExpandAll = () => {
-    const elTable = hydTableRef.value?.elTableRef;
-    if (!elTable) return;
-    const processExpansion = (rows, expanded) => {
-        rows.forEach(row => {
-            elTable.toggleRowExpansion(row, expanded);
-            if (row.children?.length) {
-                processExpansion(row.children, expanded);
-            }
-        });
-    };
+    const $table = hydTableRef.value?.elTableRef;
+    if (!$table) return;
+
+    // 切换状态
     const targetState = !defaultExpandAll.value;
-    processExpansion(tableData.value, targetState);
+    // 使用 vxe-table 的 setAllTreeExpand 方法
+    $table.setAllTreeExpand(targetState);
+
+    // 更新按钮状态
     defaultExpandAll.value = targetState;
 };
 
 // 获取数据及处理级联树形数据
 const getList = async () => {
+    loading.value = true; // 确保 loading 状态正确
     const res = await getOrganizationListApi({});
     tableData.value = res.data;
+
     const convertToTree = (items) => {
         return items.map(item => ({
             value: item.id,
@@ -270,6 +260,14 @@ const getList = async () => {
     };
     parentIdList.value = convertToTree(res.data);
     loading.value = false;
+
+    // 数据加载完成后，应用默认展开状态
+    nextTick(() => {
+        const $table = hydTableRef.value?.elTableRef;
+        if ($table && defaultExpandAll.value) {
+            $table.setAllTreeExpand(true);
+        }
+    });
 };
 
 onMounted(() => {

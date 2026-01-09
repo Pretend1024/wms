@@ -197,11 +197,6 @@ const beforeUpload = (file) => {
 };
 // 自定义上传处理
 const handleUpload = async (options) => {
-    // 加载动画
-    const loading = ElLoading.service({
-        lock: true,
-        text: 'loading...',
-    })
     try {
         const res = await uploadApi(options.file, { path: 'temp' });
         console.log(res, '上传头像返回值')
@@ -212,7 +207,6 @@ const handleUpload = async (options) => {
         console.log('上传失败，请重试', error);
     } finally {
         fileList.value = [];
-        loading.close();
     }
 };
 

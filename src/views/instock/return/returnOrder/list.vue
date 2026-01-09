@@ -75,7 +75,7 @@
                             <span>{{ getButtonText('edit') }}</span>
                         </div>
                         <div class="cursor-pointer" @click="(row.statusId == 1) && handleDel(row)"
-                            :class="{ 'btnDisable': !(row.statusId == 1 ) }">
+                            :class="{ 'btnDisable': !(row.statusId == 1) }">
                             <el-icon>
                                 <Delete />
                             </el-icon>
@@ -112,7 +112,7 @@
             </hydTable>
         </div>
         <!-- 导出弹窗 -->
-        <exportDialog ref="exportDialogRef" :selectionRows="selectionRows" :initValues="initValues" :exportType="224">
+        <exportDialog ref="exportDialogRef" :selectionRows="selectionRows" :initValues="initValues" :exportType="501">
         </exportDialog>
         <!-- 处理弹窗 -->
         <processingDialog ref="processingDialogRef" :title="processingDialogTitle" :orderId="processingOrderId"
@@ -294,7 +294,9 @@ const processingOrderId = ref('')
 const handleProcessing = (row) => {
     processingOrderId.value = row.id
     processingDialogTitle.value = `退件处理 - ${row.orderNo}`
-    processingDialogRef.value.open()
+    setTimeout(() => {
+        processingDialogRef.value.open()
+    }, 100);
 }
 const onSaved = () => {
     getList(pagination.value.currentPage, pagination.value.pageSize, orderBy.value);

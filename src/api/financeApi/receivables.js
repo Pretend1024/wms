@@ -8,11 +8,11 @@ export const getCustomerCreditPageApi = (data) => {
 }
 // 添加授信
 export const addCustomerCreditApi = (data) => {
-    return http.post('/finance/receivables/customerCredit/add', data)
+    return http.post('/finance/receivables/customerCredit/add', data, { headers: { 'loading': true } })
 }
 // 编辑
 export const updCustomerCreditByIdApi = (data) => {
-    return http.post('/finance/receivables/customerCredit/updateById', data)
+    return http.post('/finance/receivables/customerCredit/updateById', data, { headers: { 'loading': true } })
 }
 // 删除授信
 export const delCustomerCreditByIdApi = createPostRequestWithQuery('/finance/receivables/customerCredit/deleteById')
@@ -33,9 +33,8 @@ export const lockCustomerCreditByIdApi = createPostRequestWithQuery('/finance/re
 
 // 授权审核
 export const approvalCustomerCreditByIdApi = (data) => {
-    return http.post('/finance/receivables/customerCredit/approval', data)
+    return http.post('/finance/receivables/customerCredit/approval', data, { headers: { 'loading': true } })
 }
-
 
 // ---------------------------------------------------客户钱包
 // 获取客户账号
@@ -44,7 +43,7 @@ export const getCustomerAccountPageApi = (data) => {
 }
 // 新增客户账号
 export const addCustomerAccountApi = (data) => {
-    return http.post('/finance/receivables/customerAccount/add', data)
+    return http.post('/finance/receivables/customerAccount/add', data, { headers: { 'loading': true } })
 }
 
 // ---------------------------------------------------充值管理
@@ -54,11 +53,11 @@ export const getCustomerRechargePageApi = (data) => {
 }
 // 新增充值管理
 export const addCustomerRechargeApi = (data) => {
-    return http.post('/finance/receivables/customerRecharge/add', data)
+    return http.post('/finance/receivables/customerRecharge/add', data, { headers: { 'loading': true } })
 }
 // 编辑充值管理
 export const updCustomerRechargeByIdApi = (data) => {
-    return http.post('/finance/receivables/customerRecharge/updateById', data)
+    return http.post('/finance/receivables/customerRecharge/updateById', data, { headers: { 'loading': true } })
 }
 // 删除充值管理
 export const delCustomerRechargeByIdApi = createPostRequestWithQuery('/finance/receivables/customerRecharge/deleteById')
@@ -78,11 +77,10 @@ export const getCustomerRechargeCertificateApi = createPostRequestWithQuery('/fi
 // 通过客户和币种获取客户充值
 export const getRechargeByCustomerCodeAndCurrencyApi = createPostRequestWithQuery('/finance/receivables/customerRecharge/listByCustomerCodeAndCurrency')
 
-
 // ---------------------------------------------------应收费用
 // 加入账单
 export const joinBillApi = (data) => {
-    return http.post('/finance/receivables/customerBill/joinBill', data)
+    return http.post('/finance/receivables/customerBill/joinBill', data, { headers: { 'loading': true } })
 }
 // 获取费用
 export const getFeePageApi = (data) => {
@@ -90,11 +88,11 @@ export const getFeePageApi = (data) => {
 }
 // 添加费用
 export const addFeeApi = (data) => {
-    return http.post('/finance/receivables/receivableFee/add', data)
+    return http.post('/finance/receivables/receivableFee/add', data, { headers: { 'loading': true } })
 }
 // 编辑费用
 export const updFeeByIdApi = (data) => {
-    return http.post('/finance/receivables/receivableFee/updateById', data)
+    return http.post('/finance/receivables/receivableFee/updateById', data, { headers: { 'loading': true } })
 }
 // 删除费用
 export const delFeeByIdApi = createPostRequestWithQuery('/finance/receivables/receivableFee/deleteById')
@@ -121,7 +119,8 @@ export const getFeeStatAmountApi = (data) => {
 export const getFeeCreateWayEnumApi = () => {
     return http.post('/finance/receivables/receivableFee/receivableFeeCreateWayEnum')
 }
-
+// 根据客户和币种获取账单编号
+export const getBillNosByCustomerAndCurrencyApi = createPostRequestWithQuery('/finance/receivables/customerBill/getBillNosByCustomerAndCurrency')
 
 // ---------------------------------------------------应收账单
 // 获取账单
@@ -132,11 +131,11 @@ export const getBillPageApi = (data) => {
 export const getBillByIdApi = createPostRequestWithQuery('/finance/receivables/customerBill/getById')
 // 添加账单
 export const addBillApi = (data) => {
-    return http.post('/finance/receivables/customerBill/add', data)
+    return http.post('/finance/receivables/customerBill/add', data, { headers: { 'loading': true } })
 }
 // 编辑账单
 export const updBillByIdApi = (data) => {
-    return http.post('/finance/receivables/customerBill/updateById', data)
+    return http.post('/finance/receivables/customerBill/updateById', data, { headers: { 'loading': true } })
 }
 // 删除账单
 export const delBillByIdApi = createPostRequestWithQuery('/finance/receivables/customerBill/deleteById')
@@ -145,19 +144,19 @@ export const getBillStatusEnumApi = () => {
     return http.post('/finance/receivables/customerBill/customerBillStatusEnum')
 }
 // 确定账单
-export const confirmBillByIdApi = createPostRequestWithQuery('/finance/receivables/customerBill/confirmCustomerBill')
-// 确定支付
-export const payBillByIdApi = createPostRequestWithQuery('/finance/receivables/customerBill/payBill')
+export const confirmBillByIdApi = createPostRequestWithQuery('/finance/receivables/customerBill/confirm')
+// 确定核销
+export const writeOffBillByIdApi = createPostRequestWithQuery('/finance/receivables/customerBill/writeOffBill')
 // 根据id获取账单
-export const getPayBillListByIdApi = (data) => {
-    return http.post('/finance/receivables/customerBill/payBillList', data)
+export const getWriteOffBillListByIdApi = (data) => {
+    return http.post('/finance/receivables/customerBill/writeOffBillList', data)
 }
 // 账单分类统计
 export const getFeeCategoryApi = createPostRequestWithQuery('/finance/receivables/receivableFee/feeCategory')
 
-// 账单付款记录
-export const getBillPaymentPageApi = (data) => {
-    return http.post('/finance/receivables/customerPaymentDetail/page', data)
+// 账单核销记录
+export const getBillWriteOffPageApi = (data) => {
+    return http.post('/finance/receivables/customerBillWriteOff/page', data)
 }
 
 // 账单状态统计
@@ -168,4 +167,9 @@ export const getBillStatusCountApi = (data) => {
 export const getBillStatAmountApi = (data) => {
     return http.post('/finance/receivables/customerBill/statAmount', data)
 }
-
+// 退出账单
+export const exitBillByIdApi = createPostRequestWithQuery('/finance/receivables/customerBill/exitBill')
+// 取消确认
+export const cancelConfirmBillByIdApi = createPostRequestWithQuery('/finance/receivables/customerBill/cancelConfirm')
+// 取消核销
+export const cancelWriteOffBillByIdApi = createPostRequestWithQuery('/finance/receivables/customerBill/cancelWriteOffBill')

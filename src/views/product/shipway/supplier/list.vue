@@ -87,7 +87,7 @@
             </template>
         </el-dialog>
         <!-- 导出弹窗 -->
-        <exportDialog ref="exportDialogRef" :selectionRows="selectionRows" :initValues="initValues" :exportType="518">
+        <exportDialog ref="exportDialogRef" :selectionRows="selectionRows" :initValues="initValues" :exportType="106">
         </exportDialog>
     </div>
 </template>
@@ -242,16 +242,8 @@ const handleSubmitChannel = () => {
 }
 const openChannel = async (row) => {
     dataId.value = row.id
-    // 加载动画
-    const loading = ElLoading.service({
-        lock: true,
-        text: 'loading...',
-    })
     const res = await getProductSupplierChannelListApi({ supplierId: row.id })
-    console.log(res)
     supplierChannelAddDTOList.value = res.data
-    console.log('渠道数据:', supplierChannelAddDTOList.value)
-    loading.close()
     ChannelDialogVisible.value = true;
 }
 
@@ -260,10 +252,6 @@ const handleSaveChannel = async () => {
     if (supplierChannelAddDTOList.value.length) {
         await channelListRef.value.validateForms()
     }
-    const loading = ElLoading.service({
-        lock: true,
-        text: 'loading...',
-    })
     const data = {
         supplierId: dataId.value,
         supplierChannelUpdDTOList: supplierChannelAddDTOList.value
@@ -272,7 +260,6 @@ const handleSaveChannel = async () => {
 
     const res = await updProductSupplierChannelApi(data)
     smartAlert(res.msg, res.success, 1000)
-    loading.close()
     if (res.success) {
         ChannelDialogVisible.value = false;
     }

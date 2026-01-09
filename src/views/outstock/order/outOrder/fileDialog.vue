@@ -79,9 +79,9 @@ import { ref, reactive, onMounted } from 'vue';
 import {
     getOutstockOrderFileApi,
     addOutstockOrderFileApi,
-    deleteOutstockOrderFileApi
+    deleteOutstockOrderFileApi,
+    outstockOrderAttachmentTypeApi
 } from '@/api/outstockApi/order.js';
-import { getTemplateApi } from '@/api/baseApi/index.js';
 import { uploadApi } from '@/api/baseApi/index.js';
 import { useI18n } from 'vue-i18n';
 import { ElMessageBox, ElMessage } from 'element-plus';
@@ -163,7 +163,7 @@ const handleClose = () => {
 // 获取文件类型选项
 const getFileTypeOptions = async () => {
     try {
-        const res = await getTemplateApi({ atypeId: 2, btypeId: 401 });
+        const res = await outstockOrderAttachmentTypeApi({ atypeId: 2, btypeId: 402 });
         fileTypeOptions.value = res.data || [];
     } catch (error) {
         ElMessage.error(t('common.fetchFailed') + (error.message || ''));

@@ -1,11 +1,12 @@
 import http from '@/utils/request/request'
+import { createPostRequestWithQuery } from '@/utils/request/createPostRequestWithQuery'
 
 // 获取包材类型
 export const getBasicConsumablesListApi = (data) => {
     return http.post('/base/consumables/consumables/page', { ...data })
 }
 export const getBasicConsumablesListEnumApi = (data) => {
-    return http.post('/base/consumables/consumables/list', {...data }) 
+    return http.post('/base/consumables/consumables/list', { ...data })
 }
 // 添加包材类型
 export const addBasicConsumablesApi = (data) => {
@@ -16,16 +17,7 @@ export const updBasicConsumablesApi = (data) => {
     return http.post('/base/consumables/consumables/updateById', { ...data }, { headers: { 'loading': true } })
 }
 // 删除包材类型
-export const delBasicConsumablesApi = (queryParams) => {
-    const queryString = Object.entries(queryParams)
-        .map(([key, value]) => `${encodeURIComponent(key)}=${encodeURIComponent(value)}`)
-        .join('&');
-    const url = queryString
-        ? `/base/consumables/consumables/deleteById?${queryString}`
-        : '/base/consumables/consumables/deleteById';
-
-    return http.post(url);
-}
+export const delBasicConsumablesApi = createPostRequestWithQuery('/base/consumables/consumables/deleteById')
 
 // 获取包材库存
 export const getBasicConsumablesInventoryListApi = (data) => {
@@ -40,16 +32,7 @@ export const updBasicConsumablesInventoryApi = (data) => {
     return http.post('/base/consumables/consumablesInventory/updateById', { ...data }, { headers: { 'loading': true } })
 }
 // 删除包材库存
-export const delBasicConsumablesInventoryApi = (queryParams) => {
-    const queryString = Object.entries(queryParams)
-        .map(([key, value]) => `${encodeURIComponent(key)}=${encodeURIComponent(value)}`)
-        .join('&');
-    const url = queryString
-        ? `/base/consumables/consumablesInventory/deleteById?${queryString}`
-        : '/base/consumables/consumablesInventory/deleteById';
-
-    return http.post(url);
-}
+export const delBasicConsumablesInventoryApi = createPostRequestWithQuery('/base/consumables/consumablesInventory/deleteById')
 
 // 新增包材入库
 export const addBasicConsumablesInventoryInApi = (data) => {

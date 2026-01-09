@@ -267,10 +267,6 @@ const handleDialogConfirm = async () => {
     }
     try {
         await childFormRef.value.validate();
-        const bodyLoading = ElLoading.service({
-            lock: true,
-            text: 'Loading',
-        })
         loading.value = true;
         let res = await addMessageContentApi(addData.value);
         smartAlert(res.msg, res.success, 1000);
@@ -280,7 +276,6 @@ const handleDialogConfirm = async () => {
         } else {
             loading.value = false;
         }
-        bodyLoading.close();
     } catch (error) {
         console.error('表单验证失败:', error);
     }

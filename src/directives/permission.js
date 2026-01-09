@@ -2,21 +2,37 @@ import router from '@/router'
 
 /**
  * 统一的权限检查函数
- * @param {String} code 权限码
+ * @param {String} code 权限码 (例如 'add' 或 'user:add')
  * @returns {Boolean}
  */
 export function hasPerm(code) {
     const currentRoute = router.currentRoute.value
+    const metaAuth = currentRoute.meta?.permissionCode
 
-    // 获取 meta 中的权限数组
-    const permissions = currentRoute.meta?.permissionCode || []
 
-    // 安全判断
-    if (!Array.isArray(permissions)) {
+    // 定义最终使用的权限数组
+    let permissions = []
+
+    if (Array.isArray(metaAuth)) {
+        // 情况1: 如果已经是数组，直接使用
+        permissions = metaAuth
+    } else if (typeof metaAuth === 'string') {
+        // 情况2: 如果是字符串
+        if (metaAuth.includes(',')) {
+            // 如果是 "outOrder:printWayBill,outOrder:printInvoice" 这种逗号分隔的
+            // 分割 -> 去除首尾空格 -> 过滤空项
+            permissions = metaAuth.split(',').map(p => p.trim()).filter(p => p)
+        } else {
+            // 如果是单个字符串权限，放入数组
+            permissions = [metaAuth]
+        }
+    } else {
+        // 情况3: meta 中没有定义或格式不对，视为无权限
         return false
     }
 
-    // --- 核心修改开始 ---
+
+    // 下面是原有的判断逻辑
 
     // 1. 如果传入的 code 包含冒号（例如 'customer:add'），说明是全称，直接判断
     if (code.includes(':')) {
@@ -41,6 +57,7 @@ export function hasPerm(code) {
         }
     }
 
+    // 3. 最后尝试直接匹配简单码 (防止有时候 meta 里存的就是 'add' 而不是 'xxx:add')
     return permissions.includes(code)
 }
 

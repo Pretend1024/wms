@@ -218,7 +218,7 @@
                                         <el-col :span="6">
                                             <el-button @click="openAddressDialog(true)" type="primary" plain disabled>{{
                                                 getButtonText('addressBook')
-                                                }}</el-button>
+                                            }}</el-button>
                                         </el-col>
                                     </el-row>
                                 </el-form>
@@ -331,7 +331,7 @@
                                         </el-input>
                                     </template>
                                     <template #qty="{ row }">
-                                        <el-input v-model="row.qty" placeholder="请输入数量" v-number readonly />
+                                        <el-input v-model="row.qty" placeholder="请输入数量" v-intNumber readonly />
                                     </template>
                                     <template #qualityId="{ row }">
                                         <el-select v-model="row.qualityId" placeholder="请选择品质" disabled>
@@ -358,7 +358,7 @@
                                         </el-select>
                                     </template>
                                     <template #planQty="{ row }">
-                                        <el-input v-model.number="row.planQty" v-number disabled />
+                                        <el-input v-model="row.planQty" v-intNumber disabled />
                                     </template>
                                     <template #unit="{ row }">
                                         <el-select v-model="row.unit" clearable filterable disabled>
@@ -378,8 +378,7 @@
                                                 <div v-for="(file, index) in row.attachments" :key="index"
                                                     class="attachment-item">
                                                     <a :href="file.url" target="_blank" class="file-link">
-                                                        {{ file.name.length > 20 ? file.name.slice(0, 20) + '...' :
-                                                            file.name }}
+                                                        {{ file.name }}
                                                     </a>
                                                 </div>
                                             </div>
@@ -532,11 +531,11 @@
                         :data="statusNodesData">
                         <template #isSuccess="{ row }">
                             <span :style="{ color: row.isSuccess ? 'green' : 'red' }">{{ row.isSuccess ? '是' : '否'
-                                }}</span>
+                            }}</span>
                         </template>
                         <template #isEnd="{ row }">
                             <span :style="{ color: row.isEnd ? 'green' : 'red' }">{{ row.isEnd ? '是' : '否'
-                                }}</span>
+                            }}</span>
                         </template>
                     </generalAddTable>
                 </el-tab-pane>
@@ -545,7 +544,7 @@
                         :data="logData">
                         <template #isSuccess="{ row }">
                             <span :style="{ color: row.isSuccess ? 'green' : 'red' }">{{ row.isSuccess ? '成功' : '失败'
-                                }}</span>
+                            }}</span>
                         </template>
                         <template #message="{ row }">
                             <div v-html="row.message"></div>
@@ -620,7 +619,7 @@
                                         <div v-if="item.skus && item.skus.length">
                                             <div v-for="(sku, i) in JSON.parse(item.skus)" :key="i" class="sku-item">{{
                                                 sku.sku
-                                            }} * {{ sku.qty }}</div>
+                                                }} * {{ sku.qty }}</div>
                                         </div>
                                     </el-descriptions-item>
                                 </el-descriptions>
@@ -660,7 +659,7 @@
                         :data="holdupData">
                         <template #statusName="{ row }">
                             <span :style="{ color: row.holdUpStatus !== 2 ? 'green' : 'red' }">{{ row.holdUpStatusName
-                            }}</span>
+                                }}</span>
                         </template>
                         <template #customer="{ row }">
                             {{ row.customerCode }}({{ row.customerName }})
@@ -695,8 +694,8 @@ import { getVasServiceTypeListApi, getVasServiceTypeUnitEnumApi } from '@/api/va
 
 import generalAddTable from '@/components/table/generalAddTable.vue'
 import { getOrgCountryListApi } from '@/api/baseApi/org.js';
-import { outstockOrderCreateTypeApi, outstockOrderAddressTypeApi, outstockOrderStatusApi, outstockOrderTypeApi, getOutstockOrderDetailApi, outstockOrderEcommercePlatformApi, getOutstockOrderProblemApi, getOutstockOrderTrackApi, getOutstockOrderStatusApi, getOutstockOrderHoldupApi } from '@/api/outstockApi/order.js'
-import { getTemplateApi } from '@/api/baseApi/index.js';
+import { outstockOrderCreateTypeApi, outstockOrderAddressTypeApi, outstockOrderStatusApi, outstockOrderTypeApi, getOutstockOrderDetailApi, outstockOrderEcommercePlatformApi, getOutstockOrderProblemApi, getOutstockOrderTrackApi, getOutstockOrderStatusApi, getOutstockOrderHoldupApi, outstockOrderAttachmentTypeApi } from '@/api/outstockApi/order.js'
+// import { outstockOrderAttachmentTypeApi } from '@/api/baseApi/index.js';
 import { getLabel } from '@/utils/i18n/i18nLabels.js';
 import { getWhWarehouseApi } from '@/api/baseApi/wh.js'
 import { uploadApi } from '@/api/baseApi/index.js'
@@ -866,11 +865,6 @@ function openSkuDialog() {
 async function handleSkuConfirm(selectedList) {
     // 若数组为空或无效，直接返回
     if (!selectedList || !Array.isArray(selectedList) || selectedList.length === 0) return;
-    const loading = ElLoading.service({
-        lock: true,
-        target: ".contentDiv",
-        text: 'Loading'
-    })
 
     try {
         for (const sku of selectedList) {
@@ -896,7 +890,6 @@ async function handleSkuConfirm(selectedList) {
             }
         }
     } finally {
-        loading.close();
         skuDialogVisible.value = false;
     }
 }
@@ -979,12 +972,6 @@ const handleLabelUrlUpload = async (options, row) => {
     const currentFile = options.file;
     if (!currentFile) return;
 
-    const loading = ElLoading.service({
-        lock: true,
-        target: ".contentDiv",
-        text: 'loading...'
-    });
-
     try {
         const res = await uploadApi(currentFile, { path: 'temp' });
 
@@ -997,8 +984,6 @@ const handleLabelUrlUpload = async (options, row) => {
     } catch (error) {
         ElMessage.error(`运单上传出错：${error.msg || '网络异常'}`);
         row.labelUrl = '';
-    } finally {
-        loading.close();
     }
 };
 
@@ -1006,13 +991,6 @@ const handleLabelUrlUpload = async (options, row) => {
 const handleCustomLabelUrlUpload = async (options, row) => {
     const currentFile = options.file;
     if (!currentFile) return;
-
-    const loading = ElLoading.service({
-        lock: true,
-        text: 'loading...',
-        target: ".contentDiv",
-    });
-
     try {
         const res = await uploadApi(currentFile, { path: 'temp' });
 
@@ -1025,8 +1003,6 @@ const handleCustomLabelUrlUpload = async (options, row) => {
     } catch (error) {
         ElMessage.error(`报关单上传出错：${error.msg || '网络异常'}`);
         row.customLabelUrl = '';
-    } finally {
-        loading.close();
     }
 };
 
@@ -1045,7 +1021,7 @@ const skuColumns = [
     { label: '数量', prop: 'qty', width: 250, slot: 'qty', required: true },
 ]
 const filesColumns = [
-    { label: '附件类型', prop: 'typeId', width: 240, slot: 'typeId' },
+    { label: '附件类型', prop: 'typeId', width: 240, slot: 'typeId', required: true },
     { label: '附件名称', prop: 'fileName', width: 400, slot: 'fileName', required: true },
     { label: '附件地址', prop: 'fileUrl', width: 510, slot: 'fileUrl', required: true },
 ]
@@ -1304,12 +1280,7 @@ const fileTypeOptions = ref([])
 const consumablesOptions = ref([])
 
 onMounted(async () => {
-    const loading = ElLoading.service({
-        lock: true,
-        text: "Loading",
-        target: ".contentDiv"
-    });
-
+    openMainLoading();
     try {
         //定义框接口任务
         const apiTasks = [
@@ -1402,12 +1373,12 @@ onMounted(async () => {
             },
             {
                 key: "附件类型",
-                api: getTemplateApi({ atypeId: 2, btypeId: 401 }),
+                api: outstockOrderAttachmentTypeApi({ atypeId: 2, btypeId: 402 }),
                 handleSuccess: (data) => (fileTypeOptions.value = data || []),
             },
             {
                 key: "服务类型",
-                api: getVasServiceTypeListApi(),
+                api: getVasServiceTypeListApi({ isActive: true }),
                 handleSuccess: (data) => (serviceTypeOptions.value = data || []),
             },
             {
@@ -1506,9 +1477,10 @@ onMounted(async () => {
                 smartAlert(res.msg, false);
             }
         }
-    } finally {
-        loading.close();
+    } catch (e) {
+        smartAlert('初始化数据失败：' + e.msg, false);
     }
+    closeMainLoading();
 });
 
 </script>

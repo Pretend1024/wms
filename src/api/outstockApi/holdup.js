@@ -12,7 +12,7 @@ export const outstockOrderHoldupFailApi = createPostRequestWithQuery('/outstock/
 
 // 申请拦截
 export const outstockOrderApplyHoldUptApi = (data) => {
-    return http.post('/outstock/order/outOrderHoldup/applyHoldUp', data)
+    return http.post('/outstock/order/outOrderHoldup/applyHoldUp', data, { headers: { 'loading': true } })
 }
 // 取消拦截
 export const outstockOrderCancelHoldUpApi = createPostRequestWithQuery('/outstock/order/outOrderHoldup/cancelHoldUp')
@@ -20,9 +20,7 @@ export const outstockOrderCancelHoldUpApi = createPostRequestWithQuery('/outstoc
 export const getOrderHoldupStatusApi = () => {
     return http.post('/outstock/order/outOrderHoldup/holdUpStatusEnum')
 }
-// 状态数量/outstock/order/outOrderHoldup/countGroupByStatus
+// 状态数量
 export const getOrderHoldupStatusCountApi = (data) => {
     return http.post('/outstock/order/outOrderHoldup/countGroupByStatus', data)
 }
-
-

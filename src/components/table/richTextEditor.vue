@@ -183,12 +183,6 @@ onMounted(() => {
                     server: '',
                     // 你的自定义上传逻辑，拿到 URL 后调用 insertFn
                     async customUpload(file, insertFn) {
-                        // 加载动画
-                        ElLoading.service({
-                            fullscreen: true,
-                            lock: true,
-                            text: '上传中...',
-                        })
                         try {
                             const res = await uploadApi(file, { path: 'temp' })
                             insertFn(res.data)
@@ -197,8 +191,6 @@ onMounted(() => {
                             console.error('上传失败', err)
                             ElMessage.error('上传失败')
                         }
-                        // 关闭加载动画
-                        ElLoading.service().close()
                     },
                 }
             },

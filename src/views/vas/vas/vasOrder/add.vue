@@ -384,7 +384,6 @@ const fetchFeeData = async () => {
         }
 
         isFetchingFee.value = true;
-        const loading = ElLoading.service({ lock: true, target: ".contentDiv", text: 'loading...' });
 
         // 构造接口请求参数（根据实际接口要求调整格式）
         const requestParams = {
@@ -414,7 +413,6 @@ const fetchFeeData = async () => {
             ElMessage.error(res.msg || '费用计算失败');
         }
 
-        loading.close();
     } catch (error) {
         console.error('费用计算接口调用失败：', error);
         ElMessage.error('费用计算异常，请重试');
@@ -534,13 +532,12 @@ async function handleSingleSkuConfirm(selectedSku) {
 
 // 页面加载逻辑保持不变
 onMounted(async () => {
-    const loading = ElLoading.service({ lock: true, target: ".contentDiv", text: "loading..." });
     try {
         const apiTasks = [
             { key: "关联业务类型", api: getVasOrderRelatedBizTypeEnumApi(), handleSuccess: (data) => (relatedBizTypeOptions.value = data || []) },
             { key: "仓库", api: getWhWarehouseApi(), handleSuccess: (data) => (warehouseOptions.value = data || []) },
             { key: "客户", api: getCustomerLikeQueryApi({ keyword: "*" }), handleSuccess: (data) => (customerOptions.value = data.map((item) => ({ id: item.code, label: `${item.code}(${item.name})`, value: item.id }))) },
-            { key: "服务类型", api: getVasServiceTypeListApi(), handleSuccess: (data) => (serviceTypeOptions.value = data || []) },
+            { key: "服务类型", api: getVasServiceTypeListApi({ isActive: true }), handleSuccess: (data) => (serviceTypeOptions.value = data || []) },
             { key: "费用类型", api: getVasOrderFeeTypeEnumApi(), handleSuccess: (data) => (feeTypeOptions.value = data || []) },
             {
                 key: "货币类型", api: getCurrencyListApi(), handleSuccess: (data) => (currencyOptions.value = data.map(item => ({
@@ -580,8 +577,6 @@ onMounted(async () => {
     } catch (error) {
         smartAlert('下拉框数据加载异常', false);
         console.error('下拉框数据加载失败:', error);
-    } finally {
-        loading.close();
     }
 });
 </script>

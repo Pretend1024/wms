@@ -5,6 +5,14 @@
                 @reset="handleReset">
                 <template #custom-form="{ formData }">
                     <el-col>
+                        <el-form-item :label="getLabel('warehouseCode')">
+                            <el-select v-model="formData.warehouseCode" :placeholder="getPlaceholder('warehouseCode')">
+                                <el-option v-for="item in warehouseOptions" :key="item.value" :label="item.label"
+                                    :value="item.value" />
+                            </el-select>
+                        </el-form-item>
+                    </el-col>
+                    <el-col>
                         <el-form-item :label="getLabel('carrierCode')">
                             <el-select v-model="formData.carrierCode" :placeholder="getPlaceholder('carrierCode')"
                                 clearable>
@@ -48,7 +56,7 @@
                 <!-- 使用插槽来自定义列内容，假如我们需要在操作列中添加按钮 -->
                 <template #customBtn="{ row }">
                     <div style="display: flex;" v-if="row.statusId !== 3">
-                        <div class="cursor-pointer" @click="handleClaim" v-if="row.statusId == 1">
+                        <div class="cursor-pointer" @click="handleClaim(row)" v-if="row.statusId == 1">
                             <el-icon>
                                 <Document />
                             </el-icon>
@@ -63,7 +71,7 @@
                     </div>
                 </template>
                 <template #customer="{ row }">
-                    {{ row.customerCode }}({{ row.customerName ? row.customerName : '无' }})
+                    {{ row.customerCode }}
                 </template>
             </hydTable>
         </div>
@@ -75,6 +83,9 @@
                         <el-option v-for="item in destroyTypeOptions" :key="item.value" :label="item.label"
                             :value="item.value" />
                     </el-select>
+                </el-form-item>
+                <el-form-item label="销毁备注:">
+                    <el-input type="textarea" v-model="destroyRemark" placeholder="请输入销毁备注" :rows="2" />
                 </el-form-item>
             </el-form>
             <template #footer>
@@ -102,6 +113,7 @@ import { smartAlert, trimObjectStrings } from '@/utils/genericMethods.js'
 import batchOperationn from '@/components/messageNotices/batchOperation.vue'
 import { getReturnOrderClaimApi, destroyReturnOrderClaimApi, getReturnOrderClaimStatusEnumApi, getReturnOrderClaimDestroyTypeEnumApi, delReturnOrderClaimApi, verifyReturnOrderClaimApi, addReturnOrderClaimApi } from '@/api/instockApi/return.js'
 import { getProductShipwayBrandListApi } from '@/api/productApi/shipway.js'
+import { getWhWarehouseApi } from '@/api/baseApi/wh.js'
 import canonicalInput from '@/components/table/canonicalInpt.vue';
 import hydFilterBox from "@/components/table/hyd-filterBox.vue";
 import hydTable from "@/components/table/hyd-table.vue";
@@ -118,6 +130,7 @@ const formConfig = ref([
 
 // 初始化表单数据
 const initValues = ref({})
+
 
 // 搜索事件
 const handleSearch = (data) => {
@@ -140,6 +153,7 @@ const tableData = shallowRef([])
 const footer = ref({})
 // 表格列配置
 const columns = ref([
+    { label: '仓库', prop: 'warehouseName', width: '135', fixed: 'left', sortable: true },
     { label: '承运商名称', width: '155', prop: 'carrierName', sortable: true, flex: 'left' },
     { label: '物流单号', width: '150', prop: 'trackingNo', sortable: true, flex: 'left' },
     { label: '状态', width: '115', prop: 'statusName', sortable: true, flex: 'left' },
@@ -215,7 +229,7 @@ const claimDialogVisible = ref(false)
 const isMulti = ref(false)
 const claimDialogRef = ref(null)
 // 单个认领
-const handleClaim = async () => {
+const handleClaim = async (row) => {
     isMulti.value = false;
     claimDialogVisible.value = true;
 }
@@ -226,17 +240,19 @@ const handleClaimBatch = async () => {
 }
 // 认领确认
 const handleClaimConfirm = async (data) => {
-    let trackingNos = data
-    if (Array.isArray(data)) {
-        trackingNos = data.join(',');
+    const submitData = data;
+    let trackingNos = submitData.data
+    if (Array.isArray(trackingNos)) {
+        trackingNos = submitData.data.join(',');
     }
-    console.log('认领数据：', trackingNos)
-    const res = await verifyReturnOrderClaimApi({ trackingNos });
+    const res = await verifyReturnOrderClaimApi({ trackingNos, customerCode: submitData.customerCode });
     smartAlert(res.msg, res.success, 1000)
     if (!res.success) return;
     router.push({
         name: '新增退件单',
-        params: { trackingNos: trackingNos },
+        params: {
+            trackingNos: trackingNos, customerCode: res.data[0].customerCode, warehouseCode: res.data[0].warehouseCode
+        },
     })
     claimDialogVisible.value = false;
 }
@@ -267,6 +283,7 @@ const handleDel = async (row) => {
 // 销毁
 const destroyTypeOptions = ref([])
 const destroyTypeId = ref('')
+const destroyRemark = ref('')
 const handleDestroy = async () => {
     if (selectionRows.value.length === 0) {
         ElMessage({
@@ -296,7 +313,7 @@ const handleUpdStatus = async () => {
     delData.value = [];
     promptMessage.value = '操作中...'
     for (let i = 0; i < selectionRows.value.length; i++) {
-        const res = await destroyReturnOrderClaimApi({ id: selectionRows.value[i].id, destroyTypeId: destroyTypeId.value });
+        const res = await destroyReturnOrderClaimApi({ id: selectionRows.value[i].id, destroyTypeId: destroyTypeId.value, destroyRemark: destroyRemark.value });
         delData.value.push({
             id: selectionRows.value[i].trackingNo,
             msg: res.msg,
@@ -335,6 +352,8 @@ const getList = async (currentPage, pageSize, orderBy) => {
 const carrierOptions = ref([])
 // 状态
 const statusOptions = ref([])
+// 仓库数据
+const warehouseOptions = ref([])
 onMounted(async () => {
     //   销毁类型
     const destroyTypeRes = await getReturnOrderClaimStatusEnumApi()
@@ -345,6 +364,9 @@ onMounted(async () => {
         label: item.name,
         value: item.code
     }))
+    // 获取仓库数据
+    const warehouseRes = await getWhWarehouseApi()
+    warehouseOptions.value = warehouseRes.data.map(item => ({ label: item.code + '-' + item.name, value: item.code }))
     // 状态
     const statusRes = await getReturnOrderClaimDestroyTypeEnumApi()
     statusOptions.value = statusRes.data.map(item => ({ label: item.name, value: item.id }))

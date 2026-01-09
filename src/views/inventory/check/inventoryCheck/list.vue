@@ -414,14 +414,12 @@ const delColse = () => {
 
 // 打印
 const handlePrint = async (type, row) => {
-    const loadingInstance = ElLoading.service({ fullscreen: true, text: 'loading...' });
     const res = await getInventoryCheckGetFullByIdAndTypeApi({ id: row.id, type });
     if (!res.success) {
         smartAlert(res.msg, res.success, 1000);
     } else {
         openPrintCheckOrder(res.data, type);
     }
-    loadingInstance.close();
     console.log('打印数据：', res.data);
 }
 

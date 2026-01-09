@@ -184,7 +184,7 @@
         </el-dialog>
         <!-- 导出弹窗 -->
         <exportDialog ref="exportDialogRef" :selectionRows="selectionRows" :initValues="initValues"
-            :extraParams="{ view }" :exportType="300">
+            :extraParams="{ view }" :exportType="301">
         </exportDialog>
     </div>
 </template>

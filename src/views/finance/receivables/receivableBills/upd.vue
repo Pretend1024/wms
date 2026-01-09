@@ -1,72 +1,76 @@
 <template>
-    <el-form :model="formData" :rules="rules" ref="formRef" label-width="90px">
+    <el-form :model="formData" :rules="rules" ref="formRef" label-width="100px">
         <el-row>
             <el-col :span="12">
-                <el-form-item label="公司" prop="orgName">
+                <el-form-item :label="getLabel('orgId')" prop="orgName">
                     <el-input v-model="formData.orgName" disabled />
                 </el-form-item>
             </el-col>
             <el-col :span="12">
-                <el-form-item label="客户" prop="customerCode">
-                    <el-select v-model="formData.customerCode" disabled popper-class="multi-column-select">
+                <el-form-item :label="getLabel('customerCode')" prop="customerCode">
+                    <el-select v-model="formData.customerCode" disabled popper-class="multi-column-select"
+                        :placeholder="getPlaceholder('customerCode')">
                         <el-option v-for="item in customerOptions" :key="item.value" :label="item.label"
                             :value="item.value" />
                     </el-select>
                 </el-form-item>
             </el-col>
             <el-col :span="12">
-                <el-form-item label="币种" prop="currency">
-                    <el-select v-model="formData.currency" disabled>
+                <el-form-item :label="getLabel('currency')" prop="currency">
+                    <el-select v-model="formData.currency" disabled :placeholder="getPlaceholder('currency')">
                         <el-option v-for="item in nationOptions" :label="item.label" :value="item.value"
                             :key="item.value" />
                     </el-select>
                 </el-form-item>
             </el-col>
             <el-col :span="12">
-                <el-form-item label="账单编号" prop="billNo">
+                <el-form-item :label="getLabel('billNo')" prop="billNo">
                     <el-input v-model="formData.billNo" disabled />
                 </el-form-item>
             </el-col>
             <el-col :span="12">
-                <el-form-item label="总金额">
+                <el-form-item :label="getLabel('totalFeeAmount')">
                     <el-input v-model="formData.totalFeeAmount" disabled />
                 </el-form-item>
             </el-col>
+
             <el-col :span="12">
-                <el-form-item label="已支付">
-                    <el-input v-model="formData.alreadyPaidAmount" disabled />
+                <el-form-item :label="getLabel('writtenOffAmount')">
+                    <el-input v-model="formData.writtenOffAmount" disabled />
                 </el-form-item>
             </el-col>
             <el-col :span="12">
-                <el-form-item label="待支付">
-                    <el-input v-model="formData.unpaidAmount" disabled />
+                <el-form-item :label="getLabel('unwrittenOffAmount')">
+                    <el-input v-model="formData.unwrittenOffAmount" disabled />
+                </el-form-item>
+            </el-col>
+
+            <el-col :span="12">
+                <el-form-item :label="getLabel('writeOffCompleteTime')">
+                    <el-input v-model="formData.writeOffCompleteTime" disabled />
+                </el-form-item>
+            </el-col>
+
+            <el-col :span="12">
+                <el-form-item :label="getLabel('billStartDate')" prop="billStartDate">
+                    <el-date-picker v-model="formData.billStartDate" type="date"
+                        :placeholder="getPlaceholder('billStartDate')" value-format="YYYY-MM-DD" style="width: 100%" />
                 </el-form-item>
             </el-col>
             <el-col :span="12">
-                <el-form-item label="付款截止">
-                    <el-date-picker v-model="formData.paymentDeadline" type="date" placeholder="选择起始日期"
-                        value-format="YYYY-MM-DD" style="width: 100%" />
-                </el-form-item>
-            </el-col>
-            <el-col :span="12">
-                <el-form-item label="起始日期" prop="billStartDate">
-                    <el-date-picker v-model="formData.billStartDate" type="date" placeholder="选择起始日期"
-                        value-format="YYYY-MM-DD" style="width: 100%" />
-                </el-form-item>
-            </el-col>
-            <el-col :span="12">
-                <el-form-item label="结束日期" prop="billEndDate">
-                    <el-date-picker v-model="formData.billEndDate" type="date" placeholder="选择结束日期"
-                        value-format="YYYY-MM-DD" style="width: 100%" />
+                <el-form-item :label="getLabel('billEndDate')" prop="billEndDate">
+                    <el-date-picker v-model="formData.billEndDate" type="date"
+                        :placeholder="getPlaceholder('billEndDate')" value-format="YYYY-MM-DD" style="width: 100%" />
                 </el-form-item>
             </el-col>
             <el-col :span="24">
-                <el-form-item label="备注" prop="remark">
-                    <el-input v-model="formData.remark" placeholder="请输入备注" type="textarea" :rows="2" />
+                <el-form-item :label="getLabel('remark')" prop="remark">
+                    <el-input v-model="formData.remark" :placeholder="getPlaceholder('remark')" type="textarea"
+                        :rows="2" />
                 </el-form-item>
             </el-col>
             <el-col :span="24">
-                <el-form-item label="附件" prop="attachment">
+                <el-form-item :label="getLabel('attachment')" prop="attachment">
                     <div class="attachment-container">
                         <div class="attachment-list" v-if="fileList.length > 0">
                             <div v-for="(file, index) in fileList" :key="index" class="attachment-item">
@@ -136,6 +140,7 @@ const handleRemoveFile = (index) => {
 };
 
 onMounted(() => {
+    openMainLoading()
     if (props.initData) {
         formData.value = { ...props.initData };
         try {
@@ -146,6 +151,7 @@ onMounted(() => {
             fileList.value = [];
         }
     }
+    closeMainLoading()
 });
 
 defineExpose({

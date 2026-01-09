@@ -300,12 +300,6 @@ const beforeUpload = (file) => {
 };
 // 上传合同附件
 const uploadContracts = async ({ file }) => {
-    // 加载动画
-    const loading = ElLoading.service({
-        lock: true,
-        target: ".contentDiv",
-        text: 'loading...',
-    })
     try {
         const res = await uploadApi(file, { path: 'temp' })
         // 返回的地址
@@ -321,8 +315,6 @@ const uploadContracts = async ({ file }) => {
         contractUploadRef.value.clearFiles()
     } catch (err) {
         smartAlert('合同上传失败', false)
-    } finally {
-        loading.close()
     }
 }
 

@@ -310,11 +310,6 @@ const getEchartsWidth = computed(() => {
 });
 
 onMounted(async () => {
-    // 加载动画
-    const loading = ElLoading.service({
-        lock: true,
-        text: 'loading...'
-    })
     const res = await checkTokenApi()
     if (!res.success) {
         smartAlert('登录超时，请重新登录', true, 1000)
@@ -331,7 +326,6 @@ onMounted(async () => {
         pageSize: 5,
     })
     msgList.value = msgRes.data.rows
-    loading.close()
 })
 
 </script>

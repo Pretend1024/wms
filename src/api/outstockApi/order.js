@@ -7,7 +7,7 @@ export const getOutstockOrderApi = (data) => {
 }
 // 新增出库单
 export const addOutstockOrderApi = (data) => {
-    return http.post('/outstock/order/outOrder/add', data)
+    return http.post('/outstock/order/outOrder/add', data, { headers: { 'loading': true } })
 }
 // 删除出库单
 export const deleteOutstockOrderApi = createPostRequestWithQuery('/outstock/order/outOrder/deleteById')
@@ -25,6 +25,10 @@ export const outstockOrderTypeApi = () => {
 // 出库单状态枚举
 export const outstockOrderStatusApi = () => {
     return http.post('/outstock/order/outOrder/statusEnum')
+}
+// 出库单附件类型枚举
+export const outstockOrderAttachmentTypeApi = () => {
+    return http.post('/outstock/order/outOrder/attachmentTypeEnum')
 }
 // 出库单状态待分配
 export const outstockOrderToPendingAllocationApi = createPostRequestWithQuery('/outstock/order/outOrder/toPendingAllocation')
@@ -46,6 +50,7 @@ export const getOutstockOrderStatusMenuApi = (data) => {
 export const outstockOrderEcommercePlatformApi = () => {
     return http.post('/outstock/order/outOrder/ecPlatformEnum')
 }
+
 // 出库单批量设置
 // 批量设置仓库  
 export const outstockOrderBatchSetWarehouseApi = createPostRequestWithQuery('/outstock/order/outOrder/setWarehouse')
@@ -59,7 +64,7 @@ export const outstockOrderImportTrackingNoApi = (data, Params) => {
 }
 // 申请单号
 export const outstockOrderApplyTrackingNoApi = (data) => {
-    return http.post('/outstock/order/outOrder/applyWayBill', data)
+    return http.post('/outstock/order/outOrder/applyWayBill', data, { headers: { 'loading': true } })
 }
 // 取消单号
 export const outstockOrderCancelTrackingNoApi = createPostRequestWithQuery('/outstock/order/outOrder/cancelWaybill')
@@ -70,7 +75,7 @@ export const getOutstockOrderRemarkApi = (data) => {
 }
 // 新增备注
 export const addOutstockOrderRemarkApi = (data) => {
-    return http.post('/outstock/order/outOrderRemark/add', data)
+    return http.post('/outstock/order/outOrderRemark/add', data, { headers: { 'loading': true } })
 }
 // 删除备注
 export const deleteOutstockOrderRemarkApi = createPostRequestWithQuery('/outstock/order/outOrderRemark/deleteById')
@@ -81,7 +86,7 @@ export const getOutstockOrderFileApi = (data) => {
 }
 // 新增附件
 export const addOutstockOrderFileApi = (data) => {
-    return http.post('/outstock/order/outOrderFile/add', data)
+    return http.post('/outstock/order/outOrderFile/add', data, { headers: { 'loading': true } })
 }
 // 删除附件
 export const deleteOutstockOrderFileApi = createPostRequestWithQuery('/outstock/order/outOrderFile/deleteById')
@@ -105,26 +110,26 @@ export const getGenerateCustomerOrderNoApi = () => {
     return http.post('/outstock/order/outOrder/generateCustomerOrderNo')
 }
 
-// 时间筛选条件/outstock/order/outOrder/timeFilterEnum
+// 时间筛选条件
 export const getOutstockOrderTimeFilterEnumApi = () => {
     return http.post('/outstock/order/outOrder/timeFilterEnum')
 }
-// 数量个数枚举/outstock/order/outOrder/countBtnEnum
+// 数量个数枚举
 export const getOutstockOrderCountBtnEnumApi = () => {
     return http.post('/outstock/order/outOrder/countBtnEnum')
 }
-// 导出附件类型/outstock/order/outOrder/exportTypeEnum
+// 导出附件类型
 export const getOutstockOrderExportTypeEnumApi = () => {
     return http.post('/outstock/order/outOrder/exportTypeEnum')
 }
-// 导出附件/outstock/order/outOrder/exportZIP
+// 导出附件
 export const getOutstockOrderExportZIPApi = (data) => {
     return http.post('/outstock/order/outOrder/exportZIP', data, { headers: { 'loading': true } })
 }
 // 出库单详情状态节点
 export const getOutstockOrderStatusApi = createPostRequestWithQuery('/outstock/order/outOrderStatus/listByOutOrderId')
 
-// 出库单详情订单轨迹 outstock/trace/outTrack/listByOutOrderId
+// 出库单详情订单轨迹
 export const getOutstockOrderTrackApi = createPostRequestWithQuery('/outstock/trace/outTrack/listByOutOrderId')
 
 // 出库单详情问题
@@ -144,23 +149,16 @@ export const getAllocateInventoryPriorityEnumApi = () => {
     return http.post('/outstock/order/outOrderInventory/allocateInventoryPriorityEnum')
 }
 
-//手动分配库存
+// 手动分配库存
 export const getAllocateInventoryApi = (data) => {
-    return http.post('/outstock/order/outOrderInventory/allocateInventory', data)
+    return http.post('/outstock/order/outOrderInventory/allocateInventory', data, { headers: { 'loading': true } })
 }
 // 取消分配库存
 export const getCancelAllocateInventoryApi = createPostRequestWithQuery('/outstock/order/outOrderInventory/cancelAllocateInventory')
 
-
 // 加入波次
 export const getJoinWaveApi = (data) => {
-    return http.post('/outstock/wave/outWave/joinWave', data)
+    return http.post('/outstock/wave/outWave/joinWave', data, { headers: { 'loading': true } })
 }
 // 退出波次
 export const getExitWaveApi = createPostRequestWithQuery('/outstock/wave/outWave/exitWave')
-
-
-
-
-
-
