@@ -6,10 +6,10 @@
                 <el-descriptions-item label="账单编号">{{ billInfo.billNo }}</el-descriptions-item>
                 <el-descriptions-item label="公司">{{ billInfo.orgName }}</el-descriptions-item>
                 <el-descriptions-item label="客户">{{ billInfo.customerCode }}({{ billInfo.customerName
-                }})</el-descriptions-item>
+                    }})</el-descriptions-item>
                 <el-descriptions-item label="账单状态">
                     <el-tag :type="billInfo.billStatusId === 10 ? 'warning' : 'success'">{{ billInfo.billStatusName
-                    }}</el-tag>
+                        }}</el-tag>
                 </el-descriptions-item>
 
                 <el-descriptions-item label="币种">{{ billInfo.currency }}</el-descriptions-item>
@@ -31,7 +31,7 @@
                 <el-descriptions-item label="结束日期" :span="1">{{ billInfo.billEndDate }}</el-descriptions-item>
 
                 <el-descriptions-item label="核销完成时间" :span="2">{{ billInfo.writeOffCompleteTime
-                    }}</el-descriptions-item>
+                }}</el-descriptions-item>
 
                 <el-descriptions-item label="附件" :span="2">
                     <div v-if="billInfo.attachment && parseAttachment(billInfo.attachment).length > 0">
@@ -193,6 +193,7 @@ const orderBy = ref('');
 
 // 表格列配置
 const columns = ref([
+    { label: '费用大类', prop: 'feeMainTypeName', width: '120', sortable: true, fixed: 'left' },
     { label: '费用小类', prop: 'feeSubTypeName', width: '120', sortable: true, fixed: 'left' },
     { label: '费用状态', prop: 'statusName', width: '100', slot: 'statusName', sortable: true, fixed: 'left' },
     { label: '关联单号', prop: 'orderNo', width: '160', sortable: true, fixed: 'left' },

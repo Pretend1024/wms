@@ -64,14 +64,14 @@
                             <el-button type="success" @click="handleConfirm" v-permission="'customerBill:confirm'"
                                 :icon="Check">{{
                                     getButtonText('confirm') }}</el-button>
+                            <el-button type="danger" @click="handleCancelConfirm" :icon="Close">取消确认</el-button>
                             <el-button type="warning" @click="handleWriteOff" v-permission="'customerBill:writeOffBill'"
                                 :icon="Wallet">{{
                                     getButtonText('writeOff') }}</el-button>
+                            <el-button type="danger" @click="handleCancelWrite" :icon="Close">取消核销</el-button>
                             <el-button type="danger" @click="handleDel" v-permission="'customerBill:delete'"
                                 :icon="Delete">{{
                                     getButtonText('del') }}</el-button>
-                            <el-button type="danger" @click="handleCancelConfirm" :icon="Close">取消确认</el-button>
-                            <el-button type="danger" @click="handleCancelWrite" :icon="Close">取消核销</el-button>
                             <el-button type="success" @click="handleExport" v-permission="'customerBill:export'"
                                 :icon="Share">{{
                                     getButtonText('export')
