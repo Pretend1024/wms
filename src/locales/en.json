@@ -82,7 +82,10 @@
   "fullScreen": "Full Screen",
   "base_org_organization_list": {
     "addTitle": "Add Department",
-    "updTitle": "Upd Department"
+    "updTitle": "Upd Department",
+    "confirmDelete": "Are you sure you want to delete this data?",
+    "reminder": "Reminder",
+    "deleteCanceled": "Delete canceled"
   },
   "base_basic_country_list": {
     "addTitle": "Add Country/Region",
@@ -94,47 +97,161 @@
   },
   "base_consumables_consumables_list": {
     "addTitle": "Add Packaging Material Type",
-    "updTitle": "Edit Packaging Material Type"
+    "updTitle": "Edit Packaging Material Type",
+    "typeName": "Type Name",
+    "createTime": "Create Time",
+    "endTime": "End Time",
+    "selectDelete": "Please select data to delete!",
+    "confirmDelete": "Are you sure you want to delete {count} items?",
+    "reminder": "Reminder",
+    "deleteCanceled": "Delete canceled",
+    "processing": "Processing...",
+    "operationComplete": "Operation completed!"
   },
   "base_consumables_consumablesIn_list": {
     "addTitle": "Consumables Inbound",
-    "updTitle": "Edit Consumables"
+    "updTitle": "Edit Consumables",
+    "none": "None"
   },
   "base_consumables_consumablesInventory_list": {
     "addTitle": "Add Consumables Inventory",
-    "updTitle": "Edit Consumables Remarks"
+    "updTitle": "Edit Consumables Remarks",
+    "none": "None"
   },
   "base_consumables_consumablesOut_list": {
     "addTitle": "Consumables Outbound",
-    "updTitle": "Edit Consumables Inventory"
+    "updTitle": "Edit Consumables Inventory",
+    "none": "None"
   },
   "base_cust_customerApi_list": {
     "addTitle": "Add API Integration",
-    "updTitle": "Edit API Integration"
+    "updTitle": "Edit API Integration",
+    "token": "Token",
+    "apiType": "API Type",
+    "createTime": "Create Time",
+    "endTime": "End Time",
+    "customerName": "Customer Name",
+    "selectDelete": "Please select data to delete!",
+    "confirmDelete": "Are you sure you want to delete {count} items?",
+    "reminder": "Reminder",
+    "deleteCanceled": "Delete canceled",
+    "processing": "Processing...",
+    "operationComplete": "Operation completed!"
   },
   "base_cust_customerLevel_list": {
     "addTitle": "Add Customer Level",
-    "updTitle": "Edit Customer Level"
+    "updTitle": "Edit Customer Level",
+    "nameLabel": "Name",
+    "selectDelete": "Please select data to delete!",
+    "confirmDelete": "Are you sure you want to delete {count} items?",
+    "reminder": "Reminder",
+    "deleteCanceled": "Delete canceled",
+    "processing": "Processing...",
+    "operationComplete": "Operation completed!"
+  },
+  "base_sku_sku_list": {
+    "audit": "Audit",
+    "auditStatus": "Audit Status",
+    "selectAuditStatus": "Please select audit status",
+    "operationResult": "Operation Result",
+    "sku": "SKU",
+    "selectAuditData": "Please select data to audit!",
+    "auditSuccess": "Audit successful",
+    "deleteSuccess": "Delete successful",
+    "selectDelete": "Please select data to delete!",
+    "confirmDelete": "Are you sure you want to delete {count} items?",
+    "reminder": "Reminder",
+    "deleteCanceled": "Delete canceled",
+    "processing": "Processing...",
+    "operationComplete": "Operation completed!",
+    "importCreate": "SKU Creation",
+    "importUpdate": "SKU Update"
   },
   "base_org_position_list": {
     "addTitle": "Add Position",
-    "updTitle": "Edit Position"
+    "updTitle": "Edit Position",
+    "selectWarning": "Please select data to delete!",
+    "confirmDelete": "Are you sure you want to delete {count} items?",
+    "reminder": "Reminder",
+    "deleteCanceled": "Delete canceled",
+    "processing": "Processing...",
+    "operationComplete": "Operation completed!",
+    "name": "Name"
   },
   "base_sku_skuMapping_list": {
     "addTitle": "Add SKU Mapping",
-    "updTitle": "Edit SKU Mapping"
+    "updTitle": "Edit SKU Mapping",
+    "platformSku": "Platform SKU",
+    "selectDelete": "Please select data to delete!",
+    "confirmDelete": "Are you sure you want to delete {count} items?",
+    "reminder": "Reminder",
+    "deleteCanceled": "Delete canceled",
+    "processing": "Processing...",
+    "operationComplete": "Operation completed!",
+    "importCreate": "Import SKU Mapping"
   },
   "base_wh_location_list": {
     "addTitle": "Add Storage Location",
-    "updTitle": "Edit Storage Location"
+    "updTitle": "Edit Storage Location",
+    "locationCode": "Location Code",
+    "selectDelete": "Please select data to delete!",
+    "confirmDelete": "Are you sure you want to delete {count} items?",
+    "reminder": "Reminder",
+    "deleteCanceled": "Delete canceled",
+    "processing": "Processing...",
+    "operationComplete": "Operation completed!",
+    "importCreate": "Location Create",
+    "importUpdate": "Location Update"
   },
   "base_wh_locationSizeType_list": {
     "addTitle": "Add Location Type",
-    "updTitle": "Edit Location Type"
+    "updTitle": "Edit Location Type",
+    "nameLabel": "Name",
+    "selectDelete": "Please select data to delete!",
+    "confirmDelete": "Are you sure you want to delete {count} items?",
+    "reminder": "Reminder",
+    "deleteCanceled": "Delete canceled",
+    "processing": "Processing...",
+    "operationComplete": "Operation completed!"
   },
   "base_wh_platform_list": {
     "addTitle": "Add Platform",
-    "updTitle": "Edit Platform"
+    "updTitle": "Edit Platform",
+    "appointmentStatus": "Appointment Status",
+    "updateResult": "Update Result",
+    "platformName": "Platform Name",
+    "selectChange": "Please select data to change!",
+    "confirmChange": "Are you sure you want to change {count} items?",
+    "reminder": "Reminder",
+    "operationCanceled": "Canceled",
+    "processing": "Processing...",
+    "operationComplete": "Operation completed!",
+    "appointmentNo": "Appointment No",
+    "appointmentTime": "Appointment Time",
+    "status": "Status",
+    "company": "Company",
+    "customer": "Customer",
+    "viewAppointmentDetail": "View Appointment Details",
+    "close": "Close"
+  },
+  "product_shipway_shipway_list": {
+    "statusUpdateResult": "Status Update Result",
+    "product": "Product",
+    "log": "Log",
+    "selectChange": "Please select data to change!",
+    "confirmChange": "Are you sure you want to {action} {count} items?",
+    "reminder": "Reminder",
+    "operationCanceled": "Canceled",
+    "processing": "Processing...",
+    "operationComplete": "Operation completed!",
+    "oneToOne": "One to One",
+    "lowestPrice": "Lowest Price",
+    "enable": "Enable",
+    "disable": "Disable"
+  },
+  "product_shipway_supplier_list": {
+    "channelInfo": "Channel Information",
+    "noData": "No Data"
   },
   "base_wh_warehouse_list": {
     "addTitle": "Add Warehouse",
@@ -142,7 +259,14 @@
   },
   "base_wh_zone_list": {
     "addTitle": "Add Warehouse Zone",
-    "updTitle": "Edit Warehouse Zone"
+    "updTitle": "Edit Warehouse Zone",
+    "zoneName": "Zone Name",
+    "selectDelete": "Please select data to delete!",
+    "confirmDelete": "Are you sure you want to delete {count} items?",
+    "reminder": "Reminder",
+    "deleteCanceled": "Delete canceled",
+    "processing": "Processing...",
+    "operationComplete": "Operation completed!"
   },
   "instock_appointment_inAppointment_list": {
     "addTitle": "Add Appointment",
@@ -151,7 +275,52 @@
   "product_shipway_carrier_list": {
     "addTitle": "Add Carrier",
     "updTitle": "Edit Carrier",
-    "infoTitle": "Carrier Details"
+    "infoTitle": "Carrier Details",
+    "operationResult": "Operation Result",
+    "carrierCode": "Carrier Code",
+    "updateStatusSuccess": "Update Status Successful",
+    "selectChange": "Please select data to change!",
+    "confirmChange": "Are you sure you want to {action} {count} items?",
+    "reminder": "Reminder",
+    "operationCanceled": "Canceled",
+    "processing": "Processing...",
+    "operationComplete": "Operation completed!",
+    "enable": "Enable",
+    "disable": "Disable"
+  },
+  "product_shipway_addressValid_list": {
+    "addTitle": "Add Address Validation Config",
+    "updTitle": "Edit Address Validation Config",
+    "operationResult": "Operation Result",
+    "configName": "Config Name",
+    "selectDelete": "Please select data to delete!",
+    "confirmDelete": "Are you sure you want to delete {count} items?",
+    "reminder": "Reminder",
+    "processing": "Processing...",
+    "operationComplete": "Operation completed!",
+    "enable": "Enable",
+    "disable": "Disable",
+    "confirmStatusChange": "Are you sure you want to {action} this config?"
+  },
+  "product_shipway_traceStatus_list": {
+    "addTitle": "Add Trace Status",
+    "updTitle": "Edit Trace Status",
+    "statusName": "Status Name",
+    "selectDelete": "Please select data to delete!",
+    "confirmDelete": "Are you sure you want to delete {count} items?",
+    "reminder": "Reminder",
+    "deleteCanceled": "Delete canceled",
+    "processing": "Processing...",
+    "operationComplete": "Operation completed!",
+    "confirmRefresh": "Are you sure you want to refresh the cache?",
+    "refreshCanceled": "Canceled",
+    "test": "Test",
+    "enterTraceContent": "Please enter trace content",
+    "testContentPlaceholder": "Please enter test content",
+    "contentRequired": "Content cannot be empty",
+    "testCanceled": "Canceled",
+    "statusId": "Status ID",
+    "isCustomerVisible": "Is Customer Visible"
   },
   "product_price_fuel_list": {
     "addTitle": "Add Template",
@@ -167,7 +336,18 @@
   },
   "product_shipway_shipwaySender_list": {
     "addTitle": "Add Sender Address",
-    "updTitle": "Edit Sender Address"
+    "updTitle": "Edit Sender Address",
+    "product_shipway_shipwaySender_list": {
+      "addTitle": "Add Return Address",
+      "updTitle": "Edit Return Address",
+      "addressLabel": "Address",
+      "selectDelete": "Please select data to delete!",
+      "confirmDelete": "Are you sure you want to delete {count} items?",
+      "reminder": "Reminder",
+      "deleteCanceled": "Delete canceled",
+      "processing": "Processing...",
+      "operationComplete": "Operation completed!"
+    }
   },
   "base_basic_address_list": {
     "addTitle": "Add Address",
@@ -194,7 +374,62 @@
   },
   "sys_user_role_list": {
     "addTitle": "Add Role",
-    "updTitle": "Edit Role"
+    "updTitle": "Edit Role",
+    "authorize": "Authorize",
+    "roleName": "Role Name",
+    "deleteSuccess": "Deleted successfully",
+    "selectDelete": "Please select data to delete!",
+    "confirmDelete": "Are you sure you want to delete {count} items?",
+    "reminder": "Reminder",
+    "deleteCanceled": "Delete canceled",
+    "processing": "Processing...",
+    "operationComplete": "Operation completed!"
+  },
+  "base_cust_customer_list": {
+    "createTime": "Create Time",
+    "endTime": "End Time",
+    "customerName": "Customer Name",
+    "dockingInfo": "Docking Info",
+    "fetchLinkError": "Failed to fetch docking list data, please try again",
+    "enterNewPassword": "Enter new password for \"{name} ({userCode})\"",
+    "resetPassword": "Reset Password"
+  },
+  "base_cust_customerAuth_list": {
+    "auditAuthInfo": "Audit Auth Info",
+    "viewAuthDetails": "View Auth Details",
+    "basicInfo": "Basic Info",
+    "customerInfo": "Customer Info",
+    "subjectType": "Subject Type",
+    "currentStatus": "Current Status",
+    "contact": "Contact",
+    "mobile": "Mobile",
+    "email": "Email",
+    "region": "Region",
+    "address": "Address",
+    "certInfo": "Certificate Info",
+    "certType": "Certificate Type",
+    "certNo": "Certificate No",
+    "socialCreditCode": "Unified Social Credit Code",
+    "idCardNumber": "ID Card Number",
+    "attachments": "Attachments",
+    "idCardFront": "ID Card Front",
+    "idCardBack": "ID Card Back",
+    "businessLicense": "Business License",
+    "legalIdFront": "Legal Rep ID Front",
+    "legalIdBack": "Legal Rep ID Back",
+    "noAttachments": "No Attachments",
+    "auditProcessing": "Audit Processing",
+    "auditResult": "Audit Result",
+    "approve": "Approve",
+    "reject": "Reject",
+    "rejectReason": "Reject Reason",
+    "rejectReasonPlaceholder": "Please enter reject reason (Required)",
+    "submitAndNext": "Submit & Next",
+    "selectAuditWarning": "Please select data to audit!",
+    "noPendingAudit": "No pending audit records selected!",
+    "noMorePending": "No more pending records",
+    "enterRejectReason": "Please enter reject reason",
+    "allAudited": "All selected records audited"
   },
   "instock_returned_returnClaim_list": {
     "title": "Return Claim",
@@ -616,8 +851,8 @@
     "close": "Close"
   },
   "finance_receivables_fee_list": {
-    "feeMainType": "Fee Main Type",
-    "feeSubType": "Fee Sub Type",
+    "FeeBizType": "Order Type",
+    "feeSubType": "Fee Item",
     "amountFormula": "Amount Calculation Formula",
     "currency": "Currency",
     "originalAmount": "Original Amount",
@@ -625,7 +860,7 @@
     "confirmAmount": "Confirm Amount",
     "remark": "Remark",
     "inputExistOrderNo": "Please enter the existing {orderNoLabel} in the system",
-    "selectFeeMainType": "Please select fee main type",
+    "selectFeeBizType": "Please select fee business type",
     "pleaseSelect": "Please select",
     "inputAmountFormula": "Please enter amount calculation formula",
     "inputAmount": "Please enter amount",
@@ -635,6 +870,7 @@
     "confirm": "Confirm",
     "inputOrderNo": "Please enter order number",
     "inboundOrderNo": "Inbound Order No.",
+    "returnOrderNo": "Return Order No.",
     "outboundOrderNo": "Outbound Order No.",
     "storageRentOrderNo": "Storage Rent Order No.",
     "valueAddedOrderNo": "Value-added Order No.",
@@ -644,12 +880,34 @@
     "inbound": "Inbound",
     "outbound": "Outbound",
     "storageRent": "Storage Rent",
+    "return": "Return",
+    "other": "Other",
     "valueAdded": "Value-added",
     "fee": "Fee",
     "all": "All",
     "inboundFee": "Inbound Fee",
     "outboundFee": "Outbound Fee",
+    "returnFee": "Return Fee",
+    "otherFee": "Other Fee",
     "storageRentFee": "Storage Rent Fee",
     "valueAddedFee": "Value-added Fee"
+  },
+  "base_org_employee_list": {
+    "authorize": "Authorize",
+    "operationResult": "Operation Result",
+    "employeeNameUserCode": "Employee Name (User Code)",
+    "confirmLeave": "Change selected employees to resigned status?",
+    "reminder": "Reminder",
+    "resetPassword": "Reset Password",
+    "cancelOperation": "Cancelled",
+    "selectEmployee": "Please select an employee first!",
+    "selectLock": "Please select data to lock!",
+    "selectUnlock": "Please select data to unlock!",
+    "selectLeave": "Please select data to resign!",
+    "processing": "Processing...",
+    "operationComplete": "Operation completed!",
+    "saveSuccess": "Saved successfully",
+    "locked": "User locked",
+    "unlocked": "User unlocked"
   }
 }

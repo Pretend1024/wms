@@ -332,7 +332,7 @@ const handleSave = async () => {
         const feeTableDataLocal = feeTableRef.value.getTableData();
 
         const formatItemList = itemTableDataLocal.map(item => {
-            const attachments = item.attachments && Array.isArray(item.attachments) ? item.attachments : null;
+            const attachments = item.attachments && Array.isArray(item.attachments) && item.attachments.length > 0 ? item.attachments : null;
             return {
                 ...item,
                 serviceAttachment: attachments ? JSON.stringify(attachments) : null,

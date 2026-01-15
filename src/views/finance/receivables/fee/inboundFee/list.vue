@@ -1,9 +1,11 @@
 <template>
     <div class="viewArea">
+        <!-- 筛选区 -->
         <div class="filterDiv">
             <hydFilterBox :form-items="formConfig" :initial-value="initValues" @search="handleSearch"
                 @reset="handleReset">
                 <template #custom-form="{ formData }">
+                    <!-- 公司 -->
                     <el-col>
                         <el-form-item :label="getLabel('orgId')">
                             <el-cascader ref="cascaderRef" v-model="formData.orgId" :options="companyOptions"
@@ -11,6 +13,7 @@
                                 :placeholder="getPlaceholder('orgId')" />
                         </el-form-item>
                     </el-col>
+                    <!-- 仓库 -->
                     <el-col>
                         <el-form-item :label="getLabel('warehouseCode')">
                             <el-select v-model="formData.warehouseCode" :placeholder="getPlaceholder('warehouseCode')"
@@ -20,6 +23,7 @@
                             </el-select>
                         </el-form-item>
                     </el-col>
+                    <!-- 客户代码 -->
                     <el-col>
                         <el-form-item :label="getLabel('customerCode')">
                             <el-select v-model="formData.customerCode" filterable
@@ -30,6 +34,7 @@
                             </el-select>
                         </el-form-item>
                     </el-col>
+                    <!-- 计费项目 -->
                     <el-col>
                         <el-form-item :label="getLabel('feeSubTypeId')">
                             <el-select v-model="formData.feeSubTypeId" :placeholder="getPlaceholder('feeSubTypeId')"
@@ -39,6 +44,7 @@
                             </el-select>
                         </el-form-item>
                     </el-col>
+                    <!-- 币种 -->
                     <el-col>
                         <el-form-item :label="getLabel('currency')">
                             <el-select v-model="formData.currency" :placeholder="getPlaceholder('currency')" clearable>
@@ -47,6 +53,7 @@
                             </el-select>
                         </el-form-item>
                     </el-col>
+                    <!-- 费用状态 -->
                     <el-col>
                         <el-form-item :label="getLabel('statusId')">
                             <el-select v-model="formData.statusId" :placeholder="getPlaceholder('statusId')" clearable>
@@ -55,6 +62,7 @@
                             </el-select>
                         </el-form-item>
                     </el-col>
+                    <!-- 创建方式 -->
                     <el-col>
                         <el-form-item :label="getLabel('createWayId')">
                             <el-select v-model="formData.createWay" :placeholder="getPlaceholder('createWayId')"
@@ -64,18 +72,21 @@
                             </el-select>
                         </el-form-item>
                     </el-col>
+                    <!-- 入库单号 -->
                     <el-col>
                         <el-form-item :label="getLabel('orderNo')">
                             <canonicalInput v-model:listName="formData.orderNoList"
                                 :placeholder="getPlaceholder('orderNo')" clearable />
                         </el-form-item>
                     </el-col>
+                    <!-- 账单编号 -->
                     <el-col>
                         <el-form-item :label="getLabel('billNo')">
                             <el-input v-model.trim="formData.billNo" :placeholder="getPlaceholder('billNo')"
                                 clearable />
                         </el-form-item>
                     </el-col>
+                    <!-- 时间筛选 -->
                     <el-col>
                         <selectDate ref="dateSelectRef" :options="timeTypeOptions"
                             :initialDateRange="selectDateData.dateRange" @change="handleTimeChange"></selectDate>
@@ -84,6 +95,7 @@
             </hydFilterBox>
         </div>
 
+        <!-- 表格区 -->
         <div class="tableDiv">
             <hydTable :footer="footer" :tableData="tableData" :columns="columns" :pagination="pagination"
                 :enableSelection="true" :loading="loading" :pageSizes="[20, 50, 100, 200, 500]"
@@ -107,72 +119,88 @@
                                         <div class="currency-list">
                                             <div v-for="currencyItem in item.currencyAmounts"
                                                 :key="currencyItem.currency" class="currency-item">
-                                                <span class="currency-label">{{
-                                                    currencyItem.currency ? currencyItem.currency + '：' : '' }}</span>
+                                                <span class="currency-label">{{ currencyItem.currency ?
+                                                    currencyItem.currency + '：' : '' }}</span>
                                                 <span class="currency-amount">{{ currencyItem.totalFeeAmount ?
-                                                    currencyItem.totalFeeAmount.toFixed(3) : '暂无'
-                                                    }}</span>
+                                                    currencyItem.totalFeeAmount.toFixed(3) : '暂无' }}</span>
                                             </div>
                                         </div>
                                     </div>
                                     <div class="stat-empty" v-if="statData.length === 0">暂无统计数据</div>
                                 </div>
                             </div>
+                            <!-- 新增按钮 -->
                             <el-button type="primary" @click="handleAdd" v-permission="'receivableFree:add'"
-                                :icon="Plus">{{
-                                    getButtonText('add') }}</el-button>
+                                :icon="Plus">
+                                {{ getButtonText('add') }}
+                            </el-button>
+                            <!-- 删除按钮 -->
                             <el-button type="danger" @click="handleDel" v-permission="'receivableFree:delete'"
-                                :icon="Delete">{{
-                                    getButtonText('del') }}</el-button>
-                            <el-button type="success" @click="handleImport" :icon="Upload">{{
-                                getButtonText('importCreate')
-                            }}</el-button>
-                            <el-button type="success" @click="handleExport" :icon="Share">{{ getButtonText('export')
-                            }}</el-button>
-                            <el-button type="primary" @click="joinBillVisible = true" :icon="Money">{{
-                                getButtonText('joinBill')
-                            }}</el-button>
+                                :icon="Delete">
+                                {{ getButtonText('del') }}
+                            </el-button>
+                            <!-- 导入按钮 -->
+                            <el-button type="success" @click="handleImport" :icon="Upload">
+                                {{ getButtonText('importCreate') }}
+                            </el-button>
+                            <!-- 导出按钮 -->
+                            <el-button type="success" @click="handleExport" :icon="Share">
+                                {{ getButtonText('export') }}
+                            </el-button>
+                            <!-- 加入账单按钮 -->
+                            <el-button type="primary" @click="joinBillVisible = true" :icon="Money">
+                                {{ getButtonText('joinBill') }}
+                            </el-button>
                         </div>
                     </div>
                 </template>
+
+                <!-- 表格操作列 -->
                 <template #customBtn="{ row }">
                     <div style="display: flex;">
                         <div class="cursor-pointer" @click="(row.statusId == 10) && handleEdit(row)"
                             :class="{ 'btnDisable': !(row.statusId == 10) }">
                             <el-icon>
                                 <EditPen />
-                            </el-icon><span>{{ getButtonText('edit') }}</span>
+                            </el-icon>
+                            <span>{{ getButtonText('edit') }}</span>
                         </div>
                     </div>
                 </template>
+
+                <!-- 状态名称 -->
                 <template #statusName="{ row }">
                     <span
-                        :style="{ color: row.statusId == 10 ? '#E6A23C' : (row.statusId == 20 ? '#67C23A' : '#F56C6C') }">{{
-                            row.statusName }}</span>
+                        :style="{ color: row.statusId == 10 ? '#E6A23C' : (row.statusId == 20 ? '#67C23A' : '#F56C6C') }">
+                        {{ row.statusName }}
+                    </span>
                 </template>
+
+                <!-- 客户 -->
                 <template #customer="{ row }">
                     {{ row.customerCode }}({{ row.customerName }})
                 </template>
             </hydTable>
         </div>
 
-        <FeeDialog v-model="centerDialogVisible" :dialogMode="dialogMode" :feeMainTypeId="1" :initData="editInitData"
+        <!-- 费用弹窗 -->
+        <FeeDialog v-model="centerDialogVisible" :dialogMode="dialogMode" :feeBizTypeId="10" :initData="editInitData"
             :feeTypeOptions="feeTypeOptions" :currencyOptions="currencyOptions" :loading="dialogLoading"
             @confirm="handleDialogConfirm" />
+        <!-- 加入账单弹窗 -->
         <JoinBillDialog v-model="joinBillVisible" :selectionRows="selectionRows" :searchParams="initValues"
             @success="handleJoinSuccess" />
+        <!-- 导出弹窗 -->
         <exportDialog ref="exportDialogRef" :selectionRows="selectionRows" :initValues="initValues" :exportType="706">
         </exportDialog>
+        <!-- 操作结果弹窗 -->
         <batchOperationn :dialogTitle="'操作结果'" :isVisible="resultDialogVisible" :tableData="resultData"
             :nameField="'id'" :nameLabel="'单号'" @close="resultClose" :promptMessage="promptMessage" />
     </div>
 </template>
 
 <script setup name="入库费用">
-import { ref, shallowRef, onMounted, nextTick, toRefs } from 'vue';
-import { useRouter } from 'vue-router';
-import { Plus, Delete, EditPen, Share, Upload, Money } from '@element-plus/icons-vue';
-import { ElMessage, ElMessageBox } from 'element-plus';
+// 公共组件引入
 import canonicalInput from '@/components/table/canonicalInpt.vue';
 import hydFilterBox from "@/components/table/hyd-filterBox.vue";
 import hydTable from "@/components/table/hyd-table.vue";
@@ -180,21 +208,32 @@ import exportDialog from '@/components/print-export-importDialog/exportDialog.vu
 import batchOperationn from '@/components/messageNotices/batchOperation.vue';
 import JoinBillDialog from '../JoinBillDialog.vue';
 import FeeDialog from '../FeeDialog.vue';
+
+// 工具方法引入
 import { smartAlert, trimObjectStrings } from '@/utils/genericMethods.js';
 import { getButtonText, getLabel, getPlaceholder } from '@/utils/i18n/i18nLabels';
+
+// api引入
 import {
     getFeePageApi,
     addFeeApi,
     updFeeByIdApi,
     delFeeByIdApi,
     joinBillApi,
-    getFeeTypeEnumApi,
-    getFeeStatusCountApi, // 新增
-    getFeeStatAmountApi  // 新增
+    getFeeSubTypeEnumApi,
+    getFeeStatusCountApi,
+    getFeeStatAmountApi
 } from '@/api/financeApi/receivables.js';
 import { getCustomerLikeQueryApi } from '@/api/baseApi/sku.js';
 
+import { ref, shallowRef, onMounted, nextTick, toRefs, watch } from 'vue';
+import { useRouter } from 'vue-router';
+import { Plus, Delete, EditPen, Share, Upload, Money } from '@element-plus/icons-vue';
+import { ElMessage, ElMessageBox } from 'element-plus';
+
 const router = useRouter();
+
+// 父组件传参
 const props = defineProps({
     companyOptions: { type: Array, default: () => [] },
     warehouseOptions: { type: Array, default: () => [] },
@@ -204,6 +243,8 @@ const props = defineProps({
     currencyOptions: { type: Array, default: () => [] },
 });
 const { companyOptions, warehouseOptions, statusOptions, createWayOptions, currencyOptions } = toRefs(props);
+
+// 下拉选项数据
 const customerOptions = ref([]);
 const feeTypeOptions = ref([]);
 const cascaderRef = ref(null);
@@ -213,15 +254,25 @@ const parentProps = {
     emitPath: false,
 };
 
+// 搜索表单配置
 const formConfig = ref([]);
-// 初始化查询参数：feeMainTypeId 固定为 1 (入库)
 const initValues = ref({
-    orgId: '', warehouseCode: '', feeSubTypeId: '', statusId: '', createWay: '', orderNoList: [], billNoList: [], feeMainTypeId: 1, statusIdList: []
+    orgId: '',
+    warehouseCode: '',
+    feeSubTypeId: '',
+    statusId: '',
+    createWay: '',
+    orderNoList: [],
+    billNoList: [],
+    feeBizTypeId: 10,
+    statusIdList: []
 });
 
+// 时间选择相关
 const dateSelectRef = ref(null);
 const timeTypeOptions = ref([{ label: '单据创建时间', value: 10 }, { label: '费用创建时间', value: 20 }]);
-// 获取默认时间范围
+
+// 获取默认时间范围（当前时间前推30天）
 const getDefaultDateRange = () => {
     const end = new Date(); end.setHours(23, 59, 59, 999);
     const start = new Date(end); start.setDate(start.getDate() - 30); start.setHours(0, 0, 0, 0);
@@ -229,6 +280,8 @@ const getDefaultDateRange = () => {
     return [formatDate(start), formatDate(end)];
 };
 const selectDateData = ref({ dateType: 10, dateRange: getDefaultDateRange() });
+
+// 表格相关数据
 const loading = ref(false);
 const tableData = shallowRef([]);
 const footer = ref();
@@ -236,13 +289,13 @@ const selectionRows = ref([]);
 const orderBy = ref('');
 const pagination = ref({ currentPage: 1, pageSize: 100, total: 0 });
 
-// 新增：金额统计与状态栏相关变量
+// 金额统计相关
 const statData = ref([]);
 const statLoading = ref(false);
 const statusIdsList = ref([]);
 const statusIdsArr = ref([]);
 
-// 表格列定义
+// 表格列配置
 const columns = ref([
     { label: '公司', prop: 'orgName', width: '120', sortable: true, fixed: 'left' },
     { label: '仓库', prop: 'warehouseCode', width: '100', sortable: true, fixed: 'left' },
@@ -250,7 +303,7 @@ const columns = ref([
     { label: '账单编号', prop: 'billNo', width: '160' },
     { label: '入库单号', prop: 'orderNo', width: '160', sortable: true },
     { label: '入库日期', prop: 'orderCreatedTime', width: '200' },
-    { label: '费用小类', prop: 'feeSubTypeName', width: '120', sortable: true },
+    { label: '计费项目', prop: 'feeSubTypeName', width: '120', sortable: true },
     { label: '创建方式', prop: 'createWayName', width: '120', sortable: true },
     { label: '币种', prop: 'currency', width: '80', sortable: true },
     { label: '费用金额', prop: 'feeAmount', width: '100', align: 'right' },
@@ -271,9 +324,21 @@ const columns = ref([
     { label: '操作', prop: 'action', width: '100', fixed: 'right', slot: 'customBtn' }
 ]);
 
+// 弹窗相关数据
+const centerDialogVisible = ref(false);
+const dialogMode = ref('add');
+const editInitData = ref({});
+const dialogLoading = ref(false);
+const joinBillVisible = ref(false);
+const resultDialogVisible = ref(false);
+const resultData = ref([]);
+const promptMessage = ref('');
+const exportDialogRef = ref(null);
+
+// 时间组件变化事件
 const handleTimeChange = (data) => selectDateData.value = data;
 
-// 金额统计接口
+// 获取金额统计数据
 const getFeeStatAmount = async () => {
     statLoading.value = true;
     try {
@@ -287,7 +352,7 @@ const getFeeStatAmount = async () => {
     }
 };
 
-// 状态栏接口
+// 获取状态统计数据
 const getStatus = async () => {
     const data = { ...trimObjectStrings(initValues.value) };
     delete data.statusIdList;
@@ -296,7 +361,7 @@ const getStatus = async () => {
     statusIdsArr.value = [...initValues.value.statusIdList];
 };
 
-// 查询操作
+// 搜索事件
 const handleSearch = (data) => {
     initValues.value = {
         ...data,
@@ -304,23 +369,23 @@ const handleSearch = (data) => {
         timeBegin: selectDateData.value.dateRange ? selectDateData.value.dateRange[0] : '',
         timeEnd: selectDateData.value.dateRange ? selectDateData.value.dateRange[1] : '',
         statusIdList: statusIdsArr.value,
-        feeMainTypeId: 1
+        feeBizTypeId: 10
     };
     getList(1, pagination.value.pageSize);
     getStatus();
 };
 
-// 重置操作
+// 重置事件
 const handleReset = (data) => {
     selectDateData.value = { dateType: 10, dateRange: getDefaultDateRange() };
-    initValues.value = { ...data, orgId: '', dateType: 10, dateRange: getDefaultDateRange(), feeMainTypeId: 1, statusIdList: [] };
+    initValues.value = { ...data, orgId: '', dateType: 10, dateRange: getDefaultDateRange(), feeBizTypeId: 10, statusIdList: [] };
     statusIdsArr.value = [];
     handleCascaderChange();
     getList(1, pagination.value.pageSize);
     getStatus();
 };
 
-// 获取列表
+// 获取入库费用列表数据
 const getList = async (page, pageSize, orderByStr = orderBy.value) => {
     loading.value = true;
     try {
@@ -333,11 +398,14 @@ const getList = async (page, pageSize, orderByStr = orderBy.value) => {
     } catch (e) { console.error(e); tableData.value = []; } finally { loading.value = false; }
 };
 
+// 表格勾选事件
 const handleSelectionChange = (val) => selectionRows.value = val;
+// 分页切换事件
 const handlePageChange = ({ pageSize, currentPage }) => getList(currentPage, pageSize);
+// 表格排序事件
 const handleTableSort = (sort) => { orderBy.value = sort; getList(pagination.value.currentPage, pagination.value.pageSize); };
 
-// 状态改变事件
+// 状态筛选变更事件
 const handleStatusChange = async (e) => {
     let list = [...statusIdsArr.value];
     if (list.includes(null)) list = [];
@@ -345,44 +413,87 @@ const handleStatusChange = async (e) => {
     getList(1, pagination.value.pageSize);
 };
 
-// 弹窗逻辑
-const centerDialogVisible = ref(false); const dialogMode = ref('add'); const editInitData = ref({}); const dialogLoading = ref(false);
+// 新增弹窗打开
 const handleAdd = () => { editInitData.value = {}; dialogMode.value = 'add'; centerDialogVisible.value = true; };
-const handleEdit = (row) => { if (row.statusId != 10) return smartAlert('只能编辑未确认状态的费用', false); editInitData.value = JSON.parse(JSON.stringify(row)); dialogMode.value = 'upd'; centerDialogVisible.value = true; };
+
+// 编辑弹窗打开
+const handleEdit = (row) => {
+    if (row.statusId != 10) return smartAlert('只能编辑未确认状态的费用', false);
+    editInitData.value = JSON.parse(JSON.stringify(row));
+    dialogMode.value = 'upd';
+    centerDialogVisible.value = true;
+};
+
+// 弹窗确认提交
 const handleDialogConfirm = async (formData) => {
     dialogLoading.value = true;
     try {
-        let res = dialogMode.value === 'add' ? await addFeeApi({ ...formData }) : await updFeeByIdApi({ id: formData.id, confirmFeeAmount: formData.confirmFeeAmount, remark: formData.remark });
-        smartAlert(res.msg, res.success, 1000); if (res.success) { centerDialogVisible.value = false; getList(pagination.value.currentPage, pagination.value.pageSize); getStatus(); }
+        let res = dialogMode.value === 'add'
+            ? await addFeeApi({ ...formData })
+            : await updFeeByIdApi({ id: formData.id, confirmFeeAmount: formData.confirmFeeAmount, remark: formData.remark });
+        smartAlert(res.msg, res.success, 1000);
+        if (res.success) {
+            centerDialogVisible.value = false;
+            getList(pagination.value.currentPage, pagination.value.pageSize);
+            getStatus();
+        }
     } catch (e) { console.error(e); } finally { dialogLoading.value = false; }
 };
 
-// 批量删除
-const resultDialogVisible = ref(false); const resultData = ref([]); const promptMessage = ref('');
+// 批量删除操作
 const handleDel = () => {
     if (selectionRows.value.length === 0) return ElMessage.warning('请选择要删除的数据！');
-    ElMessageBox.confirm(`是否要删除${selectionRows.value.length}条数据?`, '提醒', { confirmButtonText: '确定', cancelButtonText: '取消', type: 'warning' }).then(async () => {
-        loading.value = true; resultData.value = []; resultDialogVisible.value = true; promptMessage.value = '操作中...';
-        for (const row of selectionRows.value) { const res = await delFeeByIdApi({ id: row.id }); resultData.value.push({ id: `${row.orderNo} `, msg: res.msg, success: res.success }); }
-        promptMessage.value = '操作完成'; loading.value = false;
-    }).catch(() => { });
+    ElMessageBox.confirm(`是否要删除${selectionRows.value.length}条数据?`, '提醒', { confirmButtonText: '确定', cancelButtonText: '取消', type: 'warning' })
+        .then(async () => {
+            loading.value = true;
+            resultData.value = [];
+            resultDialogVisible.value = true;
+            promptMessage.value = '操作中...';
+            for (const row of selectionRows.value) {
+                const res = await delFeeByIdApi({ id: row.id });
+                resultData.value.push({ id: `${row.orderNo} `, msg: res.msg, success: res.success });
+            }
+            promptMessage.value = '操作完成';
+            loading.value = false;
+        }).catch(() => { });
 };
+
+// 关闭操作结果弹窗
 const resultClose = () => { resultDialogVisible.value = false; getList(pagination.value.currentPage, pagination.value.pageSize); getStatus(); };
 
-// 加入账单逻辑
-const joinBillVisible = ref(false);
+// 加入账单成功回调
 const handleJoinSuccess = async () => {
     getList(pagination.value.currentPage, pagination.value.pageSize);
     getStatus();
 };
-const handleImport = () => router.push({ name: '导入文件', params: { typeId: 701, typeName: '入库单应收费用' } });
-const exportDialogRef = ref(null); const handleExport = () => exportDialogRef.value.openExportDialog();
-const handleCascaderChange = async (e) => { if (e) nextTick(() => cascaderRef.value.togglePopperVisible()); const result = await getCustomerLikeQueryApi({ keyword: '*', orgId: e }); customerOptions.value = result.data.map(item => ({ value: item.code, label: `${item.code}(${item.name})` })); };
 
-// 初始化
+// 导入按钮跳转
+const handleImport = () => router.push({ name: '导入文件', params: { typeId: 701, typeName: '入库单应收费用' } });
+// 导出按钮打开弹窗
+const handleExport = () => exportDialogRef.value.openExportDialog();
+
+// 公司联动客户列表
+const handleCascaderChange = async (e) => {
+    if (e) nextTick(() => cascaderRef.value.togglePopperVisible());
+    const result = await getCustomerLikeQueryApi({ keyword: '*', orgId: e });
+    customerOptions.value = result.data.map(item => ({ value: item.code, label: `${item.code}(${item.name})` }));
+};
+
+// 初始化客户列表监听
+const stopWatch = watch(
+    () => props.initialCustomerOptions,
+    (newVal) => {
+        if (newVal && newVal.length > 0) {
+            customerOptions.value = newVal;
+            stopWatch();
+        }
+    },
+    { immediate: true }
+);
+
+// 页面初始化
 onMounted(async () => {
-    customerOptions.value = props.initialCustomerOptions;
-    const feeTypeRes = await getFeeTypeEnumApi({ mainTypeId: 1 });
+    const feeTypeRes = await getFeeSubTypeEnumApi({ feeBizTypeId: 10 });
     feeTypeOptions.value = feeTypeRes.data.map(i => ({ label: i.name, value: i.id }));
     getStatus();
 });
@@ -403,7 +514,6 @@ onMounted(async () => {
     width: 45px;
 }
 
-// 金额统计区域样式
 .amount-statistic-container {
     height: 32px;
     display: flex;

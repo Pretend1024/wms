@@ -96,12 +96,12 @@ export const updFeeByIdApi = (data) => {
 }
 // 删除费用
 export const delFeeByIdApi = createPostRequestWithQuery('/finance/receivables/receivableFee/deleteById')
-// 费用大类型
-export const getFeeMainTypeEnumApi = () => {
-    return http.post('/finance/receivables/receivableFee/feeMainTypeEnum')
+// 费用单据类型
+export const getFeeBizTypeEnumApi = () => {
+    return http.post('product/price/priceItem/feeBizTypeEnum')
 }
-// 费用小类型
-export const getFeeTypeEnumApi = createPostRequestWithQuery('/finance/receivables/receivableFee/feeSubTypeEnum')
+// 费用计费项目
+export const getFeeSubTypeEnumApi = createPostRequestWithQuery('product/price/priceItem/feeSubTypeEnum')
 
 // 费用状态
 export const getFeeStatusEnumApi = () => {

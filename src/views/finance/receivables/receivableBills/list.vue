@@ -61,10 +61,6 @@
                             <el-button type="primary" @click="handleAdd" v-permission="'customerBill:add'"
                                 :icon="Plus">{{
                                     getButtonText('add') }}</el-button>
-                            <el-button type="success" @click="handleConfirm" v-permission="'customerBill:confirm'"
-                                :icon="Check">{{
-                                    getButtonText('confirm') }}</el-button>
-                            <el-button type="danger" @click="handleCancelConfirm" :icon="Close">取消确认</el-button>
                             <el-button type="warning" @click="handleWriteOff" v-permission="'customerBill:writeOffBill'"
                                 :icon="Wallet">{{
                                     getButtonText('writeOff') }}</el-button>
@@ -366,31 +362,6 @@ const handleWriteOffSuccess = () => {
     getStatus();
 };
 
-// 确认
-const handleConfirm = () => {
-    if (selectionRows.value.length === 0) {
-        ElMessage.warning('请选择要确定的数据！');
-        return;
-    }
-    ElMessageBox.confirm(
-        `是否要确认${selectionRows.value.length}条数据?`, '提醒', { confirmButtonText: '确定', cancelButtonText: '取消', type: 'warning' }
-    ).then(async () => {
-        loading.value = true;
-        delDialogVisible.value = true;
-        delData.value = [];
-        promptMessage.value = '操作中...'
-        for (let i = 0; i < selectionRows.value.length; i++) {
-            const res = await confirmBillByIdApi({ id: selectionRows.value[i].id });
-            delData.value.push({
-                id: selectionRows.value[i].billNo,
-                msg: res.msg,
-                success: res.success
-            });
-        }
-        promptMessage.value = '操作完成！'
-        getStatus();
-    }).catch(() => { });
-};
 // 导出
 const exportDialogRef = ref(null)
 const handleExport = async () => {
@@ -478,30 +449,7 @@ const handleDel = () => {
     }).catch(() => { });
 };
 
-const handleCancelConfirm = () => {
-    if (selectionRows.value.length === 0) {
-        ElMessage.warning('请选择要取消的数据！');
-        return;
-    }
-    ElMessageBox.confirm(
-        `是否要取消${selectionRows.value.length}条数据?`, '提醒', { confirmButtonText: '确定', cancelButtonText: '取消', type: 'warning' }
-    ).then(async () => {
-        loading.value = true;
-        delDialogVisible.value = true;
-        delData.value = [];
-        promptMessage.value = '操作中...'
-        for (let i = 0; i < selectionRows.value.length; i++) {
-            const res = await cancelConfirmBillByIdApi({ id: selectionRows.value[i].id });
-            delData.value.push({
-                id: selectionRows.value[i].billNo,
-                msg: res.msg,
-                success: res.success
-            });
-        }
-        promptMessage.value = '操作完成！'
-        getStatus();
-    }).catch(() => { });
-};
+
 const handleCancelWrite = () => {
     if (selectionRows.value.length === 0) {
         ElMessage.warning('请选择要取消的数据！');

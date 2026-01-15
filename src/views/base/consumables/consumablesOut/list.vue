@@ -30,13 +30,6 @@
                             </canonicalInput>
                         </el-form-item>
                     </el-col>
-                    <!-- <el-col>
-                        <el-form-item :label="getLabel('trackingNoList')">
-                            <canonicalInput v-model:listName="formData.trackingNoList"
-                                :placeholder="getPlaceholder('trackingNoList')" clearable>
-                            </canonicalInput>
-                        </el-form-item>
-                    </el-col> -->
                 </template>
             </hydFilterBox>
         </div>
@@ -45,38 +38,28 @@
                 :enableSelection="true" :loading="loading" :pageSizes="[20, 50, 100, 200, 500]"
                 @selection-change="handleSelectionChange" @row-click="handleRowClick" @page-change="handlePageChange"
                 @sort-change="handleTableSort">
-                <!-- 在表格上方通过 slot 插入按钮 -->
                 <template #table-buttons>
-                    <el-button type="primary" @click="handleAdd" v-permission="'add'" :icon="Plus">{{ getButtonText('outbound')
-                        }}</el-button>
-                    <el-button type="success" @click="handleExport" :icon="Share">{{ getButtonText('export')
-                        }}</el-button>
-                </template>
-                <!-- 使用插槽来自定义列内容，假如我们需要在操作列中添加按钮 -->
-                <template #customBtn="{ row, column, index }">
-                    <div style="display: flex;">
-                        <div class="cursor-pointer" @click="handleEdit(row)">
-                            <el-icon>
-                                <EditPen />
-                            </el-icon>
-                            <span>{{ getButtonText('edit') }}</span>
-                        </div>
-                    </div>
+                    <el-button type="primary" @click="handleAdd" v-permission="'add'" :icon="Plus">
+                        {{ getButtonText('outbound') }}
+                    </el-button>
+                    <el-button type="success" @click="handleExport" v-permission="'export'" :icon="Share">
+                        {{ getButtonText('export') }}
+                    </el-button>
                 </template>
                 <template #customer="{ row }">
-                    {{ row.customerCode }}({{ row.customerName ? row.customerName : '无' }})
+                    {{ row.customerCode }}({{ row.customerName ? row.customerName :
+                        t('base_consumables_consumablesOut_list.none') }})
                 </template>
                 <template #consumablesCode="{ row }">
                     {{ row.consumablesCode }}({{ row.consumablesName }})
                 </template>
                 <template #isPublic="{ row }">
-                    <span :style="{ color: row.isPublic ? 'green' : 'red' }">{{ row.isPublic ? '是' : '否' }}</span>
+                    <span :style="{ color: row.isPublic ? 'green' : 'red' }">{{ row.isPublic ? t('yes') : t('no')
+                    }}</span>
                 </template>
             </hydTable>
         </div>
-        <!-- 弹窗 -->
         <el-dialog v-model="centerDialogVisible" :title="dialogTitle" width="700" align-center destroy-on-close>
-            <!-- 动态加载新增或编辑的表单组件 -->
             <component :is="currentForm" ref="childFormRef" :formData="addData" :warehouseOptions="warehouseOptions" />
             <template #footer>
                 <div class="dialog-footer">
@@ -85,36 +68,55 @@
                 </div>
             </template>
         </el-dialog>
-        <!-- 导出弹窗 -->
         <exportDialog ref="exportDialogRef" :selectionRows="selectionRows" :initValues="initValues" :exportType="105">
         </exportDialog>
     </div>
 </template>
+
 <script setup name="耗材出库">
-import { Printer, Share, Plus } from '@element-plus/icons-vue'
-import { smartAlert, trimObjectStrings } from '@/utils/genericMethods.js'
-import { getBasicConsumablesInventoryOutListApi, addBasicConsumablesInventoryOutApi, updBasicConsumablesInventoryApi, getBasicConsumablesListEnumApi } from '@/api/baseApi/consumables.js'
-import { getWhWarehouseApi } from '@/api/baseApi/wh.js'
-import { getCustomerLikeQueryApi } from '@/api/baseApi/sku.js'
+/* 1. 引入 */
+// 1.1 Vue核心及插件
+import { ref, computed, shallowRef, onMounted } from 'vue';
+import { useI18n } from 'vue-i18n';
+import { Share, Plus, EditPen } from '@element-plus/icons-vue';
+
+// 1.2 组件引入
 import hydFilterBox from "@/components/table/hyd-filterBox.vue";
 import hydTable from "@/components/table/hyd-table.vue";
 import AddForm from './add.vue';
 import canonicalInput from '@/components/table/canonicalInpt.vue';
-import { useI18n } from 'vue-i18n';
+import exportDialog from '@/components/print-export-importDialog/exportDialog.vue';
+
+// 1.3 API引入
+import {
+    getBasicConsumablesInventoryOutListApi,
+    addBasicConsumablesInventoryOutApi,
+    updBasicConsumablesInventoryApi,
+    getBasicConsumablesListEnumApi
+} from '@/api/baseApi/consumables.js';
+import { getWhWarehouseApi } from '@/api/baseApi/wh.js';
+import { getCustomerLikeQueryApi } from '@/api/baseApi/sku.js';
+
+// 1.4 工具类引入
+import { smartAlert, trimObjectStrings } from '@/utils/genericMethods.js';
+
+
+/* 2. 全局变量与状态 */
 const { t } = useI18n();
-// 搜索表单配置项------------------------------------------------
-// 配置表单项，使用所有支持的类型
+const loading = ref(true);
+
+// 搜索表单配置
 const formConfig = ref([
     { type: 'select', label: '耗材类型', prop: 'consumablesCodes', options: [] },
     {
         type: 'select', label: '是否公用', prop: 'isPublic', options: [
-            { label: '是', value: true },
-            { label: '否', value: false }
+            { label: t('yes'), value: true },
+            { label: t('no'), value: false }
         ]
     },
     { type: 'date', label: '创建时间', prop: 'createdTimeBegin', offsetDays: 30, useEndOfDay: false },
     { type: 'date', label: '截至时间', prop: 'createdTimeEnd', useEndOfDay: true },
-])
+]);
 
 // 初始化表单数据
 const initValues = ref({
@@ -124,35 +126,41 @@ const initValues = ref({
     createdTimeBegin: '',
     createdTimeEnd: '',
     outOrderNoList: [],
-    // trackingNoList: []
-})
+});
 
-// 搜索事件
-const handleSearch = (data) => {
-    loading.value = true;
-    initValues.value = {
-        ...data,
-    }
-    getList(pagination.value.currentPage, pagination.value.pageSize, orderBy.value)
-}
-// 重置事件
-const handleReset = (data) => {
-    loading.value = true;
-    initValues.value = {
-        ...data,
-    }
-    getList(pagination.value.currentPage, pagination.value.pageSize, orderBy.value)
-}
-// 表格数据--------------------------------------
-const tableData = shallowRef([])
-// 底部信息
-const footer = ref({})
-// 表格列配置
+// 下拉选项数据
+const warehouseOptions = ref([]);
+const customerOptions = ref([]);
+
+// 表格数据与分页
+const tableData = shallowRef([]);
+const footer = ref({});
+const pagination = ref({
+    currentPage: 1,
+    pageSize: 100,
+    total: 99
+});
+const orderBy = ref('');
+
+// 选中数据
+const selection = ref({});
+const selectionRows = ref([]);
+
+// 弹窗状态
+const centerDialogVisible = ref(false);
+const dialogMode = ref('add'); // 'add' | 'upd'
+const childFormRef = ref(null);
+const addData = ref({});
+
+// 导出与打印
+const exportDialogRef = ref(null);
+
+/* 3. 计算属性 */
+// 表格列定义
 const columns = ref([
     { label: '仓库代码', prop: 'warehouseCode', width: '135', sortable: true, fixed: 'left' },
     { label: '客户', prop: 'customerName', width: '200', slot: 'customer', fixed: 'left' },
     { label: '出库单号', prop: 'outOrderNo', width: '150', sortable: true, fixed: 'left' },
-    // { label: '跟踪单号', prop: 'trackingNo', width: '150', sortable: true, fixed: 'left' },
     { label: '耗材条码', prop: 'consumablesBarcode', width: '190', sortable: true },
     { label: '耗材类型', prop: 'consumablesCode', width: '200', sortable: true, slot: 'consumablesCode' },
     { label: '是否公用', prop: 'isPublic', width: '135', slot: 'isPublic' },
@@ -164,58 +172,48 @@ const columns = ref([
     { label: '创建人', prop: 'createdBy', width: '110' },
     { label: '更新时间', prop: 'updatedTime', width: '200', sortable: true },
     { label: '更新人', prop: 'updatedBy', width: '120' },
-])
+]);
 
-const pagination = ref({
-    currentPage: 1,
-    pageSize: 100,
-    total: 99
-})
+// 弹窗标题
+const dialogTitle = computed(() => t(`base_consumables_consumablesOut_list.${dialogMode.value}Title`));
+// 当前表单组件
+const currentForm = computed(() => dialogMode.value === 'add' ? AddForm : UpdForm); // 这里 UpdForm 可能需要从外部引入或根据实际情况调整
 
-const loading = ref(true)
+/* 4. 业务逻辑 (CRUD) */
 
-// 事件回调
-const handleSelectionChange = (selection) => {
-    selectionRows.value = selection
-    console.log('选中的数据：', selectionRows.value)
-}
-
-const handleRowClick = (row) => {
-    console.log('点击的行数据：', row)
-    selection.value = row
-}
-
-const handlePageChange = ({ pageSize, currentPage }) => {
-    loading.value = true
-    console.log('分页变化：', pageSize, currentPage)
-    pagination.value.pageSize = pageSize
-    pagination.value.currentPage = currentPage
-    getList(pagination.value.currentPage, pagination.value.pageSize, orderBy.value)
-}
-// 排序条件
-const orderBy = ref('')
-// 点击表格排序
-const handleTableSort = (sortString) => {
-    console.log('排序条件返回:', sortString)
-    orderBy.value = sortString
-    getList(pagination.value.currentPage, pagination.value.pageSize, orderBy.value)
-}
-// 编辑
-const handleEdit = (row) => {
-    console.log('编辑：', row);
-    // 将当前行数据填充到表单数据中
-    addData.value = {
-        ...row,
+// 获取列表数据
+const getList = async (currentPage, pageSize, orderBy) => {
+    const res = await getBasicConsumablesInventoryOutListApi({
+        page: currentPage,
+        pageSize: pageSize,
+        orderBy,
+        ...trimObjectStrings(initValues.value)
+    });
+    tableData.value = Object.freeze(res.data.rows);
+    footer.value = res.data.footer[0];
+    loading.value = false;
+    pagination.value = {
+        currentPage: res.data.page,
+        pageSize: pageSize,
+        total: res.data.total
     };
-    dialogMode.value = 'upd';
-    centerDialogVisible.value = true;
-}
-// 选择的行数据
-const selection = ref({})
-// 多选的行数据
-const selectionRows = ref([])
+};
 
-// 添加
+// 搜索
+const handleSearch = (data) => {
+    loading.value = true;
+    initValues.value = { ...data };
+    getList(pagination.value.currentPage, pagination.value.pageSize, orderBy.value);
+};
+
+// 重置
+const handleReset = (data) => {
+    loading.value = true;
+    initValues.value = { ...data };
+    getList(pagination.value.currentPage, pagination.value.pageSize, orderBy.value);
+};
+
+// 新增
 const handleAdd = async () => {
     addData.value = {
         id: null,
@@ -227,22 +225,14 @@ const handleAdd = async () => {
     };
     dialogMode.value = 'add';
     centerDialogVisible.value = true;
-}
-// 弹窗相关
-const centerDialogVisible = ref(false);
-const addData = ref({});
-const childFormRef = ref(null);
-// 使用 dialogMode 区分新增与编辑
-const dialogMode = ref('add'); // 'add' 或 'upd'
-const dialogTitle = computed(() => t(`base_consumables_consumablesOut_list.${dialogMode.value}Title`)); // 可根据模式调整标题
-const currentForm = computed(() => dialogMode.value === 'add' ? AddForm : UpdForm);
+};
 
 // 导出
-const exportDialogRef = ref(null)
 const handleExport = async () => {
-    exportDialogRef.value.openExportDialog()
-}
-// 弹窗确定按钮，调用子组件的表单校验及提交
+    exportDialogRef.value.openExportDialog();
+};
+
+// 弹窗确认
 const handleDialogConfirm = async () => {
     if (!childFormRef.value) return;
     try {
@@ -251,67 +241,78 @@ const handleDialogConfirm = async () => {
         let res;
         if (addData.value.id) {
             res = await updBasicConsumablesInventoryApi(addData.value);
-            console.log('修改数据:', res);
         } else {
             res = await addBasicConsumablesInventoryOutApi(addData.value);
         }
+        smartAlert(res.msg, res.success, 1000);
         if (res.success) {
             centerDialogVisible.value = false;
             getList(pagination.value.currentPage, pagination.value.pageSize, orderBy.value);
         }
-        smartAlert(res.msg, res.success, 1000)
         loading.value = false;
     } catch (error) {
         console.error('表单验证失败:', error);
     }
 };
-// 弹窗取消按钮
+
+/* 5. 辅助方法 */
+
+// 表格选中
+const handleSelectionChange = (selection) => {
+    selectionRows.value = selection;
+};
+
+// 行点击
+const handleRowClick = (row) => {
+    selection.value = row;
+};
+
+// 分页变化
+const handlePageChange = ({ pageSize, currentPage }) => {
+    loading.value = true;
+    pagination.value.pageSize = pageSize;
+    pagination.value.currentPage = currentPage;
+    getList(pagination.value.currentPage, pagination.value.pageSize, orderBy.value);
+};
+
+// 排序变化
+const handleTableSort = (sortString) => {
+    orderBy.value = sortString;
+    getList(pagination.value.currentPage, pagination.value.pageSize, orderBy.value);
+};
+
+// 弹窗取消
 const handleDialogCancel = () => {
     centerDialogVisible.value = false;
 };
 
-// 获取列表
-const getList = async (currentPage, pageSize, orderBy) => {
-    const res = await getBasicConsumablesInventoryOutListApi({
-        page: currentPage,
-        pageSize: pageSize,
-        orderBy,
-        ...trimObjectStrings(initValues.value)
-    })
-    tableData.value = Object.freeze(res.data.rows)
-    footer.value = res.data.footer[0]
-    loading.value = false
-    pagination.value = {
-        currentPage: res.data.page,
-        pageSize: pageSize,
-        total: res.data.total
-    }
-}
-// 仓库下拉框数据
-const warehouseOptions = ref([])
-// 筛选客户代码
-const customerOptions = ref([]);
-
+/* 6. 生命周期 */
 onMounted(async () => {
+    // 使用 Promise.all 并发请求
+    const [warehouseRes, consumablesRes, customerRes] = await Promise.all([
+        getWhWarehouseApi(),
+        getBasicConsumablesListEnumApi(),
+        getCustomerLikeQueryApi({ keyword: '*' })
+    ]);
+
     // 仓库数据
-    const warehouseRes = await getWhWarehouseApi()
     warehouseOptions.value = warehouseRes.data.map(item => ({
         label: item.code + '(' + item.name + ')',
         value: item.code
-    }))
-    // 耗材类型
-    const consumablesOptionsRes = await getBasicConsumablesListEnumApi();
-    formConfig.value[0].options = consumablesOptionsRes.data.map(item => ({
+    }));
+
+    // 耗材类型数据
+    formConfig.value[0].options = consumablesRes.data.map(item => ({
         value: item.code,
         label: item.name + '(' + item.code + ')'
     }));
-    const result = await getCustomerLikeQueryApi({ keyword: '*' });
-    customerOptions.value = result.data.map(item => ({
+
+    // 客户数据
+    customerOptions.value = customerRes.data.map(item => ({
         value: item.code,
         label: item.code + '(' + item.name + ')'
-    }))
-})
-
+    }));
+});
 </script>
 
 <style scoped lang="scss">

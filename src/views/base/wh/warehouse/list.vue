@@ -9,16 +9,14 @@
             <hydTable :tableData="tableData" :columns="columns" :pagination="pagination" :enableSelection="true"
                 :loading="loading" :pageSizes="[20, 50, 100, 200, 500]" @selection-change="handleSelectionChange"
                 @row-click="handleRowClick" @page-change="handlePageChange" @sort-change="handleTableSort">
-                <!-- 表格上方按钮 -->
                 <template #table-buttons>
                     <el-button type="primary" @click="handleAdd" v-permission="'add'" :icon="Plus">
                         {{ getButtonText('add') }}
                     </el-button>
                 </template>
-                <!-- 操作列按钮 -->
                 <template #customBtn="{ row }">
                     <div style="display: flex;">
-                        <div class="cursor-pointer" @click="handleEdit(row)">
+                        <div class="cursor-pointer" @click="handleEdit(row)" v-permission="'edit'">
                             <el-icon>
                                 <EditPen />
                             </el-icon>
@@ -33,23 +31,21 @@
                     <span>{{ row.name }}</span>
                 </template>
                 <template #isDanger="{ row }">
-                    <el-tag v-if="row.isDanger" type="danger">是</el-tag>
-                    <el-tag v-else type="success">否</el-tag>
+                    <el-tag v-if="row.isDanger" type="danger">{{ t('yes') }}</el-tag>
+                    <el-tag v-else type="success">{{ t('no') }}</el-tag>
                 </template>
                 <template #statusName="{ row }">
                     <span :style="{ color: row.statusId == 10 ? 'green' : 'red' }">{{ row.statusName }}</span>
                 </template>
             </hydTable>
         </div>
-        <!-- 弹窗 -->
         <el-dialog v-model="centerDialogVisible" :title="dialogTitle" width="700" align-center destroy-on-close>
-            <!-- 动态加载新增或编辑的表单组件 -->
             <component :is="currentForm" ref="childFormRef" :formData="addData"
                 :warehouseTypeEnumOptions="warehouseTypeEnumOptions"
                 :warehouseStatusEnumOptions="warehouseStatusEnumOptions" />
             <template #footer>
                 <div class="dialog-footer">
-                    <el-button @click="handleDialogCancel"> 取消</el-button>
+                    <el-button @click="handleDialogCancel">{{ getButtonText('cancel') }}</el-button>
                     <el-button type="primary" @click="handleDialogConfirm">{{ getButtonText('confirm') }}</el-button>
                 </div>
             </template>
@@ -58,16 +54,36 @@
 </template>
 
 <script setup name='仓库'>
-import { Plus } from "@element-plus/icons-vue";
+/* 1. 引入 */
+// 1.1 Vue核心及插件
+import { ref, computed, onMounted, shallowRef } from 'vue';
+import { useI18n } from 'vue-i18n';
+import { Plus, EditPen } from "@element-plus/icons-vue";
+
+// 1.2 组件引入
 import hydTable from "@/components/table/hyd-table.vue";
 import hydFilterBox from "@/components/table/hyd-filterBox.vue";
 import AddForm from './add.vue';
 import UpdForm from './upd.vue';
-import { smartAlert, trimObjectStrings } from '@/utils/genericMethods.js'
-import { getWhWarehouseListApi, getWhWarehouseTypeEnumApi, getWhWarehouseStatusEnumApi, addWhWarehouseApi, updWhWarehouseApi } from '@/api/baseApi/wh.js'
-import { useI18n } from 'vue-i18n';
+
+// 1.3 API引入
+import {
+    getWhWarehouseListApi,
+    getWhWarehouseTypeEnumApi,
+    getWhWarehouseStatusEnumApi,
+    addWhWarehouseApi,
+    updWhWarehouseApi
+} from '@/api/baseApi/wh.js';
+
+// 1.4 工具类引入
+import { smartAlert, trimObjectStrings } from '@/utils/genericMethods.js';
+import { getButtonText } from '@/utils/i18n/i18nLabels.js';
+
+/* 2. 全局变量与状态 */
 const { t } = useI18n();
-// 搜索表单配置项------------------------------------------------
+const loading = ref(true);
+
+// 搜索表单配置
 const formConfig = ref([
     { type: 'select', label: '类型', prop: 'typeId', options: [] },
     { type: 'select', label: '状态', prop: 'statusId', options: [] },
@@ -79,25 +95,9 @@ const initValues = ref({
     statusId: ''
 });
 
-// 搜索事件
-const handleSearch = (data) => {
-    loading.value = true;
-    initValues.value = {
-        ...data
-    };
-    getList(pagination.value.currentPage, pagination.value.pageSize, orderBy.value);
-};
-
-// 重置事件
-const handleReset = (data) => {
-    loading.value = true;
-    initValues.value = {
-        ...data,
-    };
-    getList(pagination.value.currentPage, pagination.value.pageSize, orderBy.value);
-};
 // 表格数据与列配置
 const tableData = shallowRef([]);
+// Columns
 const columns = ref([
     { label: '仓库代码', prop: 'code', width: '180', fixed: 'left', sortable: true },
     { label: '仓库名称', prop: 'name', width: '190', fixed: 'left', sortable: true },
@@ -123,41 +123,22 @@ const columns = ref([
     { label: '更新时间', prop: 'updatedTime', width: '200', sortable: true },
     { label: '操作', prop: 'action', width: '105', fixed: 'right', slot: 'customBtn' }
 ]);
+
 const pagination = ref({
     currentPage: 1,
     pageSize: 100,
     total: 99
 });
-const loading = ref(true);
-
-// 选择及排序数据
-const selection = ref({});
-const selectionRows = ref([]);
 const orderBy = ref('');
 
-// 表格事件方法
-const handleSelectionChange = (selectionList) => {
-    selectionRows.value = selectionList;
-    console.log('选中的数据：', selectionRows.value);
-};
-const handleRowClick = (row) => {
-    console.log('点击的行数据：', row);
-    selection.value = row;
-};
-const handlePageChange = ({ pageSize, currentPage }) => {
-    loading.value = true
-    pagination.value.pageSize = pageSize;
-    pagination.value.currentPage = currentPage;
-    getList(pagination.value.currentPage, pagination.value.pageSize, orderBy.value);
-};
-const handleTableSort = (sortString) => {
-    console.log('排序条件返回:', sortString);
-    orderBy.value = sortString;
-    getList(pagination.value.currentPage, pagination.value.pageSize, orderBy.value);
-};
+// 选中数据
+const selection = ref({});
+const selectionRows = ref([]);
 
-// 弹窗相关
+// 弹窗状态
 const centerDialogVisible = ref(false);
+const dialogMode = ref('add'); // 'add' | 'upd'
+const childFormRef = ref(null);
 const addData = ref({
     id: null,
     typeId: '',
@@ -178,13 +159,50 @@ const addData = ref({
     statusId: '',
     isDanger: null
 });
-const childFormRef = ref(null);
-// 使用 dialogMode 区分新增与编辑
-const dialogMode = ref('add'); // 'add' 或 'upd'
-const dialogTitle = computed(() => t(`base_wh_warehouse_list.${dialogMode.value}Title`)); // 可根据模式调整标题
+
+// 枚举数据
+const warehouseTypeEnumOptions = ref([]);
+const warehouseStatusEnumOptions = ref([]);
+
+// 弹窗标题
+const dialogTitle = computed(() => t(`base_wh_warehouse_list.${dialogMode.value}Title`));
+// 当前表单组件
 const currentForm = computed(() => dialogMode.value === 'add' ? AddForm : UpdForm);
 
-// 新增按钮
+/* 4. 业务逻辑 (CRUD) */
+
+// 获取列表数据
+const getList = async (currentPage, pageSize, orderBy) => {
+    const res = await getWhWarehouseListApi({
+        page: currentPage,
+        pageSize: pageSize,
+        orderBy,
+        ...trimObjectStrings(initValues.value)
+    });
+    tableData.value = Object.freeze(res.data.rows);
+    loading.value = false;
+    pagination.value = {
+        currentPage: res.data.page,
+        pageSize: pageSize,
+        total: res.data.total
+    };
+};
+
+// 搜索
+const handleSearch = (data) => {
+    loading.value = true;
+    initValues.value = { ...data };
+    getList(pagination.value.currentPage, pagination.value.pageSize, orderBy.value);
+};
+
+// 重置
+const handleReset = (data) => {
+    loading.value = true;
+    initValues.value = { ...data };
+    getList(pagination.value.currentPage, pagination.value.pageSize, orderBy.value);
+};
+
+// 新增
 const handleAdd = () => {
     addData.value = {
         id: null,
@@ -210,16 +228,14 @@ const handleAdd = () => {
     centerDialogVisible.value = true;
 };
 
-// 编辑按钮
+// 编辑
 const handleEdit = async (row) => {
-    addData.value = {
-        ...row,
-    };
+    addData.value = { ...row };
     dialogMode.value = 'upd';
     centerDialogVisible.value = true;
 };
 
-// 弹窗确定按钮，调用子组件的表单校验及提交
+// 弹窗确认
 const handleDialogConfirm = async () => {
     if (!childFormRef.value) return;
     try {
@@ -241,42 +257,58 @@ const handleDialogConfirm = async () => {
         console.error('表单验证失败:', error);
     }
 };
-// 弹窗取消按钮
+
+/* 5. 辅助方法 */
+
+// 表格选中
+const handleSelectionChange = (selectionList) => {
+    selectionRows.value = selectionList;
+    console.log('选中的数据：', selectionRows.value);
+};
+
+// 行点击
+const handleRowClick = (row) => {
+    console.log('点击的行数据：', row);
+    selection.value = row;
+};
+
+// 分页变化
+const handlePageChange = ({ pageSize, currentPage }) => {
+    loading.value = true;
+    pagination.value.pageSize = pageSize;
+    pagination.value.currentPage = currentPage;
+    getList(pagination.value.currentPage, pagination.value.pageSize, orderBy.value);
+};
+
+// 排序变化
+const handleTableSort = (sortString) => {
+    console.log('排序条件返回:', sortString);
+    orderBy.value = sortString;
+    getList(pagination.value.currentPage, pagination.value.pageSize, orderBy.value);
+};
+
+// 弹窗取消
 const handleDialogCancel = () => {
     centerDialogVisible.value = false;
 };
 
-// 获取列表数据
-const getList = async (currentPage, pageSize, orderBy) => {
-    const res = await getWhWarehouseListApi({
-        page: currentPage,
-        pageSize: pageSize,
-        orderBy,
-        ...trimObjectStrings(initValues.value)
-    });
-    tableData.value = Object.freeze(res.data.rows);
-    loading.value = false;
-    pagination.value = {
-        currentPage: res.data.page,
-        pageSize: pageSize,
-        total: res.data.total
-    };
-};
-// 获取枚举数据
-const warehouseTypeEnumOptions = ref([]);
-const warehouseStatusEnumOptions = ref([]);
+/* 6. 生命周期 */
 onMounted(async () => {
-    const warehouseTypeEnumRes = await getWhWarehouseTypeEnumApi()
-    formConfig.value[0].options = warehouseTypeEnumRes.data.map(item => ({ value: item.id, label: item.name }));
-    warehouseTypeEnumOptions.value = formConfig.value[0].options
+    // 使用 Promise.all 并发请求
+    const [warehouseTypeEnumRes, warehouseStatusEnumRes] = await Promise.all([
+        getWhWarehouseTypeEnumApi(),
+        getWhWarehouseStatusEnumApi()
+    ]);
 
-    const warehouseStatusEnumRes = await getWhWarehouseStatusEnumApi()
+    // 初始化下拉选项
+    formConfig.value[0].options = warehouseTypeEnumRes.data.map(item => ({ value: item.id, label: item.name }));
+    warehouseTypeEnumOptions.value = formConfig.value[0].options;
+
     formConfig.value[1].options = warehouseStatusEnumRes.data.map(item => ({ value: item.id, label: item.name }));
-    warehouseStatusEnumOptions.value = formConfig.value[1].options
+    warehouseStatusEnumOptions.value = formConfig.value[1].options;
 });
 </script>
 
 <style scoped lang="scss">
-// 引入外框css
 @use '@/assets/css/viewArea.scss';
 </style>

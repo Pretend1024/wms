@@ -172,7 +172,6 @@ const commit = async () => {
 
         // 1. 调用任务创建接口
         const res = await importJobAddApi(params);
-        loadingInstance.close(); // 接口返回后关闭全屏遮罩
 
         if (!res.success) {
             smartAlert(res.msg, false);

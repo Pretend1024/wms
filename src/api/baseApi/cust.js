@@ -79,3 +79,6 @@ export const getCustomerAuthListApi = (data) => {
 export const getCustomerAuthByIdApi = createPostRequestWithQuery('/base/cust/customerAuth/getById')
 // 客户审核提交
 export const approvalCustomerAuthApi = createPostRequestWithQuery('/base/cust/customerAuth/approval')
+
+// 客户端登录
+export const loginByAdminApi = createPostRequestWithQuery('/base/cust/customer/loginByAdmin')

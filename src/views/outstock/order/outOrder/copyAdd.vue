@@ -794,7 +794,7 @@ const handleSave = async () => {
             // 处理任务与增值服务附件
             if (serviceCheck.data.length > 0) {
                 data.vasOrderItemList = serviceCheck.data.map(item => {
-                    const attachments = Array.isArray(item.attachments) ? item.attachments : null;
+                    const attachments = Array.isArray(item.attachments) && item.attachments.length > 0 ? item.attachments : null;
                     return {
                         ...item,
                         serviceAttachment: attachments ? JSON.stringify(attachments) : null,

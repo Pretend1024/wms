@@ -256,35 +256,6 @@ const setUserCode = (e) => {
 
 // 打开规则提示
 const openHint = () => {
-    //     const textTitle = `<p style="font-weight:900;font-size:16px;color:#000000cc">数据权限包括查看和操作</p>
-    //     <br>
-    // <p style="font-weight:900;font-size:16px;color:#000000cc">数据权限生效范围</p>
-    // <p>所有查询页面，如: 客户列表、SKU、入库单、库存、出库单、退件、报价、应收应付等</p>
-
-    // <p style="font-weight:900;font-size:16px;color:#000000cc">默认范围</p>
-    // <p>1. 本公司 (不可移除)</p>
-    // <p>2. 所有仓库(可移除)</p>
-    // <p>3. 所有客户(可移除)</p>
-
-    // <p style="font-weight:900;font-size:16px;color:#000000cc">可配置范围</p>
-    // <p>2. 指定仓库</p>
-    // <p>3. 指定客户</p>
-
-    // <p style="font-weight:900;font-size:16px;color:#000000cc">不可移除且不可增加约束的权限</p>
-    // <p>1. 岗位 - 销售员：自己的客户</p>
-    // <p>2. 岗位 - 销售主管：部门内所有客户 </p>
-    // <p>3. 仓库员工：所在仓库的全部数据 </p>
-    // <p>4. 系统管理员：拥有全局数据查看权限，包括所有公司、仓库及客户的全部数据</p>
-
-    // <p style="font-weight:900;font-size:16px;color:#000000cc">权限控制机制</p>
-    // <p>采用数据权限与功能权限相结合的双重控制模式：</p>
-    // <p>● 数据权限决定用户可访问的信息范围</p>
-    // <p>● 功能权限限制用户可操作的功能模块</p>
-
-    // <p>例如: 仓库员工虽具备所在仓库的全部数据权限，但可通过角色配置限制其功能权限，如：</p>
-    // <p>● 隐藏 "客户列表" 菜单入口</p>
-    // <p>● 禁用 "账单查询"、"客户管理" 等功能按钮</p>
-    // <p>● 限制导出客户相关数据的操作权限</p>`;
     ElMessageBox.alert(t("DataPermissionDescription"), t("RulePrompt"), {
         confirmButtonText: getButtonText('confirm'),
         dangerouslyUseHTMLString: true,

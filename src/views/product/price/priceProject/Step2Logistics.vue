@@ -126,13 +126,14 @@ onMounted(() => {
     padding: 10px;
     background: #fff;
     border-radius: 4px;
+    box-sizing: border-box;
 
     .header-actions {
         margin-bottom: 10px;
     }
 
     .table-content {
-        flex: 1;
+        flex: 0.98;
         overflow: hidden;
     }
 }

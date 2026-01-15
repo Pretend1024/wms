@@ -17,6 +17,14 @@
                     :currencyOptions="currencyOptions" />
             </el-tab-pane>
 
+            <!-- 退件入库费用 -->
+            <el-tab-pane :label="t('finance_receivables_fee_list.returnFee')" name="returnInbound">
+                <ReturnInboundList v-show="activeName === 'returnInbound'" :companyOptions="companyOptions"
+                    :warehouseOptions="warehouseOptions" :initialCustomerOptions="initialCustomerOptions"
+                    :statusOptions="statusOptions" :createWayOptions="createWayOptions"
+                    :currencyOptions="currencyOptions" />
+            </el-tab-pane>
+
             <!-- 出库费用标签 -->
             <el-tab-pane :label="t('finance_receivables_fee_list.outboundFee')" name="outbound">
                 <OutboundList v-show="activeName === 'outbound'" :companyOptions="companyOptions"
@@ -40,6 +48,14 @@
                     :statusOptions="statusOptions" :createWayOptions="createWayOptions"
                     :currencyOptions="currencyOptions" />
             </el-tab-pane>
+
+            <!-- 其他费用 -->
+            <el-tab-pane :label="t('finance_receivables_fee_list.otherFee')" name="other">
+                <OtherList v-show="activeName === 'other'" :companyOptions="companyOptions"
+                    :warehouseOptions="warehouseOptions" :initialCustomerOptions="initialCustomerOptions"
+                    :statusOptions="statusOptions" :createWayOptions="createWayOptions"
+                    :currencyOptions="currencyOptions" />
+            </el-tab-pane>
         </el-tabs>
     </div>
 </template>
@@ -51,9 +67,11 @@ import { useI18n } from 'vue-i18n'; // 1. 引入I18n核心方法
 // 引入组件
 import AllList from './allFee/list.vue';
 import InboundList from './inboundFee/list.vue';
+import ReturnInboundList from './returnInboundFee/list.vue';
 import OutboundList from './outboundFee/list.vue';
 import StorageList from './storageFee/list.vue';
 import ValueAddedList from './valueAddedFee/list.vue';
+import OtherList from './otherFee/list.vue';
 
 // 引入所有公共 API
 import { getOrgListCompanyApi } from '@/api/baseApi/org.js';
@@ -94,7 +112,7 @@ onMounted(async () => {
         ] = await Promise.all([
             getOrgListCompanyApi(),
             getWhWarehouseApi(),
-            getCustomerLikeQueryApi({ keyword: '*', orgId: '' }),
+            getCustomerLikeQueryApi({ keyword: '*' }),
             getFeeStatusEnumApi(),
             getFeeCreateWayEnumApi(),
             getCurrencyListApi()
@@ -108,7 +126,6 @@ onMounted(async () => {
         companyOptions.value = convertToTree(companyRes.data);
 
         warehouseOptions.value = whRes.data.map(item => ({ code: item.code, name: item.name }));
-
         initialCustomerOptions.value = customerRes.data.map(item => ({
             value: item.code,
             label: `${item.code}(${item.name})`

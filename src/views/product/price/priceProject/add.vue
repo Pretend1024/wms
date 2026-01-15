@@ -58,15 +58,16 @@
                 </div>
             </KeepAlive>
             <KeepAlive>
-                <div v-if="activeStep === 3" class="placeholder-container">
-                    <el-empty description="仓租报价配置模块开发中..." />
+                <div v-if="activeStep === 3" class="step-wrapper">
+                    <div class="component-area">
+                        <Step4WhRent :project-id="projectId" />
+                    </div>
                     <div class="fixed-footer">
                         <div class="footer-content">
                             <div class="left-info">
                                 <span class="id-tag"><el-icon>
                                         <Link />
-                                    </el-icon> 当前名称: {{ projectName }}
-                                </span>
+                                    </el-icon> 当前名称: {{ projectName }}</span>
                             </div>
                             <div class="right-btns">
                                 <el-button @click="prevStep">上一步</el-button>
@@ -88,6 +89,7 @@ import { Link } from '@element-plus/icons-vue'
 import Step1Basic from './Step1Basic.vue'
 import Step2Logistics from './Step2Logistics.vue'
 import Step3OperationFee from './Step3OperationFee.vue'
+import Step4WhRent from './Step4WhRent.vue'
 
 const router = useRouter()
 const activeStep = ref(0)

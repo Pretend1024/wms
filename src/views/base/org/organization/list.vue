@@ -9,24 +9,24 @@
                         {{ getButtonText('add') }}
                     </el-button>
                     <el-button type="success" plain @click="handleExpandAll" :icon="Sort">
-                        {{ defaultExpandAll ? '全部折叠' : '全部展开' }}
+                        {{ defaultExpandAll ? getButtonText('collapseAll') : getButtonText('expandAll') }}
                     </el-button>
                 </template>
                 <template #customBtn="{ row }">
                     <div style="display: flex;">
-                        <div class="cursor-pointer" @click="handleEdit(row)">
+                        <div class="cursor-pointer" @click="handleEdit(row)" v-permission="'edit'">
                             <el-icon>
                                 <EditPen />
                             </el-icon>
                             <span>{{ getButtonText('edit') }}</span>
                         </div>
-                        <div class="cursor-pointer" @click="handleAddChildren(row)">
+                        <div class="cursor-pointer" @click="handleAddChildren(row)" v-permission="'add'">
                             <el-icon>
                                 <Plus />
                             </el-icon>
                             <span>{{ getButtonText('add') }}</span>
                         </div>
-                        <div class="cursor-pointer" @click="handleDel(row)">
+                        <div class="cursor-pointer" @click="handleDel(row)" v-permission="'delete'">
                             <el-icon>
                                 <Delete />
                             </el-icon>
@@ -50,22 +50,65 @@
 </template>
 
 <script setup name="公司部门">
-import { ref, computed, onMounted, shallowRef, nextTick } from 'vue'; // 引入 nextTick
+/* 1. 引入 */
+// 1.1 Vue核心及插件
+import { ref, computed, onMounted, shallowRef, nextTick } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { Plus, Sort, Delete, EditPen } from '@element-plus/icons-vue';
+import { ElMessage, ElMessageBox } from 'element-plus';
+
+// 1.2 组件引入
 import hydTable from '@/components/table/hyd-table.vue';
 import AddForm from './add.vue';
 import UpdForm from './upd.vue';
-import { ElMessage, ElMessageBox, ElLoading } from 'element-plus';
+
+// 1.3 API引入
 import {
-    getOrganizationListApi, getOrganizationTypeEnumApi, addOrganizationDataApi, updateOrganizationDataApi,
+    getOrganizationListApi,
+    getOrganizationTypeEnumApi,
+    addOrganizationDataApi,
+    updateOrganizationDataApi,
     delOrganizationDataApi
 } from '@/api/baseApi/org.js';
-import { smartAlert, trimObjectStrings } from '@/utils/genericMethods.js'
-import { useI18n } from 'vue-i18n';
+
+// 1.4 工具类引入
+import { smartAlert } from '@/utils/genericMethods.js';
+import { getButtonText } from '@/utils/i18n/i18nLabels.js';
+
+/* 2. 全局变量与状态 */
 const { t } = useI18n();
 
-// 表格数据及配置
+// 表格数据
 const tableData = shallowRef([]);
+const loading = ref(true);
+const defaultExpandAll = ref(true);
+const hydTableRef = ref(null);
+const selection = ref({});
+
+// 弹窗状态
+const centerDialogVisible = ref(false);
+const dialogMode = ref('add');
+const childFormRef = ref(null);
+
+// 字典/枚举数据
+const TypeEnum = ref([]);
+const parentIdList = ref([]);
+
+// 表单数据模型
+const addData = ref({
+    leader: '',
+    nameCn: '',
+    nameEn: '',
+    parentId: '',
+    remark: '',
+    sortNo: null,
+    typeName: '',
+    typeId: null,
+    type: null,
+});
+
+/* 3. 计算属性 */
+// 表格列定义
 const columns = ref([
     { label: '中文名', prop: 'nameCn', width: '180' },
     { label: '英文名', prop: 'nameEn', width: '180' },
@@ -80,46 +123,156 @@ const columns = ref([
     { label: '更新人', prop: 'updatedBy', width: '120' },
     { label: '操作', prop: 'action', width: '210', fixed: 'right', slot: 'customBtn' }
 ]);
-const loading = ref(true);
-const defaultExpandAll = ref(true);
 
-const selection = ref({});
+// 弹窗标题
+const dialogTitle = computed(() => t(`base_org_organization_list.${dialogMode.value}Title`));
+
+// 当前表单组件
+const currentForm = computed(() => dialogMode.value === 'add' ? AddForm : UpdForm);
+
+/* 4. 业务逻辑 (CRUD) */
+
+// 获取列表数据
+const getList = async () => {
+    loading.value = true;
+    try {
+        const res = await getOrganizationListApi({});
+        tableData.value = res.data;
+        parentIdList.value = convertToTree(res.data);
+    } finally {
+        loading.value = false;
+        // 保持展开状态逻辑
+        nextTick(() => {
+            const $table = hydTableRef.value?.elTableRef;
+            if ($table && defaultExpandAll.value) {
+                $table.setAllTreeExpand(true);
+            }
+        });
+    }
+};
+
+// 点击新增
+const handleAdd = async () => {
+    await ensureTypeEnum();
+    resetFormData();
+    dialogMode.value = 'add';
+    centerDialogVisible.value = true;
+};
+
+// 点击新增子部门
+const handleAddChildren = async (row) => {
+    await ensureTypeEnum();
+    resetFormData();
+    addData.value.parentId = row.id;
+    dialogMode.value = 'add';
+    centerDialogVisible.value = true;
+};
+
+// 点击编辑
+const handleEdit = async (row) => {
+    await ensureTypeEnum();
+    addData.value = {
+        ...row,
+        type: TypeEnum.value.find(item => item.id === row.typeId)
+    };
+    dialogMode.value = 'upd';
+    centerDialogVisible.value = true;
+};
+
+// 点击删除
+const handleDel = (row) => {
+    ElMessageBox.confirm(
+        t('base_org_organization_list.confirmDelete'),
+        t('base_org_organization_list.reminder'),
+        {
+            confirmButtonText: getButtonText('confirm'),
+            cancelButtonText: getButtonText('cancel'),
+            type: 'warning'
+        }
+    )
+        .then(async () => {
+            loading.value = true;
+            const res = await delOrganizationDataApi({ id: row.id });
+            smartAlert(res.msg, res.success, 1000);
+            if (res.success) {
+                await getList();
+                await ensureTypeEnum(true);
+            }
+        })
+        .catch(() => {
+            ElMessage({
+                type: 'info',
+                message: t('base_org_organization_list.deleteCanceled')
+            });
+        });
+};
+
+// 弹窗确认保存
+const handleDialogConfirm = async () => {
+    if (!childFormRef.value) return;
+    try {
+        await childFormRef.value.validate();
+
+        // 数据处理
+        if (Array.isArray(addData.value.parentId)) {
+            const len = addData.value.parentId.length;
+            addData.value.parentId = len > 0 ? addData.value.parentId[len - 1] : '0';
+        }
+        if (!addData.value.parentId) {
+            addData.value.parentId = '0';
+        }
+
+        const data = { ...addData.value };
+        let res;
+
+        if (dialogMode.value === 'upd') {
+            res = await updateOrganizationDataApi(data);
+        } else {
+            res = await addOrganizationDataApi(data);
+        }
+
+        smartAlert(res.msg, res.success, 1000);
+        if (res.success) {
+            getList();
+            centerDialogVisible.value = false;
+        }
+    } catch (error) {
+        console.error('表单验证失败:', error);
+    }
+};
+
+/* 5. 辅助方法 */
+
+// 弹窗取消
+const handleDialogCancel = () => {
+    centerDialogVisible.value = false;
+};
+
+// 表格行点击
 const handleRowClick = (row) => {
     console.log('点击的行数据：', row);
     selection.value = row;
 };
 
-// 弹窗及表单数据
-const centerDialogVisible = ref(false);
-const addData = ref({
-    leader: '',
-    nameCn: '',
-    nameEn: '',
-    parentId: '',
-    remark: '',
-    sortNo: null,
-    typeName: '',
-    typeId: null,
-    type: null,
-});
+// 切换展开/折叠
+const handleExpandAll = () => {
+    const $table = hydTableRef.value?.elTableRef;
+    if (!$table) return;
+    const targetState = !defaultExpandAll.value;
+    $table.setAllTreeExpand(targetState);
+    defaultExpandAll.value = targetState;
+};
 
-// dialogMode 用于区分 "add"（新增）与 "upd"（编辑）
-const dialogMode = ref('add');
-const dialogTitle = computed(() => t(`base_org_organization_list.${dialogMode.value}Title`));
-const currentForm = computed(() => dialogMode.value === 'add' ? AddForm : UpdForm);
-const childFormRef = ref(null);
-
-// 部门类型枚举和上级部门数据
-const TypeEnum = ref([]);
-const parentIdList = ref([]);
-
-// 点击新增
-const handleAdd = async () => {
-    if (TypeEnum.value.length === 0) {
+// 确保枚举数据已加载
+const ensureTypeEnum = async (force = false) => {
+    if (TypeEnum.value.length === 0 || force) {
         const resType = await getOrganizationTypeEnumApi();
         TypeEnum.value = resType.data;
     }
-    // 重置表单数据
+};
+
+// 重置表单数据
+const resetFormData = () => {
     addData.value = {
         leader: '',
         nameCn: '',
@@ -131,151 +284,23 @@ const handleAdd = async () => {
         typeId: null,
         type: null
     };
-    dialogMode.value = 'add';
-    centerDialogVisible.value = true;
 };
 
-// 点击编辑
-const handleEdit = async (row) => {
-    if (TypeEnum.value.length === 0) {
-        const resType = await getOrganizationTypeEnumApi();
-        TypeEnum.value = resType.data;
-    }
-    addData.value = {
-        ...row,
-        type: TypeEnum.value.find(item => item.id === row.typeId)
-    };
-    dialogMode.value = 'upd';
-    centerDialogVisible.value = true;
+// 树形数据转换递归函数
+const convertToTree = (items) => {
+    return items.map(item => ({
+        value: item.id,
+        label: item.nameCn,
+        children: item.children ? convertToTree(item.children) : []
+    }));
 };
 
-// 点击新增子部门
-const handleAddChildren = async (row) => {
-    if (TypeEnum.value.length === 0) {
-        const resType = await getOrganizationTypeEnumApi();
-        TypeEnum.value = resType.data;
-    }
-    addData.value = {
-        parentId: row.id,
-        leader: '',
-        nameCn: '',
-        nameEn: '',
-        remark: '',
-        sortNo: null,
-        typeName: '',
-        typeId: null,
-        type: null
-    };
-    dialogMode.value = 'add';
-    centerDialogVisible.value = true;
-};
-
-// 弹窗取消回调
-const handleDialogCancel = () => {
-    centerDialogVisible.value = false;
-};
-
-// 弹窗确定回调
-const handleDialogConfirm = async () => {
-    if (!childFormRef.value) return;
-    try {
-        await childFormRef.value.validate();
-        let res = null;
-        // 处理 cascader 选择数据（若为数组则取最后一项）
-        if (Array.isArray(addData.value.parentId)) {
-            const len = addData.value.parentId.length;
-            addData.value.parentId = len > 0 ? addData.value.parentId[len - 1] : '0';
-            if (addData.value.parentId === '') {
-                addData.value.parentId = '0';
-            }
-        }
-        const data = {
-            ...addData.value
-        };
-        if (dialogMode.value === 'upd') {
-            res = await updateOrganizationDataApi(data);
-        } else {
-            res = await addOrganizationDataApi(data);
-        }
-        smartAlert(res.msg, res.success, 1000);
-        if (res.success) {
-            getList();
-            centerDialogVisible.value = false;
-        }
-    } catch (error) {
-        console.error('表单验证失败:', error);
-    }
-};
-
-// 删除操作
-const handleDel = (row) => {
-    ElMessageBox.confirm('是否要删除本条数据?', '提醒', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        type: 'warning'
-    })
-        .then(async () => {
-            loading.value = true;
-            const res = await delOrganizationDataApi({ id: row.id });
-            smartAlert(res.msg, res.success, 1000);
-            getList();
-            const resType = await getOrganizationTypeEnumApi();
-            TypeEnum.value = resType.data;
-        })
-        .catch(() => {
-            ElMessage({
-                type: 'info',
-                message: '已取消删除'
-            });
-        });
-};
-
-// 表格展开/折叠 (适配 vxe-table API)
-const hydTableRef = ref(null);
-const handleExpandAll = () => {
-    const $table = hydTableRef.value?.elTableRef;
-    if (!$table) return;
-
-    // 切换状态
-    const targetState = !defaultExpandAll.value;
-    // 使用 vxe-table 的 setAllTreeExpand 方法
-    $table.setAllTreeExpand(targetState);
-
-    // 更新按钮状态
-    defaultExpandAll.value = targetState;
-};
-
-// 获取数据及处理级联树形数据
-const getList = async () => {
-    loading.value = true; // 确保 loading 状态正确
-    const res = await getOrganizationListApi({});
-    tableData.value = res.data;
-
-    const convertToTree = (items) => {
-        return items.map(item => ({
-            value: item.id,
-            label: item.nameCn,
-            children: item.children ? convertToTree(item.children) : []
-        }));
-    };
-    parentIdList.value = convertToTree(res.data);
-    loading.value = false;
-
-    // 数据加载完成后，应用默认展开状态
-    nextTick(() => {
-        const $table = hydTableRef.value?.elTableRef;
-        if ($table && defaultExpandAll.value) {
-            $table.setAllTreeExpand(true);
-        }
-    });
-};
-
+/* 6. 生命周期 */
 onMounted(() => {
     getList();
 });
 </script>
 
 <style scoped lang="scss">
-// 引入外框css
 @use '@/assets/css/viewArea.scss';
 </style>

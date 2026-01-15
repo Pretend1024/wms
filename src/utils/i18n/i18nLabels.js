@@ -82,6 +82,14 @@ export const buttonTextMap = {
         zh: '取消',
         en: 'Cancel'
     },
+    expandAll: {
+        zh: '全部展开',
+        en: 'Expand All'
+    },
+    collapseAll: {
+        zh: '全部折叠',
+        en: 'Collapse All'
+    },
     freeze: {
         zh: '冻结',
         en: 'Freeze'
@@ -159,6 +167,10 @@ export const buttonTextMap = {
     viewPassword: {
         zh: '查看密码',
         en: 'View Password'
+    },
+    login: {
+        zh: '登录',
+        en: 'Login'
     },
     authorize: {
         zh: '授权',
@@ -621,6 +633,11 @@ export const buttonTextMap = {
         zh: '格式化',
         en: 'Format'
     },
+    // 确认
+    affirm: {
+        zh: '确认',
+        en: 'Affirm'
+    }
 }
 const labelsMap = {
     // 通用配置
@@ -6734,16 +6751,16 @@ const labelsMap = {
             "placeholderZh": "请输入增值服务单号",
             "placeholderEn": "Please Enter VAS Order No."
         },
-        "feeMainTypeId": {
-            "zh": "费用大类:",
-            "en": "Fee Main Type:",
-            "placeholderZh": "请选择费用大类",
-            "placeholderEn": "Please Select Fee Main Type"
+        "feeBizTypeId": {
+            "zh": "单据类型:",
+            "en": "Fee Biz Type:",
+            "placeholderZh": "请选择单据类型",
+            "placeholderEn": "Please Select Fee Biz Type"
         },
         "feeSubTypeId": {
-            "zh": "费用小类:",
+            "zh": "计费项目:",
             "en": "Fee Sub Type:",
-            "placeholderZh": "请选择费用小类",
+            "placeholderZh": "请选择计费项目",
             "placeholderEn": "Please Select Fee Sub Type"
         },
         "orderNo": {
@@ -6818,10 +6835,16 @@ const labelsMap = {
             "placeholderZh": "请选择费用大类",
             "placeholderEn": "Please Select Fee Main Type"
         },
+        "feeBizTypeId": {
+            "zh": "单据类型:",
+            "en": "Fee Biz Type:",
+            "placeholderZh": "请选择单据类型",
+            "placeholderEn": "Please Select Fee Biz Type"
+        },
         "feeSubTypeId": {
-            "zh": "费用小类:",
+            "zh": "计费项目:",
             "en": "Fee Sub Type:",
-            "placeholderZh": "请选择费用小类",
+            "placeholderZh": "请选择计费项目",
             "placeholderEn": "Please Select Fee Sub Type"
         },
         "feeUnitTypeId": {

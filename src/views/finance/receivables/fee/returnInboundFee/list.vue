@@ -72,7 +72,7 @@
                             </el-select>
                         </el-form-item>
                     </el-col>
-                    <!-- 出库单号 -->
+                    <!-- 退件入库单号 -->
                     <el-col>
                         <el-form-item :label="getLabel('orderNo')">
                             <canonicalInput v-model:listName="formData.orderNoList"
@@ -100,7 +100,7 @@
             <hydTable :footer="footer" :tableData="tableData" :columns="columns" :pagination="pagination"
                 :enableSelection="true" :loading="loading" :pageSizes="[20, 50, 100, 200, 500]"
                 @selection-change="handleSelectionChange" @page-change="handlePageChange" @sort-change="handleTableSort"
-                :tableId="'finance/receivables/fee/list/outboundFee'">
+                :tableId="'finance/receivables/fee/list/returnInboundFee'">
                 <template #table-buttons>
                     <div class="tableTopButtons">
                         <div class="statusIds">
@@ -172,14 +172,14 @@
         </div>
 
         <!-- 费用新增/编辑弹窗 -->
-        <FeeDialog v-model="centerDialogVisible" :dialogMode="dialogMode" :feeBizTypeId="20" :initData="editInitData"
+        <FeeDialog v-model="centerDialogVisible" :dialogMode="dialogMode" :feeBizTypeId="11" :initData="editInitData"
             :feeTypeOptions="feeTypeOptions" :currencyOptions="currencyOptions" :loading="dialogLoading"
             @confirm="handleDialogConfirm" />
         <!-- 加入账单弹窗 -->
         <JoinBillDialog v-model="joinBillVisible" :selectionRows="selectionRows" :searchParams="initValues"
             @success="handleJoinSuccess" />
         <!-- 导出弹窗 -->
-        <exportDialog ref="exportDialogRef" :selectionRows="selectionRows" :initValues="initValues" :exportType="706">
+        <exportDialog ref="exportDialogRef" :selectionRows="selectionRows" :initValues="initValues" :exportType="716">
         </exportDialog>
         <!-- 批量操作结果弹窗 -->
         <batchOperationn :dialogTitle="'操作结果'" :isVisible="resultDialogVisible" :tableData="resultData"
@@ -187,7 +187,7 @@
     </div>
 </template>
 
-<script setup name="出库费用">
+<script setup name="退件入库费用">
 // 引入vue核心方法
 import { ref, shallowRef, onMounted, nextTick, toRefs, watch } from 'vue';
 // 引入路由方法
@@ -248,9 +248,9 @@ const parentProps = {              // 级联选择器配置项
 };
 
 const formConfig = ref([]);
-// 初始化查询参数：feeBizTypeId 固定为 20 (出库费用)
+// 初始化查询参数：feeBizTypeId 固定为 11 (退件入库费用)
 const initValues = ref({
-    orgId: '', warehouseCode: '', feeSubTypeId: '', statusId: '', createWay: '', orderNoList: [], billNoList: [], feeBizTypeId: 20, statusIdList: []
+    orgId: '', warehouseCode: '', feeSubTypeId: '', statusId: '', createWay: '', orderNoList: [], billNoList: [], feeBizTypeId: 11, statusIdList: []
 });
 
 // 时间筛选相关变量
@@ -288,9 +288,8 @@ const columns = ref([
     { label: '仓库', prop: 'warehouseCode', width: '100', sortable: true, fixed: 'left' },
     { label: '客户', prop: 'customerCode', width: '180', sortable: true, fixed: 'left', slot: 'customer' },
     { label: '账单编号', prop: 'billNo', width: '160' },
-    { label: '出库单号', prop: 'orderNo', width: '160', sortable: true },
-    { label: '出库日期', prop: 'orderCreatedTime', width: '200' },
-    { label: '发货时间', prop: 'shippedTime', width: '200', sortable: true },
+    { label: '退件入库单号', prop: 'orderNo', width: '160', sortable: true },
+    { label: '入库日期', prop: 'orderCreatedTime', width: '200' },
     { label: '费用小类', prop: 'feeSubTypeName', width: '120', sortable: true },
     { label: '创建方式', prop: 'createWayName', width: '120', sortable: true },
     { label: '币种', prop: 'currency', width: '80', sortable: true },
@@ -344,7 +343,7 @@ const handleSearch = (data) => {
         timeBegin: selectDateData.value.dateRange ? selectDateData.value.dateRange[0] : '',
         timeEnd: selectDateData.value.dateRange ? selectDateData.value.dateRange[1] : '',
         statusIdList: statusIdsArr.value,
-        feeBizTypeId: 20
+        feeBizTypeId: 11
     };
     getList(1, pagination.value.pageSize);
     getStatus();
@@ -353,7 +352,7 @@ const handleSearch = (data) => {
 // 重置按钮点击事件
 const handleReset = (data) => {
     selectDateData.value = { dateType: 10, dateRange: getDefaultDateRange() };
-    initValues.value = { ...data, orgId: '', dateType: 10, dateRange: getDefaultDateRange(), feeBizTypeId: 20, statusIdList: [] };
+    initValues.value = { ...data, orgId: '', dateType: 10, dateRange: getDefaultDateRange(), feeBizTypeId: 11, statusIdList: [] };
     statusIdsArr.value = [];
     handleCascaderChange();
     getList(1, pagination.value.pageSize);
@@ -431,7 +430,7 @@ const handleDel = () => {
     if (selectionRows.value.length === 0) return ElMessage.warning('请选择要删除的数据！');
     ElMessageBox.confirm(`是否要删除${selectionRows.value.length}条数据?`, '提醒', { confirmButtonText: '确定', cancelButtonText: '取消', type: 'warning' }).then(async () => {
         loading.value = true; resultData.value = []; resultDialogVisible.value = true; promptMessage.value = '操作中...';
-        for (const row of selectionRows.value) { const res = await delFeeByIdApi({ id: row.id }); resultData.value.push({ id: `${row.orderNo}`, msg: res.msg, success: res.success }); }
+        for (const row of selectionRows.value) { const res = await delFeeByIdApi({ id: row.id }); resultData.value.push({ id: `${row.orderNo} `, msg: res.msg, success: res.success }); }
         promptMessage.value = '操作完成'; loading.value = false;
     }).catch(() => { });
 };
@@ -449,7 +448,7 @@ const handleJoinSuccess = async () => {
 };
 
 // 导入按钮跳转事件
-const handleImport = () => router.push({ name: '导入文件', params: { typeId: 701, typeName: '出库单应收费用' } });
+const handleImport = () => router.push({ name: '导入文件', params: { typeId: 701, typeName: '退件入库费用' } });
 
 // 导出按钮点击事件
 const exportDialogRef = ref(null);
@@ -476,7 +475,7 @@ const stopWatch = watch(
 
 // 页面初始化加载
 onMounted(async () => {
-    const feeTypeRes = await getFeeSubTypeEnumApi({ feeBizTypeId: 20 });
+    const feeTypeRes = await getFeeSubTypeEnumApi({ feeBizTypeId: 11 });
     feeTypeOptions.value = feeTypeRes.data.map(i => ({ label: i.name, value: i.id }));
     getStatus();
 });

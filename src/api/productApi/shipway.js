@@ -319,9 +319,35 @@ export const delProductShipwayPriceItemApi = createPostRequestWithQuery('/produc
 
 // 费用单位枚举
 export const getFeeUnitTypeEnumApi = createPostRequestWithQuery('/product/price/priceItem/feeUnitTypeEnum')
+// 条件科目枚举
+export const getFeeConditionSubjectEnumApi = createPostRequestWithQuery('/product/price/priceItem/feeConditionSubjectEnum')
+// 运算符枚举
+export const getFeeOperatorEnumApi = () => {
+    return http.post('/product/price/priceItem/operatorEnum')
+}
+// 条件逻辑枚举
+export const getFeeConditionLogicEnumApi = () => {
+    return http.post('/product/price/priceItem/conditionLogicEnum')
+}
+// 条件括号枚举
+export const getFeeConditionBracketEnumApi = () => {
+    return http.post('/product/price/priceItem/bracketEnum')
+}
+// 费用大类枚举
+export const getFeeMainTypeEnumApi = () => {
+    return http.post('product/price/priceItem/feeMainTypeEnum')
+}
 // 价格维度枚举
 export const getFeePriceDimensionEnumApi = () => {
     return http.post('/product/price/priceItem/priceDimensionEnum')
+}
+
+// 根据分区方案查询分区明细
+export const getRegionsWithDetailByRegionProjectIdApi = createPostRequestWithQuery('/product/price/region/listRegionsWithDetailByRegionProjectId')
+
+// 物流附加费类型枚举
+export const getFeeSubTypeEnumApi = () => {
+    return http.post('/product/price/priceItem/feeSubTypeEnum-logisticsSurcharge')
 }
 
 // ---------------------------------------------------------报价方案
@@ -406,6 +432,22 @@ export const addOrUpdPriceWhOpApi = (data) => {
 }
 // 删除操作费报价
 export const delPriceWhOpByIdApi = createPostRequestWithQuery('/product/price/priceWhOp/deleteById')
+
+// 查询仓租报价基础信息
+export const getPriceWhRentListByProjectIdApi = createPostRequestWithQuery('/product/price/priceWhRent/listByProjectId')
+// 保存仓租基础信息
+export const setPriceWhRentApi = (data) => {
+    return http.post('/product/price/priceWhRent/set', data, { headers: { 'loading': true } })
+}
+
+// 查询仓租报价表格信息
+export const getPriceWhRentAgeListByProjectIdApi = createPostRequestWithQuery('/product/price/priceWhRentAge/listByProjectId')
+// 仓租报价表格新增/编辑
+export const addOrUpdPriceWhRentAgeApi = (data) => {
+    return http.post('/product/price/priceWhRentAge/addOrUpd', data, { headers: { 'loading': true } }) 
+}
+// 删除仓租报价
+export const delPriceWhRentAgeByIdApi = createPostRequestWithQuery('/product/price/priceWhRentAge/deleteById')
 
 // ---------------------------------------------------------地址校验
 // 获取地址校验配置

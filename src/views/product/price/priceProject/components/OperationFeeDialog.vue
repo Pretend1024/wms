@@ -1,25 +1,41 @@
 <template>
-    <el-dialog :title="isEdit ? '编辑操作费' : '新增操作费'" v-model="visible" width="80%" top="5vh" :close-on-click-modal="false"
+    <el-dialog :title="isEdit ? '编辑操作费' : '新增操作费'" v-model="visible" width="85%" top="5vh" :close-on-click-modal="false"
         destroy-on-close class="operation-dialog fixed-height-dialog">
         <div class="dialog-layout">
             <div class="header-section">
                 <el-card shadow="never" class="base-info-card">
-                    <el-form :model="formData" :rules="rules" ref="formRef" label-width="90px">
+                    <el-form :model="formData" :rules="rules" ref="formRef" label-width="110px">
                         <el-row :gutter="20">
-                            <el-col :span="12">
-                                <el-form-item label="费用类型" prop="feeMainTypeId">
-                                    <el-select v-model="formData.feeMainTypeId" placeholder="请选择" style="width: 100%"
+                            <el-col :span="8">
+                                <el-form-item label="主费用类型" prop="feeMainTypeId">
+                                    <el-select v-model="formData.feeMainTypeId" placeholder="请选择" clearable filterable
                                         :disabled="isEdit">
-                                        <el-option v-for="item in feeTypeEnum" :key="item.id" :label="item.name"
-                                            :value="item.id" />
+                                        <el-option v-for="item in feeMainTypeEnum" :key="item.value" :label="item.label"
+                                            :value="item.value" />
                                     </el-select>
                                 </el-form-item>
                             </el-col>
-                            <el-col :span="12">
-                                <el-form-item label="费用名称" prop="feeName">
-                                    <el-input v-model="formData.feeName" placeholder="请输入费用名称" maxlength="50" />
+
+                            <el-col :span="8">
+                                <el-form-item label="业务费用类型" prop="feeBizTypeId">
+                                    <el-select v-model="formData.feeBizTypeId" placeholder="请选择" clearable filterable
+                                        :disabled="isEdit" @change="handleBizTypeChange">
+                                        <el-option v-for="item in feeBizTypeEnum" :key="item.value" :label="item.label"
+                                            :value="item.value" />
+                                    </el-select>
                                 </el-form-item>
                             </el-col>
+
+                            <el-col :span="8">
+                                <el-form-item label="子费用类型" prop="feeSubTypeId">
+                                    <el-select v-model="formData.feeSubTypeId" placeholder="请选择" clearable filterable
+                                        :disabled="isEdit" @change="handleSubTypeChange">
+                                        <el-option v-for="item in subTypeOptions" :key="item.value" :label="item.label"
+                                            :value="item.value" />
+                                    </el-select>
+                                </el-form-item>
+                            </el-col>
+
                             <el-col :span="24">
                                 <el-form-item label="备注" prop="remark">
                                     <el-input v-model="formData.remark" type="textarea" :rows="2"
@@ -48,55 +64,53 @@
                 <div class="table-area">
                     <el-table ref="detailTableRef" :data="formData.detailDTOList" border height="100%" row-key="_tempId"
                         :expand-row-keys="expandedRowKeys" @expand-change="handleExpandChange">
+
                         <el-table-column type="expand" width="55">
                             <template #default="{ row }">
                                 <div class="sticky-wrapper">
                                     <div class="expand-form-container">
-                                        <el-form label-width="80px" class="inner-form" size="default">
+                                        <el-form label-position="top" size="small" class="compact-expand-form">
 
-                                            <el-row :gutter="20">
-                                                <el-col :span="8">
+                                            <el-row :gutter="10">
+                                                <el-col :span="3">
                                                     <el-form-item label="分组代码">
-                                                        <el-input v-model="row.groupCode" placeholder="请输入代码" />
+                                                        <el-input v-model="row.groupCode" placeholder="Code" />
                                                     </el-form-item>
                                                 </el-col>
-                                                <el-col :span="8">
+                                                <el-col :span="3">
                                                     <el-form-item label="排序号">
-                                                        <el-input v-model="row.sortNo" v-intNumber="false"
-                                                            placeholder="越小越优先" />
+                                                        <el-input v-model="row.sortNo" v-number="0"
+                                                            placeholder="Sort" />
                                                     </el-form-item>
                                                 </el-col>
-                                                <el-col :span="8">
+                                                <el-col :span="3">
                                                     <el-form-item label="计费单位">
-                                                        <el-select v-model="row.feeUnitTypeId" placeholder="请选择"
+                                                        <el-select v-model="row.feeUnitTypeId" placeholder="单位"
                                                             style="width: 100%">
-                                                            <el-option v-for="u in unitTypeEnum" :key="u.id"
-                                                                :label="u.name" :value="u.id" />
+                                                            <el-option v-for="u in unitTypeOptions" :key="u.value"
+                                                                :label="u.label" :value="u.value" />
                                                         </el-select>
                                                     </el-form-item>
                                                 </el-col>
-                                            </el-row>
-
-                                            <el-row :gutter="20" class="mt-row">
-                                                <el-col :span="6">
+                                                <el-col :span="3">
                                                     <el-form-item label="单位数量">
-                                                        <el-input v-model="row.unitQty" v-intNumber="false"
-                                                            placeholder="1" />
+                                                        <el-input v-model="row.unitQty" v-number="3"
+                                                            placeholder="Qty" />
                                                     </el-form-item>
                                                 </el-col>
-                                                <el-col :span="6">
+                                                <el-col :span="4">
                                                     <el-form-item label="单价">
                                                         <el-input v-model="row.price" v-number="3"
                                                             placeholder="0.000" />
                                                     </el-form-item>
                                                 </el-col>
-                                                <el-col :span="6">
+                                                <el-col :span="4">
                                                     <el-form-item label="最小收费">
                                                         <el-input v-model="row.minCharge" v-number="3"
                                                             placeholder="0.000" />
                                                     </el-form-item>
                                                 </el-col>
-                                                <el-col :span="6">
+                                                <el-col :span="4">
                                                     <el-form-item label="最大收费">
                                                         <el-input v-model="row.maxCharge" v-number="3"
                                                             placeholder="0.000" />
@@ -104,14 +118,22 @@
                                                 </el-col>
                                             </el-row>
 
-                                            <el-row :gutter="20" class="mt-row">
-                                                <el-col :span="12">
-                                                    <el-form-item label="计费公式">
-                                                        <el-input v-model="row.formula" placeholder="例如: #W * 0.5" />
+                                            <el-row :gutter="10">
+                                                <el-col :span="24">
+                                                    <el-form-item label="计费公式" style="margin-bottom: 5px;">
+                                                        <el-input v-model="row.formula" placeholder="例如: #W * 0.5">
+                                                            <template #append>
+                                                                <el-button :icon="Edit"
+                                                                    @click="openFormulaDialog(row)" />
+                                                            </template>
+                                                        </el-input>
                                                     </el-form-item>
                                                 </el-col>
-                                                <el-col :span="12">
-                                                    <el-form-item label="公式说明">
+                                            </el-row>
+
+                                            <el-row :gutter="10">
+                                                <el-col :span="24">
+                                                    <el-form-item label="公式说明" style="margin-bottom: 0;">
                                                         <el-input v-model="row.formulaDesc" placeholder="公式的文字说明" />
                                                     </el-form-item>
                                                 </el-col>
@@ -123,17 +145,17 @@
                             </template>
                         </el-table-column>
 
-                        <el-table-column label="分组代码" prop="groupCode" width="120" show-overflow-tooltip />
-                        <el-table-column label="排序" prop="sortNo" width="80" />
-                        <el-table-column label="计费单位" prop="feeUnitTypeId" width="120">
+                        <el-table-column label="分组代码" prop="groupCode" width="100" show-overflow-tooltip />
+                        <el-table-column label="排序" prop="sortNo" width="60" />
+                        <el-table-column label="计费单位" prop="feeUnitTypeId" width="100">
                             <template #default="{ row }">{{ getUnitName(row.feeUnitTypeId) }}</template>
                         </el-table-column>
-                        <el-table-column label="单位数量" prop="unitQty" width="120" />
-                        <el-table-column label="单价" prop="price" width="120" />
-                        <el-table-column label="最小收费" prop="minCharge" width="120" />
-                        <el-table-column label="最大收费" prop="maxCharge" width="120" />
-                        <el-table-column label="公式" prop="formula" min-width="200" show-overflow-tooltip />
-                        <el-table-column label="说明" prop="formulaDesc" min-width="200" show-overflow-tooltip />
+                        <el-table-column label="单位数量" prop="unitQty" width="90" />
+                        <el-table-column label="单价" prop="price" width="60" />
+                        <el-table-column label="最小收费" prop="minCharge" width="90" />
+                        <el-table-column label="最大收费" prop="maxCharge" width="90" />
+                        <el-table-column label="公式" prop="formula" width="250" show-overflow-tooltip />
+                        <el-table-column label="说明" prop="formulaDesc" width="250" show-overflow-tooltip />
 
                         <el-table-column label="操作" width="120" fixed="right">
                             <template #default="{ row }">
@@ -150,18 +172,23 @@
             <el-button @click="visible = false">取消</el-button>
             <el-button type="primary" @click="handleSubmit" :loading="submitting">确定</el-button>
         </template>
+
+        <FormulaDialog v-model="formulaVisible" :feeSubTypeId="formData.feeSubTypeId"
+            :initialFormula="currentEditingRow?.formula" @confirm="handleFormulaConfirm" />
     </el-dialog>
 </template>
 
 <script setup>
 import { ref, reactive, computed, onMounted, nextTick } from 'vue'
-import { Plus, InfoFilled } from '@element-plus/icons-vue'
+import { Plus, InfoFilled, Edit } from '@element-plus/icons-vue' // 引入 Edit 图标
 import { smartAlert } from '@/utils/genericMethods.js'
 
+// 自定义组件
+import FormulaDialog from '@/components/FormulaDialog.vue'
+
 // API
-import { addOrUpdPriceWhOpApi } from '@/api/productApi/shipway.js'
-import { getVasOrderFeeTypeEnumApi } from "@/api/vasApi/vas.js"
-import { getUnitTypeEnumApi } from '@/api/baseApi/basic.js'
+import { getFeeBizTypeEnumApi, getFeeSubTypeEnumApi } from '@/api/financeApi/receivables.js'
+import { getFeeMainTypeEnumApi, addOrUpdPriceWhOpApi, getFeeUnitTypeEnumApi } from '@/api/productApi/shipway.js'
 
 const props = defineProps({
     modelValue: Boolean,
@@ -180,29 +207,37 @@ const formRef = ref(null)
 const submitting = ref(false)
 const detailTableRef = ref(null)
 
-const feeTypeEnum = ref([])
-const unitTypeEnum = ref([])
+// 公式弹窗相关
+const formulaVisible = ref(false)
+const currentEditingRow = ref(null)
+
+const feeMainTypeEnum = ref([])
+const feeBizTypeEnum = ref([])
+const subTypeOptions = ref([])
+const unitTypeOptions = ref([])
 
 const formData = reactive({
     id: '',
     priceProjectId: '',
     feeMainTypeId: '',
-    feeName: '',
+    feeBizTypeId: '',
+    feeSubTypeId: '',
     remark: '',
     detailDTOList: []
 })
 
 const rules = {
-    feeMainTypeId: [{ required: true, message: '请选择', trigger: 'change' }],
-    feeName: [{ required: true, message: '请输入', trigger: 'blur' }]
+    feeMainTypeId: [{ required: true, message: '请选择主费用类型', trigger: 'change' }],
+    feeBizTypeId: [{ required: true, message: '请选择业务费用类型', trigger: 'change' }],
+    feeSubTypeId: [{ required: true, message: '请选择子费用类型', trigger: 'change' }]
 }
 
 // --- 详情表格逻辑 ---
 const expandedRowKeys = ref([])
 
 const getUnitName = (id) => {
-    const item = unitTypeEnum.value.find(i => i.id === id)
-    return item ? item.name : id
+    const item = unitTypeOptions.value.find(i => i.value === id)
+    return item ? item.label : id
 }
 
 // 1. 新增详情行
@@ -222,6 +257,7 @@ const addDetailRow = () => {
     formData.detailDTOList.push(newRow)
     nextTick(() => {
         if (detailTableRef.value) {
+            // 关闭其他行，只展开新行
             formData.detailDTOList.forEach(item => {
                 if (item._tempId !== newRow._tempId) {
                     detailTableRef.value.toggleRowExpansion(item, false)
@@ -232,7 +268,7 @@ const addDetailRow = () => {
     })
 }
 
-// 2. 编辑详情行
+// 2. 编辑详情行 (展开)
 const editDetailRow = (row) => {
     if (detailTableRef.value) {
         formData.detailDTOList.forEach(item => {
@@ -264,22 +300,74 @@ const delDetailRow = (row) => {
     if (index > -1) {
         formData.detailDTOList.splice(index, 1)
     }
-}
-
-// --- 提交逻辑 ---
-const loadEnums = async () => {
-    try {
-        const [resType, resUnit] = await Promise.all([
-            getVasOrderFeeTypeEnumApi(),
-            getUnitTypeEnumApi()
-        ])
-        feeTypeEnum.value = resType.data || []
-        unitTypeEnum.value = resUnit.data || []
-    } catch (e) {
-        console.error(e)
+    // 如果删除后为空，自动补充一行
+    if (formData.detailDTOList.length === 0) {
+        addDetailRow()
     }
 }
 
+// --- 公式弹窗逻辑 ---
+const openFormulaDialog = (row) => {
+    currentEditingRow.value = row
+    formulaVisible.value = true
+}
+
+const handleFormulaConfirm = (formulaStr) => {
+    if (currentEditingRow.value) {
+        currentEditingRow.value.formula = formulaStr
+    }
+}
+
+// --- 级联数据加载逻辑 ---
+const loadBaseEnums = async () => {
+    try {
+        const [resMain, resBiz] = await Promise.all([
+            getFeeMainTypeEnumApi(),
+            getFeeBizTypeEnumApi()
+        ])
+        feeMainTypeEnum.value = (resMain.data || []).map(item => ({ label: item.name || item.label, value: item.id || item.value }))
+        feeBizTypeEnum.value = (resBiz.data || []).map(item => ({ label: item.name || item.label, value: item.id || item.value }))
+    } catch (e) {
+        console.error('加载基础枚举失败', e)
+    }
+}
+
+const handleBizTypeChange = async (val) => {
+    formData.feeSubTypeId = ''
+    formData.feeUnitTypeId = ''
+    subTypeOptions.value = []
+    unitTypeOptions.value = []
+    if (val) {
+        try {
+            const res = await getFeeSubTypeEnumApi({ feeBizTypeId: val })
+            subTypeOptions.value = (res.data || []).map(item => ({ label: item.name, value: item.id }))
+        } catch (error) { console.error(error) }
+    }
+}
+
+const handleSubTypeChange = async (val) => {
+    unitTypeOptions.value = []
+    if (val) {
+        try {
+            const unitRes = await getFeeUnitTypeEnumApi({ subTypeId: val })
+            unitTypeOptions.value = (unitRes.data || []).map(item => ({ label: item.name, value: item.id }))
+        } catch (error) { console.error(error) }
+    }
+}
+
+const loadSubTypeData = async (bizTypeId) => {
+    if (!bizTypeId) return
+    const res = await getFeeSubTypeEnumApi({ feeBizTypeId: bizTypeId })
+    subTypeOptions.value = (res.data || []).map(item => ({ label: item.name, value: item.id }))
+}
+
+const loadUnitTypeData = async (subTypeId) => {
+    if (!subTypeId) return
+    const unitRes = await getFeeUnitTypeEnumApi({ subTypeId: subTypeId })
+    unitTypeOptions.value = (unitRes.data || []).map(item => ({ label: item.name, value: item.id }))
+}
+
+// --- 提交逻辑 ---
 const handleSubmit = async () => {
     if (!formRef.value) return
     await formRef.value.validate(async (valid) => {
@@ -287,9 +375,23 @@ const handleSubmit = async () => {
             submitting.value = true
             try {
                 const payload = JSON.parse(JSON.stringify(formData))
-                payload.detailDTOList.forEach(d => {
-                    delete d._tempId
+                payload.feeMainTypeId = Number(payload.feeMainTypeId)
+                payload.feeBizTypeId = Number(payload.feeBizTypeId)
+                payload.feeSubTypeId = Number(payload.feeSubTypeId)
+
+                payload.detailDTOList = payload.detailDTOList.map(d => {
+                    const item = { ...d }
+                    delete item._tempId
+                    if (!item.priceProjectId) item.priceProjectId = payload.priceProjectId
+                    item.sortNo = item.sortNo ? Number(item.sortNo) : undefined
+                    item.feeUnitTypeId = item.feeUnitTypeId ? Number(item.feeUnitTypeId) : 0
+                    item.unitQty = item.unitQty ? Number(item.unitQty) : 0
+                    item.price = item.price ? Number(item.price) : 0
+                    item.minCharge = item.minCharge ? Number(item.minCharge) : 0
+                    item.maxCharge = item.maxCharge ? Number(item.maxCharge) : 0
+                    return item
                 })
+
                 const res = await addOrUpdPriceWhOpApi(payload)
                 smartAlert(res.msg, res.success, 1000)
                 if (res.success) {
@@ -306,26 +408,34 @@ const handleSubmit = async () => {
 }
 
 onMounted(async () => {
-    await loadEnums()
+    await loadBaseEnums()
 
     if (props.editData) {
-        Object.assign(formData, JSON.parse(JSON.stringify(props.editData)))
-        if (formData.detailDTOList) {
+        const data = JSON.parse(JSON.stringify(props.editData))
+        if (data.feeBizTypeId) await loadSubTypeData(data.feeBizTypeId)
+        if (data.feeSubTypeId) await loadUnitTypeData(data.feeSubTypeId)
+        Object.assign(formData, data)
+
+        if (formData.detailDTOList && formData.detailDTOList.length > 0) {
             formData.detailDTOList.forEach(item => {
                 item._tempId = item.id || Date.now() + Math.random()
             })
         } else {
-            formData.detailDTOList = []
+            // 编辑态如果列表为空，也默认加一行
+            addDetailRow()
         }
     } else {
         Object.assign(formData, {
             id: '',
             priceProjectId: props.projectId,
             feeMainTypeId: '',
-            feeName: '',
+            feeBizTypeId: '',
+            feeSubTypeId: '',
             remark: '',
             detailDTOList: []
         })
+        // 新增态默认加一行
+        addDetailRow()
     }
 })
 </script>
@@ -335,7 +445,6 @@ onMounted(async () => {
     :deep(.el-dialog__body) {
         padding: 0;
         height: 70vh;
-        /* 固定高度 */
         display: flex;
         flex-direction: column;
         overflow: hidden;
@@ -412,47 +521,40 @@ onMounted(async () => {
         }
     }
 
-    /* 关键修改：移除表格默认的 Expanded Cell Padding 
-      使 sticky-wrapper 能真正从左侧边缘开始吸附
-    */
     :deep(.el-table__expanded-cell) {
         padding: 0 !important;
     }
 
-    /* 展开行容器样式优化 */
     .sticky-wrapper {
         position: sticky;
-        /* 粘性定位 */
         left: 0;
         z-index: 10;
-        width: 900px;
-        /* 宽度随内容 */
-        min-width: 800px;
-        /* 最小宽度，防止太窄 */
-        padding: 15px 20px;
-        /* 手动补回 Padding */
+        width: 60%;
+        /* 修改宽度为100%，自适应 */
+        padding: 10px 15px;
+        /* 稍微减小内边距 */
         background-color: #fff;
-        /* 背景色，防止透明叠加 */
     }
 
     .expand-form-container {
-        /* 表单容器 */
         width: 100%;
-        padding: 15px 20px 5px 20px;
+        padding: 10px;
         background-color: #f8f9fa;
-        /* 浅灰背景 */
         border-radius: 4px;
-        box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.05);
-        /* 柔和内阴影 */
+        box-shadow: inset 0 0 4px rgba(0, 0, 0, 0.05);
 
-        .inner-form {
-            .el-form-item {
-                margin-bottom: 15px;
-                /* 行间距 */
+        /* 紧凑表单样式 */
+        .compact-expand-form {
+            :deep(.el-form-item) {
+                margin-bottom: 5px;
             }
 
-            .mt-row {
-                margin-top: 5px;
+            /* 调整label高度，更紧凑 */
+            :deep(.el-form-item__label) {
+                line-height: 1.2;
+                padding-bottom: 2px;
+                font-size: 12px;
+                color: #606266;
             }
         }
     }

@@ -112,7 +112,7 @@
             </el-splitter>
         </div>
         <!-- 导入弹窗 -->
-        <importDialog ref="importDialogRef" :typeId="541" :id="importId" :importTitle="'导入分区'" @close='getPartitionList'>
+        <importDialog ref="importDialogRef" :typeId="601" :id="importId" :importTitle="'导入分区'" @close='getPartitionList'>
         </importDialog>
         <!-- <el-dialog v-model="centerDialogVisible" title="导入分区" width="900" align-center @close="getPartitionList">
             <importDialog :typeId="41" :id="importId"></importDialog>

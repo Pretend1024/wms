@@ -67,12 +67,11 @@
                 :enableSelection="true" :loading="loading" :pageSizes="[20, 50, 100, 200, 500]"
                 @selection-change="handleSelectionChange" @row-click="handleRowClick" @page-change="handlePageChange"
                 @sort-change="handleTableSort">
-                <!-- 在表格上方通过 slot 插入按钮 -->
                 <template #table-buttons>
-                    <el-button type="primary" @click="handleAdd" v-permission="'add'" :icon="Plus">{{
-                        getButtonText('add') }}</el-button>
+                    <el-button type="primary" @click="handleAdd" v-permission="'add'" :icon="Plus">
+                        {{ getButtonText('add') }}
+                    </el-button>
                 </template>
-                <!-- 使用插槽来自定义列内容，假如我们需要在操作列中添加按钮 -->
                 <template #customBtn="{ row }">
                     <div style="display: flex;">
                         <div class="cursor-pointer" @click="handleEdit(row)" v-permission="'edit'">
@@ -90,12 +89,18 @@
                             </span>
                             <template #dropdown>
                                 <el-dropdown-menu>
-                                    <el-dropdown-item @click="handleLink(row)">{{ getButtonText('connect') }}
+                                    <el-dropdown-item @click="handleLink(row)" v-permission="'connect'">
+                                        {{ getButtonText('connect') }}
                                     </el-dropdown-item>
-                                    <el-dropdown-item @click="resetPassword(row)">{{ getButtonText('resetPassword')
-                                    }}</el-dropdown-item>
-                                    <el-dropdown-item @click="lookPassword(row)">{{ getButtonText('viewPassword')
-                                    }}</el-dropdown-item>
+                                    <el-dropdown-item @click="resetPassword(row)" v-permission="'resetPassword'">
+                                        {{ getButtonText('resetPassword') }}
+                                    </el-dropdown-item>
+                                    <el-dropdown-item @click="lookPassword(row)" v-permission="'viewPassword'">
+                                        {{ getButtonText('viewPassword') }}
+                                    </el-dropdown-item>
+                                    <el-dropdown-item @click="handleLogin(row)" v-permission="'login'">
+                                        {{ getButtonText('login') }}
+                                    </el-dropdown-item>
                                 </el-dropdown-menu>
                             </template>
                         </el-dropdown>
@@ -120,40 +125,63 @@
                     <span :style="{ color: row.userStatusId == 10 ? 'green' : 'red' }">{{ row.userStatusName }}</span>
                 </template>
                 <template #isCompany="{ row }">
-                    <span :style="{ color: row.isCompany ? 'green' : 'red' }">{{ row.isCompany ? '是' : '否'
-                        }}</span>
+                    <span :style="{ color: row.isCompany ? 'green' : 'red' }">
+                        {{ row.isCompany ? t('yes') : t('no') }}
+                    </span>
                 </template>
             </hydTable>
         </div>
-        <el-dialog :title="$t('DockingInfo')" v-model="dialogVisible" width="60%" destroy-on-close>
+        <el-dialog :title="t('base_cust_customer_list.dockingInfo')" v-model="dialogVisible" width="60%"
+            destroy-on-close>
             <hydTable :tableData="linkTableData" :columns="linkColumns">
             </hydTable>
         </el-dialog>
     </div>
 </template>
+
 <script setup name="客户">
-import { Plus, Link } from '@element-plus/icons-vue'
-import { getOrgListCompanyApi } from '@/api/baseApi/org.js';
-import { smartAlert, trimObjectStrings } from '@/utils/genericMethods.js'
-import { lookPasswordApi, updatePasswordByAdminApi } from '@/api/sysApi/user.js'
+/* 1. 引入 */
+// 1.1 Vue核心及插件
+import { ref, onMounted, nextTick, shallowRef, onActivated } from 'vue';
+import { useI18n } from 'vue-i18n';
+import { Plus, Link, EditPen, ArrowDown } from '@element-plus/icons-vue';
+import { ElMessage, ElMessageBox } from 'element-plus';
+import router from '@/router/index.js';
+
+// 1.2 组件引入
 import hydFilterBox from "@/components/table/hyd-filterBox.vue";
 import hydTable from "@/components/table/hyd-table.vue";
-import selectInput from '@/components/table/selectInput.vue'
-import router from '@/router/index.js'
-import { getButtonText } from '@/utils/i18n/i18nLabels.js'
-import { useI18n } from 'vue-i18n';
-const { t } = useI18n();
-import { useRefreshStore } from '@/store/refresh.js'
-const refreshStore = useRefreshStore()
-import { getCustomerListApi, getCustomerStatusEnumApi, getListSalesUserEnumApi, getListFinancialUserEnumApi, getCustomerApiList, getCustomerAuthStatusEnumApi } from '@/api/baseApi/cust.js'
-// 搜索表单配置项------------------------------------------------
-// 配置表单项，使用所有支持的类型
-const formConfig = ref([
-    { type: 'date', label: '创建时间', prop: 'createdTimeBegin', useEndOfDay: false },
-    { type: 'date', label: '截至时间', prop: 'createdTimeEnd', useEndOfDay: true },
-])
+import selectInput from '@/components/table/selectInput.vue';
 
-// 初始化表单数据
+// 1.3 API引入
+import { getOrgListCompanyApi } from '@/api/baseApi/org.js';
+import { lookPasswordApi, updatePasswordByAdminApi } from '@/api/sysApi/user.js';
+import {
+    getCustomerListApi,
+    getCustomerStatusEnumApi,
+    getListSalesUserEnumApi,
+    getListFinancialUserEnumApi,
+    getCustomerApiList,
+    getCustomerAuthStatusEnumApi,
+    loginByAdminApi
+} from '@/api/baseApi/cust.js';
+
+// 1.4 工具类及Store
+import { getButtonText } from '@/utils/i18n/i18nLabels.js';
+import { smartAlert, trimObjectStrings } from '@/utils/genericMethods.js';
+import { useRefreshStore } from '@/store/refresh.js';
+
+/* 2. 全局变量与状态 */
+const { t } = useI18n();
+const refreshStore = useRefreshStore();
+const loading = ref(true);
+
+// 搜索表单配置
+const formConfig = ref([
+    { type: 'date', label: t('base_cust_customer_list.createTime'), prop: 'createdTimeBegin', useEndOfDay: false },
+    { type: 'date', label: t('base_cust_customer_list.endTime'), prop: 'createdTimeEnd', useEndOfDay: true },
+]);
+
 const initValues = ref({
     code: '',
     statusId: '',
@@ -163,40 +191,49 @@ const initValues = ref({
     salesUserCode: '',
     financialUserCode: '',
     way: 'nameLike',
-})
+});
+
 const way = ref([
-    { label: '客户名', value: 'nameLike' }
-])
-// 搜索事件
-const handleSearch = (data) => {
-    loading.value = true;
-    initValues.value = {
-        ...data
-    }
-    // 定义所有可能的字段
-    const fields = way.value.map(item => item.value);
-    // 筛选出需要删除的字段（排除当前选中的way）
-    const fieldsToDelete = fields.filter(field => field !== data.way);
-    // 循环删除不需要的字段
-    fieldsToDelete.forEach(field => {
-        delete initValues.value[field];
-    });
-    getList(pagination.value.currentPage, pagination.value.pageSize, orderBy.value)
-}
-// 重置事件
-const handleReset = (data) => {
-    loading.value = true;
-    initValues.value = {
-        ...data,
-    }
-    financialUserOptions.value = [];
-    salesUserOptions.value = [];
-    getList(pagination.value.currentPage, pagination.value.pageSize, orderBy.value)
-}
-// 表格数据--------------------------------------
-const tableData = shallowRef([])
-const linkTableData = ref([])
-// 表格列配置
+    { label: t('base_cust_customer_list.customerName'), value: 'nameLike' }
+]);
+
+// 下拉选项数据
+const companyOptions = ref([]);
+const financialUserOptions = ref([]);
+const salesUserOptions = ref([]);
+const statusOptions = ref([]);
+const authStatusOptions = ref([]);
+
+const cascaderRef = ref(null);
+const parentProps = {
+    checkStrictly: true,
+    expandTrigger: 'hover',
+    emitPath: false,
+};
+
+// 表格数据与分页
+const tableData = shallowRef([]);
+const linkTableData = ref([]);
+const pagination = ref({
+    currentPage: 1,
+    pageSize: 100,
+    total: 99
+});
+const linkPagination = ref({
+    currentPage: 1,
+    pageSize: 100,
+    total: 99
+});
+const orderBy = ref('');
+
+// 选中数据
+const selection = ref({});
+const selectionRows = ref([]);
+
+// 弹窗状态
+const dialogVisible = ref(false);
+
+/* 3. 计算属性 - Columns (保持原样) */
 const columns = ref([
     { label: '公司', prop: 'orgName', width: '125', fixed: 'left', sortable: true },
     { label: '客户代码', prop: 'code', width: '175', fixed: 'left', sortable: true },
@@ -221,7 +258,8 @@ const columns = ref([
     { label: '更新时间', prop: 'updatedTime', width: '200', sortable: true },
     { label: '更新人', prop: 'updatedBy', width: '120' },
     { label: '操作', prop: 'action', width: '145', fixed: 'right', slot: 'customBtn' }
-])
+]);
+
 const linkColumns = ref([
     { label: '接口类型', prop: 'apiTypeName', width: '120' },
     { label: '令牌(Token)', prop: 'toUsToken', width: '120' },
@@ -232,76 +270,90 @@ const linkColumns = ref([
     { label: '回调密钥', prop: 'toCSecretKey', width: '120' },
     { label: '上线时间', prop: 'onlineTime', width: '200', sortable: true },
     { label: '创建时间', prop: 'createdTime', width: '200', sortable: true },
-])
+]);
 
-const pagination = ref({
-    currentPage: 1,
-    pageSize: 100,
-    total: 99
-})
-const linkPagination = ref({
-    currentPage: 1,
-    pageSize: 100,
-    total: 99
-})
+/* 4. 业务逻辑 */
 
-const loading = ref(true)
+// 搜索
+const handleSearch = (data) => {
+    loading.value = true;
+    initValues.value = { ...data };
 
-// 事件回调
-const handleSelectionChange = (selection) => {
-    selectionRows.value = selection
-    console.log('选中的数据：', selectionRows.value)
-}
+    // 处理动态搜索字段
+    const fields = way.value.map(item => item.value);
+    const fieldsToDelete = fields.filter(field => field !== data.way);
+    fieldsToDelete.forEach(field => {
+        delete initValues.value[field];
+    });
 
-const handleRowClick = (row) => {
-    console.log('点击的行数据：', row)
-    selection.value = row
-}
+    getList(pagination.value.currentPage, pagination.value.pageSize, orderBy.value);
+};
 
-const handlePageChange = ({ pageSize, currentPage }) => {
-    loading.value = true
-    console.log('分页变化：', pageSize, currentPage)
-    pagination.value.pageSize = pageSize
-    pagination.value.currentPage = currentPage
-    getList(pagination.value.currentPage, pagination.value.pageSize, orderBy.value)
-}
-// 排序条件
-const orderBy = ref('')
-// 点击表格排序
-const handleTableSort = (sortString) => {
-    console.log('排序条件返回:', sortString)
-    orderBy.value = sortString
-    getList(pagination.value.currentPage, pagination.value.pageSize, orderBy.value)
-}
+// 重置
+const handleReset = (data) => {
+    loading.value = true;
+    initValues.value = { ...data };
+    financialUserOptions.value = [];
+    salesUserOptions.value = [];
+    getList(pagination.value.currentPage, pagination.value.pageSize, orderBy.value);
+};
+
+// 列表查询
+const getList = async (currentPage, pageSize, orderBy) => {
+    const res = await getCustomerListApi({
+        page: currentPage,
+        pageSize: pageSize,
+        orderBy,
+        ...trimObjectStrings(initValues.value)
+    });
+    tableData.value = Object.freeze(res.data.rows);
+    loading.value = false;
+    pagination.value = {
+        currentPage: res.data.page,
+        pageSize: pageSize,
+        total: res.data.total
+    };
+};
+
+// 新增
+const handleAdd = async () => {
+    router.push('/base/cust/customer/add');
+};
+
 // 编辑
 const handleEdit = (row) => {
     router.push({
         name: '编辑客户',
         params: { id: row.id, name: row.name },
-    })
-}
-// 对接
-const dialogVisible = ref(false)
+    });
+};
+
+// 对接操作
 const handleLink = async (row) => {
     try {
-        // 获取对接列表数据
-        await getLinkList(row.id)
-        dialogVisible.value = true
+        await getLinkList(row.id);
+        dialogVisible.value = true;
     } catch (error) {
-        console.error('获取对接列表数据失败:', error)
-        smartAlert('获取对接列表数据失败，请重试', false)
+        console.error('获取对接列表数据失败:', error);
+        smartAlert(t('base_cust_customer_list.fetchLinkError'), false, 1000);
     }
-}
+};
+
+// 获取对接列表
+const getLinkList = async (customerId) => {
+    const res = await getCustomerApiList({ customerId });
+    linkTableData.value = res.data;
+};
+
 // 重置密码
 const resetPassword = (row) => {
     setTimeout(() => {
         ElMessageBox.prompt(
-            // `请输入“${row.name} (${row.userCode})”的新密码`,
-            t('enterNewPassword', {
-                name: row.name,   // 传递 row.name 给占位符 {name}
-                userCode: row.userCode // 传递 row.userCode 给占位符 {userCode}
+            t('base_cust_customer_list.enterNewPassword', {
+                name: row.name,
+                userCode: row.userCode
             }),
-            t('ResetPwd'),
+            t('base_cust_customer_list.resetPassword'),
             {
                 confirmButtonText: getButtonText('confirm'),
                 cancelButtonText: getButtonText('cancel'),
@@ -313,104 +365,95 @@ const resetPassword = (row) => {
                                 userId: row.userId,
                                 newPassword: instance.inputValue
                             });
+                            smartAlert(res.msg, res.success, 1000);
                             if (res.success) {
-                                smartAlert(res.msg, res.success, 1000);
                                 done();
-                            } else {
-                                smartAlert(res.msg, res.success, 1000);
                             }
                         } catch (error) {
                             console.error('请求错误:', error);
                             smartAlert(error, false, 1000);
                         }
                     } else {
-                        done(); // 取消操作直接关闭
+                        done();
                     }
                 }
             }
-        )
+        );
     }, 100);
 };
+
 // 查看密码
 const lookPassword = async (row) => {
-    const res = await lookPasswordApi({ userId: row.userId })
+    const res = await lookPasswordApi({ userId: row.userId });
     smartAlert(res.msg, false, 1000);
-}
-// 选择的行数据
-const selection = ref({})
-// 多选的行数据
-const selectionRows = ref([])
-
-// 添加
-const handleAdd = async () => {
-    router.push('/base/cust/customer/add')
-}
-
-// 获取列表
-const getList = async (currentPage, pageSize, orderBy) => {
-    const res = await getCustomerListApi({
-        page: currentPage,
-        pageSize: pageSize,
-        orderBy,
-        ...trimObjectStrings(initValues.value)
-    })
-    tableData.value = Object.freeze(res.data.rows)
-    // console.log('表格数据:', tableData.value)
-    loading.value = false
-    pagination.value = {
-        currentPage: res.data.page,
-        pageSize: pageSize,
-        total: res.data.total
-    }
-}
-// 获取对接列表
-const getLinkList = async (customerId) => {
-    const res = await getCustomerApiList({
-        customerId
-    })
-    // 赋值
-    linkTableData.value = res.data
-}
-// 公司数据
-const companyOptions = ref([]);
-const cascaderRef = ref(null);
-const parentProps = {
-    checkStrictly: true,
-    expandTrigger: 'hover',
-    emitPath: false,
 };
-// 财务用户数据
-const financialUserOptions = ref([])
-// 销售用户数据
-const salesUserOptions = ref([])
-// 公司改变事件
+
+// 登录客户端
+const handleLogin = async (row) => {
+    const res = await loginByAdminApi({ id: row.id });
+    window.open(res.data, '_blank');
+    console.log('以客户身份登录:', res.data);
+};
+
+// 公司改变 - 联动财务和销售
 const handleCascaderChange = async (e) => {
-    console.log('选择的公司:', e)
-    //获取财务用户数据
-    const financialRes = await getListFinancialUserEnumApi({ orgId: e });
-    financialUserOptions.value = financialRes.data
-    // 获取销售用户数据
-    const salesRes = await getListSalesUserEnumApi({ orgId: e });
-    salesUserOptions.value = salesRes.data
+    console.log('选择的公司:', e);
+    // 并发获取
+    const [financialRes, salesRes] = await Promise.all([
+        getListFinancialUserEnumApi({ orgId: e }),
+        getListSalesUserEnumApi({ orgId: e })
+    ]);
+
+    financialUserOptions.value = financialRes.data;
+    salesUserOptions.value = salesRes.data;
+
     nextTick(() => {
-        cascaderRef.value.togglePopperVisible()
+        cascaderRef.value.togglePopperVisible();
     });
 };
-// 状态数据
-const statusOptions = ref([])
-// 认证类型
-const authStatusOptions = ref([])
 
+/* 5. 辅助方法 */
+
+// 选择行
+const handleSelectionChange = (selection) => {
+    selectionRows.value = selection;
+    console.log('选中的数据：', selectionRows.value);
+};
+
+// 点击行
+const handleRowClick = (row) => {
+    console.log('点击的行数据：', row);
+    selection.value = row;
+};
+
+// 分页变化
+const handlePageChange = ({ pageSize, currentPage }) => {
+    loading.value = true;
+    pagination.value.pageSize = pageSize;
+    pagination.value.currentPage = currentPage;
+    getList(pagination.value.currentPage, pagination.value.pageSize, orderBy.value);
+};
+
+// 表格排序
+const handleTableSort = (sortString) => {
+    orderBy.value = sortString;
+    getList(pagination.value.currentPage, pagination.value.pageSize, orderBy.value);
+};
+
+/* 6. 生命周期 */
 onMounted(async () => {
-    // 获取状态菜单
-    const res = await getCustomerStatusEnumApi()
-    statusOptions.value = res.data.map(item => ({ label: item.name, value: item.id }))
-    // 实名状态
-    const authStatusRes = await getCustomerAuthStatusEnumApi()
-    authStatusOptions.value = authStatusRes.data
-    // 获取公司数据
-    const companyRes = await getOrgListCompanyApi();
-    // 处理公司数据
+    // 并发请求初始化数据
+    const [statusRes, authStatusRes, companyRes] = await Promise.all([
+        getCustomerStatusEnumApi(),
+        getCustomerAuthStatusEnumApi(),
+        getOrgListCompanyApi()
+    ]);
+
+    // 处理状态菜单
+    statusOptions.value = statusRes.data.map(item => ({ label: item.name, value: item.id }));
+    authStatusOptions.value = authStatusRes.data;
+
+    // 处理公司数据 (Tree)
     const convertToTree = (items) => {
         return items.map(item => ({
             value: item.id,
@@ -419,22 +462,21 @@ onMounted(async () => {
         }));
     };
     companyOptions.value = convertToTree(companyRes.data);
-})
-// 监听刷新数据
+});
+
 onActivated(() => {
     if (refreshStore.shouldRefreshCustomerList) {
-        console.log('刷新数据')
-        getList(pagination.value.currentPage, pagination.value.pageSize, orderBy.value)
-        refreshStore.shouldRefreshCustomerList = false
+        console.log('刷新数据');
+        getList(pagination.value.currentPage, pagination.value.pageSize, orderBy.value);
+        refreshStore.shouldRefreshCustomerList = false;
     }
-})
-
+});
 </script>
 
 <style scoped lang="scss">
 @use '@/assets/css/viewArea.scss';
 
-/* 清楚悬浮黑框 */
+/* 清除悬浮黑框 */
 :deep(.el-dropdown) {
     outline: none;
 }

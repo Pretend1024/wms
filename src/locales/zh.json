@@ -82,7 +82,10 @@
   "fullScreen": "全屏",
   "base_org_organization_list": {
     "addTitle": "新增部门",
-    "updTitle": "编辑部门"
+    "updTitle": "编辑部门",
+    "confirmDelete": "是否要删除本条数据?",
+    "reminder": "提醒",
+    "deleteCanceled": "已取消删除"
   },
   "base_basic_country_list": {
     "addTitle": "新增国家地区",
@@ -94,47 +97,161 @@
   },
   "base_consumables_consumables_list": {
     "addTitle": "新增包材类型",
-    "updTitle": "编辑包材类型"
+    "updTitle": "编辑包材类型",
+    "typeName": "类型名称",
+    "createTime": "创建时间",
+    "endTime": "截至时间",
+    "selectDelete": "请选择要删除的数据！",
+    "confirmDelete": "是否要删除{count}条数据?",
+    "reminder": "提醒",
+    "deleteCanceled": "已取消删除",
+    "processing": "操作中...",
+    "operationComplete": "操作完成！"
   },
   "base_consumables_consumablesIn_list": {
     "addTitle": "耗材入库",
-    "updTitle": "编辑耗材"
+    "updTitle": "编辑耗材",
+    "none": "无"
   },
   "base_consumables_consumablesInventory_list": {
     "addTitle": "新增耗材库存",
-    "updTitle": "编辑耗材备注"
+    "updTitle": "编辑耗材备注",
+    "none": "无"
   },
   "base_consumables_consumablesOut_list": {
     "addTitle": "耗材出库",
-    "updTitle": "编辑耗材库存"
+    "updTitle": "编辑耗材库存",
+    "none": "无"
   },
   "base_cust_customerApi_list": {
     "addTitle": "新增Api对接",
-    "updTitle": "编辑Api对接"
+    "updTitle": "编辑Api对接",
+    "token": "令牌",
+    "apiType": "接口类型",
+    "createTime": "创建时间",
+    "endTime": "截至时间",
+    "customerName": "客户名称",
+    "selectDelete": "请选择要删除的数据！",
+    "confirmDelete": "是否要删除{count}条数据?",
+    "reminder": "提醒",
+    "deleteCanceled": "已取消删除",
+    "processing": "操作中...",
+    "operationComplete": "操作完成！"
   },
   "base_cust_customerLevel_list": {
     "addTitle": "新增客户等级",
-    "updTitle": "编辑客户等级"
+    "updTitle": "编辑客户等级",
+    "nameLabel": "名称",
+    "selectDelete": "请选择要删除的数据！",
+    "confirmDelete": "是否要删除{count}条数据?",
+    "reminder": "提醒",
+    "deleteCanceled": "已取消删除",
+    "processing": "操作中...",
+    "operationComplete": "操作完成！"
+  },
+  "base_sku_sku_list": {
+    "audit": "审核",
+    "auditStatus": "审核状态",
+    "selectAuditStatus": "请选择审核状态",
+    "operationResult": "操作结果",
+    "sku": "SKU",
+    "selectAuditData": "请选择要审核的数据！",
+    "auditSuccess": "审核成功",
+    "deleteSuccess": "删除成功",
+    "selectDelete": "请选择要删除的数据！",
+    "confirmDelete": "是否要删除{count}条数据?",
+    "reminder": "提醒",
+    "deleteCanceled": "已取消删除",
+    "processing": "操作中...",
+    "operationComplete": "操作完成！",
+    "importCreate": "SKU创建",
+    "importUpdate": "SKU更新"
   },
   "base_org_position_list": {
     "addTitle": "新增岗位",
-    "updTitle": "编辑岗位"
+    "updTitle": "编辑岗位",
+    "selectWarning": "请选择要删除的数据！",
+    "confirmDelete": "是否要删除 {count} 条数据?",
+    "reminder": "提醒",
+    "deleteCanceled": "已取消删除",
+    "processing": "操作中...",
+    "operationComplete": "操作完成！",
+    "name": "名称"
   },
   "base_sku_skuMapping_list": {
     "addTitle": "新增SKU映射",
-    "updTitle": "编辑SKU映射"
+    "updTitle": "编辑SKU映射",
+    "platformSku": "平台Sku",
+    "selectDelete": "请选择要删除的数据！",
+    "confirmDelete": "是否要删除{count}条数据?",
+    "reminder": "提醒",
+    "deleteCanceled": "已取消删除",
+    "processing": "操作中...",
+    "operationComplete": "操作完成！",
+    "importCreate": "导入创建sku映射"
   },
   "base_wh_location_list": {
     "addTitle": "新增库位",
-    "updTitle": "编辑库位"
+    "updTitle": "编辑库位",
+    "locationCode": "库位代码",
+    "selectDelete": "请选择要删除的数据！",
+    "confirmDelete": "是否要删除{count}条数据?",
+    "reminder": "提醒",
+    "deleteCanceled": "已取消删除",
+    "processing": "操作中...",
+    "operationComplete": "操作完成！",
+    "importCreate": "库位创建",
+    "importUpdate": "库位更新"
   },
   "base_wh_locationSizeType_list": {
     "addTitle": "新增库位类型",
-    "updTitle": "编辑库位类型"
+    "updTitle": "编辑库位类型",
+    "nameLabel": "名称",
+    "selectDelete": "请选择要删除的数据！",
+    "confirmDelete": "是否要删除{count}条数据?",
+    "reminder": "提醒",
+    "deleteCanceled": "已取消删除",
+    "processing": "操作中...",
+    "operationComplete": "操作完成！"
   },
   "base_wh_platform_list": {
     "addTitle": "新增月台",
-    "updTitle": "编辑月台"
+    "updTitle": "编辑月台",
+    "appointmentStatus": "预约情况",
+    "updateResult": "更新结果",
+    "platformName": "月台名称",
+    "selectChange": "请选择要更改的数据！",
+    "confirmChange": "是否要更改{count}条数据?",
+    "reminder": "提醒",
+    "operationCanceled": "已取消",
+    "processing": "操作中...",
+    "operationComplete": "操作完成！",
+    "appointmentNo": "预约单号",
+    "appointmentTime": "预约时间",
+    "status": "状态",
+    "company": "公司",
+    "customer": "客户",
+    "viewAppointmentDetail": "查看预约详情",
+    "close": "关闭"
+  },
+  "product_shipway_shipway_list": {
+    "statusUpdateResult": "状态更改结果",
+    "product": "产品",
+    "log": "日志",
+    "selectChange": "请选择要更改的数据！",
+    "confirmChange": "是否要{action}{count}条数据?",
+    "reminder": "提醒",
+    "operationCanceled": "已取消",
+    "processing": "操作中...",
+    "operationComplete": "操作完成！",
+    "oneToOne": "一对一",
+    "lowestPrice": "取价格低者",
+    "enable": "启用",
+    "disable": "停用"
+  },
+  "product_shipway_supplier_list": {
+    "channelInfo": "渠道信息",
+    "noData": "暂无数据"
   },
   "base_wh_warehouse_list": {
     "addTitle": "新增仓库",
@@ -142,7 +259,14 @@
   },
   "base_wh_zone_list": {
     "addTitle": "新增库区",
-    "updTitle": "编辑库区"
+    "updTitle": "编辑库区",
+    "zoneName": "分区名称",
+    "selectDelete": "请选择要删除的数据！",
+    "confirmDelete": "是否要删除{count}条数据?",
+    "reminder": "提醒",
+    "deleteCanceled": "已取消删除",
+    "processing": "操作中...",
+    "operationComplete": "操作完成！"
   },
   "instock_appointment_inAppointment_list": {
     "addTitle": "新增预约",
@@ -151,7 +275,52 @@
   "product_shipway_carrier_list": {
     "addTitle": "新增承运商",
     "updTitle": "编辑承运商",
-    "infoTitle": "承运商详情"
+    "infoTitle": "承运商详情",
+    "operationResult": "操作结果",
+    "carrierCode": "承运商代码",
+    "updateStatusSuccess": "更新状态成功",
+    "selectChange": "请选择要更改的数据！",
+    "confirmChange": "是否要{action}{count}条数据?",
+    "reminder": "提醒",
+    "operationCanceled": "已取消",
+    "processing": "操作中...",
+    "operationComplete": "操作完成！",
+    "enable": "启用",
+    "disable": "禁用"
+  },
+  "product_shipway_addressValid_list": {
+    "addTitle": "新增地址校验配置",
+    "updTitle": "编辑地址校验配置",
+    "operationResult": "操作结果",
+    "configName": "配置名称",
+    "selectDelete": "请选择要删除的数据！",
+    "confirmDelete": "是否要删除{count}条数据?",
+    "reminder": "提醒",
+    "processing": "操作中...",
+    "operationComplete": "操作完成！",
+    "enable": "启用",
+    "disable": "停用",
+    "confirmStatusChange": "确认要{action}该配置吗？"
+  },
+  "product_shipway_traceStatus_list": {
+    "addTitle": "新增轨迹状态",
+    "updTitle": "编辑轨迹状态",
+    "statusName": "状态名称",
+    "selectDelete": "请选择要删除的数据！",
+    "confirmDelete": "是否要删除{count}条数据?",
+    "reminder": "提醒",
+    "deleteCanceled": "已取消删除",
+    "processing": "操作中...",
+    "operationComplete": "操作完成！",
+    "confirmRefresh": "是否要刷新缓存?",
+    "refreshCanceled": "已取消",
+    "test": "测试",
+    "enterTraceContent": "请输入轨迹内容",
+    "testContentPlaceholder": "请输入测试内容",
+    "contentRequired": "内容不能为空",
+    "testCanceled": "已取消",
+    "statusId": "状态ID",
+    "isCustomerVisible": "是否客户可见"
   },
   "product_price_fuel_list": {
     "addTitle": "新增模板",
@@ -167,7 +336,14 @@
   },
   "product_shipway_shipwaySender_list": {
     "addTitle": "新增回邮地址",
-    "updTitle": "编辑回邮地址"
+    "updTitle": "编辑回邮地址",
+    "addressLabel": "地址",
+    "selectDelete": "请选择要删除的数据！",
+    "confirmDelete": "是否要删除{count}条数据?",
+    "reminder": "提醒",
+    "deleteCanceled": "已取消删除",
+    "processing": "操作中...",
+    "operationComplete": "操作完成！"
   },
   "base_basic_address_list": {
     "addTitle": "新增地址",
@@ -194,7 +370,62 @@
   },
   "sys_user_role_list": {
     "addTitle": "新增角色",
-    "updTitle": "编辑角色"
+    "updTitle": "编辑角色",
+    "authorize": "授权",
+    "roleName": "角色名称",
+    "deleteSuccess": "删除成功",
+    "selectDelete": "请选择要删除的数据！",
+    "confirmDelete": "是否要删除 {count} 条数据?",
+    "reminder": "提醒",
+    "deleteCanceled": "已取消删除",
+    "processing": "操作中...",
+    "operationComplete": "操作完成！"
+  },
+  "base_cust_customer_list": {
+    "createTime": "创建时间",
+    "endTime": "截至时间",
+    "customerName": "客户名",
+    "dockingInfo": "对接信息",
+    "fetchLinkError": "获取对接列表数据失败，请重试",
+    "enterNewPassword": "请输入“{name} ({userCode})”的新密码",
+    "resetPassword": "重置密码"
+  },
+  "base_cust_customerAuth_list": {
+    "auditAuthInfo": "审核认证信息",
+    "viewAuthDetails": "查看认证详情",
+    "basicInfo": "基础信息",
+    "customerInfo": "客户信息",
+    "subjectType": "主体类型",
+    "currentStatus": "当前状态",
+    "contact": "联系人",
+    "mobile": "手机号",
+    "email": "邮箱",
+    "region": "所在地区",
+    "address": "详细地址",
+    "certInfo": "证件信息",
+    "certType": "证件类型",
+    "certNo": "证件号码",
+    "socialCreditCode": "统一社会信用代码",
+    "idCardNumber": "身份证号码",
+    "attachments": "附件资料",
+    "idCardFront": "身份证人像面",
+    "idCardBack": "身份证国徽面",
+    "businessLicense": "营业执照",
+    "legalIdFront": "法人身份证正面",
+    "legalIdBack": "法人身份证反面",
+    "noAttachments": "暂无附件",
+    "auditProcessing": "审核处理",
+    "auditResult": "审核结果",
+    "approve": "通过",
+    "reject": "拒绝",
+    "rejectReason": "拒绝原因",
+    "rejectReasonPlaceholder": "请输入拒绝原因（必填）",
+    "submitAndNext": "提交并继续下一条",
+    "selectAuditWarning": "请先勾选需要审核的数据！",
+    "noPendingAudit": "所选数据中没有待审核的记录！",
+    "noMorePending": "已无待审核记录",
+    "enterRejectReason": "请填写拒绝原因",
+    "allAudited": "所有选定记录审核完毕"
   },
   "instock_returned_returnClaim_list": {
     "title": "退货认领",
@@ -616,8 +847,8 @@
     "close": "关闭"
   },
   "finance_receivables_fee_list": {
-    "feeMainType": "费用大类",
-    "feeSubType": "费用小类",
+    "FeeBizType": "单据类型",
+    "feeSubType": "计费项目",
     "amountFormula": "金额计算公式",
     "currency": "币种",
     "originalAmount": "原始金额",
@@ -625,7 +856,7 @@
     "confirmAmount": "确认金额",
     "remark": "备注",
     "inputExistOrderNo": "请输入系统存在的{orderNoLabel}",
-    "selectFeeMainType": "请选择费用大类",
+    "selectFeeBizType": "请选择单据类型",
     "pleaseSelect": "请选择",
     "inputAmountFormula": "请输入金额计算公式",
     "inputAmount": "请输入金额",
@@ -635,6 +866,7 @@
     "confirm": "确定",
     "inputOrderNo": "请输入单号",
     "inboundOrderNo": "入库单号",
+    "returnOrderNo": "退件单号",
     "outboundOrderNo": "出库单号",
     "storageRentOrderNo": "仓租单号",
     "valueAddedOrderNo": "增值单号",
@@ -645,11 +877,33 @@
     "outbound": "出库",
     "storageRent": "仓租",
     "valueAdded": "增值",
+    "return": "退件",
+    "other": "其他",
     "fee": "费用",
     "all": "全部",
-    "inboundFee": "入库费用",
-    "outboundFee": "出库费用",
-    "storageRentFee": "仓租费用",
-    "valueAddedFee": "增值费用"
+    "inboundFee": "入库",
+    "returnFee": "退货",
+    "otherFee": "其他",
+    "outboundFee": "出库",
+    "storageRentFee": "仓租",
+    "valueAddedFee": "增值服务"
+  },
+  "base_org_employee_list": {
+    "authorize": "授权",
+    "operationResult": "操作结果",
+    "employeeNameUserCode": "员工姓名 (用户代码)",
+    "confirmLeave": "是否将选择的员工改为离职状态?",
+    "reminder": "提醒",
+    "resetPassword": "重置密码",
+    "cancelOperation": "已取消",
+    "selectEmployee": "请先选择要分配的员工！",
+    "selectLock": "请选择要锁定的数据！",
+    "selectUnlock": "请选择要解锁的数据！",
+    "selectLeave": "请选择要离职的数据！",
+    "processing": "操作中...",
+    "operationComplete": "操作完成！",
+    "saveSuccess": "保存成功",
+    "locked": "用户已锁定",
+    "unlocked": "用户已解锁"
   }
 }

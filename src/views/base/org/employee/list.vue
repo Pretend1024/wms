@@ -27,40 +27,40 @@
                 :enableSelection="true" :loading="loading" :pageSizes="[20, 50, 100, 200, 500]"
                 @selection-change="handleSelectionChange" @row-click="handleRowClick" @page-change="handlePageChange"
                 @sort-change="handleTableSort">
-                <!-- 在表格上方通过 slot 插入按钮 -->
                 <template #table-buttons>
-                    <el-button type="primary" @click="handleAdd" v-permission="'add'" :icon="Plus">{{
-                        getButtonText('add') }}</el-button>
+                    <el-button type="primary" @click="handleAdd" v-permission="'add'" :icon="Plus">
+                        {{ getButtonText('add') }}
+                    </el-button>
                     <el-button type="primary" @click="batchSetRoleMenu" v-permission="'userRole:setUserRole'"
-                        :icon="Finished">{{
-                            getButtonText('assignRole')
-                        }}</el-button>
-                    <el-button type="danger" @click="handleLock" v-permission="'user:lock'" :icon="Lock">{{
-                        getButtonText('lock') }}</el-button>
-                    <el-button type="warning" @click="handleUnlock" v-permission="'user:unLock'" :icon="Unlock">{{
-                        getButtonText('unlock')
-                    }}</el-button>
-                    <el-button type="danger" @click="handleLeave" v-permission="'leaveJob'" :icon="Remove">{{
-                        getButtonText('resign')
-                    }}</el-button>
-
+                        :icon="Finished">
+                        {{ getButtonText('assignRole') }}
+                    </el-button>
+                    <el-button type="danger" @click="handleLock" v-permission="'user:lock'" :icon="Lock">
+                        {{ getButtonText('lock') }}
+                    </el-button>
+                    <el-button type="warning" @click="handleUnlock" v-permission="'user:unLock'" :icon="Unlock">
+                        {{ getButtonText('unlock') }}
+                    </el-button>
+                    <el-button type="danger" @click="handleLeave" v-permission="'leaveJob'" :icon="Remove">
+                        {{ getButtonText('resign') }}
+                    </el-button>
                 </template>
-                <!-- 使用插槽来自定义列内容，假如我们需要在操作列中添加按钮 -->
-                <template #customBtn="{ row, column, index }">
+                <template #customBtn="{ row }">
                     <div style="display: flex;">
-                        <div class="cursor-pointer" @click="handleEdit(row)">
+                        <div class="cursor-pointer" @click="handleEdit(row)" v-permission="'edit'">
                             <el-icon>
                                 <EditPen />
                             </el-icon>
                             <span>{{ getButtonText('edit') }}</span>
                         </div>
-                        <div class="cursor-pointer" @click="resetPassword(row)">
+                        <div class="cursor-pointer" @click="resetPassword(row)"
+                            v-permission="'user:updatePasswordByAdmin'">
                             <el-icon>
                                 <RefreshRight />
                             </el-icon>
                             <span>{{ getButtonText('resetPassword') }}</span>
                         </div>
-                        <div class="cursor-pointer" @click="lookPassword(row)">
+                        <div class="cursor-pointer" @click="lookPassword(row)" v-permission="'user:lookPassword'">
                             <el-icon>
                                 <View />
                             </el-icon>
@@ -71,16 +71,16 @@
                 <template #name="{ row }">
                     <span>{{ row.name }}</span>
                 </template>
-                <template #statusName="{ row, column, index }">
+                <template #statusName="{ row }">
                     <span :style="{ color: row.statusId == 10 ? 'green' : 'red' }">{{ row.statusName }}</span>
                 </template>
-                <template #userStatusName="{ row, column, index }">
+                <template #userStatusName="{ row }">
                     <span :style="{ color: row.userStatusId == 10 ? 'green' : 'red' }">{{ row.userStatusName }}</span>
                 </template>
             </hydTable>
         </div>
-        <!-- 受权弹窗 -->
-        <el-dialog v-model="setRoleDialogVisible" title="授权" width="700" align-center destroy-on-close>
+        <el-dialog v-model="setRoleDialogVisible" :title="t('base_org_employee_list.authorize')" width="700"
+            align-center destroy-on-close>
             <setRole :formData="userData" ref="roleDialogRef" />
             <template #footer>
                 <div class="dialog-footer">
@@ -90,63 +90,104 @@
                 </div>
             </template>
         </el-dialog>
-        <batchOperationn :dialogTitle="'操作结果'" :isVisible="batchSetRoleDialogVisible" :tableData="setRoleData"
-            :nameField="'id'" :nameLabel="'员工姓名 (用户代码)'" :successValue="successValue" @close="delColse"
+        <batchOperationn :dialogTitle="t('base_org_employee_list.operationResult')"
+            :isVisible="batchSetRoleDialogVisible" :tableData="setRoleData" :nameField="'id'"
+            :nameLabel="t('base_org_employee_list.employeeNameUserCode')" :successValue="successValue" @close="delColse"
             :promptMessage="promptMessage" />
     </div>
 </template>
+
 <script setup name="员工">
-import { Plus, Finished, Unlock, Lock, View, Remove } from '@element-plus/icons-vue'
-import { getOrgListDepartmentApi, getOrgEmployeeListApi, getStatusEnumApi, getOrgListCompanyApi, leaveOrgEmployeeApi } from '@/api/baseApi/org.js';
-import { setUserUserUnLockApi, setUserUserLockApi, lookPasswordApi, updatePasswordByAdminApi, setUserUserRoleApi } from '@/api/sysApi/user.js'
-import setRole from './setRole.vue'
+/* 1. 引入 */
+// 1.1 Vue核心及插件
+import { ref, onMounted, nextTick, shallowRef, onActivated } from 'vue';
 import { useI18n } from 'vue-i18n';
-const { t } = useI18n();
-import { getButtonText } from '@/utils/i18n/i18nLabels.js'
-import batchOperationn from '@/components/messageNotices/batchOperation.vue'
+import { Plus, Finished, Unlock, Lock, View, Remove, EditPen, RefreshRight } from '@element-plus/icons-vue';
+import { ElMessage, ElMessageBox } from 'element-plus';
+import router from '@/router/index.js';
+
+// 1.2 组件引入
+import setRole from './setRole.vue';
+import batchOperationn from '@/components/messageNotices/batchOperation.vue';
 import hydFilterBox from "@/components/table/hyd-filterBox.vue";
 import hydTable from "@/components/table/hyd-table.vue";
-import { smartAlert, trimObjectStrings } from '@/utils/genericMethods.js'
-import router from '@/router/index.js'
-import { useRefreshStore } from '@/store/refresh.js'
-const refreshStore = useRefreshStore()
-// 搜索表单配置项------------------------------------------------
-// 配置表单项，使用所有支持的类型
-let statusMenu = ref([])
+
+// 1.3 API引入
+import {
+    getOrgListDepartmentApi,
+    getOrgEmployeeListApi,
+    getStatusEnumApi,
+    getOrgListCompanyApi,
+    leaveOrgEmployeeApi
+} from '@/api/baseApi/org.js';
+import {
+    setUserUserUnLockApi,
+    setUserUserLockApi,
+    lookPasswordApi,
+    updatePasswordByAdminApi,
+    setUserUserRoleApi
+} from '@/api/sysApi/user.js';
+
+// 1.4 工具类及Store
+import { getButtonText } from '@/utils/i18n/i18nLabels.js';
+import { smartAlert, trimObjectStrings } from '@/utils/genericMethods.js';
+import { useRefreshStore } from '@/store/refresh.js';
+
+/* 2. 全局变量与状态 */
+const { t } = useI18n();
+const refreshStore = useRefreshStore();
+const loading = ref(true);
+
+// 搜索表单配置
+let statusMenu = ref([]);
 const formConfig = ref([
     { type: 'input', label: '工号', prop: 'num', },
     { type: 'input', label: '用户代码', prop: 'userCode', },
     { type: 'select', label: '在职状态', prop: 'statusId', options: [] },
-])
+]);
 
-// 初始化表单数据
 const initValues = ref({
     num: '',
     statusId: '',
     orgId: '',
     departmentId: '',
-})
+});
 
-// 搜索事件
-const handleSearch = (data) => {
-    loading.value = true;
-    initValues.value = {
-        ...data,
-    }
-    getList(pagination.value.currentPage, pagination.value.pageSize, orderBy.value)
-}
-// 重置事件
-const handleReset = (data) => {
-    loading.value = true;
-    initValues.value = {
-        ...data,
-    }
-    departmentOptions.value = []
-    getList(pagination.value.currentPage, pagination.value.pageSize, orderBy.value)
-}
-// 表格数据--------------------------------------
-const tableData = shallowRef([])
-// 表格列配置
+// 公司与部门级联数据
+const companyOptions = ref([]);
+const departmentOptions = ref([]);
+const cascaderRef = ref(null);
+const parentProps = {
+    checkStrictly: true,
+    expandTrigger: 'hover',
+    emitPath: false,
+};
+
+// 表格数据与分页
+const tableData = shallowRef([]);
+const pagination = ref({
+    currentPage: 1,
+    pageSize: 100,
+    total: 99
+});
+const orderBy = ref('');
+
+// 选中数据
+const selection = ref({});
+const selectionRows = ref([]);
+
+// 批量操作数据
+const setRoleData = ref([]);
+const batchSetRoleDialogVisible = ref(false);
+const promptMessage = ref('');
+const successValue = ref('');
+
+// 授权弹窗数据
+const userData = ref({});
+const setRoleDialogVisible = ref(false);
+const roleDialogRef = ref(null);
+
+/* 3. 计算属性 - Columns (保持原样) */
 const columns = ref([
     { label: '公司', prop: 'orgName', width: '125', sortable: true, fixed: 'left' },
     { label: '部门', prop: 'departmentName', width: '145', sortable: true, fixed: 'left' },
@@ -174,58 +215,73 @@ const columns = ref([
     { label: '更新时间', prop: 'updatedTime', width: '200', sortable: true },
     { label: '更新人', prop: 'updatedBy', width: '120' },
     { label: '操作', prop: 'action', width: '250', fixed: 'right', slot: 'customBtn' }
-])
+]);
 
-const pagination = ref({
-    currentPage: 1,
-    pageSize: 100,
-    total: 99
-})
+/* 4. 业务逻辑 */
 
-const loading = ref(true)
+// 搜索
+const handleSearch = (data) => {
+    loading.value = true;
+    initValues.value = { ...data };
+    getList(pagination.value.currentPage, pagination.value.pageSize, orderBy.value);
+};
 
-// 事件回调
-const handleSelectionChange = (selection) => {
-    selectionRows.value = selection
-    console.log('选中的数据：', selectionRows.value)
-}
+// 重置
+const handleReset = (data) => {
+    loading.value = true;
+    initValues.value = { ...data };
+    departmentOptions.value = [];
+    getList(pagination.value.currentPage, pagination.value.pageSize, orderBy.value);
+};
 
-const handleRowClick = (row) => {
-    console.log('点击的行数据：', row)
-    selection.value = row
-}
+// 列表查询
+const getList = async (currentPage, pageSize, orderBy) => {
+    const res = await getOrgEmployeeListApi({
+        page: currentPage,
+        pageSize: pageSize,
+        orderBy,
+        ...trimObjectStrings(initValues.value),
+    });
+    tableData.value = Object.freeze(res.data.rows);
+    loading.value = false;
+    pagination.value = {
+        currentPage: res.data.page,
+        pageSize: pageSize,
+        total: res.data.total
+    };
+};
 
-const handlePageChange = ({ pageSize, currentPage }) => {
-    loading.value = true
-    console.log('分页变化：', pageSize, currentPage)
-    pagination.value.pageSize = pageSize
-    pagination.value.currentPage = currentPage
-    getList(pagination.value.currentPage, pagination.value.pageSize, orderBy.value)
-}
-// 排序条件
-const orderBy = ref('')
-// 点击表格排序
-const handleTableSort = (sortString) => {
-    console.log('排序条件返回:', sortString)
-    orderBy.value = sortString
-    getList(pagination.value.currentPage, pagination.value.pageSize, orderBy.value)
-}
+// 公司选择改变 - 联动部门
+const handleCascaderChange = async (e) => {
+    nextTick(() => {
+        cascaderRef.value.togglePopperVisible();
+    });
+    const res = await getOrgListDepartmentApi({ parentId: e[e.length - 1] });
+    departmentOptions.value = res.data;
+};
+
+// 新增
+const handleAdd = async () => {
+    router.push('/base/org/employee/add');
+};
+
 // 编辑
 const handleEdit = (row) => {
     router.push({
         name: '编辑员工',
         params: { id: row.id, name: row.name },
-    })
-}
+    });
+};
+
 // 重置密码
 const resetPassword = (row) => {
     setTimeout(() => {
         ElMessageBox.prompt(
             t('enterNewPassword', {
-                name: row.name,   // 传递 row.name 给占位符 {name}
-                userCode: row.userCode // 传递 row.userCode 给占位符 {userCode}
+                name: row.name,
+                userCode: row.userCode
             }),
-            t('ResetPwd'),
+            t('base_org_employee_list.resetPassword'),
             {
                 confirmButtonText: getButtonText('confirm'),
                 cancelButtonText: getButtonText('cancel'),
@@ -237,237 +293,224 @@ const resetPassword = (row) => {
                                 userId: row.userId,
                                 newPassword: instance.inputValue
                             });
+                            // 使用 smartAlert 并保持 1000ms 延时
+                            smartAlert(res.msg, res.success, 1000);
                             if (res.success) {
-                                smartAlert(res.msg, res.success, 1000);
                                 done();
-                            } else {
-                                smartAlert(res.msg, res.success, 1000);
                             }
                         } catch (error) {
                             console.error('请求错误:', error);
                             smartAlert(error, false, 1000);
                         }
                     } else {
-                        done(); // 取消操作直接关闭
+                        done();
                     }
                 }
             }
-        )
+        );
     }, 100);
 };
+
 // 查看密码
 const lookPassword = async (row) => {
-    const res = await lookPasswordApi({ userId: row.userId })
+    const res = await lookPasswordApi({ userId: row.userId });
     smartAlert(res.msg, false, 1000);
-}
-// 选择的行数据
-const selection = ref({})
-// 多选的行数据
-const selectionRows = ref([])
-// 批量数据
-const setRoleData = ref([])
-// 批量弹窗
-const batchSetRoleDialogVisible = ref(false)
-const promptMessage = ref('')
-const successValue = ref('保存成功')
-// 添加员工
-const handleAdd = async () => {
-    router.push('/base/org/employee/add')
-}
-const userData = ref({})
-const setRoleDialogVisible = ref(false)
-const roleDialogRef = ref(null)
-// 批量分配角色
+};
+
+// 批量分配角色 - 打开弹窗
 const batchSetRoleMenu = async () => {
     if (selectionRows.value.length === 0) {
         ElMessage({
-            message: '请先选择要分配的员工！',
+            message: t('base_org_employee_list.selectEmployee'),
             type: 'warning',
-        })
-        return
+        });
+        return;
     }
-    userData.value = { nickName: '批量授权' }
-    // 弹窗
-    setRoleDialogVisible.value = true
-}
-// 授权确认
+    userData.value = { nickName: '批量授权' };
+    setRoleDialogVisible.value = true;
+};
+
+// 批量分配角色 - 确认
 const handleSetRoleMenuConfirm = async () => {
-    let res
-    const roleIds = await roleDialogRef.value.handleSelection()
-    // 循环遍历selectionRows
+    let res;
+    const roleIds = await roleDialogRef.value.handleSelection();
     setRoleData.value = [];
-    promptMessage.value = '操作中...'
+    promptMessage.value = t('base_org_employee_list.processing');
     batchSetRoleDialogVisible.value = true;
-    successValue.value = '保存成功'
+    successValue.value = t('base_org_employee_list.saveSuccess');
+
     for (let i = 0; i < selectionRows.value.length; i++) {
-        res = await setUserUserRoleApi({ userId: selectionRows.value[i].userId, roleIds })
+        res = await setUserUserRoleApi({ userId: selectionRows.value[i].userId, roleIds });
         setRoleData.value.push({
             id: selectionRows.value[i].name + ' (' + selectionRows.value[i].userCode + ')',
             msg: res.msg,
             success: res.success
         });
     }
-    promptMessage.value = '操作完成！'
-    if (res.success) {
+    promptMessage.value = t('base_org_employee_list.operationComplete');
+    if (res && res.success) {
         setRoleDialogVisible.value = false;
         selectionRows.value = [];
     }
-}
-// 批量弹窗关闭
-const delColse = () => {
-    batchSetRoleDialogVisible.value = false
-    setRoleData.value = []
-    getList(pagination.value.currentPage, pagination.value.pageSize, orderBy.value)
-}
-// 锁定
+};
+
+// 锁定用户
 const handleLock = async () => {
     if (selectionRows.value.length === 0) {
         ElMessage({
-            message: '请选择要锁定的数据！',
+            message: t('base_org_employee_list.selectLock'),
             type: 'warning',
-        })
-        return
+        });
+        return;
     }
-    let res
-    // 循环遍历selectionRows
+    let res;
     setRoleData.value = [];
-    promptMessage.value = '操作中...'
+    promptMessage.value = t('base_org_employee_list.processing');
     batchSetRoleDialogVisible.value = true;
-    successValue.value = '用户已锁定'
+    successValue.value = t('base_org_employee_list.locked');
+
     for (let i = 0; i < selectionRows.value.length; i++) {
-        res = await setUserUserLockApi({ id: selectionRows.value[i].userId })
+        res = await setUserUserLockApi({ id: selectionRows.value[i].userId });
         setRoleData.value.push({
             id: selectionRows.value[i].name + ' (' + selectionRows.value[i].userCode + ')',
             msg: res.msg,
             success: res.success
         });
     }
-    promptMessage.value = '操作完成！'
-    if (res.success) {
+    promptMessage.value = t('base_org_employee_list.operationComplete');
+    if (res && res.success) {
         setRoleDialogVisible.value = false;
         selectionRows.value = [];
     }
-}
-// 解锁
+};
+
+// 解锁用户
 const handleUnlock = async () => {
     if (selectionRows.value.length === 0) {
         ElMessage({
-            message: '请选择要解锁的数据！',
+            message: t('base_org_employee_list.selectUnlock'),
             type: 'warning',
-        })
-        return
+        });
+        return;
     }
-    let res
+    let res;
     setRoleData.value = [];
-    promptMessage.value = '操作中...'
+    promptMessage.value = t('base_org_employee_list.processing');
     batchSetRoleDialogVisible.value = true;
-    successValue.value = '用户已解锁'
+    successValue.value = t('base_org_employee_list.unlocked');
+
     for (let i = 0; i < selectionRows.value.length; i++) {
-        res = await setUserUserUnLockApi({ id: selectionRows.value[i].userId })
+        res = await setUserUserUnLockApi({ id: selectionRows.value[i].userId });
         setRoleData.value.push({
             id: selectionRows.value[i].name + ' (' + selectionRows.value[i].userCode + ')',
             msg: res.msg,
             success: res.success
         });
     }
-    promptMessage.value = '操作完成！'
-    if (res.success) {
+    promptMessage.value = t('base_org_employee_list.operationComplete');
+    if (res && res.success) {
         setRoleDialogVisible.value = false;
         selectionRows.value = [];
     }
-}
+};
 
-// 离职
+// 离职操作
 const handleLeave = async () => {
     if (selectionRows.value.length === 0) {
         ElMessage({
-            message: '请选择要离职的数据！',
+            message: t('base_org_employee_list.selectLeave'),
             type: 'warning',
-        })
-        return
+        });
+        return;
     }
-    // 使用导入的 ElMessageBox 而不是全局变量
     ElMessageBox.confirm(
-        `是否将选择的员工改为离职状态?`,
-        '提醒',
-        { confirmButtonText: '确定', cancelButtonText: '取消', type: 'warning' }
+        t('base_org_employee_list.confirmLeave'),
+        t('base_org_employee_list.reminder'),
+        {
+            confirmButtonText: getButtonText('confirm'),
+            cancelButtonText: getButtonText('cancel'),
+            type: 'warning'
+        }
     ).then(async () => {
-        let res
-        // 循环遍历selectionRows
+        let res;
         setRoleData.value = [];
-        promptMessage.value = '操作中...'
+        promptMessage.value = t('base_org_employee_list.processing');
         batchSetRoleDialogVisible.value = true;
+
         for (let i = 0; i < selectionRows.value.length; i++) {
-            res = await leaveOrgEmployeeApi({ id: selectionRows.value[i].id })
+            res = await leaveOrgEmployeeApi({ id: selectionRows.value[i].id });
             setRoleData.value.push({
                 id: selectionRows.value[i].name + ' (' + selectionRows.value[i].userCode + ')',
                 msg: res.msg,
                 success: res.success
             });
         }
-        promptMessage.value = '操作完成！'
-        if (res.success) {
+        promptMessage.value = t('base_org_employee_list.operationComplete');
+        if (res && res.success) {
             setRoleDialogVisible.value = false;
             selectionRows.value = [];
         }
     }).catch(() => {
-        ElMessage.info('已取消');
+        ElMessage.info(t('base_org_employee_list.cancelOperation'));
     });
-}
-
-// 获取列表
-const getList = async (currentPage, pageSize, orderBy) => {
-    const res = await getOrgEmployeeListApi({
-        page: currentPage,
-        pageSize: pageSize,
-        orderBy,
-        ...trimObjectStrings(initValues.value),
-    })
-    tableData.value = Object.freeze(res.data.rows)
-    loading.value = false
-    pagination.value = {
-        currentPage: res.data.page,
-        pageSize: pageSize,
-        total: res.data.total
-    }
-}
-// 公司数据
-const companyOptions = ref([]);
-const cascaderRef = ref(null);
-const parentProps = {
-    checkStrictly: true,
-    expandTrigger: 'hover',
-    emitPath: false,
 };
-// 公司改变事件
-const handleCascaderChange = async (e) => {
-    nextTick(() => {
-        cascaderRef.value.togglePopperVisible()
-    });
-    const res = await getOrgListDepartmentApi({ parentId: e[e.length - 1] });
-    departmentOptions.value = res.data;
-};
-// 部门数据
-const departmentOptions = ref([]);
 
+/* 5. 辅助方法 */
+
+// 选择行
+const handleSelectionChange = (selection) => {
+    selectionRows.value = selection;
+    console.log('选中的数据：', selectionRows.value);
+};
+
+// 点击行
+const handleRowClick = (row) => {
+    console.log('点击的行数据：', row);
+    selection.value = row;
+};
+
+// 分页变化
+const handlePageChange = ({ pageSize, currentPage }) => {
+    loading.value = true;
+    pagination.value.pageSize = pageSize;
+    pagination.value.currentPage = currentPage;
+    getList(pagination.value.currentPage, pagination.value.pageSize, orderBy.value);
+};
+
+// 表格排序
+const handleTableSort = (sortString) => {
+    orderBy.value = sortString;
+    getList(pagination.value.currentPage, pagination.value.pageSize, orderBy.value);
+};
+
+// 批量弹窗关闭
+const delColse = () => {
+    batchSetRoleDialogVisible.value = false;
+    setRoleData.value = [];
+    getList(pagination.value.currentPage, pagination.value.pageSize, orderBy.value);
+};
+
+/* 6. 生命周期 */
 onMounted(async () => {
-    // 获取状态菜单
-    const res = await getStatusEnumApi()
-    statusMenu.value = res.data.map(item => ({ label: item.name, value: item.id }))
+    // 使用 Promise.all 并发请求
+    const [statusRes, companyRes] = await Promise.all([
+        getStatusEnumApi(),
+        getOrgListCompanyApi()
+    ]);
+
+    // 处理状态菜单
+    statusMenu.value = statusRes.data.map(item => ({ label: item.name, value: item.id }));
     formConfig.value[2] = {
         ...formConfig.value[2],
         options: statusMenu.value,
+    };
+    // 赋值给对应的列 (Filters)
+    const statusCol = columns.value.find(col => col.prop === 'statusName');
+    if (statusCol) {
+        statusCol.filters = statusMenu.value;
     }
 
-    // 赋值给对应的列
-    const statusCol = columns.value.find(col => col.prop === 'statusName')
-    if (statusCol) {
-        statusCol.filters = statusMenu.value
-        console.log('statusCol', columns.value)
-    }
-    // 获取公司数据
-    const companyRes = await getOrgListCompanyApi();
-    // 处理公司数据
+    // 处理公司数据 (Tree)
     const convertToTree = (items) => {
         return items.map(item => ({
             value: item.id,
@@ -476,15 +519,15 @@ onMounted(async () => {
         }));
     };
     companyOptions.value = convertToTree(companyRes.data);
-})
-// 监听刷新数据
+});
+
 onActivated(() => {
     if (refreshStore.shouldRefreshEmployeeList) {
-        console.log('刷新数据')
-        getList(pagination.value.currentPage, pagination.value.pageSize, orderBy.value)
-        refreshStore.shouldRefreshEmployeeList = false
+        console.log('刷新数据');
+        getList(pagination.value.currentPage, pagination.value.pageSize, orderBy.value);
+        refreshStore.shouldRefreshEmployeeList = false;
     }
-})
+});
 </script>
 
 <style scoped lang="scss">

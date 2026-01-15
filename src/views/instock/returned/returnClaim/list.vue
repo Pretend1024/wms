@@ -355,8 +355,8 @@ const statusOptions = ref([])
 // 仓库数据
 const warehouseOptions = ref([])
 onMounted(async () => {
-    //   销毁类型
-    const destroyTypeRes = await getReturnOrderClaimStatusEnumApi()
+    //销毁类型
+    const destroyTypeRes = await getReturnOrderClaimDestroyTypeEnumApi()
     destroyTypeOptions.value = destroyTypeRes.data.map(item => ({ label: item.name, value: item.id }))
     // 承运商数据
     const carrierRes = await getProductShipwayBrandListApi()
@@ -368,7 +368,7 @@ onMounted(async () => {
     const warehouseRes = await getWhWarehouseApi()
     warehouseOptions.value = warehouseRes.data.map(item => ({ label: item.code + '-' + item.name, value: item.code }))
     // 状态
-    const statusRes = await getReturnOrderClaimDestroyTypeEnumApi()
+    const statusRes = await getReturnOrderClaimStatusEnumApi()
     statusOptions.value = statusRes.data.map(item => ({ label: item.name, value: item.id }))
 })
 

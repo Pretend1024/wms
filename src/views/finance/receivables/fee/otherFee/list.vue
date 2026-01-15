@@ -72,7 +72,7 @@
                             </el-select>
                         </el-form-item>
                     </el-col>
-                    <!-- 出库单号 -->
+                    <!-- 关联单号 -->
                     <el-col>
                         <el-form-item :label="getLabel('orderNo')">
                             <canonicalInput v-model:listName="formData.orderNoList"
@@ -100,7 +100,7 @@
             <hydTable :footer="footer" :tableData="tableData" :columns="columns" :pagination="pagination"
                 :enableSelection="true" :loading="loading" :pageSizes="[20, 50, 100, 200, 500]"
                 @selection-change="handleSelectionChange" @page-change="handlePageChange" @sort-change="handleTableSort"
-                :tableId="'finance/receivables/fee/list/outboundFee'">
+                :tableId="'finance/receivables/fee/list/otherFee'">
                 <template #table-buttons>
                     <div class="tableTopButtons">
                         <div class="statusIds">
@@ -158,43 +158,39 @@
                         </div>
                     </div>
                 </template>
-                <!-- 状态名称格式化插槽 -->
+                <!-- 状态名称 -->
                 <template #statusName="{ row }">
                     <span
                         :style="{ color: row.statusId == 10 ? '#E6A23C' : (row.statusId == 20 ? '#67C23A' : '#F56C6C') }">{{
                         row.statusName }}</span>
                 </template>
-                <!-- 客户名称格式化插槽 -->
+                <!-- 客户 -->
                 <template #customer="{ row }">
                     {{ row.customerCode }}({{ row.customerName }})
                 </template>
             </hydTable>
         </div>
 
-        <!-- 费用新增/编辑弹窗 -->
-        <FeeDialog v-model="centerDialogVisible" :dialogMode="dialogMode" :feeBizTypeId="20" :initData="editInitData"
+        <!-- 费用弹窗 -->
+        <FeeDialog v-model="centerDialogVisible" :dialogMode="dialogMode" :feeBizTypeId="99" :initData="editInitData"
             :feeTypeOptions="feeTypeOptions" :currencyOptions="currencyOptions" :loading="dialogLoading"
-            @confirm="handleDialogConfirm" />
+            :warehouseOptions="warehouseOptions" :customerOptions="customerOptions" @confirm="handleDialogConfirm" />
         <!-- 加入账单弹窗 -->
         <JoinBillDialog v-model="joinBillVisible" :selectionRows="selectionRows" :searchParams="initValues"
             @success="handleJoinSuccess" />
         <!-- 导出弹窗 -->
-        <exportDialog ref="exportDialogRef" :selectionRows="selectionRows" :initValues="initValues" :exportType="706">
+        <exportDialog ref="exportDialogRef" :selectionRows="selectionRows" :initValues="initValues" :exportType="799">
         </exportDialog>
-        <!-- 批量操作结果弹窗 -->
+        <!-- 操作结果弹窗 -->
         <batchOperationn :dialogTitle="'操作结果'" :isVisible="resultDialogVisible" :tableData="resultData"
             :nameField="'id'" :nameLabel="'单号'" @close="resultClose" :promptMessage="promptMessage" />
     </div>
 </template>
 
-<script setup name="出库费用">
-// 引入vue核心方法
+<script setup name="其他费用">
 import { ref, shallowRef, onMounted, nextTick, toRefs, watch } from 'vue';
-// 引入路由方法
 import { useRouter } from 'vue-router';
-// 引入element图标
 import { Plus, Delete, EditPen, Share, Upload, Money } from '@element-plus/icons-vue';
-// 引入element消息提示组件
 import { ElMessage, ElMessageBox } from 'element-plus';
 
 // 公共组件引入
@@ -210,23 +206,13 @@ import FeeDialog from '../FeeDialog.vue';
 import { smartAlert, trimObjectStrings } from '@/utils/genericMethods.js';
 import { getButtonText, getLabel, getPlaceholder } from '@/utils/i18n/i18nLabels';
 
-// 接口请求方法引入
-import {
-    getFeePageApi,
-    addFeeApi,
-    updFeeByIdApi,
-    delFeeByIdApi,
-    joinBillApi,
-    getFeeSubTypeEnumApi,
-    getFeeStatusCountApi,
-    getFeeStatAmountApi
-} from '@/api/financeApi/receivables.js';
+// api引入
+import { getFeePageApi, addFeeApi, updFeeByIdApi, delFeeByIdApi, joinBillApi, getFeeSubTypeEnumApi, getFeeStatusCountApi, getFeeStatAmountApi } from '@/api/financeApi/receivables.js';
 import { getCustomerLikeQueryApi } from '@/api/baseApi/sku.js';
 
-// 初始化路由对象
 const router = useRouter();
 
-// 父组件传参接收
+// 父组件传参
 const props = defineProps({
     companyOptions: { type: Array, default: () => [] },
     warehouseOptions: { type: Array, default: () => [] },
@@ -237,50 +223,43 @@ const props = defineProps({
 });
 const { companyOptions, warehouseOptions, statusOptions, createWayOptions, currencyOptions } = toRefs(props);
 
-// 响应式变量定义
-const customerOptions = ref([]);   // 客户枚举数据
-const feeTypeOptions = ref([]);    // 费用小类枚举数据
-const cascaderRef = ref(null);     // 组织级联选择器ref
-const parentProps = {              // 级联选择器配置项
+// 响应式变量
+const customerOptions = ref([]); // 客户枚举
+const feeTypeOptions = ref([]);  // 费用小类枚举
+const cascaderRef = ref(null);   // 组织级联ref
+const parentProps = {            // 级联配置
     checkStrictly: true,
     expandTrigger: 'hover',
     emitPath: false,
 };
 
 const formConfig = ref([]);
-// 初始化查询参数：feeBizTypeId 固定为 20 (出库费用)
-const initValues = ref({
-    orgId: '', warehouseCode: '', feeSubTypeId: '', statusId: '', createWay: '', orderNoList: [], billNoList: [], feeBizTypeId: 20, statusIdList: []
-});
+// 初始化参数,feeBizTypeId:99 其他费用
+const initValues = ref({ orgId: '', warehouseCode: '', feeSubTypeId: '', statusId: '', createWay: '', orderNoList: [], billNoList: [], feeBizTypeId: 99, statusIdList: [] });
 
-// 时间筛选相关变量
 const dateSelectRef = ref(null);
-const timeTypeOptions = ref([{ label: '单据创建时间', value: 10 }, { label: '费用创建时间', value: 20 }]);
+const timeTypeOptions = ref([{ label: '费用创建时间', value: 20 }]);
 
-// 获取默认时间范围 (当前时间往前推30天)
+// 获取默认时间范围
 const getDefaultDateRange = () => {
     const end = new Date(); end.setHours(23, 59, 59, 999);
     const start = new Date(end); start.setDate(start.getDate() - 30); start.setHours(0, 0, 0, 0);
     const formatDate = (d) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')} ${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}:${String(d.getSeconds()).padStart(2, '0')}`;
     return [formatDate(start), formatDate(end)];
 };
-const selectDateData = ref({ dateType: 10, dateRange: getDefaultDateRange() });
+const selectDateData = ref({ dateType: 20, dateRange: getDefaultDateRange() });
 
-// 表格核心变量
-const loading = ref(false);               // 表格加载状态
-const tableData = shallowRef([]);         // 表格数据
-const footer = ref();                     // 表格合计行数据
-const selectionRows = ref([]);            // 表格选中行数据
-const orderBy = ref('');                  // 表格排序字段
-const pagination = ref({                  // 分页参数
-    currentPage: 1, pageSize: 100, total: 0
-});
+const loading = ref(false);       // 表格加载中
+const tableData = shallowRef([]); // 表格数据
+const footer = ref();             // 合计行
+const selectionRows = ref([]);    // 选中行
+const orderBy = ref('');          // 排序字段
+const pagination = ref({ currentPage: 1, pageSize: 100, total: 0 }); // 分页参数
 
-// 统计相关变量
-const statData = ref([]);         // 金额统计数据
-const statLoading = ref(false);   // 金额统计加载状态
-const statusIdsList = ref([]);    // 状态统计列表数据
-const statusIdsArr = ref([]);     // 选中的状态筛选数组
+const statData = ref([]);         // 统计数据
+const statLoading = ref(false);   // 统计加载中
+const statusIdsList = ref([]);    // 状态统计列表
+const statusIdsArr = ref([]);     // 选中状态数组
 
 // 表格列配置
 const columns = ref([
@@ -288,14 +267,15 @@ const columns = ref([
     { label: '仓库', prop: 'warehouseCode', width: '100', sortable: true, fixed: 'left' },
     { label: '客户', prop: 'customerCode', width: '180', sortable: true, fixed: 'left', slot: 'customer' },
     { label: '账单编号', prop: 'billNo', width: '160' },
-    { label: '出库单号', prop: 'orderNo', width: '160', sortable: true },
-    { label: '出库日期', prop: 'orderCreatedTime', width: '200' },
-    { label: '发货时间', prop: 'shippedTime', width: '200', sortable: true },
+    { label: '关联单号', prop: 'orderNo', width: '160', sortable: true },
+    { label: '入库日期', prop: 'orderCreatedTime', width: '200' },
     { label: '费用小类', prop: 'feeSubTypeName', width: '120', sortable: true },
     { label: '创建方式', prop: 'createWayName', width: '120', sortable: true },
     { label: '币种', prop: 'currency', width: '80', sortable: true },
     { label: '费用金额', prop: 'feeAmount', width: '100', align: 'right' },
     { label: '确认金额', prop: 'confirmFeeAmount', width: '100', align: 'right' },
+    { label: '货柜型号', prop: 'containerType', width: '100' },
+    { label: '货柜号码', prop: 'containerNumber', width: '100' },
     { label: '报价方案', prop: 'priceProjectCode', width: '120', sortable: true },
     { label: '费用金额公式', prop: 'expression', width: '140' },
     { label: '确认时间', prop: 'confirmTime', width: '200', sortable: true },
@@ -310,24 +290,20 @@ const columns = ref([
     { label: '操作', prop: 'action', width: '100', fixed: 'right', slot: 'customBtn' }
 ]);
 
-// 时间筛选组件值变更事件
+// 时间变更
 const handleTimeChange = (data) => selectDateData.value = data;
 
-// 获取金额统计数据
+// 获取金额统计
 const getFeeStatAmount = async () => {
     statLoading.value = true;
     try {
         const params = { ...trimObjectStrings(initValues.value) };
         const res = await getFeeStatAmountApi(params);
         statData.value = res.data || [];
-    } catch (e) {
-        console.error(e); statData.value = [];
-    } finally {
-        statLoading.value = false;
-    }
+    } catch (e) { console.error(e); statData.value = []; } finally { statLoading.value = false; }
 };
 
-// 获取状态统计数据
+// 获取状态统计
 const getStatus = async () => {
     const data = { ...trimObjectStrings(initValues.value) };
     delete data.statusIdList;
@@ -336,31 +312,24 @@ const getStatus = async () => {
     statusIdsArr.value = [...initValues.value.statusIdList];
 };
 
-// 查询按钮点击事件
+// 查询
 const handleSearch = (data) => {
-    initValues.value = {
-        ...data,
-        timeType: selectDateData.value.dateType,
-        timeBegin: selectDateData.value.dateRange ? selectDateData.value.dateRange[0] : '',
-        timeEnd: selectDateData.value.dateRange ? selectDateData.value.dateRange[1] : '',
-        statusIdList: statusIdsArr.value,
-        feeBizTypeId: 20
-    };
+    initValues.value = { ...data, timeType: selectDateData.value.dateType, timeBegin: selectDateData.value.dateRange ? selectDateData.value.dateRange[0] : '', timeEnd: selectDateData.value.dateRange ? selectDateData.value.dateRange[1] : '', statusIdList: statusIdsArr.value, feeBizTypeId: 99 };
     getList(1, pagination.value.pageSize);
     getStatus();
 };
 
-// 重置按钮点击事件
+// 重置
 const handleReset = (data) => {
     selectDateData.value = { dateType: 10, dateRange: getDefaultDateRange() };
-    initValues.value = { ...data, orgId: '', dateType: 10, dateRange: getDefaultDateRange(), feeBizTypeId: 20, statusIdList: [] };
+    initValues.value = { ...data, orgId: '', dateType: 10, dateRange: getDefaultDateRange(), feeBizTypeId: 99, statusIdList: [] };
     statusIdsArr.value = [];
     handleCascaderChange();
     getList(1, pagination.value.pageSize);
     getStatus();
 };
 
-// 获取表格列表数据
+// 获取表格数据
 const getList = async (page, pageSize, orderByStr = orderBy.value) => {
     loading.value = true;
     try {
@@ -373,16 +342,16 @@ const getList = async (page, pageSize, orderByStr = orderBy.value) => {
     } catch (e) { console.error(e); tableData.value = []; } finally { loading.value = false; }
 };
 
-// 表格勾选状态变更事件
+// 勾选变更
 const handleSelectionChange = (val) => selectionRows.value = val;
 
-// 分页切换事件
+// 分页变更
 const handlePageChange = ({ pageSize, currentPage }) => getList(currentPage, pageSize);
 
-// 表格排序变更事件
+// 排序变更
 const handleTableSort = (sort) => { orderBy.value = sort; getList(pagination.value.currentPage, pagination.value.pageSize); };
 
-// 状态筛选复选框变更事件
+// 状态筛选变更
 const handleStatusChange = async (e) => {
     let list = [...statusIdsArr.value];
     if (list.includes(null)) list = [];
@@ -390,16 +359,16 @@ const handleStatusChange = async (e) => {
     getList(1, pagination.value.pageSize);
 };
 
-// 弹窗相关变量
+// 弹窗相关
 const centerDialogVisible = ref(false);
 const dialogMode = ref('add');
 const editInitData = ref({});
 const dialogLoading = ref(false);
 
-// 打开新增弹窗
+// 新增方法
 const handleAdd = () => { editInitData.value = {}; dialogMode.value = 'add'; centerDialogVisible.value = true; };
 
-// 打开编辑弹窗
+// 编辑方法
 const handleEdit = (row) => {
     if (row.statusId != 10) return smartAlert('只能编辑未确认状态的费用', false);
     editInitData.value = JSON.parse(JSON.stringify(row));
@@ -407,7 +376,7 @@ const handleEdit = (row) => {
     centerDialogVisible.value = true;
 };
 
-// 弹窗确认提交事件
+// 弹窗确认提交
 const handleDialogConfirm = async (formData) => {
     dialogLoading.value = true;
     try {
@@ -421,62 +390,65 @@ const handleDialogConfirm = async (formData) => {
     } catch (e) { console.error(e); } finally { dialogLoading.value = false; }
 };
 
-// 批量删除相关变量
+// 批量删除相关
 const resultDialogVisible = ref(false);
 const resultData = ref([]);
 const promptMessage = ref('');
 
-// 批量删除按钮点击事件
+// 删除方法
 const handleDel = () => {
     if (selectionRows.value.length === 0) return ElMessage.warning('请选择要删除的数据！');
     ElMessageBox.confirm(`是否要删除${selectionRows.value.length}条数据?`, '提醒', { confirmButtonText: '确定', cancelButtonText: '取消', type: 'warning' }).then(async () => {
-        loading.value = true; resultData.value = []; resultDialogVisible.value = true; promptMessage.value = '操作中...';
-        for (const row of selectionRows.value) { const res = await delFeeByIdApi({ id: row.id }); resultData.value.push({ id: `${row.orderNo}`, msg: res.msg, success: res.success }); }
-        promptMessage.value = '操作完成'; loading.value = false;
+        loading.value = true;
+        resultData.value = [];
+        resultDialogVisible.value = true;
+        promptMessage.value = '操作中...';
+        for (const row of selectionRows.value) {
+            const res = await delFeeByIdApi({ id: row.id });
+            resultData.value.push({ id: `${row.orderNo} `, msg: res.msg, success: res.success });
+        }
+        promptMessage.value = '操作完成';
+        loading.value = false;
     }).catch(() => { });
 };
 
-// 关闭批量操作结果弹窗
+// 关闭结果弹窗
 const resultClose = () => { resultDialogVisible.value = false; getList(pagination.value.currentPage, pagination.value.pageSize); getStatus(); };
 
-// 加入账单相关变量
+// 加入账单
 const joinBillVisible = ref(false);
 
-// 加入账单成功回调事件
+// 加入账单成功回调
 const handleJoinSuccess = async () => {
     getList(pagination.value.currentPage, pagination.value.pageSize);
     getStatus();
 };
 
-// 导入按钮跳转事件
-const handleImport = () => router.push({ name: '导入文件', params: { typeId: 701, typeName: '出库单应收费用' } });
+// 导入
+const handleImport = () => router.push({ name: '导入文件', params: { typeId: 701, typeName: '其他费用' } });
 
-// 导出按钮点击事件
+// 导出
 const exportDialogRef = ref(null);
 const handleExport = () => exportDialogRef.value.openExportDialog();
 
-// 组织级联选择变更联动客户数据
+// 组织变更联动客户
 const handleCascaderChange = async (e) => {
     if (e) nextTick(() => cascaderRef.value.togglePopperVisible());
     const result = await getCustomerLikeQueryApi({ keyword: '*', orgId: e });
     customerOptions.value = result.data.map(item => ({ value: item.code, label: `${item.code}(${item.name})` }));
 };
 
-// 初始化客户数据监听
-const stopWatch = watch(
-    () => props.initialCustomerOptions,
-    (newVal) => {
-        if (newVal && newVal.length > 0) {
-            customerOptions.value = newVal;
-            stopWatch();
-        }
-    },
-    { immediate: true }
-);
+// 初始化客户数据
+const stopWatch = watch(() => props.initialCustomerOptions, (newVal) => {
+    if (newVal && newVal.length > 0) {
+        customerOptions.value = newVal;
+        stopWatch();
+    }
+}, { immediate: true });
 
-// 页面初始化加载
+// 初始化加载
 onMounted(async () => {
-    const feeTypeRes = await getFeeSubTypeEnumApi({ feeBizTypeId: 20 });
+    const feeTypeRes = await getFeeSubTypeEnumApi({ feeBizTypeId: 99 });
     feeTypeOptions.value = feeTypeRes.data.map(i => ({ label: i.name, value: i.id }));
     getStatus();
 });
@@ -497,7 +469,6 @@ onMounted(async () => {
     width: 45px;
 }
 
-// 金额统计区域样式
 .amount-statistic-container {
     height: 32px;
     display: flex;

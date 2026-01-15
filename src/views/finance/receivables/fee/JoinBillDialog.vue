@@ -44,7 +44,7 @@
     <el-dialog v-model="resultVisible" title="操作结果" width="700px" align-center :before-close="handleResultClose"
         append-to-body>
         <div style="margin-bottom: 15px;">
-            <el-alert title="账单处理成功" type="success" show-icon :closable="false" />
+            <el-alert :title="titleMsg" type="success" show-icon :closable="false" />
         </div>
 
         <el-table :data="resultData" border stripe style="width: 100%" max-height="400">
@@ -173,7 +173,7 @@ const handleMethodChange = () => {
 const handleClose = () => {
     isVisible.value = false;
 };
-
+const titleMsg = ref('')
 // --- 提交逻辑 ---
 const handleConfirm = async () => {
     billNoError.value = '';
@@ -199,6 +199,7 @@ const handleConfirm = async () => {
     try {
         const res = await joinBillApi(params);
         if (res.success) {
+            titleMsg.value = res.msg
             isVisible.value = false;
             resultData.value = res.data || [];
             resultVisible.value = true;

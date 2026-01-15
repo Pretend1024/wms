@@ -4,7 +4,6 @@
             <hydTable :tableData="tableData" :columns="columns" :pagination="pagination" :enableSelection="true"
                 :loading="loading" :pageSizes="[20, 50, 100, 200, 500]" @selection-change="handleSelectionChange"
                 @row-click="handleRowClick" @page-change="handlePageChange" @sort-change="handleTableSort">
-                <!-- 表格上方按钮 -->
                 <template #table-buttons>
                     <el-button type="primary" @click="handleAdd" v-permission="'add'" :icon="Plus">
                         {{ getButtonText('add') }}
@@ -13,16 +12,16 @@
                         {{ getButtonText('del') }}
                     </el-button>
                 </template>
-                <!-- 操作列按钮 -->
+
                 <template #customBtn="{ row }">
                     <div style="display: flex;">
-                        <div class="cursor-pointer" @click="handleEdit(row)">
+                        <div class="cursor-pointer" @click="handleEdit(row)" v-permission="'edit'">
                             <el-icon>
                                 <EditPen />
                             </el-icon>
                             <span>{{ getButtonText('edit') }}</span>
                         </div>
-                        <div class="cursor-pointer" @click="handleSetRoleMenu(row)">
+                        <div class="cursor-pointer" @click="handleSetRoleMenu(row)" v-permission="'role:authorize'">
                             <el-icon>
                                 <Plus />
                             </el-icon>
@@ -30,14 +29,14 @@
                         </div>
                     </div>
                 </template>
+
                 <template #name="{ row }">
                     <span>{{ row.name }}</span>
                 </template>
             </hydTable>
         </div>
-        <!-- 弹窗 -->
+
         <el-dialog v-model="centerDialogVisible" :title="dialogTitle" width="700" align-center destroy-on-close>
-            <!-- 动态加载新增或编辑的表单组件 -->
             <component :is="currentForm" ref="childFormRef" :formData="addData" />
             <template #footer>
                 <div class="dialog-footer">
@@ -46,8 +45,9 @@
                 </div>
             </template>
         </el-dialog>
-        <!-- 受权弹窗 -->
-        <el-dialog v-model="setRoleDialogVisible" :title="setRoleTitle" width="700" align-center destroy-on-close>
+
+        <el-dialog v-model="setRoleDialogVisible" :title="t('sys_user_role_list.authorize')" width="700" align-center
+            destroy-on-close>
             <setRole :formData="addData" ref="roleDialogRef" />
             <template #footer>
                 <div class="dialog-footer">
@@ -57,28 +57,81 @@
                 </div>
             </template>
         </el-dialog>
-        <!-- 批量删除弹窗组件 -->
-        <batchOperationn :isVisible="delDialogVisible" :tableData="delData" :nameField="'id'" :nameLabel="'角色名称'"
-            :successValue="'删除成功'" @close="delColse" :promptMessage="promptMessage" />
+
+        <batchOperationn :isVisible="delDialogVisible" :tableData="delData" :nameField="'id'"
+            :nameLabel="t('sys_user_role_list.roleName')" @close="delColse" :promptMessage="promptMessage" />
     </div>
 </template>
 
 <script setup name="角色">
-import { ref, computed, onMounted } from 'vue';
-import { Plus, DeleteFilled } from "@element-plus/icons-vue";
+/* 1. 引入 */
+// 1.1 Vue核心及插件
+import { ref, computed, onMounted, shallowRef } from 'vue';
+import { useI18n } from 'vue-i18n';
+import { Plus, DeleteFilled, EditPen } from "@element-plus/icons-vue";
+import { ElMessage, ElMessageBox } from 'element-plus';
+
+// 1.2 Components
 import hydTable from "@/components/table/hyd-table.vue";
 import batchOperationn from '@/components/messageNotices/batchOperation.vue';
 import AddForm from './add.vue';
 import UpdForm from './upd.vue';
 import setRole from './setRole.vue';
-import { ElMessage, ElMessageBox } from 'element-plus';
-import *as api from '@/api/sysApi/user.js'
-import { smartAlert } from '@/utils/genericMethods.js'
-import { useI18n } from 'vue-i18n';
+
+// 1.3 API
+import {
+    getUserRoleListApi,
+    addUserRoleDataApi,
+    updateUserRoleDataApi,
+    delUserRoleDataApi,
+    setUserRoleMenuApi
+} from '@/api/sysApi/user.js';
+
+// 1.4 Utils
+import { smartAlert } from '@/utils/genericMethods.js';
+import { getButtonText } from '@/utils/i18n/i18nLabels.js';
+
+/* 2. 全局变量与状态 */
 const { t } = useI18n();
 
-// 表格数据与列配置
+// 表格数据
 const tableData = shallowRef([]);
+const loading = ref(true);
+const pagination = ref({
+    currentPage: 1,
+    pageSize: 100,
+    total: 99
+});
+
+// 选择及排序
+const selection = ref({});
+const selectionRows = ref([]);
+const orderBy = ref('');
+
+// 弹窗状态
+const centerDialogVisible = ref(false);
+const dialogMode = ref('add'); // 'add' | 'upd'
+const childFormRef = ref(null);
+
+// 授权相关
+const roleDialogRef = ref(null);
+const setRoleDialogVisible = ref(false);
+
+// 批量删除
+const delData = ref([]);
+const delDialogVisible = ref(false);
+const promptMessage = ref('');
+
+// 表单数据模型
+const addData = ref({
+    id: null,
+    name: '',
+    remark: '',
+    sortNo: null,
+});
+
+/* 3. 计算属性 */
+// 表格列定义
 const columns = ref([
     { label: '角色名称', prop: 'name', width: '150', sortable: true },
     { label: '备注', prop: 'remark', width: '300' },
@@ -88,55 +141,34 @@ const columns = ref([
     { label: '更新人', prop: 'updatedBy', width: '120' },
     { label: '操作', prop: 'action', width: '155', fixed: 'right', slot: 'customBtn' }
 ]);
-const pagination = ref({
-    currentPage: 1,
-    pageSize: 100,
-    total: 99
-});
-const loading = ref(true);
 
-// 选择及排序数据
-const selection = ref({});
-const selectionRows = ref([]);
-const orderBy = ref('');
-
-// 表格事件方法
-const handleSelectionChange = (selectionList) => {
-    selectionRows.value = selectionList;
-    console.log('选中的数据：', selectionRows.value);
-};
-const handleRowClick = (row) => {
-    console.log('点击的行数据：', row);
-    selection.value = row;
-};
-const handlePageChange = ({ pageSize, currentPage }) => {
-    loading.value = true
-    pagination.value.pageSize = pageSize;
-    pagination.value.currentPage = currentPage;
-    getList(pagination.value.currentPage, pagination.value.pageSize, orderBy.value);
-};
-const handleTableSort = (sortString) => {
-    console.log('排序条件返回:', sortString);
-    orderBy.value = sortString;
-    getList(pagination.value.currentPage, pagination.value.pageSize, orderBy.value);
-};
-
-// 弹窗相关
-const centerDialogVisible = ref(false);
-const addData = ref({
-    id: null,
-    name: '',
-    remark: '',
-    sortNo: null,
-});
-const childFormRef = ref(null);
-// 使用 dialogMode 区分新增与编辑
-const dialogMode = ref('add'); // 'add' 或 'upd' 或 'setRole'
-// 动态加载表单组件
+// 弹窗标题及组件
 const dialogTitle = computed(() => t(`sys_user_role_list.${dialogMode.value}Title`));
-const currentForm = computed(() => dialogMode.value === 'add' ? AddForm : dialogMode.value === 'upd' ? UpdForm : setRole);
+const currentForm = computed(() => dialogMode.value === 'add' ? AddForm : UpdForm);
 
-// 新增按钮
+/* 4. 业务逻辑 (CRUD) */
+
+// 获取列表数据
+const getList = async (currentPage, pageSize, orderByStr) => {
+    loading.value = true;
+    try {
+        const res = await getUserRoleListApi({
+            page: currentPage,
+            pageSize: pageSize,
+            orderBy: orderByStr
+        });
+        tableData.value = Object.freeze(res.data.rows);
+        pagination.value = {
+            currentPage: res.data.page,
+            pageSize: pageSize,
+            total: res.data.total
+        };
+    } finally {
+        loading.value = false;
+    }
+};
+
+// 点击新增
 const handleAdd = () => {
     addData.value = {
         id: null,
@@ -148,10 +180,8 @@ const handleAdd = () => {
     centerDialogVisible.value = true;
 };
 
-// 编辑按钮
+// 点击编辑
 const handleEdit = (row) => {
-    console.log('编辑：', row);
-    // 将当前行数据填充到表单数据中
     addData.value = {
         id: row.id,
         name: row.name,
@@ -161,121 +191,127 @@ const handleEdit = (row) => {
     dialogMode.value = 'upd';
     centerDialogVisible.value = true;
 };
-// 授权相关
-const roleDialogRef = ref(null);
-const setRoleDialogVisible = ref(false);
+
 // 点击授权
 const handleSetRoleMenu = (row) => {
-    addData.value = {
-        ...row
-    };
+    addData.value = { ...row };
     setRoleDialogVisible.value = true;
-}
-// 授权确定
+};
+
+// 确认授权
 const handleSetRoleMenuConfirm = async () => {
-    const menuIds = await roleDialogRef.value.handleSelection()
-    // console.log('授权菜单：', menuIds);
-    const res = await api.setUserRoleMenuApi({ roleId: addData.value.id, menuIds: menuIds })
+    const menuIds = await roleDialogRef.value.handleSelection();
+    const res = await setUserRoleMenuApi({ roleId: addData.value.id, menuIds: menuIds });
     smartAlert(res.msg, res.success, 1000);
     if (res.success) {
         setRoleDialogVisible.value = false;
     }
-}
+};
 
-// 批量删除相关
-const delData = ref([]);
-const delDialogVisible = ref(false);
-const promptMessage = ref('')
+// 点击删除
 const handleDel = () => {
-
     if (selectionRows.value.length === 0) {
         ElMessage({
             type: 'warning',
-            message: '请选择要删除的数据！'
+            message: t('sys_user_role_list.selectDelete')
         });
         return;
     }
     ElMessageBox.confirm(
-        `是否要删除${selectionRows.value.length > 0 ? selectionRows.value.length : '该'}条数据?`,
-        '提醒',
+        t('sys_user_role_list.confirmDelete', { count: selectionRows.value.length }),
+        t('sys_user_role_list.reminder'),
         {
-            confirmButtonText: '确定',
-            cancelButtonText: '取消',
+            confirmButtonText: getButtonText('confirm'),
+            cancelButtonText: getButtonText('cancel'),
             type: 'warning'
         }
-    )
-        .then(async () => {
-            loading.value = true;
-            delDialogVisible.value = true;
-            delData.value = [];
-            promptMessage.value = '操作中...'
-            for (let i = 0; i < selectionRows.value.length; i++) {
-                const res = await api.delUserRoleDataApi({ id: selectionRows.value[i].id });
-                delData.value.push({
-                    id: selectionRows.value[i].name,
-                    msg: res.msg,
-                    success: res.success
-                });
-            }
-            promptMessage.value = '操作完成！'
-        })
-        .catch(() => {
-            ElMessage({
-                type: 'info',
-                message: '已取消删除'
+    ).then(async () => {
+        loading.value = true;
+        delDialogVisible.value = true;
+        delData.value = [];
+        promptMessage.value = t('sys_user_role_list.processing');
+
+        for (let i = 0; i < selectionRows.value.length; i++) {
+            const res = await delUserRoleDataApi({ id: selectionRows.value[i].id });
+            delData.value.push({
+                id: selectionRows.value[i].name,
+                msg: res.msg,
+                success: res.success
             });
+        }
+        promptMessage.value = t('sys_user_role_list.operationComplete');
+    }).catch(() => {
+        ElMessage({
+            type: 'info',
+            message: t('sys_user_role_list.deleteCanceled')
         });
-};
-const delColse = () => {
-    delDialogVisible.value = false;
-    delData.value = [];
-    getList(pagination.value.currentPage, pagination.value.pageSize, orderBy.value);
+    });
 };
 
-// 弹窗确定按钮，调用子组件的表单校验及提交
+// 弹窗确认保存
 const handleDialogConfirm = async () => {
     if (!childFormRef.value) return;
     try {
         await childFormRef.value.validate();
         let res = null;
-        const data = {
-            ...addData.value
-        };
+        const data = { ...addData.value };
+
         if (dialogMode.value === 'upd') {
-            res = await api.updateUserRoleDataApi(data);
+            res = await updateUserRoleDataApi(data);
         } else {
-            res = await api.addUserRoleDataApi(data);
+            res = await addUserRoleDataApi(data);
         }
+
         smartAlert(res.msg, res.success, 1000);
         if (res.success) {
-            getList();
+            getList(pagination.value.currentPage, pagination.value.pageSize, orderBy.value);
             centerDialogVisible.value = false;
         }
     } catch (error) {
         console.error('表单验证失败:', error);
     }
 };
-// 弹窗取消按钮
+
+/* 5. 辅助方法 */
+
+// 表格选中改变
+const handleSelectionChange = (selectionList) => {
+    selectionRows.value = selectionList;
+    console.log('选中的数据：', selectionRows.value);
+};
+
+// 表格行点击
+const handleRowClick = (row) => {
+    selection.value = row;
+};
+
+// 分页改变
+const handlePageChange = ({ pageSize, currentPage }) => {
+    loading.value = true;
+    pagination.value.pageSize = pageSize;
+    pagination.value.currentPage = currentPage;
+    getList(pagination.value.currentPage, pagination.value.pageSize, orderBy.value);
+};
+
+// 排序改变
+const handleTableSort = (sortString) => {
+    orderBy.value = sortString;
+    getList(pagination.value.currentPage, pagination.value.pageSize, orderBy.value);
+};
+
+// 弹窗取消
 const handleDialogCancel = () => {
     centerDialogVisible.value = false;
 };
 
-// 获取列表数据
-const getList = async (currentPage, pageSize, orderBy) => {
-    const res = await api.getUserRoleListApi({
-        page: currentPage,
-        pageSize: pageSize,
-        orderBy
-    });
-    tableData.value = Object.freeze(res.data.rows);
-    loading.value = false;
-    pagination.value = {
-        currentPage: res.data.page,
-        pageSize: pageSize,
-        total: res.data.total
-    };
+// 批量删除弹窗关闭
+const delColse = () => {
+    delDialogVisible.value = false;
+    delData.value = [];
+    getList(pagination.value.currentPage, pagination.value.pageSize, orderBy.value);
 };
 
+/* 6. 生命周期 */
 onMounted(() => {
     getList(pagination.value.currentPage, pagination.value.pageSize, orderBy.value);
 });

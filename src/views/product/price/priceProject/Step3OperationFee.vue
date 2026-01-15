@@ -6,14 +6,14 @@
 
         <div class="table-content">
             <el-table :data="tableData" border stripe height="100%" v-loading="loading">
-                <el-table-column label="费用类型" prop="feeMainTypeId" width="150">
+                <el-table-column label="费用类型" prop="feeBizTypeId" width="150">
                     <template #default="{ row }">
-                        {{ getFeeTypeName(row.feeMainTypeId) }}
+                        {{ getFeeTypeName(row.feeBizTypeId) }}
                     </template>
                 </el-table-column>
                 <el-table-column label="费用小类" prop="feeSubTypeId" width="150">
                     <template #default="{ row }">
-                        {{ getFeeSubTypeName(row.feeSubTypeId) }}
+                        {{ getfeeSubTypeName(row.feeSubTypeId) }}
                     </template>
                 </el-table-column>
                 <el-table-column prop="remark" label="备注" show-overflow-tooltip />
@@ -74,7 +74,7 @@ const getFeeTypeName = (id) => {
 }
 
 // 模拟小类名称 (实际应有接口)
-const getFeeSubTypeName = (id) => {
+const getfeeSubTypeName = (id) => {
     return id === 1 ? '测试小类' : id
 }
 
@@ -148,7 +148,7 @@ onMounted(async () => {
     }
 
     .table-content {
-        flex: 1;
+        flex: 0.98;
         /* 占据剩余高度 */
         overflow: hidden;
         /* 触发 BFC，配合 el-table height="100%" */

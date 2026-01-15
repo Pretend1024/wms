@@ -1,99 +1,177 @@
 <template>
     <div class="viewArea">
         <div class="filterDiv">
-            <hydFilterBox :form-items="formConfig" :initial-value="initValues" @search="handleSearch"
-                @reset="handleReset">
+            <hydFilterBox 
+                :form-items="formConfig" 
+                :initial-value="initValues" 
+                @search="handleSearch"
+                @reset="handleReset"
+            >
                 <template #custom-form="{ formData }">
                     <el-col>
                         <el-form-item :label="getLabel('orgId')">
-                            <el-cascader ref="cascaderRef" v-model="formData.orgId" :options="companyOptions"
-                                :props="parentProps" clearable @change="handleCascaderChange"
-                                :placeholder="getPlaceholder('orgId')" />
+                            <el-cascader 
+                                ref="cascaderRef" 
+                                v-model="formData.orgId" 
+                                :options="companyOptions"
+                                :props="parentProps" 
+                                clearable 
+                                @change="handleCascaderChange"
+                                :placeholder="getPlaceholder('orgId')" 
+                            />
                         </el-form-item>
                     </el-col>
                     <el-col>
                         <el-form-item :label="getLabel('warehouseCode')">
-                            <el-select v-model="formData.warehouseCode" :placeholder="getPlaceholder('warehouseCode')"
-                                clearable>
-                                <el-option v-for="item in warehouseOptions" :key="item.code"
-                                    :label="`${item.code}-${item.name}`" :value="item.code" />
+                            <el-select 
+                                v-model="formData.warehouseCode" 
+                                :placeholder="getPlaceholder('warehouseCode')"
+                                clearable
+                            >
+                                <el-option 
+                                    v-for="item in warehouseOptions" 
+                                    :key="item.code"
+                                    :label="`${item.code}-${item.name}`" 
+                                    :value="item.code" 
+                                />
                             </el-select>
                         </el-form-item>
                     </el-col>
                     <el-col>
                         <el-form-item :label="getLabel('customerCode')">
-                            <el-select v-model="formData.customerCode" filterable
-                                :placeholder="getPlaceholder('customerCode')" clearable
-                                popper-class="multi-column-select">
-                                <el-option v-for="item in customerOptions" :key="item.value" :label="item.label"
-                                    :value="item.value" />
+                            <el-select 
+                                v-model="formData.customerCode" 
+                                filterable
+                                :placeholder="getPlaceholder('customerCode')" 
+                                clearable
+                                popper-class="multi-column-select"
+                            >
+                                <el-option 
+                                    v-for="item in customerOptions" 
+                                    :key="item.value" 
+                                    :label="item.label"
+                                    :value="item.value" 
+                                />
                             </el-select>
                         </el-form-item>
                     </el-col>
                     <el-col>
                         <el-form-item :label="getLabel('feeSubTypeId')">
-                            <el-select v-model="formData.feeSubTypeId" :placeholder="getPlaceholder('feeSubTypeId')"
-                                clearable>
-                                <el-option v-for="item in feeTypeOptions" :key="item.value" :label="item.label"
-                                    :value="item.value" />
+                            <el-select 
+                                v-model="formData.feeSubTypeId" 
+                                :placeholder="getPlaceholder('feeSubTypeId')"
+                                clearable
+                            >
+                                <el-option 
+                                    v-for="item in feeTypeOptions" 
+                                    :key="item.value" 
+                                    :label="item.label"
+                                    :value="item.value" 
+                                />
                             </el-select>
                         </el-form-item>
                     </el-col>
                     <el-col>
                         <el-form-item :label="getLabel('currency')">
-                            <el-select v-model="formData.currency" :placeholder="getPlaceholder('currency')" clearable>
-                                <el-option v-for="item in currencyOptions" :key="item.value" :label="item.label"
-                                    :value="item.value" />
+                            <el-select 
+                                v-model="formData.currency" 
+                                :placeholder="getPlaceholder('currency')"
+                                clearable
+                            >
+                                <el-option 
+                                    v-for="item in currencyOptions" 
+                                    :key="item.value" 
+                                    :label="item.label"
+                                    :value="item.value" 
+                                />
                             </el-select>
                         </el-form-item>
                     </el-col>
                     <el-col>
                         <el-form-item :label="getLabel('statusId')">
-                            <el-select v-model="formData.statusId" :placeholder="getPlaceholder('statusId')" clearable>
-                                <el-option v-for="item in statusOptions" :key="item.value" :label="item.label"
-                                    :value="item.value" />
+                            <el-select 
+                                v-model="formData.statusId" 
+                                :placeholder="getPlaceholder('statusId')"
+                                clearable
+                            >
+                                <el-option 
+                                    v-for="item in statusOptions" 
+                                    :key="item.value" 
+                                    :label="item.label"
+                                    :value="item.value" 
+                                />
                             </el-select>
                         </el-form-item>
                     </el-col>
                     <el-col>
                         <el-form-item :label="getLabel('createWayId')">
-                            <el-select v-model="formData.createWay" :placeholder="getPlaceholder('createWayId')"
-                                clearable>
-                                <el-option v-for="item in createWayOptions" :key="item.value" :label="item.label"
-                                    :value="item.value" />
+                            <el-select 
+                                v-model="formData.createWay" 
+                                :placeholder="getPlaceholder('createWayId')"
+                                clearable
+                            >
+                                <el-option 
+                                    v-for="item in createWayOptions" 
+                                    :key="item.value" 
+                                    :label="item.label"
+                                    :value="item.value" 
+                                />
                             </el-select>
                         </el-form-item>
                     </el-col>
                     <el-col>
                         <el-form-item :label="getLabel('orderNo')">
-                            <canonicalInput v-model:listName="formData.orderNoList"
-                                :placeholder="getPlaceholder('orderNo')" clearable />
+                            <canonicalInput 
+                                v-model:listName="formData.orderNoList"
+                                :placeholder="getPlaceholder('orderNo')" 
+                                clearable 
+                            />
                         </el-form-item>
                     </el-col>
                     <el-col>
                         <el-form-item :label="getLabel('billNo')">
-                            <el-input v-model.trim="formData.billNo" :placeholder="getPlaceholder('billNo')"
-                                clearable />
+                            <el-input 
+                                v-model.trim="formData.billNo" 
+                                :placeholder="getPlaceholder('billNo')"
+                                clearable 
+                            />
                         </el-form-item>
                     </el-col>
                     <el-col>
-                        <selectDate ref="dateSelectRef" :options="timeTypeOptions"
-                            :initialDateRange="selectDateData.dateRange" @change="handleTimeChange"></selectDate>
+                        <selectDate 
+                            ref="dateSelectRef" 
+                            :options="timeTypeOptions"
+                            :initialDateRange="selectDateData.dateRange" 
+                            @change="handleTimeChange"
+                        ></selectDate>
                     </el-col>
                 </template>
             </hydFilterBox>
         </div>
 
         <div class="tableDiv">
-            <hydTable :footer="footer" :tableData="tableData" :columns="columns" :pagination="pagination"
-                :enableSelection="true" :loading="loading" :pageSizes="[20, 50, 100, 200, 500]"
-                @selection-change="handleSelectionChange" @page-change="handlePageChange" @sort-change="handleTableSort"
-                :tableId="'finance/receivables/fee/list/valueAddedFee'">
+            <hydTable 
+                :footer="footer" 
+                :tableData="tableData" 
+                :columns="columns" 
+                :pagination="pagination"
+                :enableSelection="true" 
+                :loading="loading" 
+                :pageSizes="[20, 50, 100, 200, 500]"
+                @selection-change="handleSelectionChange" 
+                @page-change="handlePageChange" 
+                @sort-change="handleTableSort"
+                :tableId="'finance/receivables/fee/list/valueAddedFee'"
+            >
                 <template #table-buttons>
                     <div class="tableTopButtons">
                         <div class="statusIds">
                             <el-checkbox-group v-model="statusIdsArr" @change="handleStatusChange">
-                                <el-checkbox v-for="item in statusIdsList" :key="item.id" :label="item.id">
+                                <el-checkbox 
+                                    v-for="item in statusIdsList" 
+                                    :key="item.id" 
+                                    :label="item.id"
+                                >
                                     {{ item.name + '[' + item.qty + ']' }}
                                 </el-checkbox>
                             </el-checkbox-group>
@@ -105,50 +183,73 @@
                                     <div v-for="item in statData" :key="item.id" class="stat-item">
                                         <div class="stat-name">{{ item.name + ':' || '费用统计' }}</div>
                                         <div class="currency-list">
-                                            <div v-for="currencyItem in item.currencyAmounts"
-                                                :key="currencyItem.currency" class="currency-item">
-                                                <span class="currency-label">{{
-                                                    currencyItem.currency ? currencyItem.currency + '：' : '' }}</span>
-                                                <span class="currency-amount">{{ currencyItem.totalFeeAmount ?
-                                                    currencyItem.totalFeeAmount.toFixed(3) : '暂无'
-                                                    }}</span>
+                                            <div v-for="currencyItem in item.currencyAmounts" :key="currencyItem.currency" class="currency-item">
+                                                <span class="currency-label">{{ currencyItem.currency ? currencyItem.currency + '：' : '' }}</span>
+                                                <span class="currency-amount">{{ currencyItem.totalFeeAmount ? currencyItem.totalFeeAmount.toFixed(3) : '暂无' }}</span>
                                             </div>
                                         </div>
                                     </div>
                                     <div class="stat-empty" v-if="statData.length === 0">暂无统计数据</div>
                                 </div>
                             </div>
-                            <el-button type="primary" @click="handleAdd" v-permission="'receivableFree:add'"
-                                :icon="Plus">{{
-                                    getButtonText('add') }}</el-button>
-                            <el-button type="danger" @click="handleDel" v-permission="'receivableFree:delete'"
-                                :icon="Delete">{{
-                                    getButtonText('del') }}</el-button>
-                            <el-button type="success" @click="handleImport" :icon="Upload">{{
-                                getButtonText('importCreate')
-                            }}</el-button>
-                            <el-button type="success" @click="handleExport" :icon="Share">{{ getButtonText('export')
-                            }}</el-button>
-                            <el-button type="primary" @click="joinBillVisible = true" :icon="Money">{{
-                                getButtonText('joinBill')
-                            }}</el-button>
+                            <el-button 
+                                type="primary" 
+                                @click="handleAdd" 
+                                v-permission="'receivableFree:add'"
+                                :icon="Plus"
+                            >
+                                {{ getButtonText('add') }}
+                            </el-button>
+                            <el-button 
+                                type="danger" 
+                                @click="handleDel" 
+                                v-permission="'receivableFree:delete'"
+                                :icon="Delete"
+                            >
+                                {{ getButtonText('del') }}
+                            </el-button>
+                            <el-button 
+                                type="success" 
+                                @click="handleImport" 
+                                :icon="Upload"
+                            >
+                                {{ getButtonText('importCreate') }}
+                            </el-button>
+                            <el-button 
+                                type="success" 
+                                @click="handleExport" 
+                                :icon="Share"
+                            >
+                                {{ getButtonText('export') }}
+                            </el-button>
+                            <el-button 
+                                type="primary" 
+                                @click="joinBillVisible = true" 
+                                :icon="Money"
+                            >
+                                {{ getButtonText('joinBill') }}
+                            </el-button>
                         </div>
                     </div>
                 </template>
                 <template #customBtn="{ row }">
                     <div style="display: flex;">
-                        <div class="cursor-pointer" @click="(row.statusId == 10) && handleEdit(row)"
-                            :class="{ 'btnDisable': !(row.statusId == 10) }">
+                        <div 
+                            class="cursor-pointer" 
+                            @click="(row.statusId == 10) && handleEdit(row)"
+                            :class="{ 'btnDisable': !(row.statusId == 10) }"
+                        >
                             <el-icon>
                                 <EditPen />
-                            </el-icon><span>{{ getButtonText('edit') }}</span>
+                            </el-icon>
+                            <span>{{ getButtonText('edit') }}</span>
                         </div>
                     </div>
                 </template>
                 <template #statusName="{ row }">
-                    <span
-                        :style="{ color: row.statusId == 10 ? '#E6A23C' : (row.statusId == 20 ? '#67C23A' : '#F56C6C') }">{{
-                            row.statusName }}</span>
+                    <span :style="{ color: row.statusId == 10 ? '#E6A23C' : (row.statusId == 20 ? '#67C23A' : '#F56C6C') }">
+                        {{ row.statusName }}
+                    </span>
                 </template>
                 <template #customer="{ row }">
                     {{ row.customerCode }}({{ row.customerName }})
@@ -156,15 +257,38 @@
             </hydTable>
         </div>
 
-        <FeeDialog v-model="centerDialogVisible" :dialogMode="dialogMode" :feeMainTypeId="4" :initData="editInitData"
-            :feeTypeOptions="feeTypeOptions" :currencyOptions="currencyOptions" :loading="dialogLoading"
-            @confirm="handleDialogConfirm" />
-        <JoinBillDialog v-model="joinBillVisible" :selectionRows="selectionRows" :searchParams="initValues"
-            @success="handleJoinSuccess" />
-        <exportDialog ref="exportDialogRef" :selectionRows="selectionRows" :initValues="initValues" :exportType="706">
+        <FeeDialog 
+            v-model="centerDialogVisible" 
+            :dialogMode="dialogMode" 
+            :feeBizTypeId="40" 
+            :initData="editInitData"
+            :feeTypeOptions="feeTypeOptions" 
+            :currencyOptions="currencyOptions" 
+            :loading="dialogLoading"
+            @confirm="handleDialogConfirm" 
+        />
+        <JoinBillDialog 
+            v-model="joinBillVisible" 
+            :selectionRows="selectionRows" 
+            :searchParams="initValues"
+            @success="handleJoinSuccess" 
+        />
+        <exportDialog 
+            ref="exportDialogRef" 
+            :selectionRows="selectionRows" 
+            :initValues="initValues" 
+            :exportType="706"
+        >
         </exportDialog>
-        <batchOperationn :dialogTitle="'操作结果'" :isVisible="resultDialogVisible" :tableData="resultData"
-            :nameField="'id'" :nameLabel="'单号'" @close="resultClose" :promptMessage="promptMessage" />
+        <batchOperationn 
+            :dialogTitle="'操作结果'" 
+            :isVisible="resultDialogVisible" 
+            :tableData="resultData"
+            :nameField="'id'" 
+            :nameLabel="'单号'" 
+            @close="resultClose" 
+            :promptMessage="promptMessage" 
+        />
     </div>
 </template>
 
@@ -188,13 +312,14 @@ import {
     updFeeByIdApi,
     delFeeByIdApi,
     joinBillApi,
-    getFeeTypeEnumApi,
+    getFeeSubTypeEnumApi,
     getFeeStatusCountApi,
     getFeeStatAmountApi
 } from '@/api/financeApi/receivables.js';
 import { getCustomerLikeQueryApi } from '@/api/baseApi/sku.js';
 
 const router = useRouter();
+
 const props = defineProps({
     companyOptions: { type: Array, default: () => [] },
     warehouseOptions: { type: Array, default: () => [] },
@@ -203,10 +328,13 @@ const props = defineProps({
     createWayOptions: { type: Array, default: () => [] },
     currencyOptions: { type: Array, default: () => [] },
 });
+
 const { companyOptions, warehouseOptions, statusOptions, createWayOptions, currencyOptions } = toRefs(props);
+
 const customerOptions = ref([]);
 const feeTypeOptions = ref([]);
 const cascaderRef = ref(null);
+
 const parentProps = {
     checkStrictly: true,
     expandTrigger: 'hover',
@@ -214,13 +342,15 @@ const parentProps = {
 };
 
 const formConfig = ref([]);
-// 初始化查询参数：feeMainTypeId 固定为 4 (增值)
+
+// 初始化查询参数：feeBizTypeId 固定为 4 (增值)
 const initValues = ref({
-    orgId: '', warehouseCode: '', feeSubTypeId: '', statusId: '', createWay: '', orderNoList: [], billNoList: [], feeMainTypeId: 4, statusIdList: []
+    orgId: '', warehouseCode: '', feeSubTypeId: '', statusId: '', createWay: '', orderNoList: [], billNoList: [], feeBizTypeId: 40, statusIdList: []
 });
 
 const dateSelectRef = ref(null);
 const timeTypeOptions = ref([{ label: '单据创建时间', value: 10 }, { label: '费用创建时间', value: 20 }]);
+
 // 获取默认时间范围
 const getDefaultDateRange = () => {
     const end = new Date(); end.setHours(23, 59, 59, 999);
@@ -228,6 +358,7 @@ const getDefaultDateRange = () => {
     const formatDate = (d) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')} ${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}:${String(d.getSeconds()).padStart(2, '0')}`;
     return [formatDate(start), formatDate(end)];
 };
+
 const selectDateData = ref({ dateType: 10, dateRange: getDefaultDateRange() });
 const loading = ref(false);
 const tableData = shallowRef([]);
@@ -250,7 +381,7 @@ const columns = ref([
     { label: '账单编号', prop: 'billNo', width: '160' },
     { label: '关联订单号', prop: 'orderNo', width: '160', sortable: true },
     { label: '订单创建时间', prop: 'orderCreatedTime', width: '200' },
-    { label: '费用大类', prop: 'feeMainTypeName', width: '120', sortable: true },
+    { label: '费用大类', prop: 'feeBizTypeName', width: '120', sortable: true },
     { label: '费用小类', prop: 'feeSubTypeName', width: '120', sortable: true },
     { label: '创建方式', prop: 'createWayName', width: '120', sortable: true },
     { label: '币种', prop: 'currency', width: '80', sortable: true },
@@ -270,7 +401,9 @@ const columns = ref([
     { label: '操作', prop: 'action', width: '100', fixed: 'right', slot: 'customBtn' }
 ]);
 
-const handleTimeChange = (data) => selectDateData.value = data;
+const handleTimeChange = (data) => {
+    selectDateData.value = data;
+};
 
 // 金额统计接口
 const getFeeStatAmount = async () => {
@@ -303,7 +436,7 @@ const handleSearch = (data) => {
         timeBegin: selectDateData.value.dateRange ? selectDateData.value.dateRange[0] : '',
         timeEnd: selectDateData.value.dateRange ? selectDateData.value.dateRange[1] : '',
         statusIdList: statusIdsArr.value,
-        feeMainTypeId: 4
+        feeBizTypeId: 40
     };
     getList(1, pagination.value.pageSize);
     getStatus();
@@ -312,7 +445,7 @@ const handleSearch = (data) => {
 // 重置逻辑
 const handleReset = (data) => {
     selectDateData.value = { dateType: 10, dateRange: getDefaultDateRange() };
-    initValues.value = { ...data, orgId: '', dateType: 10, dateRange: getDefaultDateRange(), feeMainTypeId: 4, statusIdList: [] };
+    initValues.value = { ...data, orgId: '', dateType: 10, dateRange: getDefaultDateRange(), feeBizTypeId: 40, statusIdList: [] };
     statusIdsArr.value = [];
     handleCascaderChange();
     getList(1, pagination.value.pageSize);
@@ -329,12 +462,26 @@ const getList = async (page, pageSize, orderByStr = orderBy.value) => {
         footer.value = res.data.footer ? res.data.footer[0] : {};
         pagination.value = { currentPage: res.data.page, pageSize, total: res.data.total };
         await getFeeStatAmount();
-    } catch (e) { console.error(e); tableData.value = []; } finally { loading.value = false; }
+    } catch (e) { 
+        console.error(e); 
+        tableData.value = []; 
+    } finally { 
+        loading.value = false; 
+    }
 };
 
-const handleSelectionChange = (val) => selectionRows.value = val;
-const handlePageChange = ({ pageSize, currentPage }) => getList(currentPage, pageSize);
-const handleTableSort = (sort) => { orderBy.value = sort; getList(pagination.value.currentPage, pagination.value.pageSize); };
+const handleSelectionChange = (val) => {
+    selectionRows.value = val;
+};
+
+const handlePageChange = ({ pageSize, currentPage }) => {
+    getList(currentPage, pageSize);
+};
+
+const handleTableSort = (sort) => {
+    orderBy.value = sort;
+    getList(pagination.value.currentPage, pagination.value.pageSize);
+};
 
 // 状态改变事件
 const handleStatusChange = async (e) => {
@@ -345,43 +492,106 @@ const handleStatusChange = async (e) => {
 };
 
 // 弹窗逻辑
-const centerDialogVisible = ref(false); const dialogMode = ref('add'); const editInitData = ref({}); const dialogLoading = ref(false);
-const handleAdd = () => { editInitData.value = {}; dialogMode.value = 'add'; centerDialogVisible.value = true; };
-const handleEdit = (row) => { if (row.statusId != 10) return smartAlert('只能编辑未确认状态的费用', false); editInitData.value = JSON.parse(JSON.stringify(row)); dialogMode.value = 'upd'; centerDialogVisible.value = true; };
+const centerDialogVisible = ref(false); 
+const dialogMode = ref('add'); 
+const editInitData = ref({}); 
+const dialogLoading = ref(false);
+
+const handleAdd = () => { 
+    editInitData.value = {}; 
+    dialogMode.value = 'add'; 
+    centerDialogVisible.value = true; 
+};
+
+const handleEdit = (row) => { 
+    if (row.statusId != 10) return smartAlert('只能编辑未确认状态的费用', false); 
+    editInitData.value = JSON.parse(JSON.stringify(row)); 
+    dialogMode.value = 'upd'; 
+    centerDialogVisible.value = true; 
+};
+
 const handleDialogConfirm = async (formData) => {
     dialogLoading.value = true;
     try {
         let res = dialogMode.value === 'add' ? await addFeeApi({ ...formData }) : await updFeeByIdApi({ id: formData.id, confirmFeeAmount: formData.confirmFeeAmount, remark: formData.remark });
-        smartAlert(res.msg, res.success, 1000); if (res.success) { centerDialogVisible.value = false; getList(pagination.value.currentPage, pagination.value.pageSize); getStatus(); }
-    } catch (e) { console.error(e); } finally { dialogLoading.value = false; }
+        smartAlert(res.msg, res.success, 1000); 
+        if (res.success) { 
+            centerDialogVisible.value = false; 
+            getList(pagination.value.currentPage, pagination.value.pageSize); 
+            getStatus(); 
+        }
+    } catch (e) { 
+        console.error(e); 
+    } finally { 
+        dialogLoading.value = false; 
+    }
 };
 
 // 批量删除
-const resultDialogVisible = ref(false); const resultData = ref([]); const promptMessage = ref('');
+const resultDialogVisible = ref(false); 
+const resultData = ref([]); 
+const promptMessage = ref('');
+
 const handleDel = () => {
     if (selectionRows.value.length === 0) return ElMessage.warning('请选择要删除的数据！');
     ElMessageBox.confirm(`是否要删除${selectionRows.value.length}条数据?`, '提醒', { confirmButtonText: '确定', cancelButtonText: '取消', type: 'warning' }).then(async () => {
-        loading.value = true; resultData.value = []; resultDialogVisible.value = true; promptMessage.value = '操作中...';
-        for (const row of selectionRows.value) { const res = await delFeeByIdApi({ id: row.id }); resultData.value.push({ id: `${row.orderNo}`, msg: res.msg, success: res.success }); }
-        promptMessage.value = '操作完成'; loading.value = false;
+        loading.value = true; 
+        resultData.value = []; 
+        resultDialogVisible.value = true; 
+        promptMessage.value = '操作中...';
+        for (const row of selectionRows.value) { 
+            const res = await delFeeByIdApi({ id: row.id }); 
+            resultData.value.push({ id: `${row.orderNo}`, msg: res.msg, success: res.success }); 
+        }
+        promptMessage.value = '操作完成'; 
+        loading.value = false;
     }).catch(() => { });
 };
-const resultClose = () => { resultDialogVisible.value = false; getList(pagination.value.currentPage, pagination.value.pageSize); getStatus(); };
+
+const resultClose = () => {
+    resultDialogVisible.value = false;
+    getList(pagination.value.currentPage, pagination.value.pageSize);
+    getStatus();
+};
 
 // 加入账单逻辑
 const joinBillVisible = ref(false);
+
 const handleJoinSuccess = async () => {
     getList(pagination.value.currentPage, pagination.value.pageSize);
     getStatus();
 };
-const handleImport = () => router.push({ name: '导入文件', params: { typeId: 701, typeName: '增值应收费用' } });
-const exportDialogRef = ref(null); const handleExport = () => exportDialogRef.value.openExportDialog();
-const handleCascaderChange = async (e) => { if (e) nextTick(() => cascaderRef.value.togglePopperVisible()); const result = await getCustomerLikeQueryApi({ keyword: '*', orgId: e }); customerOptions.value = result.data.map(item => ({ value: item.code, label: `${item.code}(${item.name})` })); };
+
+const handleImport = () => {
+    router.push({ name: '导入文件', params: { typeId: 701, typeName: '增值应收费用' } });
+};
+
+const exportDialogRef = ref(null); 
+const handleExport = () => {
+    exportDialogRef.value.openExportDialog();
+};
+
+const handleCascaderChange = async (e) => { 
+    if (e) nextTick(() => cascaderRef.value.togglePopperVisible()); 
+    const result = await getCustomerLikeQueryApi({ keyword: '*', orgId: e }); 
+    customerOptions.value = result.data.map(item => ({ value: item.code, label: `${item.code}(${item.name})` })); 
+};
+
+// 初始化customerOptions
+const stopWatch = watch(
+    () => props.initialCustomerOptions,
+    (newVal) => {
+        if (newVal && newVal.length > 0) {
+            customerOptions.value = newVal;
+            stopWatch();
+        }
+    },
+    { immediate: true }
+);
 
 // 初始化
 onMounted(async () => {
-    customerOptions.value = props.initialCustomerOptions;
-    const feeTypeRes = await getFeeTypeEnumApi({ mainTypeId: 4 });
+    const feeTypeRes = await getFeeSubTypeEnumApi({ feeBizTypeId: 40 });
     feeTypeOptions.value = feeTypeRes.data.map(i => ({ label: i.name, value: i.id }));
     getStatus();
 });
