@@ -359,6 +359,12 @@ export const getPriceProjectStatusEnumApi = () => {
 export const getPriceProjectPageApi = (data) => {
     return http.post('/product/price/priceProject/page', data)
 }
+// 复制报价方案
+export const copyPriceProjectByIdApi = (data) => {
+    return http.post('/product/price/priceProject/copyById', data)
+}
+// 获取报价方案详情
+export const getPriceProjectInfoByIdApi = createPostRequestWithQuery('/product/price/priceProject/getById')
 // 启用报价方案
 export const activatePriceProjectByIdApi = createPostRequestWithQuery('/product/price/priceProject/activateById')
 // 停用报价方案
@@ -377,6 +383,12 @@ export const updatePriceProjectApi = (data) => {
 
 // 查询物流渠道报价
 export const getPriceShipwayListByProjectIdApi = createPostRequestWithQuery('/product/price/priceShipway/listByProjectId')
+// 获取物流报价详情
+export const getPriceShipwayInfoByIdApi = createPostRequestWithQuery('/product/price/priceShipway/getById')
+// 获取操作费报价详情
+export const getPriceWhOpInfoByIdApi = createPostRequestWithQuery('/product/price/priceWhOp/getById')
+// 获取仓租报价详情
+export const getPriceWhRentInfoByIdApi = createPostRequestWithQuery('product/price/priceWhRentAge/getById')
 // 新增/编辑渠道报价
 export const addOrUpdPriceShipwayApi = (data) => {
     return http.post('/product/price/priceShipway/addOrUpd', data, { headers: { 'loading': true } })
@@ -434,7 +446,7 @@ export const addOrUpdPriceWhOpApi = (data) => {
 export const delPriceWhOpByIdApi = createPostRequestWithQuery('/product/price/priceWhOp/deleteById')
 
 // 查询仓租报价基础信息
-export const getPriceWhRentListByProjectIdApi = createPostRequestWithQuery('/product/price/priceWhRent/listByProjectId')
+export const getPriceWhRentListByProjectIdApi = createPostRequestWithQuery('/product/price/priceWhRent/get')
 // 保存仓租基础信息
 export const setPriceWhRentApi = (data) => {
     return http.post('/product/price/priceWhRent/set', data, { headers: { 'loading': true } })
@@ -444,7 +456,7 @@ export const setPriceWhRentApi = (data) => {
 export const getPriceWhRentAgeListByProjectIdApi = createPostRequestWithQuery('/product/price/priceWhRentAge/listByProjectId')
 // 仓租报价表格新增/编辑
 export const addOrUpdPriceWhRentAgeApi = (data) => {
-    return http.post('/product/price/priceWhRentAge/addOrUpd', data, { headers: { 'loading': true } }) 
+    return http.post('/product/price/priceWhRentAge/addOrUpd', data, { headers: { 'loading': true } })
 }
 // 删除仓租报价
 export const delPriceWhRentAgeByIdApi = createPostRequestWithQuery('/product/price/priceWhRentAge/deleteById')

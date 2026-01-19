@@ -247,6 +247,7 @@ defineExpose({ handleReset }) // 暴露重置方法给父组件
     background: #fff;
     padding: 16px;
     border-radius: 4px;
+    margin-bottom: 5px;  /* 左侧菜单样式 */
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 

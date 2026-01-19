@@ -15,7 +15,7 @@
                             <el-option label="体积单位2" :value="2" />
                         </el-select>
                     </el-form-item>
-                    <el-form-item>
+                    <el-form-item v-if="!isView">
                         <el-button type="primary" plain @click="handleSaveBasic">保存配置</el-button>
                     </el-form-item>
                 </el-form>
@@ -23,7 +23,8 @@
 
             <div class="actions">
                 <!-- :disabled="!basicInfo.id" -->
-                <el-button type="primary" :icon="Plus" @click="handleAdd" :disabled="!basicInfo.id">新增阶梯报价</el-button>
+                <el-button v-if="!isView" type="primary" :icon="Plus" @click="handleAdd"
+                    :disabled="!basicInfo.id">新增阶梯报价</el-button>
             </div>
         </div>
 
@@ -57,9 +58,9 @@
                 </el-table-column>
 
                 <el-table-column prop="createdBy" label="创建人" width="100" />
-                <el-table-column prop="createdTime" label="创建时间" width="160" />
+                <el-table-column prop="createdTime" label="创建时间" width="200" />
                 <el-table-column prop="updatedBy" label="更新人" width="100" />
-                <el-table-column prop="updatedTime" label="更新时间" width="160" />
+                <el-table-column prop="updatedTime" label="更新时间" width="200" />
 
                 <el-table-column label="操作" width="150" fixed="right">
                     <template #default="{ row }">
@@ -71,7 +72,7 @@
         </div>
 
         <WhRentAgeDialog v-if="dialogVisible" v-model="dialogVisible" :project-id="projectId" :wh-rent-id="basicInfo.id"
-            :edit-data="currentEditData" @success="getAgeList" />
+            :edit-data="currentEditData" @success="getAgeList" :isView="isView" />
     </div>
 </template>
 
@@ -90,7 +91,8 @@ import {
 } from "@/api/productApi/shipway"
 
 const props = defineProps({
-    projectId: { type: String, required: true }
+    projectId: { type: String, required: true },
+    isView: { type: Boolean, default: false }
 })
 
 const loading = ref(false)
@@ -105,7 +107,7 @@ const basicInfo = reactive({
     volumeUnit: 1
 })
 
-const getUnitName = (val) => val === 1 ? 'm³' : 'cuft'
+const getUnitName = (val) => val === 1 ? '单位1' : '单位2'
 
 const getBasicInfo = async () => {
     if (!props.projectId) return

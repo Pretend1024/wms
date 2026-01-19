@@ -155,7 +155,6 @@ const loginBtn = async () => {
             }
         } else {
             userData.value.password = ''
-            loading.close()
             ElMessage({
                 message: res.msg,
                 type: 'error',

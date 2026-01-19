@@ -1,20 +1,14 @@
 <template>
     <div class="step-operation-fee">
-        <div class="header-actions">
+        <div class="header-actions" v-if="!isView">
             <el-button type="primary" :icon="Plus" @click="handleAdd">新增操作费</el-button>
         </div>
 
         <div class="table-content">
             <el-table :data="tableData" border stripe height="100%" v-loading="loading">
                 <el-table-column label="费用类型" prop="feeBizTypeId" width="150">
-                    <template #default="{ row }">
-                        {{ getFeeTypeName(row.feeBizTypeId) }}
-                    </template>
                 </el-table-column>
                 <el-table-column label="费用小类" prop="feeSubTypeId" width="150">
-                    <template #default="{ row }">
-                        {{ getfeeSubTypeName(row.feeSubTypeId) }}
-                    </template>
                 </el-table-column>
                 <el-table-column prop="remark" label="备注" show-overflow-tooltip />
                 <el-table-column prop="createdBy" label="创建人" width="120" />
@@ -31,7 +25,7 @@
         </div>
 
         <OperationFeeDialog v-if="dialogVisible" v-model="dialogVisible" :project-id="projectId"
-            :edit-data="currentEditData" @success="getList" />
+            :edit-data="currentEditData" @success="getList" :isView="isView" />
     </div>
 </template>
 
@@ -49,7 +43,8 @@ import {
 import { getVasOrderFeeTypeEnumApi } from "@/api/vasApi/vas.js"
 
 const props = defineProps({
-    projectId: { type: String, required: true }
+    projectId: { type: String, required: true },
+    isView: { type: Boolean, default: false }
 })
 
 const loading = ref(false)
@@ -71,11 +66,6 @@ const loadEnums = async () => {
 const getFeeTypeName = (id) => {
     const item = feeTypeEnum.value.find(i => i.id === id)
     return item ? item.name : id
-}
-
-// 模拟小类名称 (实际应有接口)
-const getfeeSubTypeName = (id) => {
-    return id === 1 ? '测试小类' : id
 }
 
 // 获取列表

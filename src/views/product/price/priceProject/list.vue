@@ -105,7 +105,8 @@
                 </template>
 
                 <template #statusName="{ row }">
-                    <el-tag :type="row.statusId === 1 ? 'success' : 'info'">{{ row.statusName }}</el-tag>
+                    <el-tag :type="row.statusId === 20 ? 'success' : row.statusId === 30 ? 'error' : 'info'">{{
+                        row.statusName }}</el-tag>
                 </template>
             </hydTable>
         </div>
@@ -120,12 +121,13 @@
                 </div>
             </template>
         </el-dialog>
+        <CopyProjectDialog v-model="copyDialogVisible" :row-data="currentCopyRow" @success="handleCopySuccess" />
         <batchOperationn :dialogTitle="'操作结果'" :isVisible="batchDialogVisible" :tableData="batchResultData"
             :nameField="'id'" :nameLabel="'方案名'" @close="batchClose" :promptMessage="batchPromptMessage" />
     </div>
 </template>
 
-<script setup name="新增报价方案">
+<script setup name="报价方案">
 import { ref, shallowRef, reactive, onMounted, nextTick, onActivated } from 'vue'
 import { Plus, Delete, VideoPlay, VideoPause, EditPen, View, CopyDocument, Tickets } from '@element-plus/icons-vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
@@ -135,6 +137,7 @@ import hydFilterBox from "@/components/table/hyd-filterBox.vue"
 import hydTable from "@/components/table/hyd-table.vue"
 import LogForm from '@/components/table/logTableById.vue';
 import batchOperationn from '@/components/messageNotices/batchOperation.vue'
+import CopyProjectDialog from './components/CopyProjectDialog.vue'
 
 // 接口引用
 import { getOrgListCompanyApi } from '@/api/baseApi/org.js'
@@ -145,7 +148,8 @@ import {
     getPriceProjectPageApi,
     activatePriceProjectByIdApi,
     stopPriceProjectByIdApi,
-    deletePriceProjectByIdApi
+    deletePriceProjectByIdApi,
+    copyPriceProjectByIdApi
 } from "@/api/productApi/shipway"
 
 
@@ -249,7 +253,7 @@ const handleAdd = () => {
 const handleEdit = (row) => {
     router.push({
         name: '编辑报价方案',
-        query: { id: row.id }
+        params: { name: row.name, id: row.id, }
     })
 }
 
@@ -257,15 +261,24 @@ const handleEdit = (row) => {
 const handleView = (row) => {
     router.push({
         name: '报价方案详情',
-        query: { id: row.id, type: 'view' }
+        params: { name: row.name, id: row.id, }
     })
 }
 
 // 复制
+const copyDialogVisible = ref(false)
+const currentCopyRow = ref({})
 const handleCopy = (row) => {
-    router.push({
-        name: '复制报价方案',
-        query: { id: row.id }
+    currentCopyRow.value = { ...row }
+    copyDialogVisible.value = true
+}
+// 处理复制成功后的回调
+const handleCopySuccess = (data) => {
+    getList(pagination.value.currentPage, pagination.value.pageSize, orderBy.value)
+    // 跳转到编辑页面
+    handleEdit({
+        id: data.id,
+        name: data.name
     })
 }
 const centerDialogVisible = ref(false)

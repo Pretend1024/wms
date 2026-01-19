@@ -1,3 +1,6 @@
+import i18n from '@/i18n'
+const { t, te } = i18n.global
+
 const tagMap = {
     欢迎: {
         zh: '欢迎',
@@ -155,10 +158,23 @@ const tagMap = {
 import useUserMenuStore from '@/store/userMenu'
 
 export function getRouteTitle(route) {
-    const userMenuStore = useUserMenuStore()
-    const lang = userMenuStore.lang
-    if (route.meta?.langKey) {
-        return tagMap[route.meta.langKey]?.[lang] || route.meta.langKey
+    // 安全检查
+    if (!route || !route.meta) return route?.name || '';
+
+    // 1. 如果有 langKey，去 i18n 中找对应的翻译
+    if (route.meta.langKey) {
+        // 对应迁移脚本生成的 titles.json，key 格式为 "titles.xxx"
+        const i18nKey = `titles.${route.meta.langKey}`;
+
+        // 使用 te() 检查是否存在翻译 (相当于原来的 tagMap[key] 是否存在)
+        if (te(i18nKey)) {
+            return t(i18nKey);
+        }
+
+        // 原逻辑：没有翻译则返回 langKey
+        return route.meta.langKey;
     }
-    return route.meta?.lang || route.name
+
+    // 2. 兜底逻辑：返回 meta.lang 或 route.name
+    return route.meta.lang || route.name;
 }

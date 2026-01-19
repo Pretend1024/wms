@@ -435,6 +435,26 @@ const routes = [
                     keepAlive: true,
                 }
             },
+            {
+                path: '/product/price/priceProject/upd/:name/:id/',
+                name: '编辑报价方案',
+                component: () => import('@/views/product/price/priceProject/upd.vue'),
+                props: true,
+                meta: {
+                    langKey: '编辑报价方案',
+                    keepAlive: true,
+                }
+            },
+            {
+                path: '/product/price/priceProject/info/:name/:id/',
+                name: '报价方案详情',
+                component: () => import('@/views/product/price/priceProject/info.vue'),
+                props: true,
+                meta: {
+                    langKey: '报价方案详情',
+                    keepAlive: true,
+                }
+            },
         ]
     },
     {

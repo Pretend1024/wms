@@ -336,6 +336,7 @@ $default-padding: 15px;
 
 .WeclomeViewArea {
     background: #f0f1f3;
+    overflow: auto;
 
     .WeclomeViewAreaTop {
         margin: 0 auto;
@@ -378,6 +379,7 @@ $default-padding: 15px;
         }
 
         .msgContentDiv {
+            margin-top: auto;
 
             ul {
                 display: flex;

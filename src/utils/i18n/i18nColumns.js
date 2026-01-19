@@ -1,7 +1,7 @@
 import useUserMenuStore from '@/store/userMenu'
 const userMenuStore = useUserMenuStore()
-
-
+import i18n from '@/i18n'
+const { t, te } = i18n.global
 
 // 列名映射表
 export const columnTextMap = {
@@ -1379,21 +1379,25 @@ const getRouteKey = () => {
     return routeKey
 }
 // 获取列文字
-export const getColumnText = (key) => {
-    // 语言
-    const lang = userMenuStore.lang
+export const getColumnText = (code) => {
+    if (!code) return '';
 
-    // 路由转 key
-    const routeKey = getRouteKey()
+    const routeKey = getRouteKey();
 
-    // 优先匹配路由下的配置
-    if (columnTextMap[routeKey] && columnTextMap[routeKey][key]) {
-        return columnTextMap[routeKey][key][lang]
+    // 1. 尝试查找页面专属列名: columns.base_wh_location.code
+    const pageKey = `columns.${routeKey}.${code}`;
+    if (te(pageKey)) {
+        return t(pageKey);
     }
 
-    // 再匹配 general
-    if (columnTextMap.general && columnTextMap.general[key]) {
-        return columnTextMap.general[key][lang]
+    // 2. 尝试查找通用列名: columns.general.code (假设你有一个通用的定义)
+    // 如果原来的 general 没有迁移过来，这一步可以先省略，或者手动在 generated.json 里加一个 general 节点
+    const commonKey = `columns.general.${code}`;
+    if (te(commonKey)) {
+        return t(commonKey);
     }
+
+    // 3. 兜底：直接返回 code，方便你看到哪里没翻译
+    return code;
 }
 

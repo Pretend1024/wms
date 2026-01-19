@@ -20,11 +20,11 @@
 
             <el-form :model="orderInfo" ref="formRef" label-width="131px">
                 <el-row>
-                    <el-col :span="6"><el-form-item label="仓库代码:"><el-input v-model.trim="orderInfo.warehouseCode"
+                    <el-col :span="6"><el-form-item :label="$t('instock_op_inReceipt_add.warehouseCode')"><el-input v-model.trim="orderInfo.warehouseCode"
                                 readonly /></el-form-item></el-col>
-                    <el-col :span="6"><el-form-item label="客户代码:"><el-input v-model.trim="orderInfo.customerCode"
+                    <el-col :span="6"><el-form-item :label="$t('instock_op_inReceipt_add.customerCode')"><el-input v-model.trim="orderInfo.customerCode"
                                 readonly /></el-form-item></el-col>
-                    <el-col :span="6"><el-form-item label="入库单号:"><el-input v-model.trim="orderInfo.orderNo"
+                    <el-col :span="6"><el-form-item label="入库单号"><el-input v-model.trim="orderInfo.orderNo"
                                 readonly /></el-form-item></el-col>
                     <el-col :span="6"><el-form-item label="状态:"><el-input v-model.trim="orderInfo.statusName"
                                 readonly /></el-form-item></el-col>

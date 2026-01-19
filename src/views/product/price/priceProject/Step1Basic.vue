@@ -1,13 +1,14 @@
 <template>
     <div class="step-basic-container">
         <div class="scroll-form-area">
-            <div class="info-alert">
+            <div class="info-alert" v-if="!isView">
                 <el-alert title="请先完善并提交基础信息，保存成功后方可进行后续报价配置。" type="warning" show-icon :closable="false" effect="light"
                     class="custom-alert" />
             </div>
 
             <div class="form-content">
-                <el-form :model="formData" :rules="rules" ref="formRef" label-width="110px" label-position="top">
+                <el-form :model="formData" :rules="rules" ref="formRef" label-width="110px" label-position="top"
+                    :disabled="isView">
 
                     <el-card class="form-card" shadow="hover">
                         <template #header>
@@ -29,7 +30,7 @@
                                     </template>
                                     <el-cascader ref="cascaderRef" v-model="formData.orgId" :options="companyOptions"
                                         :props="parentProps" clearable @change="handleOrgChange" placeholder="请选择公司"
-                                        style="width: 100%" :disabled="isEditMode" />
+                                        style="width: 100%" :disabled="isEditMode || isView" />
                                 </el-form-item>
                             </el-col>
                             <el-col :xs="24" :sm="12" :md="12">
@@ -43,7 +44,7 @@
                                         </el-tooltip>
                                     </template>
                                     <el-select v-model="formData.warehouseCode" filterable placeholder="请选择仓库" clearable
-                                        style="width: 100%" :disabled="isEditMode">
+                                        style="width: 100%" :disabled="isEditMode || isView">
                                         <template #prefix><el-icon>
                                                 <House />
                                             </el-icon></template>
@@ -66,7 +67,7 @@
                             <el-col :span="24">
                                 <el-form-item label="方案名称" prop="name">
                                     <el-input v-model="formData.name" placeholder="例如：2025年Q1季度标准报价" clearable
-                                        maxlength="50" show-word-limit :disabled="isEditMode">
+                                        maxlength="50" show-word-limit :disabled="isEditMode || isView">
                                         <template #prefix><el-icon>
                                                 <Document />
                                             </el-icon></template>
@@ -98,8 +99,9 @@
                             <el-col :span="24">
                                 <el-form-item label="适用客户">
                                     <div class="customer-input-wrapper">
-                                        <div class="customer-trigger-box" :class="{ 'is-disabled': !formData.orgId }"
-                                            @click="openCustomerDialog">
+                                        <div class="customer-trigger-box"
+                                            :class="{ 'is-disabled': !formData.orgId || isView }"
+                                            @click="(!isView && formData.orgId) && openCustomerDialog()">
                                             <div v-if="formData.customerCodeList.length === 0" class="placeholder-text">
                                                 <el-icon class="mr-5">
                                                     <User />
@@ -109,12 +111,12 @@
                                             <div v-else class="tag-wrapper">
                                                 <el-tag v-for="(code, index) in formData.customerCodeList" :key="index"
                                                     size="default" type="primary" effect="light"
-                                                    class="mr-5 mb-5 cust-tag" closable
+                                                    class="mr-5 mb-5 cust-tag" :closable="!isView"
                                                     @close.stop="removeCustomer(code)">
                                                     {{ code }}
                                                 </el-tag>
                                             </div>
-                                            <div class="trigger-icon">
+                                            <div class="trigger-icon" v-if="!isView">
                                                 <el-icon>
                                                     <More />
                                                 </el-icon>
@@ -139,7 +141,7 @@
             <div class="footer-content">
                 <div class="left-info">
                     <transition name="el-fade-in">
-                        <div v-if="hasDataChanged && isEditMode" class="warning-badge">
+                        <div v-if="hasDataChanged && isEditMode && !isView" class="warning-badge">
                             <el-icon>
                                 <Warning />
                             </el-icon> 信息已修改，请先保存
@@ -152,11 +154,11 @@
                     </span>
                 </div>
                 <div class="right-btns">
-                    <el-button type="primary" @click="handleSubmit" :loading="submitting">
+                    <el-button type="primary" @click="handleSubmit" :loading="submitting" v-if="!isView">
                         {{ isEditMode ? '保存修改' : '保存提交' }}
                     </el-button>
-                    <!-- :disabled="!localProjectId || hasDataChanged" -->
-                    <el-button type="success" @click="handleNext">
+                    <el-button type="success" @click="handleNext"
+                        :disabled="!localProjectId || (hasDataChanged && !isView)">
                         下一步
                     </el-button>
                 </div>
@@ -212,7 +214,8 @@ import { getCustomerLikeQueryApi } from '@/api/baseApi/sku.js'
 import { addPriceProjectApi, updatePriceProjectApi } from "@/api/productApi/shipway"
 
 const props = defineProps({
-    projectId: { type: String, default: '' }
+    projectId: { type: String, default: '' },
+    isView: { type: Boolean, default: false }
 })
 const emits = defineEmits(['update:projectId', 'next', 'updateName'])
 
@@ -245,7 +248,7 @@ const rules = {
 // --- 日期限制逻辑 ---
 const disabledStartDate = (time) => {
     // 只能选择今天及以后的日期 (可选)
-    // return time.getTime() < Date.now() - 8.64e7 
+    return time.getTime() < Date.now() - 8.64e7
 
     // 如果有截止日期，起始日期不能晚于截止日期
     if (formData.endDate) {
@@ -412,12 +415,14 @@ const handleNext = () => {
         ElMessage.warning('信息已变更，请先保存修改')
         return
     }
-    // if (localProjectId.value) {
-    //     emits('next')
-    // }
-    emits('next')
+    if (localProjectId.value) {
+        emits('next')
+    }
 }
-
+defineExpose({
+    formData,
+    hasDataChanged
+})
 watch(() => props.projectId, (val) => {
     localProjectId.value = val
 })

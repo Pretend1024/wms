@@ -1,10 +1,10 @@
 <template>
-    <el-dialog :title="isEdit ? '编辑操作费' : '新增操作费'" v-model="visible" width="85%" top="5vh" :close-on-click-modal="false"
-        destroy-on-close class="operation-dialog fixed-height-dialog">
+    <el-dialog :title="isView ? '操作费详情' : (isEdit ? '编辑操作费' : '新增操作费')" v-model="visible" width="85%" top="5vh"
+        :close-on-click-modal="false" destroy-on-close class="operation-dialog fixed-height-dialog">
         <div class="dialog-layout">
             <div class="header-section">
                 <el-card shadow="never" class="base-info-card">
-                    <el-form :model="formData" :rules="rules" ref="formRef" label-width="110px">
+                    <el-form :model="formData" :rules="rules" ref="formRef" label-width="110px" :disabled="isView">
                         <el-row :gutter="20">
                             <el-col :span="8">
                                 <el-form-item label="主费用类型" prop="feeMainTypeId">
@@ -58,7 +58,8 @@
                             同分组代码的收费条件只会生效一个(取金额最大的)，排序号越小优先级越高
                         </span>
                     </div>
-                    <el-button type="primary" size="small" :icon="Plus" @click="addDetailRow">新增详情</el-button>
+                    <el-button v-if="!isView" type="primary" size="small" :icon="Plus"
+                        @click="addDetailRow">新增详情</el-button>
                 </div>
 
                 <div class="table-area">
@@ -69,7 +70,8 @@
                             <template #default="{ row }">
                                 <div class="sticky-wrapper">
                                     <div class="expand-form-container">
-                                        <el-form label-position="top" size="small" class="compact-expand-form">
+                                        <el-form label-position="top" size="small" class="compact-expand-form"
+                                            :disabled="isView">
 
                                             <el-row :gutter="10">
                                                 <el-col :span="3">
@@ -123,8 +125,8 @@
                                                     <el-form-item label="计费公式" style="margin-bottom: 5px;">
                                                         <el-input v-model="row.formula" placeholder="例如: #W * 0.5">
                                                             <template #append>
-                                                                <el-button :icon="Edit"
-                                                                    @click="openFormulaDialog(row)" />
+                                                                <el-button :icon="Edit" @click="openFormulaDialog(row)"
+                                                                    :disabled="isView" />
                                                             </template>
                                                         </el-input>
                                                     </el-form-item>
@@ -157,7 +159,7 @@
                         <el-table-column label="公式" prop="formula" width="250" show-overflow-tooltip />
                         <el-table-column label="说明" prop="formulaDesc" width="250" show-overflow-tooltip />
 
-                        <el-table-column label="操作" width="120" fixed="right">
+                        <el-table-column v-if="!isView" label="操作" width="120" fixed="right">
                             <template #default="{ row }">
                                 <el-button link type="primary" @click="editDetailRow(row)">编辑</el-button>
                                 <el-button link type="danger" @click="delDetailRow(row)">删除</el-button>
@@ -169,8 +171,8 @@
         </div>
 
         <template #footer>
-            <el-button @click="visible = false">取消</el-button>
-            <el-button type="primary" @click="handleSubmit" :loading="submitting">确定</el-button>
+            <el-button @click="visible = false">{{ isView ? '关闭' : '取消' }}</el-button>
+            <el-button v-if="!isView" type="primary" @click="handleSubmit" :loading="submitting">确定</el-button>
         </template>
 
         <FormulaDialog v-model="formulaVisible" :feeSubTypeId="formData.feeSubTypeId"
@@ -188,11 +190,12 @@ import FormulaDialog from '@/components/FormulaDialog.vue'
 
 // API
 import { getFeeBizTypeEnumApi, getFeeSubTypeEnumApi } from '@/api/financeApi/receivables.js'
-import { getFeeMainTypeEnumApi, addOrUpdPriceWhOpApi, getFeeUnitTypeEnumApi } from '@/api/productApi/shipway.js'
+import { getFeeMainTypeEnumApi, addOrUpdPriceWhOpApi, getFeeUnitTypeEnumApi, getPriceWhOpInfoByIdApi } from '@/api/productApi/shipway.js'
 
 const props = defineProps({
     modelValue: Boolean,
     projectId: String,
+    isView: { type: Boolean, default: false },
     editData: Object
 })
 const emits = defineEmits(['update:modelValue', 'success'])
@@ -372,6 +375,7 @@ const handleSubmit = async () => {
     if (!formRef.value) return
     await formRef.value.validate(async (valid) => {
         if (valid) {
+            openMainLoading()
             submitting.value = true
             try {
                 const payload = JSON.parse(JSON.stringify(formData))
@@ -401,28 +405,50 @@ const handleSubmit = async () => {
             } catch (e) {
                 console.error(e)
             } finally {
+                closeMainLoading()
                 submitting.value = false
             }
         }
     })
 }
 
+// 在 onMounted 中替换原有的逻辑
 onMounted(async () => {
+    openMainLoading()
+    // 1. 加载主费用类型、业务费用类型等基础枚举
     await loadBaseEnums()
 
-    if (props.editData) {
-        const data = JSON.parse(JSON.stringify(props.editData))
-        if (data.feeBizTypeId) await loadSubTypeData(data.feeBizTypeId)
-        if (data.feeSubTypeId) await loadUnitTypeData(data.feeSubTypeId)
-        Object.assign(formData, data)
+    // 2. 判断是编辑还是新增
+    if (props.editData && props.editData.id) {
+        try {
+            // 调用详情接口
+            const res = await getPriceWhOpInfoByIdApi({ id: props.editData.id })
+            if (res.success) {
+                const data = res.data
 
-        if (formData.detailDTOList && formData.detailDTOList.length > 0) {
-            formData.detailDTOList.forEach(item => {
-                item._tempId = item.id || Date.now() + Math.random()
-            })
-        } else {
-            // 编辑态如果列表为空，也默认加一行
-            addDetailRow()
+                // 【核心】加载级联下拉列表的数据
+                if (data.feeBizTypeId) {
+                    await loadSubTypeData(data.feeBizTypeId)
+                }
+                if (data.feeSubTypeId) {
+                    await loadUnitTypeData(data.feeSubTypeId)
+                }
+
+                // 回填表单数据
+                Object.assign(formData, data)
+
+                // 【核心】为详情列表生成前端所需的 _tempId，用于控制表格展开
+                if (formData.detailDTOList && formData.detailDTOList.length > 0) {
+                    formData.detailDTOList.forEach(item => {
+                        item._tempId = item.id || Date.now() + Math.random()
+                    })
+                } else {
+                    // 如果列表为空，默认加一行空行
+                    addDetailRow()
+                }
+            }
+        } catch (e) {
+            console.error('获取操作费详情失败', e)
         }
     } else {
         Object.assign(formData, {
@@ -434,9 +460,9 @@ onMounted(async () => {
             remark: '',
             detailDTOList: []
         })
-        // 新增态默认加一行
-        addDetailRow()
+        addDetailRow() // 默认加一行
     }
+    closeMainLoading()
 })
 </script>
 

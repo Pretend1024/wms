@@ -1,10 +1,10 @@
 <template>
-    <el-dialog :title="isEdit ? '编辑库龄报价' : '新增库龄报价'" v-model="visible" width="800px" top="5vh"
+    <el-dialog :title="isView ? '库龄报价详情' : (isEdit ? '编辑库龄报价' : '新增库龄报价')" v-model="visible" width="800px" top="5vh"
         :close-on-click-modal="false" destroy-on-close class="wh-rent-dialog">
         <div class="dialog-content">
             <div class="form-section">
                 <div class="sub-title">基础配置</div>
-                <el-form :model="formData" ref="formRef" :rules="rules" label-width="80px">
+                <el-form :model="formData" ref="formRef" :rules="rules" label-width="80px" :disabled="isView">
                     <el-row :gutter="20">
                         <el-col :span="8">
                             <el-form-item label="库龄起始" prop="daysStart">
@@ -34,7 +34,7 @@
             <div class="surcharge-section">
                 <div class="header">
                     <div class="sub-title">旺季附加费配置</div>
-                    <el-button type="primary" link @click="addSurchargeRow">+ 添加旺季</el-button>
+                    <el-button v-if="!isView" type="primary" link @click="addSurchargeRow">+ 添加旺季</el-button>
                 </div>
 
                 <div class="surcharge-list">
@@ -45,16 +45,17 @@
                     <div v-for="(item, index) in formData.surchargeDTOList" :key="index" class="surcharge-row">
                         <div class="row-top">
                             <span class="index-label">配置 {{ index + 1 }}</span>
-                            <el-button type="danger" link :icon="Delete" @click="delSurchargeRow(index)">移除</el-button>
+                            <el-button v-if="!isView" type="danger" link :icon="Delete"
+                                @click="delSurchargeRow(index)">移除</el-button>
                         </div>
 
                         <div class="row-content">
                             <div class="month-selector">
                                 <div class="label">选择月份:</div>
-                                <div class="months-grid">
+                                <div class="months-grid" :class="{ 'is-disabled': isView }">
                                     <div v-for="m in 12" :key="m" class="month-item"
                                         :class="{ 'active': item._selectedMonths.includes(m) }"
-                                        @click="toggleMonth(item, m)">
+                                        @click="!isView && toggleMonth(item, m)">
                                         {{ m }}月
                                     </div>
                                 </div>
@@ -65,7 +66,8 @@
 
                             <div class="price-input">
                                 <div class="label">附加单价:</div>
-                                <el-input v-model="item.unitPrice" v-number="3" placeholder="0.00" style="width: 120px">
+                                <el-input v-model="item.unitPrice" v-number="3" placeholder="0.00" style="width: 120px"
+                                    :disabled="isView">
                                     <template #append>元</template>
                                 </el-input>
                             </div>
@@ -76,8 +78,8 @@
         </div>
 
         <template #footer>
-            <el-button @click="visible = false">取消</el-button>
-            <el-button type="primary" @click="handleSubmit" :loading="submitting">确定</el-button>
+            <el-button @click="visible = false">{{ isView ? '关闭' : '取消' }}</el-button>
+            <el-button v-if="!isView" type="primary" @click="handleSubmit" :loading="submitting">确定</el-button>
         </template>
     </el-dialog>
 </template>
@@ -86,14 +88,16 @@
 import { ref, reactive, computed, onMounted } from 'vue'
 import { Delete } from '@element-plus/icons-vue'
 import { ElMessage } from 'element-plus'
-import { addOrUpdPriceWhRentAgeApi } from "@/api/productApi/shipway"
+import { addOrUpdPriceWhRentAgeApi, getPriceWhRentInfoByIdApi } from "@/api/productApi/shipway"
 
 const props = defineProps({
     modelValue: Boolean,
     projectId: String,
-    whRentId: String, // 基础信息的ID
-    editData: Object
+    whRentId: String,
+    editData: Object,
+    isView: { type: Boolean, default: false }
 })
+
 const emits = defineEmits(['update:modelValue', 'success'])
 
 const visible = computed({
@@ -194,6 +198,7 @@ const handleSubmit = async () => {
     if (!formRef.value) return
     await formRef.value.validate(async (valid) => {
         if (valid) {
+            openMainLoading()
             // 校验旺季配置
             for (const item of formData.surchargeDTOList) {
                 if (!item.months) return ElMessage.warning('请选择旺季月份')
@@ -217,22 +222,37 @@ const handleSubmit = async () => {
                     ElMessage.error(res.msg)
                 }
             } finally {
+                closeMainLoading()
                 submitting.value = false
             }
         }
     })
 }
 
-onMounted(() => {
-    if (props.editData) {
-        Object.assign(formData, JSON.parse(JSON.stringify(props.editData)))
-        // 恢复月份选中状态
-        if (formData.surchargeDTOList) {
-            formData.surchargeDTOList.forEach(item => {
-                item._selectedMonths = convertStringToMonths(item.months)
-            })
+onMounted(async () => {
+    openMainLoading()
+    // 判断是编辑还是新增
+    if (props.editData && props.editData.id) {
+        try {
+            // 调用详情接口 (使用您提供的接口名 getPriceWhRentInfoByIdApi)
+            const res = await getPriceWhRentInfoByIdApi({ id: props.editData.id })
+            if (res.success) {
+                const data = res.data
+                Object.assign(formData, data)
+
+                // 【核心】恢复旺季月份的选中状态 (字符串 -> 数组)
+                if (formData.surchargeDTOList && formData.surchargeDTOList.length > 0) {
+                    formData.surchargeDTOList.forEach(item => {
+                        // 使用组件内定义的 convertStringToMonths 方法恢复 _selectedMonths
+                        item._selectedMonths = convertStringToMonths(item.months)
+                    })
+                }
+            }
+        } catch (e) {
+            console.error('获取库龄报价详情失败', e)
         }
     } else {
+        // --- 新增模式初始化 ---
         Object.assign(formData, {
             id: '',
             priceProjectId: props.projectId,
@@ -241,6 +261,7 @@ onMounted(() => {
             surchargeDTOList: []
         })
     }
+    closeMainLoading()
 })
 </script>
 
@@ -368,5 +389,15 @@ onMounted(() => {
             }
         }
     }
+}
+
+.months-grid.is-disabled .month-item {
+    cursor: not-allowed;
+    opacity: 0.7;
+}
+
+.months-grid.is-disabled .month-item:not(.active) {
+    background-color: #f5f7fa;
+    color: #c0c4cc;
 }
 </style>

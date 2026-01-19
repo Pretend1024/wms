@@ -6,10 +6,11 @@
             </el-header>
 
             <el-container>
-                <el-aside width="200px">
+                <!-- <el-aside width="200px">
                     <menus :menuData="userMenuStore" :isCollapse="false"></menus>
-                </el-aside>
+                </el-aside> -->
                 <el-main>
+                    <tags></tags>
                     <router-view v-slot="{ Component, route }">
                         <div class="router-view-container">
                             <transition :name="route.meta.noAnimation ? '' : 'page-transition'">
@@ -32,6 +33,8 @@ import { computed, provide, onMounted } from 'vue';
 import tagsStore from '@/store/tags.js'
 import useUserMenuStore from '@/store/userMenu';
 import { useRoute } from 'vue-router';
+
+import tags from '@/layout/tags.vue';
 
 const route = useRoute();
 const useTagsStore = tagsStore();
@@ -63,7 +66,8 @@ provide('refresh', refresh);
 .router-view-container {
     position: relative;
     width: 100%;
-    height: 100%;
+    // height: 100%;  左侧菜单样式
+    height: calc(100vh - 110px);
     display: flex;
     flex-direction: column;
     /*开启硬件加速，减少主线程重绘压力 */
@@ -139,7 +143,7 @@ provide('refresh', refresh);
 
 .el-main {
     background-color: #f0f1f3;
-    padding: 10px 12px;
-    width: calc(100vw - 200px);
+    padding: 0px 12px 10px 12px;
+    overflow: auto; // 左侧菜单样式
 }
 </style>

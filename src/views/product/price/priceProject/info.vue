@@ -1,5 +1,5 @@
 <template>
-    <div class="viewArea add-price-project-page">
+    <div class="viewArea upd-price-project-page">
         <div class="steps-wrapper">
             <el-steps :active="activeStep" finish-status="success" align-center class="custom-steps">
                 <el-step title="方案基础信息" />
@@ -11,13 +11,13 @@
 
         <div class="content-wrapper">
             <KeepAlive>
-                <Step1Basic v-if="activeStep === 0" v-model:projectId="projectId" @next="nextStep"
-                    @updateName="handleUpdateName" :isView="false" />
+                <Step1Basic v-if="activeStep === 0" ref="step1Ref" v-model:projectId="projectId" @next="nextStep"
+                    @updateName="handleUpdateName" isView />
             </KeepAlive>
             <KeepAlive>
                 <div v-if="activeStep === 1" class="step-wrapper">
                     <div class="component-area">
-                        <Step2Logistics :project-id="projectId" :isView="false" />
+                        <Step2Logistics :project-id="projectId" isView />
                     </div>
                     <div class="fixed-footer">
                         <div class="footer-content">
@@ -39,7 +39,7 @@
             <KeepAlive>
                 <div v-if="activeStep === 2" class="step-wrapper">
                     <div class="component-area">
-                        <Step3OperationFee :project-id="projectId" :isView="false" />
+                        <Step3OperationFee :project-id="projectId" isView />
                     </div>
                     <div class="fixed-footer">
                         <div class="footer-content">
@@ -60,7 +60,7 @@
             <KeepAlive>
                 <div v-if="activeStep === 3" class="step-wrapper">
                     <div class="component-area">
-                        <Step4WhRent :project-id="projectId" :isView="false" />
+                        <Step4WhRent :project-id="projectId" isView />
                     </div>
                     <div class="fixed-footer">
                         <div class="footer-content">
@@ -71,7 +71,7 @@
                             </div>
                             <div class="right-btns">
                                 <el-button @click="prevStep">上一步</el-button>
-                                <el-button type="success" @click="handleFinish">完成创建</el-button>
+                                <el-button type="success" @click="handleFinish">完成配置</el-button>
                             </div>
                         </div>
                     </div>
@@ -81,35 +81,73 @@
     </div>
 </template>
 
-<script setup name="新增报价方案">
-import { ref } from 'vue'
-import { ElMessage } from 'element-plus'
-import { Link } from '@element-plus/icons-vue'
+<script setup name="报价方案详情">
+import { ref, onMounted, nextTick } from 'vue'
 import { useRoute } from 'vue-router'
 import router from '@/router/index.js'
+import { ElMessage } from 'element-plus'
+import { Link } from '@element-plus/icons-vue'
 import Step1Basic from './Step1Basic.vue'
 import Step2Logistics from './Step2Logistics.vue'
 import Step3OperationFee from './Step3OperationFee.vue'
 import Step4WhRent from './Step4WhRent.vue'
+import { getPriceProjectInfoByIdApi } from '@/api/productApi/shipway'
 import tagsStore from '@/store/tags.js'
 let useTagsStore = tagsStore()
 
+const props = defineProps({
+    id: {
+        type: String,
+        required: true,
+        default: ''
+    },
+})
 const route = useRoute()
 const activeStep = ref(0)
 const projectId = ref('')
-
 const projectName = ref('')
+const step1Ref = ref(null)
 
 const handleUpdateName = (name) => {
     projectName.value = name
 }
 
+// 初始化数据
+const initData = async () => {
+    openMainLoading()
+    const id = props.id
+    try {
+        const res = await getPriceProjectInfoByIdApi({ id })
+        if (res.success && res.data) {
+            const data = res.data
+            projectId.value = data.id
+            projectName.value = data.name
+
+            // 回显Step1数据
+            await nextTick()
+            if (step1Ref.value) {
+                step1Ref.value.formData.orgId = data.orgId
+                step1Ref.value.formData.warehouseCode = data.warehouseCode
+                step1Ref.value.formData.name = data.name
+                step1Ref.value.formData.startDate = data.startDate
+                step1Ref.value.formData.endDate = data.endDate
+                step1Ref.value.formData.remark = data.remark
+                step1Ref.value.formData.customerCodeList = data.customerCodeList || []
+                await nextTick()
+                step1Ref.value.hasDataChanged = false
+                closeMainLoading()
+            }
+        } else {
+            ElMessage.error(res.msg || '获取详情失败')
+        }
+    } catch (e) {
+        console.error(e)
+        ElMessage.error('系统异常，请稍后重试')
+    }
+}
+
 // 下一步
 const nextStep = () => {
-    // if (activeStep.value === 0 && !projectId.value) {
-    //     ElMessage.warning('请先提交基础信息以生成方案ID')
-    //     return
-    // }
     if (activeStep.value < 3) {
         activeStep.value++
     }
@@ -128,12 +166,16 @@ const handleFinish = () => {
     useTagsStore.tagsStore = useTagsStore.tagsStore.filter(item => item.path !== route.fullPath)
     router.push({ name: '报价方案' })
 }
+
+onMounted(() => {
+    initData()
+})
 </script>
 
 <style scoped lang="scss">
 @use '@/assets/css/viewArea.scss';
 
-.add-price-project-page {
+.upd-price-project-page {
     display: flex;
     flex-direction: column;
     height: 100%;
@@ -199,19 +241,6 @@ const handleFinish = () => {
         overflow: hidden;
         padding-bottom: 64px;
     }
-}
-
-/* 占位容器样式 (居中显示) */
-.placeholder-container {
-    height: 100%;
-    background: #fff;
-    border-radius: 8px;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    position: relative;
-    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
 }
 
 /* 统一的底部按钮样式 */

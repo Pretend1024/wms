@@ -56,7 +56,7 @@ const useTagsStore = tagsStore()
 const refreshCurrentPage = inject('refresh')
 
 // 受控 activeKey —— 与 route.fullPath 同步
-const activeKey = ref(route.fullPath) 
+const activeKey = ref(route.fullPath)
 watch(() => route.fullPath, (newPath) => {
     activeKey.value = newPath
 })
@@ -87,8 +87,8 @@ const activeTabIndex = ref(null)
 
 // 捕获右键，弹出菜单
 const handleRightClick = (event, index) => {
-    menuX.value = event.clientX - 180
-    menuY.value = event.clientY
+    menuX.value = event.clientX
+    menuY.value = event.clientY - 50
     showMenu.value = true
     activeTabIndex.value = index
 }
@@ -205,180 +205,173 @@ onBeforeUnmount(() => {
 </script>
 
 <style scoped lang="scss">
+/* --- 1. 容器样式 --- */
 .tags {
     position: relative;
-    border: none;
-    align-self: flex-end;
-    // border-top: 1px solid;
-    // border-image: linear-gradient(to right, rgb(245, 190, 40), rgb(245, 248, 41));
-    border-image-slice: 1;
-    padding-top: 8px;
-    padding-right: 45px;
-    // 渐变背景色,从右上角向左下角渐变linear-gradient(to right, #ffffff, #c5d9f0)
-    // background: linear-gradient(to right, #ffffff, #c5d9f0);
+    /* 给容器一点内边距，防止阴影被切掉 */
+    padding: 6px 0px 0 0px;
+    background-color: #f0f1f3;
+    /* 浅灰色背景衬托白色卡片 */
+    user-select: none;
+    /* 防止双击选中文字 */
+    width: 100%;
+    box-sizing: border-box;
+    border-bottom: 1px solid #e4e7ed;
 }
 
+/* --- 2. Arco Tabs 结构重置 --- */
+
+/* 隐藏默认的导航栏底条 */
+:deep(.arco-tabs-nav::before) {
+    display: none;
+}
+
+/* 调整导航栏容器的内边距 */
+:deep(.arco-tabs-nav) {
+    padding: 0 !important;
+    background: transparent;
+}
+
+/* 防止 Tabs 组件自带的内容区占位影响布局 */
+:deep(.arco-tabs-content) {
+    display: none;
+}
+
+/* --- 3. Tab 单体样式 (核心) --- */
+
+:deep(.arco-tabs-tab) {
+    margin: 0 6px 0 0 !important;
+    /* Tab 之间的间距 */
+    padding: 0 16px !important;
+    /* 文字两侧留白 */
+    height: 32px !important;
+    line-height: 32px !important;
+    background-color: #ffffff !important;
+    border: 1px solid #e4e7ed !important;
+    border-radius: 4px 4px 0 0 !important;
+    /* 上方圆角 */
+    color: #606266;
+    font-size: 13px;
+    transition: all 0.3s cubic-bezier(0.645, 0.045, 0.355, 1);
+    box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.02);
+}
+
+/* --- 4. Tab 悬停状态 (Inactive Hover) --- */
+/* 重点：使用 :not 排除掉已激活的 tab，防止颜色冲突 */
+:deep(.arco-tabs-tab:not(.arco-tabs-tab-active):hover) {
+    color: #ff914e;
+    background-color: #fffbf5 !important;
+    /* 极淡的橙色背景 */
+    border-color: #ff914e60 !important;
+    padding-right: 12px !important;
+    /* 配合关闭按钮出现的位移 */
+}
+
+/* --- 5. Tab 激活状态 (Active) --- */
+:deep(.arco-tabs-tab-active) {
+    background-color: #ff914e !important;
+    /* 深橙色高亮 */
+    color: #ffffff !important;
+    border-color: #ff914e !important;
+    font-weight: 500;
+    box-shadow: 0 2px 6px rgba(255, 145, 78, 0.3);
+}
+
+/* --- 6. 关闭按钮深度优化 (Close Button) --- */
+
+/* 基础构造：默认是一个隐藏的小圆 */
+:deep(.arco-tabs-tab-close-btn) {
+    box-sizing: border-box;
+    width: 0;
+    height: 18px;
+    /* 固定高度，形成正圆 */
+    margin-left: 0;
+    opacity: 0;
+    border-radius: 50%;
+    transform: scale(0.5);
+    transition: all 0.2s cubic-bezier(0.645, 0.045, 0.355, 1);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    vertical-align: middle;
+}
+
+/* 触发显示：只要 Tab 被悬停，或者 Tab 是激活态，就给按钮留位置 */
+:deep(.arco-tabs-tab:hover .arco-tabs-tab-close-btn),
+:deep(.arco-tabs-tab-active .arco-tabs-tab-close-btn) {
+    width: 18px;
+    margin-left: 6px;
+    opacity: 1;
+    transform: scale(1);
+}
+
+/* >>> 场景 A：未选中 (Inactive) 的 Tab <<< */
+
+/* A1. 默认：显示橙色图标，无背景 */
+:deep(.arco-tabs-tab:not(.arco-tabs-tab-active):hover .arco-tabs-tab-close-btn) {
+    color: #ff914e;
+    background-color: transparent;
+}
+
+/* A2. 悬停在按钮上：实心橙色背景，白图标 (强调删除) */
+:deep(.arco-tabs-tab:not(.arco-tabs-tab-active) .arco-tabs-tab-close-btn:hover) {
+    background-color: #ff914e !important;
+    color: #ffffff !important;
+    box-shadow: 0 2px 4px rgba(255, 145, 78, 0.2);
+}
+
+/* >>> 场景 B：已选中 (Active) 的 Tab <<< */
+
+/* B1. 默认：显示白色图标 (清晰可见) */
+:deep(.arco-tabs-tab-active .arco-tabs-tab-close-btn) {
+    color: #ffffff;
+    /* 纯白，不再使用半透明，确保清晰 */
+    background-color: transparent;
+}
+
+/* B2. 悬停在按钮上：半透明白色背景，亮白图标 (通透感) */
+:deep(.arco-tabs-tab-active .arco-tabs-tab-close-btn:hover) {
+    background-color: #ffffff !important;
+    color: #ff914e !important;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+    /* 加一点深色阴影突显层次 */
+}
+
+/* --- 7. 右键菜单样式 --- */
 .rightMenu {
     position: absolute;
     z-index: 2001;
-    border-radius: 5px;
-    height: 142px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    box-shadow: 0 0 6px #8f8f8f;
-    background-color: white;
-    padding: 0px 8px;
-
-    .el-icon {
-        margin: 10px;
-    }
-
-    span {
-        font-size: 14px;
-    }
-}
-
-.rightIcon {
-    font-size: 18px;
-}
-
-.rightIcon:hover {
-    color: #ff914e;
-    animation: rotate 0.3s linear;
-}
-
-@keyframes rotate {
-    0% {
-        transform: rotate(0deg);
-    }
-
-    100% {
-        transform: rotate(90deg);
-    }
-}
-
-.RightHandMenu {
-    position: absolute;
-    right: 10px;
-    top: 10px;
-    z-index: 100;
+    border-radius: 6px;
+    height: auto;
+    padding: 6px 0;
+    background-color: #ffffff;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+    border: 1px solid #ebeef5;
+    min-width: 120px;
 }
 
 .rightMenuItem {
     display: flex;
     align-items: center;
-    height: 28px;
-    width: 114%;
+    height: 34px;
+    padding: 0 16px;
+    width: 100%;
+    box-sizing: border-box;
+    font-size: 13px;
+    color: #606266;
+    transition: background-color 0.2s;
+
+    .el-icon {
+        margin-right: 8px;
+        font-size: 14px;
+    }
 }
 
 .rightMenuItem:hover {
     cursor: pointer;
-    // ecf5ff
-    background-color: #f8eddc;
+    background-color: #fff6ed;
+    /* 菜单项悬停淡橙色 */
     color: #ff914e;
-    ;
-}
-
-
-:deep(.arco-tabs-tab) {
-    background-color: #fff !important;
-    color: #000;
-    /* 过渡时间 */
-    transition: width 0.5s ease;
-    box-sizing: border-box;
-}
-
-:deep(.arco-tabs-tab:hover) {
-    border-color: #ff914e;
-    color: #ff914e;
-}
-
-:deep(.arco-tabs-tab-active) {
-    // #ff914e
-    background-color: #ff914e !important;
-    color: #fff;
-    border: 1px solid #ff914e;
-    border-color: #ff914e;
-}
-
-:deep(.arco-tabs-tab-active:hover) {
-    color: #fff;
-}
-
-:deep(.arco-tabs-content) {
-    height: calc(100vh - 102px) !important;
-    padding: 0 !important;
-}
-
-:deep(.arco-tabs-pane) {
-    height: 100%;
-
-}
-
-:deep(.arco-tabs-content-list) {
-    height: 100% !important;
-}
-
-/* 清楚悬浮黑框 */
-:deep(.el-dropdown) {
-    outline: none;
-}
-
-:deep(.el-tooltip__trigger) {
-    outline: none;
-}
-
-// 隐藏标签删除
-:deep(.arco-tabs-tab-close-btn) {
-    max-width: 0;
-    /* 隐藏时的高度 */
-    opacity: 0;
-    /* 隐藏时透明度 */
-    overflow: hidden;
-    /* 防止内容溢出 */
-    transition: max-width 0.5s ease, opacity 0.5s ease;
-    /* 添加高度和透明度过渡效果 */
-    visibility: hidden;
-    /* 隐藏时不显示 */
-}
-
-// 显示删除
-:deep(.arco-tabs-tab:hover .arco-tabs-tab-close-btn) {
-    max-width: 50px;
-    /* 展开后的高度，根据内容调整 */
-    opacity: 1;
-    visibility: visible;
-    /* 显示时可见 */
-    border-radius: 50%;
-}
-
-:deep(.arco-tabs-tab-close-btn:hover) {
-    background-color: #c9cdd4;
-    color: #ff914e;
-}
-
-:deep(.arco-tabs-type-card-gutter) {
-    height: 32px !important;
-}
-
-:deep(.arco-tabs-nav-button-right) {
-    margin: 0 0px 0 0;
-}
-
-:deep(.arco-tabs-nav-button-left) {
-    margin: 0 0 0 0px;
-}
-
-:deep(.arco-tabs-nav) {
-    padding: 0 5px 0 5px !important;
-}
-
-:deep(.arco-tabs-nav-tab) {
-    margin: 0 10px !important;
-}
-
-:deep(.arco-tabs-nav::before) {
-    display: none;
 }
 </style>

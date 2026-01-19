@@ -1,6 +1,6 @@
 <template>
     <div class="step-logistics">
-        <div class="header-actions">
+        <div class="header-actions" v-if="!isView">
             <el-button type="primary" :icon="Plus" @click="handleAdd">新增物流报价</el-button>
         </div>
 
@@ -14,8 +14,8 @@
                 <el-table-column prop="unitTypeName" label="单位类型" width="100" />
                 <el-table-column prop="billingWeightCountTypeName" label="计费粒度" width="100" />
                 <el-table-column prop="volumeWeightMode" label="体积重系数" width="100" />
-                <el-table-column prop="billingWeightRuleName" label="计费重规则" width="120" />
-                <el-table-column prop="weightRoundRuleName" label="计费重取整" width="120" />
+                <el-table-column prop="billingWeightRuleName" label="计费重规则" width="250" />
+                <el-table-column prop="weightRoundRuleName" label="计费重取整" width="250" />
                 <el-table-column prop="bulkWeightRuleName" label="分泡规则" width="100" />
                 <el-table-column label="免泡方式" width="180">
                     <template #default="{ row }">
@@ -25,10 +25,10 @@
                 </el-table-column>
                 <el-table-column prop="minBillingWeight" label="最小计费重" width="100" />
                 <el-table-column prop="createdBy" label="创建人" width="100" />
-                <el-table-column prop="createdTime" label="创建时间" width="160" />
+                <el-table-column prop="createdTime" label="创建时间" width="200" />
                 <el-table-column prop="updatedBy" label="更新人" width="100" />
-                <el-table-column prop="updatedTime" label="更新时间" width="160" />
-                <el-table-column label="操作" width="150" fixed="right" align="center">
+                <el-table-column prop="updatedTime" label="更新时间" width="200" />
+                <el-table-column label="操作" width="150" fixed="right">
                     <template #default="{ row }">
                         <el-button link type="primary" @click="handleEdit(row)">编辑</el-button>
                         <el-button link type="danger" @click="handleDel(row)">删除</el-button>
@@ -38,7 +38,8 @@
         </div>
 
         <LogisticsDialog v-if="dialogVisible" v-model="dialogVisible" :project-id="projectId"
-            :edit-data="currentEditData" :exclude-shipway-ids="existingShipwayIds" @success="getList" />
+            :edit-data="currentEditData" :exclude-shipway-ids="existingShipwayIds" @success="getList"
+            :isView="isView" />
     </div>
 </template>
 
@@ -55,7 +56,8 @@ import {
 } from "@/api/productApi/shipway"
 
 const props = defineProps({
-    projectId: { type: String, required: true }
+    projectId: { type: String, required: true },
+    isView: { type: Boolean, default: false }
 })
 
 const loading = ref(false)

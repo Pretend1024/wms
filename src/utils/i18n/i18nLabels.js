@@ -1,5 +1,9 @@
 import useUserMenuStore from '@/store/userMenu'
 
+import i18n from '@/i18n'
+const { t, te } = i18n.global
+
+
 // 按钮文字映射表
 export const buttonTextMap = {
     search: {
@@ -7113,53 +7117,54 @@ const getRouteKey = () => {
 }
 
 // 自动获取路由的label获取函数
-export const getLabel = (key) => {
-    const userMenuStore = useUserMenuStore()
-    const lang = userMenuStore.lang
-    const routeKey = getRouteKey() // 自动获取当前路由key
-    // 优先匹配当前路由下的配置
-    if (labelsMap[routeKey] && labelsMap[routeKey][key]) {
-        return labelsMap[routeKey][key][lang] || key
-    }
+export const getLabel = (code) => {
+    // 1. 获取当前路由名称作为 key 前缀 (逻辑照旧)
+    const routeKey = getRouteKey()
 
-    // 再匹配general通用配置
-    if (labelsMap.general && labelsMap.general[key]) {
-        return labelsMap.general[key][lang] || key
+    // 2. 尝试从新的 i18n 路径获取
+    const i18nKey = `labels.${routeKey}.${code}`
+    const text = t(i18nKey)
+    // 3. 如果翻译结果等于 key 本身，说明没找到，尝试找通用的
+    if (text === i18nKey) {
+        return t(`labels.general.${code}`)
     }
-
-    // 都没有则返回原key或默认提示
-    return ''
+    return text
 }
 
 // 获取 placeholder
-export const getPlaceholder = (key) => {
-    const userMenuStore = useUserMenuStore()
-    const routeKey = getRouteKey() // 自动获取当前路由key
-    const getPlaceholderKey = () => {
-        const langSuffix = userMenuStore.lang.slice(-2);
-        const capitalizedLangSuffix = langSuffix.charAt(0).toUpperCase() + langSuffix.slice(1);
-        return `placeholder${capitalizedLangSuffix}`;
+export const getPlaceholder = (code) => {
+    const routeKey = getRouteKey(); // 获取当前页面路由 Key，例如 'base_wh_location_list'
+
+    // 1. 拼装新的 Key：列名 + "_placeholder"
+    // labels.base_wh_location_list.name_placeholder
+    const i18nKey = `labels.${routeKey}.${code}_placeholder`;
+
+    // 2. 优先查找页面特定的 placeholder
+    if (te(i18nKey)) {
+        return t(i18nKey);
     }
 
-    // 优先匹配当前路由下的配置
-    if (labelsMap[routeKey] && labelsMap[routeKey][key]) {
-        const placeholderKey = getPlaceholderKey()
-        return labelsMap[routeKey][key][placeholderKey] || key;
+    // 3. 如果没找到，尝试查找 Label，然后手动拼凑 "请输入" (作为一个兜底策略)
+    // 或者查找通用 placeholder: labels.general.xxx_placeholder
+    const labelKey = `labels.${routeKey}.${code}`;
+    if (te(labelKey)) {
+        const label = t(labelKey).replace(/[:：]/g, ''); // 去掉冒号
+        return `请输入${label}`; // 简单的兜底
     }
 
-    // 再匹配general通用配置
-    if (labelsMap.general && labelsMap.general[key]) {
-        const placeholderKey = getPlaceholderKey()
-        return labelsMap.general[key][placeholderKey] || key;
-    }
-
-    // 都没有则返回原key或默认提示
-    return ''
+    return ''; // 实在没有就返回空
 }
 
 // 获取按钮文字
 export const getButtonText = (key) => {
-    const userMenuStore = useUserMenuStore()
-    const langSuffix = userMenuStore.lang.slice(-2);
-    return buttonTextMap[key]?.[langSuffix] || '';
+    if (!key) return '';
+
+    // 对应迁移脚本生成的 "buttons" 节点
+    const i18nKey = `buttons.${key}`;
+
+    // 1. 如果有翻译，返回翻译结果
+    if (te(i18nKey)) {
+        return t(i18nKey);
+    }
+    return key;
 }

@@ -1,11 +1,10 @@
 <template>
-    <el-dialog :title="isEdit ? '编辑物流报价' : '新增物流报价'" v-model="visible" width="95%" top="3vh"
-        :close-on-click-modal="false" destroy-on-close class="logistics-dialog fixed-height-dialog">
+    <el-dialog :title="dialogTitle" v-model="visible" width="95%" top="3vh" :close-on-click-modal="false"
+        destroy-on-close class="logistics-dialog fixed-height-dialog">
         <div class="dialog-layout">
-            <!-- 一、基础信息表单区域 -->
             <div class="header-section">
                 <el-card shadow="never" class="base-info-card">
-                    <el-form :model="formData" :rules="rules" ref="formRef" label-width="90px">
+                    <el-form :model="formData" :rules="rules" ref="formRef" label-width="90px" :disabled="isView">
                         <div class="grid-form-container">
                             <el-form-item label="物流产品" prop="shipwayId">
                                 <el-select v-model="formData.shipwayId" filterable placeholder="请选择"
@@ -96,11 +95,9 @@
                 </el-card>
             </div>
 
-            <!-- 二、标签页核心内容区-->
             <div class="tabs-section">
                 <el-tabs v-if="formData.regionProjectId" v-model="activeTab" type="border-card"
                     class="full-height-tabs">
-                    <!-- 2.1 分区预览标签页 -->
                     <el-tab-pane label="分区预览" name="region" class="full-pane">
                         <div class="pane-content">
                             <el-table :data="groupedRegionData" border height="100%" style="width: 100%">
@@ -112,10 +109,9 @@
                         </div>
                     </el-tab-pane>
 
-                    <!-- 2.2 设置运费标签页 -->
                     <el-tab-pane label="设置运费" name="delivery" class="full-pane">
                         <div class="pane-content">
-                            <div class="toolbar-area">
+                            <div class="toolbar-area" v-if="!isView">
                                 <div class="left">
                                     <el-button type="primary" :icon="Plus" @click="addDeliveryRow">新增一行</el-button>
                                     <el-button type="success" :icon="Upload" @click="openImportDialog">导入</el-button>
@@ -146,36 +142,37 @@
                                     </el-table-column>
                                     <el-table-column label="截止重量(包含)" width="85" fixed>
                                         <template #default="{ row, $index }">
-                                            <el-input v-model="row.endValue" v-number="3"
+                                            <el-input v-model="row.endValue" v-number="3" :disabled="isView"
                                                 @input="handleEndValueChange(row, $index)"
                                                 @blur="handleEndValueBlur(row)" />
                                         </template>
                                     </el-table-column>
                                     <el-table-column label="首重" width="85" fixed>
-                                        <template #default="{ row }"><el-input v-model="row.firstValue"
-                                                v-number="3" /></template>
+                                        <template #default="{ row }"><el-input v-model="row.firstValue" v-number="3"
+                                                :disabled="isView" /></template>
                                     </el-table-column>
                                     <el-table-column label="续重单位" width="85" fixed>
-                                        <template #default="{ row }"><el-input v-model="row.addValue"
-                                                v-number="3" /></template>
+                                        <template #default="{ row }"><el-input v-model="row.addValue" v-number="3"
+                                                :disabled="isView" /></template>
                                     </el-table-column>
 
-                                    <!-- 循环渲染各分区的首重价格/续重价格 -->
                                     <el-table-column v-for="(region, index) in groupedRegionData" :key="index"
                                         :label="`分区 ${region.regionCode}`" width="200">
                                         <el-table-column label="首重价格" width="85">
                                             <template #default="{ row }">
-                                                <el-input v-model="row.deliveryItems[index].firstPrice" v-number="3" />
+                                                <el-input v-model="row.deliveryItems[index].firstPrice" v-number="3"
+                                                    :disabled="isView" />
                                             </template>
                                         </el-table-column>
                                         <el-table-column label="续重价格" width="85">
                                             <template #default="{ row }">
-                                                <el-input v-model="row.deliveryItems[index].addPrice" v-number="3" />
+                                                <el-input v-model="row.deliveryItems[index].addPrice" v-number="3"
+                                                    :disabled="isView" />
                                             </template>
                                         </el-table-column>
                                     </el-table-column>
 
-                                    <el-table-column label="操作" width="110" fixed="right">
+                                    <el-table-column label="操作" width="110" fixed="right" v-if="!isView">
                                         <template #default="{ row, $index }">
                                             <el-button link type="primary"
                                                 @click="insertDeliveryRow($index)">插入</el-button>
@@ -187,10 +184,9 @@
                         </div>
                     </el-tab-pane>
 
-                    <!-- 2.3 设置附加费标签页 -->
                     <el-tab-pane label="设置附加费" name="surcharge" class="full-pane">
                         <div class="pane-content">
-                            <div class="toolbar-area mb-10">
+                            <div class="toolbar-area mb-10" v-if="!isView">
                                 <el-button type="primary" :icon="Plus" @click="addSurcharge">新增附加费</el-button>
                             </div>
 
@@ -222,7 +218,7 @@
                                                         <span class="label">备注:</span> {{ extra.remark || '-' }}
                                                     </div>
                                                 </div>
-                                                <div class="right-actions" @click.stop>
+                                                <div class="right-actions" @click.stop v-if="!isView">
                                                     <el-button link type="danger" :icon="Delete"
                                                         @click="delSurcharge(index)">删除</el-button>
                                                 </div>
@@ -230,7 +226,8 @@
                                         </template>
 
                                         <div class="surcharge-body">
-                                            <el-form label-width="80px" :inline="true" class="mini-form">
+                                            <el-form label-width="80px" :inline="true" class="mini-form"
+                                                :disabled="isView">
                                                 <el-form-item label="费用类型" required>
                                                     <el-select v-model="extra.feeSubTypeId" placeholder="选择类型"
                                                         style="width: 200px" @change="handleFeeTypeChange(extra)">
@@ -250,19 +247,20 @@
                                             <div class="condition-divider">
                                                 <span>收费条件</span>
                                                 <el-button size="small" type="primary" plain
-                                                    @click="addCondition(extra)">+ 新增条件</el-button>
+                                                    @click="addCondition(extra)" v-if="!isView">+
+                                                    新增条件</el-button>
                                             </div>
 
-                                            <!-- 循环渲染附加费的收费条件 -->
                                             <div v-for="(cond, cIdx) in extra.conditionList" :key="cIdx"
                                                 class="condition-box">
                                                 <div class="cond-header">
                                                     <span class="cond-title">条件 #{{ cIdx + 1 }}</span>
                                                     <el-button link type="danger" icon="Delete"
-                                                        @click="delCondition(extra, cIdx)"></el-button>
+                                                        @click="delCondition(extra, cIdx)" v-if="!isView"></el-button>
                                                 </div>
 
-                                                <el-form label-position="top" size="small" class="compact-cond-form">
+                                                <el-form label-position="top" size="small" class="compact-cond-form"
+                                                    :disabled="isView">
                                                     <el-row :gutter="10">
                                                         <el-col :span="3"><el-form-item label="分组代码"><el-input
                                                                     v-model="cond.groupCode"
@@ -287,7 +285,7 @@
                                                                     <template #append>
                                                                         <el-button :icon="Edit"
                                                                             @click="openFormulaDialog(cond, extra.feeSubTypeId)"
-                                                                            :disabled="!extra.feeSubTypeId"
+                                                                            :disabled="!extra.feeSubTypeId || isView"
                                                                             style="padding: 0 10px" />
                                                                     </template>
                                                                 </el-input>
@@ -306,13 +304,13 @@
                                                     <div class="checks">
                                                         <span class="label">维度:</span>
                                                         <el-checkbox-group v-model="cond.priceDim"
-                                                            @change="generatePricingList(cond)">
+                                                            @change="generatePricingList(cond)" :disabled="isView">
                                                             <el-checkbox v-for="dim in feeDimensionList" :key="dim.id"
                                                                 :label="dim.id" :value="dim.id">{{ dim.name
                                                                 }}</el-checkbox>
                                                         </el-checkbox-group>
                                                     </div>
-                                                    <div class="batch-fill">
+                                                    <div class="batch-fill" v-if="!isView">
                                                         <el-input v-model="cond._batchPrice" v-number="3"
                                                             placeholder="单价" size="small" style="width:70px" />
                                                         <el-input v-model="cond._batchMin" v-number="3" placeholder="最小"
@@ -324,7 +322,6 @@
                                                     </div>
                                                 </div>
 
-                                                <!-- 附加费价格列表 -->
                                                 <el-table :data="cond.pricingList" border size="small" class="mt-5"
                                                     max-height="250">
                                                     <el-table-column v-if="cond.priceDim && cond.priceDim.includes(2)"
@@ -345,15 +342,18 @@
                                                     </el-table-column>
                                                     <el-table-column label="单价">
                                                         <template #default="{ row }"><el-input v-model="row.price"
-                                                                v-number="3" size="small" /></template>
+                                                                v-number="3" size="small"
+                                                                :disabled="isView" /></template>
                                                     </el-table-column>
                                                     <el-table-column label="最小收费">
                                                         <template #default="{ row }"><el-input v-model="row.minCharge"
-                                                                v-number="3" size="small" /></template>
+                                                                v-number="3" size="small"
+                                                                :disabled="isView" /></template>
                                                     </el-table-column>
                                                     <el-table-column label="最大收费">
                                                         <template #default="{ row }"><el-input v-model="row.maxCharge"
-                                                                v-number="3" size="small" /></template>
+                                                                v-number="3" size="small"
+                                                                :disabled="isView" /></template>
                                                     </el-table-column>
                                                 </el-table>
                                             </div>
@@ -368,16 +368,13 @@
             </div>
         </div>
 
-        <!-- 弹窗底部按钮区 -->
         <template #footer>
-            <el-button @click="visible = false">取消</el-button>
-            <el-button type="primary" @click="handleSubmit" :loading="submitting">确定</el-button>
+            <el-button @click="visible = false">{{ isView ? '关闭' : '取消' }}</el-button>
+            <el-button type="primary" @click="handleSubmit" :loading="submitting" v-if="!isView">确定</el-button>
         </template>
 
-        <!-- 公式编辑弹窗 -->
         <FormulaDialog v-model="formulaVisible" :feeSubTypeId="currentFeeTypeId"
             :initialFormula="currentFormulaRow?.formula" @confirm="handleFormulaConfirm" />
-        <!-- 运费导入弹窗 -->
         <el-dialog title="导入运费" v-model="importVisible" width="30%" append-to-body>
             <el-input type="textarea" :rows="5" placeholder="粘贴Excel数据 (暂未实现具体逻辑)" />
             <template #footer><el-button @click="importVisible = false">关闭</el-button></template>
@@ -400,7 +397,7 @@ import {
     getProductShipwayListApi, getPriceRegionProjectListApi, getPriceRemoteListApi, getPriceFuelListApi,
     getPriceProjectVolumeModeEnumApi, getPriceProjectBulkWeightRuleEnumApi, getPriceProjectBulkWeightFreeTypeEnumApi,
     getPriceProjectBillingWeightRuleEnumApi, getPriceProjectBillingWeightCountTypeEnumApi, getPriceProjectWeightRoundRuleEnumApi,
-    getPriceRegionDetailListByProjectIdApi, addOrUpdPriceShipwayApi,
+    getPriceShipwayInfoByIdApi, addOrUpdPriceShipwayApi,
     getFeeSubTypeEnumApi, getFeeUnitTypeEnumApi,
     getFeePriceDimensionEnumApi,
     getRegionsWithDetailByRegionProjectIdApi
@@ -421,7 +418,13 @@ const props = defineProps({
     modelValue: Boolean,
     projectId: String,
     editData: Object,
+    isView: { type: Boolean, default: false },
     excludeShipwayIds: { type: Array, default: () => [] }
+})
+
+const dialogTitle = computed(() => {
+    if (props.isView) return '物流报价详情'
+    return isEdit.value ? '编辑物流报价' : '新增物流报价'
 })
 /**
  * 派发事件给父组件
@@ -854,6 +857,7 @@ const handleSubmit = async () => {
     if (!formRef.value) return
     await formRef.value.validate(async (valid) => {
         if (valid) {
+            openMainLoading()
             submitting.value = true
             try {
                 fillNames()
@@ -958,6 +962,7 @@ const handleSubmit = async () => {
             } catch (e) {
                 console.error('提交失败：', e)
             } finally {
+                closeMainLoading()
                 submitting.value = false
             }
         }
@@ -969,42 +974,96 @@ const handleSubmit = async () => {
  * 组件挂载完成后执行初始化逻辑
  */
 onMounted(async () => {
+    openMainLoading()
+    // 1. 加载所有枚举/下拉列表数据
     await loadEnums()
-    // 回显数据
-    if (props.editData) {
-        initialShipwayId.value = props.editData.shipwayId
-        Object.assign(formData, JSON.parse(JSON.stringify(props.editData)))
-        if (formData.regionProjectId) {
-            await handleRegionProjectChange(formData.regionProjectId)
-            formData.deliveryDTOList = JSON.parse(JSON.stringify(props.editData.deliveryDTOList || []))
-        }
-        if (formData.extraDTOList) {
-            formData.extraDTOList.forEach(e => {
-                if (e.feeSubTypeId) loadUnitEnums(e.feeSubTypeId)
-                if (e.conditionList) {
-                    e.conditionList.forEach(c => {
-                        c.priceDim = []
-                        if (c.pricingList && c.pricingList.length > 0) {
-                            const f = c.pricingList[0]
-                            if (f.dimMonth !== null) c.priceDim.push(4)
-                            if (f.dimRegion !== null) c.priceDim.push(3)
-                            if (f.dimAddressType !== null) c.priceDim.push(5)
-                            if (f.dimWeightStart !== null || f.dimWeightEnd !== null) c.priceDim.push(2)
-                        }
-                        if (c.priceDim.length === 0) c.priceDim.push(1)
-                    })
+
+    // 2. 判断是编辑还是新增
+    if (props.editData && props.editData.id) {
+        try {
+            // 调用详情接口
+            const res = await getPriceShipwayInfoByIdApi({ id: props.editData.id })
+            if (res.success) {
+                const data = res.data
+                initialShipwayId.value = data.shipwayId // 记录初始ID
+
+                // 先合并基础数据
+                Object.assign(formData, data)
+
+                // 【核心】处理分区方案联动
+                if (formData.regionProjectId) {
+                    await handleRegionProjectChange(formData.regionProjectId)
+
+                    // 恢复运费列表数据
+                    if (data.deliveryDTOList && data.deliveryDTOList.length > 0) {
+                        // 使用 map 处理数据，解决问题 1：首重和续重单位回显
+                        formData.deliveryDTOList = data.deliveryDTOList.map(row => {
+                            // 从 deliveryItems 的第一项中恢复外层的首重/续重单位
+                            if (row.deliveryItems && row.deliveryItems.length > 0) {
+                                const firstItem = row.deliveryItems[0]
+                                row.firstValue = firstItem.firstValue
+                                row.addValue = firstItem.addValue
+                            }
+                            return row
+                        })
+                    } else {
+                        // 防错处理
+                        if (formData.deliveryDTOList.length === 0) initDeliveryTable()
+                    }
                 }
-            })
+
+                // 【核心】处理附加费的 UI 状态回显
+                if (formData.extraDTOList && formData.extraDTOList.length > 0) {
+                    formData.extraDTOList.forEach((e) => {
+                        // 1. 触发子费用类型的单位下拉加载
+                        if (e.feeSubTypeId) loadUnitEnums(e.feeSubTypeId)
+
+                        // 2. 恢复收费条件的维度勾选状态
+                        if (e.conditionList) {
+                            e.conditionList.forEach(c => {
+                                // 解决问题 2：priceDim 反处理 (String -> Array)
+                                if (c.priceDim && typeof c.priceDim === 'string') {
+                                    c.priceDim = c.priceDim.split(',').map(Number)
+                                } else {
+                                    // 兜底逻辑：如果后端没返回 priceDim，尝试从 pricingList 推断
+                                    c.priceDim = []
+                                    if (c.pricingList && c.pricingList.length > 0) {
+                                        const f = c.pricingList[0]
+                                        if (f.dimMonth !== null) c.priceDim.push(4)
+                                        if (f.dimRegion !== null) c.priceDim.push(3)
+                                        if (f.dimAddressType !== null) c.priceDim.push(5)
+                                        if (f.dimWeightStart !== null || f.dimWeightEnd !== null || f.dimWeightRange) {
+                                            c.priceDim.push(2)
+                                        }
+                                    }
+                                    // 默认值
+                                    if (c.priceDim.length === 0) c.priceDim.push(1)
+                                }
+                            })
+                        }
+                    })
+                    // 默认展开第一个
+                    // activeSurchargeNames.value = [0]
+                }
+            }
+        } catch (e) {
+            console.error('获取物流报价详情失败', e)
         }
     } else {
-        // 初始化空数据
+        // --- 新增模式初始化 ---
         initialShipwayId.value = ''
         Object.assign(formData, {
-            id: '', priceProjectId: props.projectId, shipwayId: '', shipwayCode: '', regionProjectId: '', regionProjectName: '', remoteId: '', fuelId: '', fuelName: '', currency: '', unitType: '', volumeWeightMode: '', bulkWeightRule: '', bulkWeightFreeType: '', bulkWeightFreeValue: '', billingWeightRule: '', billingWeightCountType: '', minBillingWeight: '', weightRoundRule: '', deliveryDTOList: [], extraDTOList: []
+            id: '', priceProjectId: props.projectId, shipwayId: '', shipwayCode: '',
+            regionProjectId: '', regionProjectName: '', remoteId: '', fuelId: '', fuelName: '',
+            currency: '', unitType: '', volumeWeightMode: '', bulkWeightRule: '',
+            bulkWeightFreeType: '', bulkWeightFreeValue: '', billingWeightRule: '',
+            billingWeightCountType: '', minBillingWeight: '', weightRoundRule: '',
+            deliveryDTOList: [], extraDTOList: []
         })
         regionData.value = []
         addSurcharge()
     }
+    closeMainLoading()
 })
 </script>
 
@@ -1184,6 +1243,7 @@ onMounted(async () => {
 
                     .value {
                         font-weight: 500;
+                        width: 130px;
                     }
                 }
 

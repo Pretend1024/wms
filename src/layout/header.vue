@@ -9,8 +9,12 @@
             <img src="@/assets/icon/HYDMaxLogo.png" alt="logo">
         </div>
         <!-- 菜单  menu-trigger="click"-->
-        <div style="flex-grow: 1; min-width: 0;">
+        <!-- <div style="flex-grow: 1; min-width: 0;">
             <tags></tags>
+        </div> -->
+
+        <div class="nav-container">
+            <NavMenu />
         </div>
 
         <!-- <el-menu background-color="linear-gradient(to right, #ffffff, #ecf5ff)" text-color="#606167"
@@ -166,7 +170,7 @@
                         <!-- 超出显示省略号 -->
                         <a :href="toDownloadTempPath(msgContent.link)" target="_blank" class="ellipsis-link">{{
                             msgContent.link
-                            }}</a>
+                        }}</a>
                     </el-form-item>
                 </el-col>
                 <el-col :span="12" v-if="msgContent.fileUrl">
@@ -219,6 +223,7 @@
 import { getUserInfoApi, updateUserPasswordApi, getNewMessageCountApi } from '@/api/userApi/index.js'
 import { Search } from '@element-plus/icons-vue';
 import { logoutApi } from '@/api/loginApi';
+import NavMenu from '@/layout/NavMenu.vue';
 import { getBatchReadByIdApi } from '@/api/userApi/index.js'
 import { toDownloadTempPath } from '@/utils/downLoad.js'
 import router from '@/router';
@@ -461,17 +466,12 @@ setInterval(async () => {
         }
     }
 
-    .el-menu {
+    .nav-container {
         flex: 1;
         overflow: hidden;
-
-        .column-title {
-            font-size: 16px;
-        }
-    }
-
-    :deep(.el-sub-menu__title:hover) {
-        color: #ff914e !important;
+        height: 100%;
+        margin-left: 20px;
+        min-width: 0;
     }
 
     .otherBtn {
@@ -531,60 +531,6 @@ setInterval(async () => {
 
     img {
         width: 100%;
-    }
-}
-
-.menu-column {
-    max-width: 415px;
-    padding: 10px 20px;
-    background: linear-gradient(125deg, #ffffff, #ecf5ff);
-    margin: -5px 0;
-    display: flex;
-    flex-direction: column;
-
-    .menu-group {
-        display: flex;
-    }
-
-
-    .menu-group-title {
-        font-size: 15px;
-        line-height: 50px;
-        width: 70px;
-        margin-right: 15px;
-        flex-shrink: 0;
-        cursor: pointer;
-    }
-
-    .menu-group-title:hover {
-        // 下划线
-        text-decoration: underline;
-        text-underline-offset: 5px;
-    }
-
-    .menu-group-content {
-        margin: 10px 0;
-        display: flex;
-        max-width: 330px;
-        flex-wrap: wrap;
-        justify-content: start;
-
-        .menu-group-item {
-            width: 110px;
-            font-size: 14px;
-            padding: 5px 0;
-            color: #57595d;
-        }
-
-        .menu-group-item:hover {
-            color: #ff914e;
-            cursor: pointer;
-            background-color: #d7fdda;
-            // 阴影
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-            // 修改阴影效果
-            transition: all 0.3s ease;
-        }
     }
 }
 
@@ -679,14 +625,6 @@ setInterval(async () => {
     outline: none;
 }
 
-:deep(.el-menu) {
-    border: none;
-}
-
-:deep(.el-menu--popup-bottom-start) {
-    // padding: 15px 10px;
-    padding: 0 !important;
-}
 
 // 头像下拉菜单
 :deep(.el-dropdown-menu__item:not(.is-disabled):hover) {
