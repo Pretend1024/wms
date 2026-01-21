@@ -8,51 +8,18 @@
         <div class="logoDiv">
             <img src="@/assets/icon/HYDMaxLogo.png" alt="logo">
         </div>
-        <!-- 菜单  menu-trigger="click"-->
-        <!-- <div style="flex-grow: 1; min-width: 0;">
-            <tags></tags>
-        </div> -->
 
-        <div class="nav-container">
+        <div class="nav-container" v-if="themeStore.layout === 'top'">
             <NavMenu />
         </div>
-
-        <!-- <el-menu background-color="linear-gradient(to right, #ffffff, #ecf5ff)" text-color="#606167"
-            active-text-color="#ff914e" :default-active="activeIndex" class="custom-menu" mode="horizontal">
-
-            <el-sub-menu v-for="(item, index) in userMenuStore.userMenuList" :key="item.id" :index="item.path"
-                popper-class="column-popover">
-                <template #title>
-                    <span class="column-title">{{ userMenuStore.lang == 'zh' ? item.name : item.nameEn }}</span>
-                </template>
-<div class="menu-column">
-    <div class="menu-group" v-for="(group, idx) in item.children" :key="idx">
-        <div class="menu-group-title"> {{ userMenuStore.lang == 'zh' ? group.name :
-            group.nameEn }}</div>
-        <div class="menu-group-content">
-            <div class="menu-group-item" v-for="(ite, ind) in group.children" :key="ind"
-                @click="$router.push(ite.path)">
-                <span> {{ userMenuStore.lang == 'zh' ? ite.name :
-                    ite.nameEn }}</span>
-            </div>
+        <div style="flex-grow: 1; min-width: 0;" v-else>
+            <tags></tags>
         </div>
-    </div>
-</div>
-</el-sub-menu>
-</el-menu> -->
+
         <!-- 右侧按钮 -->
         <div class="otherBtn">
             <el-input v-model="searchLog" @change="handleSearch" class="moduleWidth" placeholder="search log"
                 :suffix-icon="Search" />
-            <!-- <el-select v-model="selectBranch" :placeholder="$t('SelectStation')" class="moduleWidth">
-                <el-option v-for="item in Branch" :key="item.value" :label="item.label" :value="item.value" />
-            </el-select>
-            <el-select v-model="selectSite" :placeholder="$t('SelectBranch')" class="moduleWidth">
-                <el-option v-for="item in Site" :key="item.value" :label="item.label" :value="item.value" />
-            </el-select> -->
-            <!-- <el-tooltip :content="$t('FullScreen')" placement="bottom" effect="light" offset="18">
-                <i class="iconfont icon-quanping" @click="fullScreen"></i>
-            </el-tooltip> -->
             <!-- 工具 -->
             <el-dropdown>
                 <i class="iconfont icon-gongju"></i>
@@ -88,9 +55,9 @@
                 </el-badge>
                 <i v-else class="iconfont icon-xiaoxitongzhi" @click="moreMsg"></i>
             </el-tooltip>
-            <!-- <el-tooltip :content="$t('Download')" placement="bottom" effect="light" offset="18">
-                <i @click='exportJob' class="iconfont icon-yunxiazai"></i>
-            </el-tooltip> -->
+            <el-tooltip content="主题设置" placement="bottom" effect="light" offset="18">
+                <i class="iconfont icon-zhuti" @click="openThemeDrawer" style="font-size: 20px;"></i>
+            </el-tooltip>
             <div class="userDiv">
                 <el-dropdown>
                     <span class="el-dropdown-link">
@@ -218,6 +185,7 @@
             </div>
         </div>
     </el-dialog>
+    <ThemeDrawer ref="themeDrawerRef" />
 </template>
 <script setup name="顶部导肮">
 import { getUserInfoApi, updateUserPasswordApi, getNewMessageCountApi } from '@/api/userApi/index.js'
@@ -238,6 +206,14 @@ const refreshStore = useRefreshStore()
 import { smartAlert, trimObjectStrings } from '@/utils/genericMethods.js'
 
 import tags from '@/layout/tags.vue';
+
+import { useThemeStore } from '@/store/theme.js'
+import ThemeDrawer from '@/layout/ThemeDrawer.vue'
+const themeStore = useThemeStore()
+const themeDrawerRef = ref(null)
+
+const modules = import.meta.glob('../views/**/*.vue')
+
 // 全部菜单
 const menuShow = ref(false)
 const menuShowBtn = () => {
@@ -332,6 +308,12 @@ const logout = async () => {
         type: 'success',
     })
 }
+
+// 打开主题抽屉
+const openThemeDrawer = () => {
+    themeDrawerRef.value.open()
+}
+
 // 弹窗提醒
 const msgDialogVisible = ref(false)
 // 提醒内容
@@ -389,6 +371,7 @@ const getMsgList = async () => {
     }
 }
 onMounted(async () => {
+    themeStore.initTheme()
     if (!useUserInfoStore.userInfo.code) {
         const res = await getUserInfoApi()
         useUserInfoStore.updateUserInfo(res.data)
@@ -404,7 +387,21 @@ onMounted(async () => {
         const msgRes = await getNewMessageCountApi()
         msgCount.value = msgRes.data.total
     }
+    setTimeout(() => {
+        preloadRoutes()
+    }, 3000)
 })
+
+const preloadRoutes = () => {
+    console.log('预加载路由组件...')
+    for (const path in modules) {
+        try {
+            modules[path]()
+        } catch (error) {
+            console.warn('预加载失败:', path)
+        }
+    }
+}
 // 定时获取新消息数量
 setInterval(async () => {
     const res = await getNewMessageCountApi()
@@ -419,7 +416,8 @@ setInterval(async () => {
     align-items: center;
     height: 60px;
     // #ecf5ff  c5d9f0
-    background: linear-gradient(to right, #ffffff, #ffdcbc);
+    // background: linear-gradient(to right, #ffffff, #ffdcbc);
+    background: var(--theme-header-bg);
 
     .menuBtn {
         box-sizing: border-box;
@@ -495,7 +493,7 @@ setInterval(async () => {
         i:hover {
             // 鼠标悬停时变小手
             cursor: pointer;
-            color: #ff914e;
+            color: var(--theme-primary);
         }
 
         .userDiv {
@@ -525,13 +523,23 @@ setInterval(async () => {
 
         .userDiv:hover .userNameDiv,
         .userDiv:hover i {
-            color: #ff914e;
+            color: var(--theme-primary);
+        }
+
+        .icon-pifu:hover {
+            cursor: pointer;
+            color: var(--theme-primary); // 使用主题色
         }
     }
 
     img {
         width: 100%;
     }
+}
+
+:deep(.el-dropdown-menu__item:not(.is-disabled):hover) {
+    background-color: var(--theme-hover-bg) !important;
+    color: var(--theme-primary) !important;
 }
 
 .headImg {

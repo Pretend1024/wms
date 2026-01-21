@@ -1,8 +1,8 @@
 <template>
-    <el-menu class="el-menu-vertical" :collapse="isCollapse" :default-active="defaultActive" background-color="#2b2b2b"
-        text-color="#fff" active-text-color="#ffffff" router @open="handleOpen" @close="handleClose" unique-opened>
+    <el-menu class="el-menu-vertical" :collapse="isCollapse" :default-active="defaultActive" :background-color="bgColor"
+        :text-color="textColor" :active-text-color="activeTextColor" router @open="handleOpen" @close="handleClose"
+        unique-opened>
         <template v-for="level1 in menuData.userMenuList" :key="level1.id">
-            <!-- 一级菜单 -->
             <el-sub-menu :index="level1.path">
                 <template #title>
                     <span :class="['iconfont', level1.icon]" class="iconFont"></span>
@@ -10,7 +10,6 @@
                 </template>
 
                 <template v-for="level2 in level1.children" :key="level2.id">
-                    <!-- 有三级 -->
                     <el-sub-menu v-if="level2.children && level2.children.length" :index="level2.path">
                         <template #title>
                             <span>{{ menuData.lang == 'zh' ? level2.name : level2.nameEn }}</span>
@@ -22,7 +21,6 @@
                         </el-menu-item>
                     </el-sub-menu>
 
-                    <!-- 没有三级，只有二级 -->
                     <el-menu-item v-else class="secondMenu" :index="level2.path" style="padding-left: 36px;">
                         {{ menuData.lang == 'zh' ? level2.name : level2.nameEn }}
                     </el-menu-item>
@@ -35,6 +33,7 @@
 <script setup>
 import { computed } from 'vue'
 import { useRoute } from 'vue-router'
+import { useThemeStore } from '@/store/theme.js'
 
 const props = defineProps({
     menuData: {
@@ -48,7 +47,25 @@ const props = defineProps({
 })
 
 const route = useRoute()
+const themeStore = useThemeStore()
+
 const defaultActive = computed(() => route.path)
+
+// 背景色
+const bgColor = computed(() => themeStore.sidebarTheme === 'dark' ? '#2b2b2b' : '#ffffff')
+// 文字颜色
+const textColor = computed(() => themeStore.sidebarTheme === 'dark' ? '#fff' : '#606266')
+// 激活状态文字颜色
+const activeTextColor = computed(() => '#ffffff')
+
+/* --- 圆点颜色 --- */
+const dotColor = computed(() => textColor.value)
+
+/* --- 悬停背景色 --- */
+const hoverBgColor = computed(() => themeStore.sidebarTheme === 'dark' ? '#535353' : 'var(--theme-hover-bg)')
+
+/* --- 悬停文字颜色 --- */
+const hoverTextColor = computed(() => themeStore.sidebarTheme === 'dark' ? '#fff' : 'var(--theme-primary)')
 
 const handleOpen = (index) => {
     // console.log('open', index)
@@ -70,14 +87,13 @@ const handleClose = (index) => {
     margin: 0 8px 0 2px;
 }
 
-/* 一级菜单标题高度 */
 :deep(.el-sub-menu__title) {
     height: 52px;
     line-height: 52px;
     font-size: 15px;
+    padding-left: 4px !important;
 }
 
-/* 二级菜单项高度*/
 :deep(.el-sub-menu .el-sub-menu .el-sub-menu__title) {
     height: 45px;
     line-height: 45px;
@@ -86,7 +102,6 @@ const handleClose = (index) => {
     position: relative;
 }
 
-/* 三级菜单项高度 */
 :deep(.el-sub-menu .el-menu-item) {
     height: 40px;
     line-height: 40px;
@@ -94,35 +109,31 @@ const handleClose = (index) => {
     position: relative;
 }
 
-/* 深色主题下自定义菜单 hover 和 active 效果 */
 :deep(.el-menu-vertical) {
     border-right: none;
 }
 
-/* 悬停状态背景 */
+/* --- 悬停效果 --- */
 :deep(.el-menu-item:hover),
 :deep(.el-sub-menu__title:hover) {
-    background-color: #535353 !important;
+    background-color: v-bind(hoverBgColor) !important;
+    color: v-bind(hoverTextColor) !important;
 }
 
-/* 激活状态背景（已通过属性 active-text-color 设置文字为白色） */
+/* 激活状态背景 */
 :deep(.el-menu-item.is-active) {
-    background-color: #ff914e !important;
+    background-color: var(--theme-primary) !important;
     color: #ffffff !important;
     font-weight: 500;
 }
 
-:deep(.el-sub-menu__title) {
-    padding-left: 4px !important;
-}
-
-/* 为三级菜单添加:before伪元素 */
+/* --- 三级菜单圆点 --- */
 :deep(.el-sub-menu .el-menu-item:not(.secondMenu)):before {
     position: absolute;
     content: "";
     width: 5px;
     height: 5px;
-    background: #fff;
+    background: v-bind(dotColor);
     left: 45px;
     top: 17px;
     border-radius: 50%;

@@ -1,6 +1,6 @@
 <template>
     <div class="tags">
-        <progressBar />
+        <!-- <progressBar /> -->
         <a-tabs v-model:activeKey="activeKey" lazy-load type="card-gutter" :editable="true" @tabClick="tabClick"
             @delete="handleDelete" auto-switch>
             <a-tab-pane v-for="(item, index) in useTagsStore.tagsStore" :key="item.fullPath" :closable="true">
@@ -88,7 +88,7 @@ const activeTabIndex = ref(null)
 // 捕获右键，弹出菜单
 const handleRightClick = (event, index) => {
     menuX.value = event.clientX
-    menuY.value = event.clientY - 50
+    menuY.value = event.clientY
     showMenu.value = true
     activeTabIndex.value = index
 }
@@ -208,18 +208,11 @@ onBeforeUnmount(() => {
 /* --- 1. 容器样式 --- */
 .tags {
     position: relative;
-    /* 给容器一点内边距，防止阴影被切掉 */
     padding: 6px 0px 0 0px;
-    background-color: #f0f1f3;
-    /* 浅灰色背景衬托白色卡片 */
     user-select: none;
-    /* 防止双击选中文字 */
     width: 100%;
     box-sizing: border-box;
-    border-bottom: 1px solid #e4e7ed;
 }
-
-/* --- 2. Arco Tabs 结构重置 --- */
 
 /* 隐藏默认的导航栏底条 */
 :deep(.arco-tabs-nav::before) {
@@ -237,54 +230,45 @@ onBeforeUnmount(() => {
     display: none;
 }
 
-/* --- 3. Tab 单体样式 (核心) --- */
+/* --- Tab 单体样式 --- */
 
 :deep(.arco-tabs-tab) {
     margin: 0 6px 0 0 !important;
-    /* Tab 之间的间距 */
     padding: 0 16px !important;
-    /* 文字两侧留白 */
     height: 32px !important;
     line-height: 32px !important;
     background-color: #ffffff !important;
     border: 1px solid #e4e7ed !important;
-    border-radius: 4px 4px 0 0 !important;
-    /* 上方圆角 */
+    border-radius: 4px 4px 4px 4px !important;
     color: #606266;
     font-size: 13px;
     transition: all 0.3s cubic-bezier(0.645, 0.045, 0.355, 1);
     box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.02);
 }
 
-/* --- 4. Tab 悬停状态 (Inactive Hover) --- */
-/* 重点：使用 :not 排除掉已激活的 tab，防止颜色冲突 */
+/* --- Tab悬停状态 --- */
 :deep(.arco-tabs-tab:not(.arco-tabs-tab-active):hover) {
-    color: #ff914e;
-    background-color: #fffbf5 !important;
-    /* 极淡的橙色背景 */
-    border-color: #ff914e60 !important;
+    color: var(--theme-primary);
+    background-color: var(--theme-hover-bg) !important;
+    border-color: var(--theme-light-8) !important;
     padding-right: 12px !important;
-    /* 配合关闭按钮出现的位移 */
 }
 
-/* --- 5. Tab 激活状态 (Active) --- */
+/* --- Tab激活状态 --- */
 :deep(.arco-tabs-tab-active) {
-    background-color: #ff914e !important;
-    /* 深橙色高亮 */
+    background-color: var(--theme-primary) !important;
     color: #ffffff !important;
-    border-color: #ff914e !important;
+    border-color: var(--theme-primary) !important;
     font-weight: 500;
-    box-shadow: 0 2px 6px rgba(255, 145, 78, 0.3);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
 }
 
-/* --- 6. 关闭按钮深度优化 (Close Button) --- */
+/* --- 关闭按钮 --- */
 
-/* 基础构造：默认是一个隐藏的小圆 */
 :deep(.arco-tabs-tab-close-btn) {
     box-sizing: border-box;
     width: 0;
     height: 18px;
-    /* 固定高度，形成正圆 */
     margin-left: 0;
     opacity: 0;
     border-radius: 50%;
@@ -306,41 +290,37 @@ onBeforeUnmount(() => {
     transform: scale(1);
 }
 
-/* >>> 场景 A：未选中 (Inactive) 的 Tab <<< */
+/* >>> 场景 A：未选中的 Tab <<< */
 
-/* A1. 默认：显示橙色图标，无背景 */
+/* A1. 默认 */
 :deep(.arco-tabs-tab:not(.arco-tabs-tab-active):hover .arco-tabs-tab-close-btn) {
-    color: #ff914e;
+    color: var(--theme-primary);
     background-color: transparent;
 }
 
-/* A2. 悬停在按钮上：实心橙色背景，白图标 (强调删除) */
+/* A2. 悬停在按钮上*/
 :deep(.arco-tabs-tab:not(.arco-tabs-tab-active) .arco-tabs-tab-close-btn:hover) {
-    background-color: #ff914e !important;
+    background-color: var(--theme-primary) !important;
     color: #ffffff !important;
-    box-shadow: 0 2px 4px rgba(255, 145, 78, 0.2);
 }
 
-/* >>> 场景 B：已选中 (Active) 的 Tab <<< */
+/* >>> 场景 B：已选中的 Tab <<< */
 
-/* B1. 默认：显示白色图标 (清晰可见) */
+/* B1. 默认 */
 :deep(.arco-tabs-tab-active .arco-tabs-tab-close-btn) {
     color: #ffffff;
-    /* 纯白，不再使用半透明，确保清晰 */
     background-color: transparent;
 }
 
-/* B2. 悬停在按钮上：半透明白色背景，亮白图标 (通透感) */
+/* B2. 悬停在按钮上*/
 :deep(.arco-tabs-tab-active .arco-tabs-tab-close-btn:hover) {
     background-color: #ffffff !important;
-    color: #ff914e !important;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
-    /* 加一点深色阴影突显层次 */
+    color: var(--theme-primary) !important;
 }
 
-/* --- 7. 右键菜单样式 --- */
+/* --- 右键菜单样式 --- */
 .rightMenu {
-    position: absolute;
+    position: fixed;
     z-index: 2001;
     border-radius: 6px;
     height: auto;
@@ -370,8 +350,7 @@ onBeforeUnmount(() => {
 
 .rightMenuItem:hover {
     cursor: pointer;
-    background-color: #fff6ed;
-    /* 菜单项悬停淡橙色 */
-    color: #ff914e;
+    background-color: var(--theme-hover-bg);
+    color: var(--theme-primary);
 }
 </style>

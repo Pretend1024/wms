@@ -98,8 +98,8 @@ const tableData = shallowRef([]);
 const columns = ref([
     { label: '洲名', prop: 'continentName', width: '145', sortable: true, sortAlias: 'continentId' },
     { label: '国家代码', prop: 'code', width: '155', sortable: true },
-    { label: '国家中文名', prop: 'nameCn', width: '200' },
-    { label: '国家英文名', prop: 'nameEn', width: '200' },
+    { label: '国家中文名', prop: 'nameCn', width: '200', showOverflow: true },
+    { label: '国家英文名', prop: 'nameEn', width: '200', showOverflow: true },
     { label: '币种代码', prop: 'currency', width: '150' },
     { label: '电话区号', prop: 'phoneAreaCode', width: '200' },
     { label: '创建人', prop: 'createdBy', width: '110' },

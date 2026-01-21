@@ -2,19 +2,17 @@
     <div class="viewArea">
         <div class="contentDiv">
             <div class="wavePickContainer">
-                <!-- 左侧波次信息和操作区 -->
                 <div class="leftPanel">
                     <h3><el-icon>
                             <Postcard />
                         </el-icon>
-                        {{ $t('outstock_op_outBoxed_add.waveBasicInfo') }}</h3> <!-- 波次基本信息 -->
-                    <el-form :model="waveInfo" label-width="80px" class="waveBasicForm">
+                        {{ $t('outstock_op_outBoxed_add.waveBasicInfo') }}</h3> <el-form :model="waveInfo"
+                        label-width="80px" class="waveBasicForm">
                         <el-row>
                             <el-col :span="12">
-                                <el-form-item :label="$t('outstock_op_outBoxed_add.waveNo') + ':'"> <!-- 波次号 -->
-                                    <el-input v-model.trim="waveInfo.waveNo" @keyup.enter="loadWaveInfo" ref="waveNoRef"
+                                <el-form-item :label="$t('outstock_op_outBoxed_add.waveNo') + ':'"> <el-input
+                                        v-model.trim="waveInfo.waveNo" @keyup.enter="loadWaveInfo" ref="waveNoRef"
                                         :placeholder="$t('outstock_op_outBoxed_add.inputWaveNoAndEnter')">
-                                        <!-- 输入波次号后回车 -->
                                         <template #append>
                                             <el-button :icon="RefreshLeft" @click="resetWaveInfo" />
                                         </template>
@@ -22,28 +20,28 @@
                                 </el-form-item>
                             </el-col>
                             <el-col :span="12">
-                                <el-form-item :label="$t('outstock_op_outBoxed_add.warehouse') + ':'"> <!-- 仓库 -->
-                                    <el-input v-model.trim="waveInfo.warehouse" readonly />
+                                <el-form-item :label="$t('outstock_op_outBoxed_add.warehouse') + ':'"> <el-input
+                                        v-model.trim="waveInfo.warehouse" readonly />
                                 </el-form-item>
                             </el-col>
                             <el-col :span="12">
-                                <el-form-item :label="$t('outstock_op_outBoxed_add.shipper') + ':'"> <!-- 货主 -->
-                                    <el-input v-model.trim="waveInfo.shipper" readonly />
+                                <el-form-item :label="$t('outstock_op_outBoxed_add.shipper') + ':'"> <el-input
+                                        v-model.trim="waveInfo.shipper" readonly />
                                 </el-form-item>
                             </el-col>
                             <el-col :span="12">
-                                <el-form-item :label="$t('outstock_op_outBoxed_add.picker') + ':'"> <!-- 拣货员 -->
-                                    <el-input v-model.trim="waveInfo.picker" readonly />
+                                <el-form-item :label="$t('outstock_op_outBoxed_add.picker') + ':'"> <el-input
+                                        v-model.trim="waveInfo.picker" readonly />
                                 </el-form-item>
                             </el-col>
                             <el-col :span="12">
-                                <el-form-item :label="$t('outstock_op_outBoxed_add.orderCount') + ':'"> <!-- 订单数 -->
-                                    <el-input v-model.trim="waveInfo.orderCount" readonly />
+                                <el-form-item :label="$t('outstock_op_outBoxed_add.orderCount') + ':'"> <el-input
+                                        v-model.trim="waveInfo.orderCount" readonly />
                                 </el-form-item>
                             </el-col>
                             <el-col :span="12">
-                                <el-form-item :label="$t('outstock_op_outBoxed_add.skuCount') + ':'"> <!-- SKU数 -->
-                                    <el-input v-model.trim="waveInfo.skuCount" readonly />
+                                <el-form-item :label="$t('outstock_op_outBoxed_add.skuCount') + ':'"> <el-input
+                                        v-model.trim="waveInfo.skuCount" readonly />
                                 </el-form-item>
                             </el-col>
                         </el-row>
@@ -51,131 +49,107 @@
                     <el-divider />
                     <h3><el-icon>
                             <Edit />
-                        </el-icon>{{ $t('outstock_op_outBoxed_add.pickOperationProcess') }}</h3> <!-- 拣货操作流程 -->
-                    <el-form label-width="80px" class="pickOpForm">
-                        <el-form-item :label="$t('outstock_op_outBoxed_add.scanLocation') + ':'"> <!-- 扫描库位 -->
-                            <el-input v-model.trim="currentOp.locationCode" @keyup.enter="checkLocation"
-                                ref="locationRef" :placeholder="$t('outstock_op_outBoxed_add.scanLocationAndEnter')" />
-                            <!-- 扫描库位后回车 -->
+                        </el-icon>{{ $t('outstock_op_outBoxed_add.pickOperationProcess') }}</h3> <el-form
+                        label-width="80px" class="pickOpForm">
+                        <el-form-item :label="$t('outstock_op_outBoxed_add.scanLocation') + ':'"> <el-input
+                                v-model.trim="currentOp.locationCode" @keyup.enter="checkLocation" ref="locationRef"
+                                :placeholder="$t('outstock_op_outBoxed_add.scanLocationAndEnter')" />
                         </el-form-item>
-                        <el-form-item :label="$t('outstock_op_outBoxed_add.barcode') + ':'"> <!-- 条码 -->
-                            <el-input v-model.trim="currentOp.barcode" @keyup.enter="checkBarcode" ref="barcodeRef"
-                                :placeholder="$t('outstock_op_outBoxed_add.scanBarcodeAndEnter')" /> <!-- 扫描条码后回车 -->
+                        <el-form-item :label="$t('outstock_op_outBoxed_add.barcode') + ':'"> <el-input
+                                v-model.trim="currentOp.barcode" @keyup.enter="checkBarcode" ref="barcodeRef"
+                                :placeholder="$t('outstock_op_outBoxed_add.scanBarcodeAndEnter')" /> </el-form-item>
+                        <el-form-item :label="$t('outstock_op_outBoxed_add.stockQty') + ':'"> <el-input
+                                v-model.trim="currentOp.stockQty" readonly ref="stockQtyRef" />
                         </el-form-item>
-                        <el-form-item :label="$t('outstock_op_outBoxed_add.stockQty') + ':'"> <!-- 库存数量 -->
-                            <el-input v-model.trim="currentOp.stockQty" readonly ref="stockQtyRef" />
-                        </el-form-item>
-                        <el-form-item :label="$t('outstock_op_outBoxed_add.pickQty') + ':'"> <!-- 拣货数量 -->
-                            <el-input v-model.trim="currentOp.pickQty" type="number" @keyup.enter="submitPick"
+                        <el-form-item :label="$t('outstock_op_outBoxed_add.pickQty') + ':'"> <el-input
+                                v-model.trim="currentOp.pickQty" type="number" @keyup.enter="submitPick"
                                 ref="pickQtyRef" :placeholder="$t('outstock_op_outBoxed_add.inputPickQtyAndEnter')" />
-                            <!-- 输入拣货数量后回车 -->
                         </el-form-item>
                     </el-form>
                     <el-divider />
-                    <!-- 操作记录表格 -->
                     <h3><el-icon>
                             <DocumentChecked />
-                        </el-icon>{{ $t('outstock_op_outBoxed_add.operationRecords') }}</h3> <!-- 操作记录 -->
+                        </el-icon>{{ $t('outstock_op_outBoxed_add.operationRecords') }}</h3>
                     <div class="operationRecordTable">
                         <el-table :data="operationRecords" border style="width: 100%;" height="200">
                             <el-table-column show-overflow-tooltip prop="locationCode"
-                                :label="$t('outstock_op_outBoxed_add.locationCode')" width="120" /> <!-- 库位 -->
-                            <el-table-column show-overflow-tooltip prop="barcode"
-                                :label="$t('outstock_op_outBoxed_add.productBarcode')" width="150" /> <!-- 商品条码 -->
-                            <el-table-column prop="stockQty" :label="$t('outstock_op_outBoxed_add.stock')" width="80" />
-                            <!-- 库存 -->
+                                :label="$t('outstock_op_outBoxed_add.locationCode')" width="120" /> <el-table-column
+                                show-overflow-tooltip prop="barcode"
+                                :label="$t('outstock_op_outBoxed_add.productBarcode')" width="150" /> <el-table-column
+                                prop="stockQty" :label="$t('outstock_op_outBoxed_add.stock')" width="80" />
                             <el-table-column prop="pickQty" :label="$t('outstock_op_outBoxed_add.pendingPickQty')"
                                 width="85" />
-                            <!-- 待拣数量 -->
                             <el-table-column show-overflow-tooltip prop="operateTime"
-                                :label="$t('outstock_op_outBoxed_add.operateTime')" width="160" /> <!-- 操作时间 -->
-                        </el-table>
+                                :label="$t('outstock_op_outBoxed_add.operateTime')" width="160" /> </el-table>
                     </div>
                 </div>
 
-                <!-- 右侧波次拣货单和订单明细 -->
                 <div class="rightPanel">
-                    <!-- 波次信息头部 -->
                     <div class="waveHeaderInfo">
-                        <span>{{ $t('outstock_op_outBoxed_add.waveNo') }}：{{ waveNo || '-' }}</span> <!-- 波次号 -->
-                        <span>{{ $t('outstock_op_outBoxed_add.createTime') }}：{{ waveInfo.createTime || '-' }}</span>
-                        <!-- 创建时间 -->
+                        <span>{{ $t('outstock_op_outBoxed_add.waveNo') }}：{{ waveNo || '-' }}</span> <span>{{
+                            $t('outstock_op_outBoxed_add.createTime') }}：{{ waveInfo.createTime || '-' }}</span>
                         <span>{{ $t('outstock_op_outBoxed_add.status') }}：{{ waveInfo.status || '-' }}</span>
-                        <!-- 状态 -->
                     </div>
 
                     <h3><el-icon>
                             <Checked />
-                        </el-icon>{{ $t('outstock_op_outBoxed_add.wavePickList') }}</h3> <!-- 波次拣货单 -->
-                    <el-table :data="wavePickDetails" border height="350" style="width: 100%; margin-bottom: 20px;"
+                        </el-icon>{{ $t('outstock_op_outBoxed_add.wavePickList') }}</h3> <el-table
+                        :data="wavePickDetails" border height="350" style="width: 100%; margin-bottom: 20px;"
                         :row-class-name="getRowClassName" ref="pickTableRef">
                         <el-table-column show-overflow-tooltip :label="$t('outstock_op_outBoxed_add.locationCode')"
                             width="140">
-                            <!-- 库位 -->
                             <template #default="scope">
                                 <span v-html="highlightLocation(scope.row.locationCode)"></span>
                             </template>
                         </el-table-column>
-                        <el-table-column :label="$t('outstock_op_outBoxed_add.barcode')" width="140"> <!-- 条码 -->
-                            <template #default="scope">
+                        <el-table-column :label="$t('outstock_op_outBoxed_add.barcode')" width="140"> <template
+                                #default="scope">
                                 <span v-html="highlightSku(scope.row.skuBarcode)"></span>
                             </template>
                         </el-table-column>
                         <el-table-column show-overflow-tooltip prop="sku" :label="$t('outstock_op_outBoxed_add.sku')"
                             width="150" />
-                        <!-- SKU -->
                         <el-table-column show-overflow-tooltip prop="skuName"
-                            :label="$t('outstock_op_outBoxed_add.skuName')" width="180" /> <!-- 品名 -->
-                        <el-table-column prop="pickQty" :label="$t('outstock_op_outBoxed_add.pendingPickQty')"
-                            width="83">
-                            <!-- 待拣数量 -->
+                            :label="$t('outstock_op_outBoxed_add.skuName')" width="180" /> <el-table-column
+                            prop="pickQty" :label="$t('outstock_op_outBoxed_add.pendingPickQty')" width="83">
                             <template #default="{ row }">
                                 <span>{{ row.pickQty - row.pickFinishedQty }}</span>
                             </template>
                         </el-table-column>
                         <el-table-column prop="pickFinishedQty" :label="$t('outstock_op_outBoxed_add.pickedQty')"
                             width="84" />
-                        <!-- 已拣数量 -->
                         <el-table-column prop="status" :label="$t('outstock_op_outBoxed_add.status')" width="85">
-                            <!-- 状态 -->
                             <template #default="{ row }">
                                 <span :style="{ color: row.isFinished == 1 ? 'green' : 'red' }">{{ row.isFinished == 1 ?
                                     $t('outstock_op_outBoxed_add.completed') :
                                     $t('outstock_op_outBoxed_add.uncompleted') }}</span>
-                                <!-- completed：完成；uncompleted：未完成 -->
                             </template>
                         </el-table-column>
                     </el-table>
 
                     <h3><el-icon>
                             <List />
-                        </el-icon>{{ $t('outstock_op_outBoxed_add.orderDetails') }}</h3> <!-- 订单明细 -->
-                    <!-- 订单明细表格：合并orderNo相同的行，展示orderSkuItems数据 -->
-                    <el-table :data="flattenedOrderDetails" border height="300" style="width: 100%;"
+                        </el-icon>{{ $t('outstock_op_outBoxed_add.orderDetails') }}</h3> <el-table
+                        :data="flattenedOrderDetails" border height="300" style="width: 100%;"
                         :span-method="objectSpanMethod">
-                        <!-- 订单号列：相同orderNo合并 -->
-                        <el-table-column prop="orderNo" :label="$t('outstock_op_outBoxed_add.orderNo')" /> <!-- 订单号 -->
-                        <!-- SKU列：取自orderSkuItems -->
-                        <el-table-column :label="$t('outstock_op_outBoxed_add.barcode')" width="220"> <!-- 条码 -->
-                            <template #default="{ row }">
+                        <el-table-column prop="orderNo" :label="$t('outstock_op_outBoxed_add.orderNo')" />
+                        <el-table-column :label="$t('outstock_op_outBoxed_add.barcode')" width="220"> <template
+                                #default="{ row }">
                                 {{ row.barcode }}
                             </template>
                         </el-table-column>
-                        <el-table-column :label="$t('outstock_op_outBoxed_add.sku')" width="160"> <!-- SKU -->
-                            <template #default="{ row }">
+                        <el-table-column :label="$t('outstock_op_outBoxed_add.sku')" width="160"> <template
+                                #default="{ row }">
                                 {{ row.sku }}
                             </template>
                         </el-table-column>
-                        <!-- 品名列：取自orderSkuItems的skuName -->
                         <el-table-column :label="$t('outstock_op_outBoxed_add.skuName')" width="180"
                             show-overflow-tooltip>
-                            <!-- 品名 -->
                             <template #default="{ row }">
                                 {{ row.skuName }}
                             </template>
                         </el-table-column>
-                        <!-- 待拣数量列：假设orderSkuItems中有toPickQty字段，无则默认0 -->
-                        <el-table-column :label="$t('outstock_op_outBoxed_add.pickQuantity')" width="100"> <!-- 拣货数量 -->
+                        <el-table-column :label="$t('outstock_op_outBoxed_add.pickQuantity')" width="100">
                             <template #default="{ row }">
                                 {{ row.pickQty || 0 }}
                             </template>
@@ -663,7 +637,7 @@ onMounted(() => {
 
 .wavePickContainer {
     display: flex;
-    gap: 20px;
+    gap: 15px;
     height: 100%;
     box-sizing: border-box;
     background-color: #f0f1f3;
@@ -674,14 +648,18 @@ onMounted(() => {
     display: flex;
     flex-direction: column;
     gap: 10px;
-    width: 500px;
+    width: 420px;
+    /* 优化：减小默认宽度 */
+    flex: 0 0 420px;
+    /* 优化：固定宽度，避免压缩 */
     background-color: white;
-    padding: 8px;
+    padding: 10px;
     border-radius: 8px;
     overflow-y: auto;
 
     .el-form {
-        width: 500px !important;
+        width: 100% !important;
+        /* 优化：改为100%宽度，适应父容器 */
     }
 
     h3 {
@@ -705,10 +683,14 @@ onMounted(() => {
 }
 
 .rightPanel {
+    flex: 1;
+    /* 优化：自动占据剩余空间 */
+    min-width: 0;
+    /* 优化：防止flex子元素内容（如表格）溢出容器 */
     display: flex;
     flex-direction: column;
     background-color: white;
-    padding: 8px;
+    padding: 10px;
     border-radius: 8px;
     overflow-x: auto;
 
@@ -802,5 +784,29 @@ h3 {
 
 :deep(.el-divider--horizontal) {
     margin: 0;
+}
+
+// 响应式处理：屏幕宽度小于1100px时，改为上下布局
+@media (max-width: 1100px) {
+    .wavePickContainer {
+        flex-direction: column;
+        /* 改为垂直布局 */
+        overflow-y: auto;
+        /* 允许容器滚动 */
+    }
+
+    .leftPanel {
+        width: 100%;
+        /* 占满宽度 */
+        flex: none;
+        max-height: none;
+    }
+
+    .rightPanel {
+        width: 100%;
+        /* 占满宽度 */
+        flex: none;
+        height: auto;
+    }
 }
 </style>

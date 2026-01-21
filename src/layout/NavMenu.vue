@@ -78,7 +78,7 @@ const handleMenuClick = (path) => {
 }
 
 :deep(.el-sub-menu__title:hover) {
-    color: #ff914e !important;
+    color: var(--theme-primary) !important;
     background-color: transparent !important;
 }
 
@@ -90,7 +90,6 @@ const handleMenuClick = (path) => {
 /* --- 下拉菜单核心布局 --- */
 .mega-menu-content {
     width: 540px;
-    /* 外层最大高度，防止极端情况超出屏幕 */
     max-height: 500px;
     overflow-y: auto;
     padding: 15px;
@@ -102,8 +101,6 @@ const handleMenuClick = (path) => {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     gap: 12px;
-    /* 【关键修改】移除 align-items: start; 
-       Grid 默认属性是 stretch，这会让同一行的所有卡片高度自动拉伸至一致 */
 }
 
 /* --- 二级菜单卡片 --- */
@@ -116,29 +113,25 @@ const handleMenuClick = (path) => {
     overflow: hidden;
     transition: all 0.2s;
     box-shadow: 0 1px 4px rgba(0, 0, 0, 0.02);
-
-    /* 【关键修改】设置高度100%以填满Grid单元格 */
     height: 100%;
-    /* 移除之前的 max-height，由内部 list 控制最大高度 */
 
     &:hover {
-        border-color: #ff914e;
-        box-shadow: 0 2px 12px rgba(255, 145, 78, 0.12);
+        border-color: var(--theme-primary);
     }
 }
 
-/* --- 二级菜单标题 (Level 2) --- */
+/* --- 二级菜单标题--- */
 .group-header {
     padding: 10px 12px;
     margin-bottom: 0;
     flex-shrink: 0;
-    background-color: #fff8f2;
-    border-bottom: 1px solid #ff914e20;
+    background-color: var(--theme-hover-bg);
+    border-bottom: 1px solid var(--theme-light-8);
 
     .header-text {
         font-size: 15px;
         font-weight: 700;
-        color: #ff914e;
+        color: var(--theme-primary);
         display: block;
         white-space: nowrap;
         overflow: hidden;
@@ -146,23 +139,16 @@ const handleMenuClick = (path) => {
     }
 }
 
-/* --- 三级菜单容器 --- */
+/* --- 三级菜单 --- */
 .group-list-container {
-    /* 【关键修改】flex: 1 确保容器填满卡片的剩余高度 */
     flex: 1;
-
-    /* 设置单个列表的最大高度。
-       如果某行所有列表都短，行高就矮。
-       如果某行有个列表很长，它会撑开行高直到 260px，然后内部滚动。
-       同行的短列表也会被拉伸到 260px (下方留白)。 */
     max-height: 260px;
     overflow-y: auto;
-
     padding: 4px 6px;
     background-color: #ffffff;
 }
 
-/* --- 三级菜单项 (Level 3) --- */
+/* --- 三级菜单项--- */
 .list-item {
     padding: 8px 10px;
     margin-bottom: 0;
@@ -181,8 +167,8 @@ const handleMenuClick = (path) => {
     }
 
     &:hover {
-        background-color: #fff6ed;
-        color: #ff914e;
+        background-color: var(--theme-hover-bg);
+        color: var(--theme-primary);
         padding-left: 14px;
         border-bottom-color: transparent;
     }
@@ -214,7 +200,7 @@ const handleMenuClick = (path) => {
 }
 
 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-    background: #ff914e;
+    background: var(--theme-primary);
 }
 
 .custom-scrollbar::-webkit-scrollbar-track {

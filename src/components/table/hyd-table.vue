@@ -7,43 +7,46 @@
             </div>
 
             <el-popover placement="bottom" width="400" trigger="click" v-model:visible="showColSettings">
-                <div style="display: flex; justify-content: space-between;align-items: center;">
-                    <h4 style="margin: 0;">{{ getButtonText('columnSetting') }}</h4>
-                    <p id="saveBtn" @click="onSaveSettings">{{ getButtonText('apply') }}</p>
-                </div>
-                <ul class="setColumns">
-                    <el-checkbox-group v-model="tempVisibleColumns">
-                        <draggable v-model="tempLocalColumns" :animation="150" handle=".drag-handle" :disabled="false">
-                            <template #item="{ element: col }">
-                                <li v-if="col.prop" class="checkbox-item" :key="col.prop">
-                                    <el-checkbox :label="col.prop">
-                                        <div class="checkbox-content" @click.stop.prevent>
-                                            <p>{{ getColumnText(col.prop) }}</p>
-                                            <el-input type="number" v-model="tempTempWidths[col.prop]"
-                                                style="width: 80px;margin:0 15px 0 auto;"
-                                                @blur="handleWidthBlurTemp(col.prop)" />
-                                            <div style="display: flex; align-items: center;">
-                                                <el-icon
-                                                    :class="['drag-handle', col.fixed === 'right' ? 'disabled' : '']">
-                                                    <i class="iconfont icon-tuodong" style="font-size: 22px;" />
-                                                </el-icon>
-                                                <el-icon :class="[
-                                                    'fixed-icon',
-                                                    tempFixedColumns.includes(col.prop) ? 'fixed' : 'not-fixed',
-                                                    col.fixed === 'right' ? 'disabled' : ''
-                                                ]"
-                                                    @click.stop.prevent="col.fixed !== 'right' && toggleFixedTemp(col.prop)">
-                                                    <i class="iconfont icon-fixed_line"
-                                                        style="font-size: 22px; margin-left: 5px;" />
-                                                </el-icon>
+                <div v-if="showColSettings">
+                    <div style="display: flex; justify-content: space-between;align-items: center;">
+                        <h4 style="margin: 0;">{{ getButtonText('columnSetting') }}</h4>
+                        <p id="saveBtn" @click="onSaveSettings">{{ getButtonText('apply') }}</p>
+                    </div>
+                    <ul class="setColumns">
+                        <el-checkbox-group v-model="tempVisibleColumns">
+                            <draggable v-model="tempLocalColumns" :animation="150" handle=".drag-handle"
+                                :disabled="false">
+                                <template #item="{ element: col }">
+                                    <li v-if="col.prop" class="checkbox-item" :key="col.prop">
+                                        <el-checkbox :label="col.prop">
+                                            <div class="checkbox-content" @click.stop.prevent>
+                                                <p>{{ getColumnText(col.prop) }}</p>
+                                                <el-input type="number" v-model="tempTempWidths[col.prop]"
+                                                    style="width: 80px;margin:0 15px 0 auto;"
+                                                    @blur="handleWidthBlurTemp(col.prop)" />
+                                                <div style="display: flex; align-items: center;">
+                                                    <el-icon
+                                                        :class="['drag-handle', col.fixed === 'right' ? 'disabled' : '']">
+                                                        <i class="iconfont icon-tuodong" style="font-size: 22px;" />
+                                                    </el-icon>
+                                                    <el-icon :class="[
+                                                        'fixed-icon',
+                                                        tempFixedColumns.includes(col.prop) ? 'fixed' : 'not-fixed',
+                                                        col.fixed === 'right' ? 'disabled' : ''
+                                                    ]"
+                                                        @click.stop.prevent="col.fixed !== 'right' && toggleFixedTemp(col.prop)">
+                                                        <i class="iconfont icon-fixed_line"
+                                                            style="font-size: 22px; margin-left: 5px;" />
+                                                    </el-icon>
+                                                </div>
                                             </div>
-                                        </div>
-                                    </el-checkbox>
-                                </li>
-                            </template>
-                        </draggable>
-                    </el-checkbox-group>
-                </ul>
+                                        </el-checkbox>
+                                    </li>
+                                </template>
+                            </draggable>
+                        </el-checkbox-group>
+                    </ul>
+                </div>
                 <template #reference>
                     <el-icon size="20" color="#999" class="table-setting-icon">
                         <Setting />
@@ -53,48 +56,31 @@
         </div>
 
         <div class="vxe-table-wrapper">
-            <vxe-table :key="tableRefreshKey" ref="vxeTableRef" border round stripe show-overflow="tooltip"
-                height="100%" :loading="loading" :data="tableData"
-                :row-config="{ keyField: rowKey, isCurrent: true, isHover: true, height: 40 }"
-                :column-config="{ resizable: true }" :header-row-config="{ height: 40 }"
-                :checkbox-config="{ range: !isTree }" :mouse-config="{ selected: true }"
-                :filter-config="{ remote: false }" :menu-config="menuConfig" :scroll-x="{ enabled: true, gt: 10 }"
-                :tree-config="isTree ? { transform: false, rowField: rowKey, children: treeProps.children } : undefined"
-                :scroll-y="{ enabled: !preserveExpanded, gt: 20 }" :show-footer="footer !== null"
-                :footer-method="footerMethod" :cell-class-name="getCellClassNameAdaptor"
-                @checkbox-change="handleSelectionChange" @checkbox-all="handleSelectionChange"
-                @checkbox-range-change="handleSelectionChange" @cell-click="handleCellClick"
-                @sort-change="handleSortChange" @filter-change="handleFilterChange" @menu-click="handleMenuClick"
-                @toggle-row-expand="handleToggleExpand" size="mini">
+            <div class="vxe-table-wrapper">
+                <vxe-grid ref="vxeTableRef" v-bind="gridOptions" :loading="loading" :height="'100%'"
+                    :columns="finalColumns" :data="tableData" @checkbox-change="handleSelectionChange"
+                    @checkbox-all="handleSelectionChange" @checkbox-range-change="handleSelectionChange"
+                    @cell-click="handleCellClick" @sort-change="handleSortChange" @filter-change="handleFilterChange"
+                    @menu-click="handleMenuClick" @toggle-row-expand="handleToggleExpand">
 
-                <vxe-column v-if="enableSelection" type="checkbox" width="50" align="center" fixed="left"></vxe-column>
+                    <template v-for="col in slotColumns" :key="col.prop" #[col.slot]="{ row, column, rowIndex }">
+                        <slot :name="col.slot" v-bind="{ row, column, index: rowIndex }">
+                            {{ row[col.prop] }}
+                        </slot>
+                    </template>
 
-                <vxe-column v-if="preserveExpanded" type="expand" width="50" fixed="left" align="center">
-                    <template #content="{ row, rowIndex }">
+                    <template #expand_content="{ row, rowIndex }">
                         <slot name="expand" :row="row" :row-key="row[rowKey]" :index="rowIndex">
                             <div class="default-expand-content">请通过「expand」插槽自定义展开内容</div>
                         </slot>
                     </template>
-                </vxe-column>
 
-                <vxe-column type="seq" width="60" fixed="left" align="center" :title="getColumnText('index')">
-                    <template #default="{ rowIndex }">
+                    <template #seq_default="{ rowIndex }">
                         {{ calculateIndex(rowIndex) }}
                     </template>
-                </vxe-column>
 
-                <vxe-column v-for="(col, index) in filteredColumns" :key="col.prop" :field="col.prop"
-                    :title="getColumnText(col.prop)" :width="col.width" :fixed="getFixedStatus(col)"
-                    :sortable="col.sortable" :filters="col.filters" :filter-multiple="col.filterMultiple !== false"
-                    :filter-method="col.filterMethod" align="left" header-align="left"
-                    :tree-node="isTree && index === 0">
-                    <template #default="{ row, rowIndex }">
-                        <slot :name="col.slot" v-bind="{ row: row, column: col, index: rowIndex }">
-                            {{ row[col.prop] }}
-                        </slot>
-                    </template>
-                </vxe-column>
-            </vxe-table>
+                </vxe-grid>
+            </div>
         </div>
 
         <div class="table-pagination">
@@ -112,7 +98,7 @@
  * 1. 依赖导入
  * =========================================================
  */
-import { defineProps, defineEmits, computed, ref, watch, onMounted, nextTick, defineExpose, shallowRef, reactive } from 'vue'
+import { defineProps, defineEmits, computed, ref, watch, onMounted, nextTick, defineExpose, shallowRef, reactive, markRaw, toRaw } from 'vue'
 import { useRoute } from 'vue-router'
 import { Setting } from '@element-plus/icons-vue'
 import draggable from 'vuedraggable'
@@ -459,7 +445,7 @@ const initColumns = (columns) => {
                 obj[col.prop] = col.width || 100
                 return obj
             }, {})
-            return orderedColumns
+            return orderedColumns.map(col => markRaw(toRaw(col)))
         } catch (e) { console.error('列缓存解析失败:', e) }
     }
     tempWidths.value = columns.reduce((obj, col) => {
@@ -468,7 +454,7 @@ const initColumns = (columns) => {
     }, {})
     const defaultCache = columns.map(col => ({ prop: col.prop, width: col.width || 100 }))
     localStorage.setItem(columnOrderStorageKey.value, JSON.stringify(defaultCache))
-    return [...columns]
+    return columns.map(col => markRaw(toRaw(col)))
 }
 
 // 临时状态变量 (用于设置弹窗中操作，不立即影响表格)
@@ -632,6 +618,102 @@ watch(visibleColumns, () => {
 watch(fixedColumns, () => {
     if (tempFixedColumns.value.length === 0) tempFixedColumns.value = [...fixedColumns.value]
 })
+
+/**
+ * =========================================================
+ * 7. [新增] Vxe-Grid 核心配置 (替代原 vxe-table 模板写法)
+ * =========================================================
+ */
+
+// 1. 构造传递给 vxe-grid 的最终列配置
+const finalColumns = computed(() => {
+    const cols = []
+
+    // (1) 多选列
+    if (props.enableSelection) {
+        cols.push({ type: 'checkbox', width: 50, align: 'center', fixed: 'left' })
+    }
+
+    // (2) 展开列 (对应原模板中的 <vxe-column type="expand">)
+    if (props.preserveExpanded) {
+        cols.push({
+            type: 'expand',
+            width: 50,
+            fixed: 'left',
+            align: 'center',
+            // 关键：告诉 Grid 这一列的内容去寻找名为 'expand_content' 的插槽
+            slots: { content: 'expand_content' }
+        })
+    }
+
+    // (3) 序号列 (对应原模板中的 <vxe-column type="seq">)
+    cols.push({
+        type: 'seq',
+        width: 60,
+        fixed: 'left',
+        align: 'center',
+        title: getColumnText('index'),
+        slots: { default: 'seq_default' } // 自定义序号插槽
+    })
+
+    // (4) 业务数据列 (将 filteredColumns 转换为 Grid 需要的格式)
+    // 这里不需要再用 toRaw/markRaw，因为 filteredColumns 已经是优化过的了
+    const bizCols = filteredColumns.value.map((col, index) => {
+        // 构造基础配置
+        const gridCol = {
+            field: col.prop,
+            title: getColumnText(col.prop),
+            width: col.width,
+            fixed: getFixedStatus(col),
+            sortable: col.sortable,
+            filters: col.filters,
+            filterMultiple: col.filterMultiple !== false,
+            filterMethod: col.filterMethod,
+            align: 'left',
+            headerAlign: 'left',
+            treeNode: props.isTree && index === 0, // 树形结构首列
+            showOverflow: col.showOverflow,        // 按需 Tooltip
+            slots: {}
+        }
+
+        // 如果业务列定义了插槽 (col.slot)，则映射到 slots.default
+        if (col.slot) {
+            gridCol.slots.default = col.slot
+        }
+
+        return gridCol
+    })
+
+    return [...cols, ...bizCols]
+})
+
+// 2. 计算需要动态渲染插槽的列 (用于模板循环)
+const slotColumns = computed(() => {
+    // 只有那些定义了 slot 属性的业务列才需要生成 <template #[slot]>
+    return props.columns.filter(col => col.slot)
+})
+
+// 3. Grid 通用配置 (原本写在 <vxe-table> 标签上的属性)
+const gridOptions = reactive({
+    border: true,
+    round: true,
+    stripe: true,
+    showOverflow: false,
+    size: "mini",
+    rowConfig: { keyField: props.rowKey, isCurrent: true, isHover: true, height: 40 },
+    columnConfig: { resizable: true },
+    headerRowConfig: { height: 40 },
+    checkboxConfig: { range: !props.isTree },
+    mouseConfig: { selected: true },
+    filterConfig: { remote: false },
+    menuConfig: menuConfig,
+    scrollX: { enabled: true, gt: 10 },
+    treeConfig: props.isTree ? { transform: false, rowField: props.rowKey, children: props.treeProps.children } : undefined,
+    scrollY: { enabled: !props.preserveExpanded, gt: 20 },
+    showFooter: props.footer !== null,
+    footerMethod: footerMethod,
+    cellClassName: getCellClassNameAdaptor
+})
 </script>
 
 <style scoped lang="scss">
@@ -646,6 +728,7 @@ watch(fixedColumns, () => {
 }
 
 .vxe-table-wrapper {
+    height: 100%;
     flex: 1;
     overflow: hidden;
     min-height: 0;
@@ -683,6 +766,9 @@ watch(fixedColumns, () => {
 
 /* Vxe-Table 样式重写 */
 :deep(.vxe-table--body-wrapper) {
+    will-change: scroll-position;
+    transform: translateZ(0);
+
     &::-webkit-scrollbar {
         width: 6px;
         height: 6px;
@@ -874,5 +960,19 @@ watch(fixedColumns, () => {
     padding: 0 !important;
     /* 提升层级，防止被某些固定列遮挡 */
     z-index: 99 !important;
+}
+
+/* 针对展开行内容的优化 */
+:deep(.vxe-body--expanded-cell) {
+    will-change: transform;
+    /* 独立渲染层 */
+    transform: translateZ(0);
+    padding: 0 !important;
+    /* 减少盒模型计算 */
+}
+
+/* 再次确保单元格不换行 */
+:deep(.vxe-body--column.col--ellipsis) {
+    height: 40px !important;
 }
 </style>

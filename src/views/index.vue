@@ -6,18 +6,19 @@
             </el-header>
 
             <el-container>
-                <!-- <el-aside width="200px">
+                <el-aside width="200px" v-if="themeStore.layout === 'left'" :class="themeStore.sidebarTheme">
                     <menus :menuData="userMenuStore" :isCollapse="false"></menus>
-                </el-aside> -->
-                <el-main>
-                    <tags></tags>
+                </el-aside>
+                <el-main :class="[themeStore.layout]">
+                    <tags v-if="themeStore.layout !== 'left'"></tags>
                     <router-view v-slot="{ Component, route }">
-                        <div class="router-view-container">
-                            <transition :name="route.meta.noAnimation ? '' : 'page-transition'">
-                                <keep-alive :include="cacheTagsList">
-                                    <component :is="Component" :key="route.fullPath + (route.meta.refreshKey || 0)" />
-                                </keep-alive>
-                            </transition>
+                        <div :class="['router-view-container', themeStore.layout]">
+                            <!-- <transition :name="route.meta.noAnimation ? '' : 'page-transition'"> -->
+                            <keep-alive :include="cacheTagsList" :max="15">
+                                <component :is="Component" :key="route.fullPath + (route.meta.refreshKey || 0)"
+                                    v-memo="[route.fullPath, route.meta.refreshKey]" />
+                            </keep-alive>
+                            <!-- </transition> -->
                         </div>
                     </router-view>
                 </el-main>
@@ -35,7 +36,8 @@ import useUserMenuStore from '@/store/userMenu';
 import { useRoute } from 'vue-router';
 
 import tags from '@/layout/tags.vue';
-
+import { useThemeStore } from '@/store/theme.js'
+const themeStore = useThemeStore()
 const route = useRoute();
 const useTagsStore = tagsStore();
 const userMenuStore = useUserMenuStore();
@@ -66,14 +68,21 @@ provide('refresh', refresh);
 .router-view-container {
     position: relative;
     width: 100%;
-    // height: 100%;  左侧菜单样式
-    height: calc(100vh - 110px);
     display: flex;
     flex-direction: column;
-    /*开启硬件加速，减少主线程重绘压力 */
-    will-change: transform;
-    transform: translateZ(0);
-    backface-visibility: hidden;
+    // will-change: transform;
+    // transform: translateZ(0);
+    // backface-visibility: hidden;
+
+    // 左侧菜单样式
+    &.left {
+        height: calc(100vh - 80px);
+    }
+
+    // 顶部菜单样式
+    &.top {
+        height: calc(100vh - 110px);
+    }
 }
 
 // 切换动画
@@ -136,6 +145,17 @@ provide('refresh', refresh);
 .el-aside {
     overflow-y: auto;
 
+    /* 亮色模式背景 */
+    &.light {
+        background-color: #ffffff;
+        border-right: 1px solid #e4e7ed;
+    }
+
+    /* 暗色模式背景 */
+    &.dark {
+        background-color: #2b2b2b;
+    }
+
     &::-webkit-scrollbar {
         display: none;
     }
@@ -143,7 +163,23 @@ provide('refresh', refresh);
 
 .el-main {
     background-color: #f0f1f3;
-    padding: 0px 12px 10px 12px;
-    overflow: auto; // 左侧菜单样式
+    overflow: auto;
+
+    // 菜单在左侧样式
+    &.left {
+        padding: 10px 12px;
+
+    }
+
+    // 菜单在顶部样式
+    &.top {
+        padding: 0px 12px 10px 12px;
+
+    }
+}
+
+// 主题抽屉
+:deep(.el-drawer__header) {
+    margin-bottom: 0px !important;
 }
 </style>

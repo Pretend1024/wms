@@ -282,7 +282,7 @@ const footer = ref({})
 const columns = ref([
     { label: '公司', prop: 'orgName', width: '130', fixed: 'left' },
     { label: '仓库代码', prop: 'warehouseCode', width: '135', sortable: true, fixed: 'left' },
-    { label: '客户', prop: 'customerName', width: '200', slot: 'customer', fixed: 'left' },
+    { label: '客户', prop: 'customerName', width: '200', slot: 'customer', fixed: 'left', showOverflow: true },
     { label: '状态', prop: 'statusName', width: '110', sortable: true, slot: 'status' },
     { label: '业务类型', prop: 'businessName', width: '120', sortable: true, sortAlias: 'businessId' },
     { label: '库区', prop: 'zoneCode', width: '115' },
@@ -296,7 +296,7 @@ const columns = ref([
     // { label: '入库单号', prop: 'sourceNo', width: '150', sortable: true },
     // { label: '批次号', prop: 'batchNo', width: '110' },
     // { label: '上架日期', prop: 'inShelfDate', width: '200' },
-    { label: '品名', prop: 'skuName', width: '170', sortable: true, slot: 'skuName' },
+    { label: '品名', prop: 'skuName', width: '170', sortable: true, slot: 'skuName', showOverflow: true },
     { label: 'sku长', prop: 'length', width: '150', sortable: true },
     { label: 'sku宽', prop: 'width', width: '150', sortable: true },
     { label: 'sku高', prop: 'height', width: '150', sortable: true },

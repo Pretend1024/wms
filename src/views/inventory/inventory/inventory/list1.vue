@@ -131,9 +131,9 @@
                 <template #table-buttons>
                     <el-button type="warning" @click="handleLock" :icon="Lock">{{ getButtonText('freeze') }}</el-button>
                     <el-button type="warning" @click="handleUnLock" :icon="Unlock">{{ getButtonText('unfreeze')
-                    }}</el-button>
+                        }}</el-button>
                     <el-button type="success" @click="handleExport" :icon="Share">{{ getButtonText('export')
-                    }}</el-button>
+                        }}</el-button>
                 </template>
                 <!-- 使用插槽来自定义列内容，假如我们需要在操作列中添加按钮 -->
                 <template #customBtn="{ row, column, index }">
@@ -319,7 +319,7 @@ const footer = ref({})
 const columns = ref([
     { label: '公司', prop: 'orgName', width: '130', fixed: 'left' },
     { label: '仓库代码', prop: 'warehouseCode', width: '135', sortable: true, fixed: 'left' },
-    { label: '客户', prop: 'customerName', width: '200', slot: 'customer', fixed: 'left' },
+    { label: '客户', prop: 'customerName', width: '200', slot: 'customer', fixed: 'left', showOverflow: true },
     { label: '状态', prop: 'statusName', width: '110', sortable: true, slot: 'status' },
     { label: '库区', prop: 'zoneCode', width: '115' },
     { label: '库位', prop: 'locationCode', width: '180', sortable: true },
@@ -333,7 +333,7 @@ const columns = ref([
     { label: '来源单号', prop: 'sourceNo', width: '150', sortable: true },
     { label: '批次号', prop: 'batchNo', width: '110' },
     { label: '上架日期', prop: 'inShelfDate', width: '200' },
-    { label: '品名', prop: 'skuName', width: '170', sortable: true, slot: 'skuName' },
+    { label: '品名', prop: 'skuName', width: '170', sortable: true, slot: 'skuName', showOverflow: true },
     { label: 'sku长', prop: 'length', width: '150', sortable: true },
     { label: 'sku宽', prop: 'width', width: '150', sortable: true },
     { label: 'sku高', prop: 'height', width: '150', sortable: true },
